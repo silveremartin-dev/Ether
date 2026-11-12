@@ -162,35 +162,22 @@ public class ConstructalFlowArchitectureEngine extends AbstractSimulationEngine 
         return HACK_LENGTH_COEFFICIENT * Math.pow(catchmentAreaKm2, HACK_SCALING_EXPONENT);
     }
 
-    /**
-     * Executes one time-stepped Constructal Law adjustment across spatial cells.
-     * Updates animal foraging migration friction and hydrological stream length efficiency.
-     *
-     * @param cells   spatial H3 cell collection
-     * @param dtYears elapsed simulation step in years
-     */
-    public static void processConstructalFlow(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            // 1. Megafauna migration distance scaling based on adult body mass ~ 1500 kg
-            double naturalBiomass = cell.getBiomassNaturalOr(0.0);
-            if (naturalBiomass > 10.0) {
-                double megafaunaDailyKm = calculateDailyMigrationDistanceKm(1500.0, LocomotionMedium.TERRESTRIAL_RUNNING, 8.0);
-                // Constructal optimal movement smooths movement friction along fertile grazing corridors
-                double friction = cell.getMovementFrictionOr(1.0);
-                if (friction > 0.50) {
-                    double constructalSmoothing = Math.min(0.02, 0.001 * (megafaunaDailyKm / 100.0) * dtYears);
-                    cell.setMovementFriction(Math.max(0.20, friction - constructalSmoothing));
-                }
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double naturalBiomass = buffer.getBiomassNatural()[i];
+        if (naturalBiomass > 10.0) {
+            double megafaunaDailyKm = calculateDailyMigrationDistanceKm(1500.0, LocomotionMedium.TERRESTRIAL_RUNNING, 8.0);
+            double friction = buffer.getFluxPressure()[i];
+            if (friction > 0.50) {
+                double constructalSmoothing = Math.min(0.02, 0.001 * (megafaunaDailyKm / 100.0) * dtYears);
+                acc.dFluxPressure -= (float) Math.min(friction - 0.20, constructalSmoothing);
             }
-
-            // 2. Hydrological basin drainage channel configuration (Hack's Law)
-            double cellAreaKm2 = Math.max(10.0, cell.getCellAreaKm2());
-            double theoreticalChannelKm = calculateHacksStreamLengthKm(cellAreaKm2);
-            // Preserves hydraulic geometry in cell metadata if accessible
         }
     }
 }

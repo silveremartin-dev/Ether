@@ -150,15 +150,24 @@ public class HistoricalPlanetaryScenarioValidationSuite {
             rCell.setFoodResource(800.0);
         }
 
+        org.ether.society.core.dod.WorldBuffer coGovBuf = new org.ether.society.core.dod.WorldBuffer(planetaryGrid.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(planetaryGrid, coGovBuf, false);
+        SoilNutrientNPKEngine npkEngine = new SoilNutrientNPKEngine();
+        BiologicalDemographicsEngine bioEngine = new BiologicalDemographicsEngine();
+        CoGovernanceTradeEngine coGovEngine = new CoGovernanceTradeEngine();
+        java.util.Set<H3Cell> riverSet = new java.util.HashSet<>(riverCells);
         for (int tick = 1; tick <= 50; tick++) {
-            SoilNutrientNPKEngine.processSoilNutrients(planetaryGrid);
-            BiologicalDemographicsEngine.processBiologicalDemographics(planetaryGrid);
-            CoGovernanceTradeEngine.processTradeAndGovernance(planetaryGrid, 1.0);
+            npkEngine.tick(coGovBuf, 1.0, 12.0);
+            bioEngine.tick(coGovBuf, 1.0, 12.0);
+            coGovEngine.tick(coGovBuf, 1.0, 1.0);
 
-            for (H3Cell rCell : riverCells) {
-                double agSurplus = rCell.getBiomassAgriculture() != null ? rCell.getBiomassAgriculture() : 600.0;
-                double currentK = rCell.getResourceCapital() != null ? rCell.getResourceCapital() : 10.0;
-                rCell.setResourceCapital(currentK + agSurplus * 0.02);
+            for (int i = 0; i < planetaryGrid.size(); i++) {
+                H3Cell c = planetaryGrid.get(i);
+                if (riverSet.contains(c)) {
+                    double agSurplus = coGovBuf.getBiomassAgriculture()[i] > 0 ? coGovBuf.getBiomassAgriculture()[i] : 600.0;
+                    coGovBuf.getResourceCapital()[i] = (float) (coGovBuf.getResourceCapital()[i] + agSurplus * 0.02);
+                    c.setResourceCapital((double) coGovBuf.getResourceCapital()[i]);
+                }
             }
         }
 
@@ -248,9 +257,20 @@ public class HistoricalPlanetaryScenarioValidationSuite {
         assertTrue(romanCells.size() > 0, "Roman Mediterranean basin must be populated during 0 AD scenario setup");
         assertTrue(totalRomanPop > 0, "Roman population must reflect dataset baselines");
 
+        org.ether.society.core.dod.WorldBuffer romanBuf = new org.ether.society.core.dod.WorldBuffer(planetaryGrid.size());
+        for (int i = 0; i < planetaryGrid.size(); i++) {
+            H3Cell c = planetaryGrid.get(i);
+            romanBuf.getBiomassHuman()[i] = (float) c.getPopulationOr(0);
+            romanBuf.getResourceCapital()[i] = (float) c.getResourceCapitalOr(0.0);
+        }
+        RomanImperialCliodynamicEngine romanEngine = new RomanImperialCliodynamicEngine();
+        FrontierAsabiyyahEngine asabiyyahEngine = new FrontierAsabiyyahEngine();
         for (int tick = 1; tick <= 30; tick++) {
-            RomanImperialCliodynamicEngine.processHybrid(planetaryGrid, 1.0);
-            FrontierAsabiyyahEngine.processHybrid(planetaryGrid, 1.0);
+            romanEngine.tick(romanBuf, 1.0, 1.0);
+            asabiyyahEngine.tick(romanBuf, 1.0, 1.0);
+        }
+        for (int i = 0; i < planetaryGrid.size(); i++) {
+            planetaryGrid.get(i).setResourceCapital((double) romanBuf.getResourceCapital()[i]);
         }
 
         double avgCapitalAfter = romanCells.stream()

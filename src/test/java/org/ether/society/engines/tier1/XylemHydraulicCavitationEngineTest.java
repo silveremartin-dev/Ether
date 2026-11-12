@@ -6,13 +6,10 @@
  */
 package org.ether.society.engines.tier1;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.model.Biome;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,57 +63,53 @@ public class XylemHydraulicCavitationEngineTest {
     @DisplayName("1.3 500-Cell Megadrought Cavitation Simulation & Canopy Dieback")
     public void test500CellMegadroughtSimulation() {
         int cellCount = 500;
-        List<H3Cell> cells = new ArrayList<>(cellCount);
+        WorldBuffer buf = new WorldBuffer(cellCount);
 
         for (int i = 0; i < cellCount; i++) {
-            H3Cell cell = new H3Cell();
-            cell.setH3Index((long) (100000 + i));
-            cell.setElevation(100.0);
-            cell.setTemperature(20.0);
+            buf.getH3Indexes()[i] = 100000L + i;
+            buf.getElevation()[i] = 100.0f;
+            buf.getTemperature()[i] = 20.0f;
 
             if (i < 200) {
                 // Agricultural cells facing severe megadrought (50 mm/yr rainfall vs 750 mm petDemand)
-                cell.setBiome(Biome.PLAINS);
-                cell.setRainfall(50.0);
-                cell.setBiomassAgriculture(1000.0);
-                cell.setFoodResource(500.0);
+                buf.getBiomes()[i] = (byte) Biome.PLAINS.ordinal();
+                buf.getRainfall()[i] = 50.0f;
+                buf.getBiomassAgriculture()[i] = 1000.0f;
+                buf.getFoodResource()[i] = 500.0f;
             } else if (i < 350) {
                 // Forest drought cells (80 mm/yr rainfall)
-                cell.setBiome(Biome.FOREST);
-                cell.setRainfall(80.0);
-                cell.setBiomassNatural(2500.0);
+                buf.getBiomes()[i] = (byte) Biome.FOREST.ordinal();
+                buf.getRainfall()[i] = 80.0f;
+                buf.getBiomassNatural()[i] = 2500.0f;
             } else {
                 // Hydrated control group (800 mm/yr rainfall)
-                cell.setBiome(Biome.TUNDRA);
-                cell.setRainfall(800.0);
-                cell.setBiomassNatural(1500.0);
+                buf.getBiomes()[i] = (byte) Biome.TUNDRA.ordinal();
+                buf.getRainfall()[i] = 800.0f;
+                buf.getBiomassNatural()[i] = 1500.0f;
             }
-            cells.add(cell);
         }
 
         // Simulate 3-year severe megadrought
+        XylemHydraulicCavitationEngine engine = new XylemHydraulicCavitationEngine();
         for (int yr = 0; yr < 3; yr++) {
-            XylemHydraulicCavitationEngine.processXylemCavitation(cells, 1.0);
+            engine.tick(buf, 1.0, 12.0);
         }
 
         // Cropland verification: severe runaway cavitation collapses agricultural biomass
         for (int i = 0; i < 200; i++) {
-            H3Cell cropCell = cells.get(i);
-            assertTrue(cropCell.getBiomassAgriculture() < 600.0,
+            assertTrue(buf.getBiomassAgriculture()[i] < 600.0f,
                     "3-year agricultural megadrought must cause severe crop failure and dieback.");
         }
 
         // Forest verification: cavitation dieback reduces canopy biomass
         for (int i = 200; i < 350; i++) {
-            H3Cell forestCell = cells.get(i);
-            assertTrue(forestCell.getBiomassNatural() < 2500.0,
+            assertTrue(buf.getBiomassNatural()[i] < 2500.0f,
                     "Forest megadrought must induce canopy dieback.");
         }
 
         // Tundra control verification: hydrated cells maintain healthy natural biomass
         for (int i = 350; i < 500; i++) {
-            H3Cell tundraCell = cells.get(i);
-            assertEquals(1500.0, tundraCell.getBiomassNatural(), 1e-4,
+            assertEquals(1500.0f, buf.getBiomassNatural()[i], 1e-4f,
                     "Hydrated cells with adequate rainfall must not suffer cavitation dieback.");
         }
     }
@@ -124,33 +117,33 @@ public class XylemHydraulicCavitationEngineTest {
     @Test
     @DisplayName("1.4 Bitwise Determinism Verification")
     public void testBitwiseDeterminism() {
-        List<H3Cell> run1 = createTestDomain(100);
-        List<H3Cell> run2 = createTestDomain(100);
+        WorldBuffer run1 = createTestDomain(100);
+        WorldBuffer run2 = createTestDomain(100);
 
+        XylemHydraulicCavitationEngine engine1 = new XylemHydraulicCavitationEngine();
+        XylemHydraulicCavitationEngine engine2 = new XylemHydraulicCavitationEngine();
         for (int yr = 0; yr < 5; yr++) {
-            XylemHydraulicCavitationEngine.processXylemCavitation(run1, 1.0);
-            XylemHydraulicCavitationEngine.processXylemCavitation(run2, 1.0);
+            engine1.tick(run1, 1.0, 12.0);
+            engine2.tick(run2, 1.0, 12.0);
         }
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(run1.get(i).getBiomassAgriculture(), run2.get(i).getBiomassAgriculture(), 0.0,
+            assertEquals(run1.getBiomassAgriculture()[i], run2.getBiomassAgriculture()[i], 0.0f,
                     "Xylem cavitation trajectories must be bitwise identical.");
-            assertEquals(run1.get(i).getBiomassNatural(), run2.get(i).getBiomassNatural(), 0.0);
+            assertEquals(run1.getBiomassNatural()[i], run2.getBiomassNatural()[i], 0.0f);
         }
     }
 
-    private List<H3Cell> createTestDomain(int count) {
-        List<H3Cell> cells = new ArrayList<>(count);
+    private WorldBuffer createTestDomain(int count) {
+        WorldBuffer buf = new WorldBuffer(count);
         for (int i = 0; i < count; i++) {
-            H3Cell cell = new H3Cell();
-            cell.setH3Index((long) (50000 + i));
-            cell.setBiome(i % 2 == 0 ? Biome.PLAINS : Biome.FOREST);
-            cell.setTemperature(18.0);
-            cell.setRainfall(70.0);
-            cell.setBiomassAgriculture(800.0);
-            cell.setBiomassNatural(1200.0);
-            cells.add(cell);
+            buf.getH3Indexes()[i] = 50000L + i;
+            buf.getBiomes()[i] = (byte) (i % 2 == 0 ? Biome.PLAINS.ordinal() : Biome.FOREST.ordinal());
+            buf.getTemperature()[i] = 18.0f;
+            buf.getRainfall()[i] = 70.0f;
+            buf.getBiomassAgriculture()[i] = 800.0f;
+            buf.getBiomassNatural()[i] = 1200.0f;
         }
-        return cells;
+        return buf;
     }
 }

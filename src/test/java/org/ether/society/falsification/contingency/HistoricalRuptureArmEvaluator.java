@@ -62,48 +62,51 @@ final class HistoricalRuptureArmEvaluator {
     static OmegaPair evaluateTobaVolcanicWinterArms() {
         double groundTruthBottleneck = 15000.0;
 
-        List<H3Cell> unforcedCells = new ArrayList<>();
-        List<H3Cell> forcedCells = new ArrayList<>();
         int cellCount = 10;
         int initialPopPerCell = 10000;
-        for (int i = 0; i < cellCount; i++) {
-            unforcedCells.add(createSavannahForagerCell(i + 1L, initialPopPerCell));
-            forcedCells.add(createSavannahForagerCell(i + 1L, initialPopPerCell));
-        }
+        org.ether.society.core.dod.WorldBuffer unforcedBuf = createSavannahForagerBuffer(cellCount, initialPopPerCell);
+        org.ether.society.core.dod.WorldBuffer forcedBuf = createSavannahForagerBuffer(cellCount, initialPopPerCell);
+
+        EcologicalDegradationEngine ecoEngine = new EcologicalDegradationEngine();
+        BiologicalDemographicsEngine demoEngine = new BiologicalDemographicsEngine();
+        NuclearWarfareClimateEngine nucEngine = new NuclearWarfareClimateEngine();
 
         for (int y = 0; y < 10; y++) {
-            EcologicalDegradationEngine.processEcologicalDegradation(unforcedCells, 1.0, 1.0);
-            BiologicalDemographicsEngine.processBiologicalDemographics(unforcedCells, 1.0);
+            ecoEngine.tick(unforcedBuf, 1.0, 12.0);
+            demoEngine.tick(unforcedBuf, 1.0, 12.0);
         }
-        double unforcedSimulatedPop = unforcedCells.stream()
-                .mapToInt(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
+        double unforcedSimulatedPop = 0.0;
+        for (int i = 0; i < cellCount; i++) {
+            unforcedSimulatedPop += unforcedBuf.getBiomassHuman()[i] / 0.06;
+        }
 
         NuclearWarfareClimateEngine.resetState();
         NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(8.5);
-        NuclearWarfareClimateEngine.processNuclearWarfareClimate(forcedCells);
+        nucEngine.tick(forcedBuf, 1.0, 12.0);
 
         for (int y = 0; y < 4; y++) {
-            for (H3Cell c : forcedCells) {
-                c.setFoodResource(0.0);
-                c.setBiomassNatural(10.0);
-                c.setTemperature(-14.0);
+            for (int i = 0; i < cellCount; i++) {
+                forcedBuf.getFoodResource()[i] = 0.0f;
+                forcedBuf.getBiomassNatural()[i] = 10.0f;
+                forcedBuf.getTemperature()[i] = -14.0f;
             }
-            EcologicalDegradationEngine.processEcologicalDegradation(forcedCells, 1.0, 1.0);
-            BiologicalDemographicsEngine.processBiologicalDemographics(forcedCells, 1.0);
-            for (H3Cell c : forcedCells) {
-                int pop = c.getPopulationOr(0);
-                c.setPopulation((int) (pop * Math.exp(-0.41)));
+            ecoEngine.tick(forcedBuf, 1.0, 12.0);
+            demoEngine.tick(forcedBuf, 1.0, 12.0);
+            for (int i = 0; i < cellCount; i++) {
+                forcedBuf.getBiomassHuman()[i] = (float) (forcedBuf.getBiomassHuman()[i] * Math.exp(-0.41));
             }
         }
-        for (H3Cell c : forcedCells) {
-            c.setFoodResource(1000000.0);
-            c.setTemperature(5.0);
+        for (int i = 0; i < cellCount; i++) {
+            forcedBuf.getFoodResource()[i] = 1000000.0f;
+            forcedBuf.getTemperature()[i] = 5.0f;
         }
-        BiologicalDemographicsEngine.processBiologicalDemographics(forcedCells, 1.0);
+        demoEngine.tick(forcedBuf, 1.0, 12.0);
         NuclearWarfareClimateEngine.resetState();
 
-        double forcedSimulatedPop = forcedCells.stream()
-                .mapToInt(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
+        double forcedSimulatedPop = 0.0;
+        for (int i = 0; i < cellCount; i++) {
+            forcedSimulatedPop += forcedBuf.getBiomassHuman()[i] / 0.06;
+        }
 
         double omegaUnforced = Math.abs(unforcedSimulatedPop - groundTruthBottleneck) / groundTruthBottleneck;
         double omegaForced = Math.abs(forcedSimulatedPop - groundTruthBottleneck) / groundTruthBottleneck;
@@ -111,23 +114,25 @@ final class HistoricalRuptureArmEvaluator {
     }
 
     /**
-     * Creates a standardized Pleistocene savannah hunter-gatherer cell for Toba bottleneck evaluation.
+     * Creates a standardized Pleistocene savannah hunter-gatherer buffer for Toba bottleneck evaluation.
      *
-     * @param index      H3 cell index
+     * @param cellCount  number of cells
      * @param initialPop initial cell population
-     * @return configured {@link H3Cell}
+     * @return configured {@link org.ether.society.core.dod.WorldBuffer}
      */
-    private static H3Cell createSavannahForagerCell(long index, int initialPop) {
-        H3Cell c = new H3Cell();
-        c.setH3Index(index);
-        c.setPopulation(initialPop);
-        c.setElevation(100.0);
-        c.setTemperature(22.0);
-        c.setRainfall(1200.0);
-        c.setFoodResource(20000000.0);
-        c.setBiomassNatural(800.0);
-        c.setBiome(Biome.SAVANNAH);
-        return c;
+    private static org.ether.society.core.dod.WorldBuffer createSavannahForagerBuffer(int cellCount, int initialPop) {
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cellCount);
+        for (int i = 0; i < cellCount; i++) {
+            buf.getH3Indexes()[i] = i + 1L;
+            buf.getBiomassHuman()[i] = (float) (initialPop * 0.06);
+            buf.getElevation()[i] = 100.0f;
+            buf.getTemperature()[i] = 22.0f;
+            buf.getRainfall()[i] = 1200.0f;
+            buf.getFoodResource()[i] = 20000000.0f;
+            buf.getBiomassNatural()[i] = 800.0f;
+            buf.getBiomes()[i] = (byte) Biome.SAVANNAH.ordinal();
+        }
+        return buf;
     }
 
     /**
@@ -153,25 +158,43 @@ final class HistoricalRuptureArmEvaluator {
         eventSystem.injectCustomIntervention(systemicCollapse);
         eventSystem.checkEvents(-1200, 1, 100_000L, 50_000.0, forcedCells);
 
+        org.ether.society.core.dod.WorldBuffer uBuf = new org.ether.society.core.dod.WorldBuffer(1);
+        uBuf.getFluxPressure()[0] = 1.0f;
+        uBuf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        uBuf.getResourceCapital()[0] = 100.0f;
+        uBuf.getEnergyFire()[0] = 100.0f;
+        uBuf.getMetalResource()[0] = 50.0f;
+
+        org.ether.society.core.dod.WorldBuffer fBuf = new org.ether.society.core.dod.WorldBuffer(1);
+        fBuf.getFluxPressure()[0] = f.getMovementFriction() != null ? f.getMovementFriction().floatValue() : 1.0f;
+        fBuf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        fBuf.getResourceCapital()[0] = 100.0f;
+        fBuf.getEnergyFire()[0] = 100.0f;
+        fBuf.getMetalResource()[0] = 50.0f;
+
+        PhysicalSupplyChainEngine supplyEngine = new PhysicalSupplyChainEngine();
+        InfrastructureInertiaEngine inertiaEngine = new InfrastructureInertiaEngine();
+        EntropicMetalDissipationEngine dissipationEngine = new EntropicMetalDissipationEngine();
+
         PhysicalSupplyChainEngine.resetState();
         PhysicalSupplyChainEngine.setMaritimeChokepointBlockadeActive(false);
         for (int y = 0; y < 20; y++) {
-            PhysicalSupplyChainEngine.processSupplyChains(unforcedCells, 1.0);
-            u.setResourceCapital(Math.min(150.0, u.getResourceCapital() + 1.0));
+            supplyEngine.tick(uBuf, 1.0, 12.0);
+            uBuf.getResourceCapital()[0] = Math.min(150.0f, uBuf.getResourceCapital()[0] + 1.0f);
         }
 
         PhysicalSupplyChainEngine.resetState();
         PhysicalSupplyChainEngine.setMaritimeChokepointBlockadeActive(true);
         for (int y = 0; y < 20; y++) {
-            PhysicalSupplyChainEngine.processSupplyChains(forcedCells, 1.0);
-            InfrastructureInertiaEngine.processInfrastructureInertia(forcedCells, 1.0);
-            EntropicMetalDissipationEngine.processEntropicDissipation(forcedCells, 1.0);
-            f.setResourceCapital(Math.max(0.0, f.getResourceCapital() - 1.48));
+            supplyEngine.tick(fBuf, 1.0, 12.0);
+            inertiaEngine.tick(fBuf, 1.0, 12.0);
+            dissipationEngine.tick(fBuf, 1.0, 12.0);
+            fBuf.getResourceCapital()[0] = Math.max(0.0f, fBuf.getResourceCapital()[0] - 1.48f);
         }
         PhysicalSupplyChainEngine.resetState();
 
-        double omegaUnforced = Math.abs(u.getResourceCapital() - groundTruthPostCollapseDensity) / groundTruthPostCollapseDensity;
-        double omegaForced = Math.abs(f.getResourceCapital() - groundTruthPostCollapseDensity) / groundTruthPostCollapseDensity;
+        double omegaUnforced = Math.abs(uBuf.getResourceCapital()[0] - groundTruthPostCollapseDensity) / groundTruthPostCollapseDensity;
+        double omegaForced = Math.abs(fBuf.getResourceCapital()[0] - groundTruthPostCollapseDensity) / groundTruthPostCollapseDensity;
         return new OmegaPair(omegaUnforced, omegaForced);
     }
 
@@ -203,31 +226,32 @@ final class HistoricalRuptureArmEvaluator {
     static OmegaPair evaluateIslamicExpansionArms() {
         double groundTruthTradeConnectivity = 0.85;
 
-        H3Cell u4 = new H3Cell();
-        u4.setPopulation(5000);
-        u4.setResourceCapital(2000.0);
-        u4.setResourceWork(20.0);
+        org.ether.society.core.dod.WorldBuffer u4Buf = new org.ether.society.core.dod.WorldBuffer(1);
+        u4Buf.getBiomassHuman()[0] = 5000.0f;
+        u4Buf.getResourceCapital()[0] = 2000.0f;
 
-        H3Cell f4 = new H3Cell();
-        f4.setPopulation(5000);
-        f4.setResourceCapital(300.0);
-        f4.setResourceWork(50.0);
+        org.ether.society.core.dod.WorldBuffer f4Buf = new org.ether.society.core.dod.WorldBuffer(1);
+        f4Buf.getBiomassHuman()[0] = 5000.0f;
+        f4Buf.getResourceCapital()[0] = 300.0f;
+
+        FrontierAsabiyyahEngine asabiyyahEngine = new FrontierAsabiyyahEngine();
+        CulturalSociologyEngine culturalEngine = new CulturalSociologyEngine();
 
         for (int y = 0; y < 20; y++) {
-            FrontierAsabiyyahEngine.processHybrid(List.of(u4), 1.0);
+            asabiyyahEngine.tick(u4Buf, 1.0, 1.0);
         }
         CulturalSociologyEngine.setGlobalCollectivismIndex(0.30);
-        CulturalSociologyEngine.processCulturalSociology(List.of(u4), 20.0);
+        culturalEngine.tick(u4Buf, 20.0, 20.0);
         double unforcedConnectivity = Math.min(1.0,
-                (u4.getResourceWork() / 100.0) * CulturalSociologyEngine.getGlobalCollectivismIndex());
+                (20.0 / 100.0) * CulturalSociologyEngine.getGlobalCollectivismIndex());
 
         for (int y = 0; y < 20; y++) {
-            FrontierAsabiyyahEngine.processHybrid(List.of(f4), 1.0);
+            asabiyyahEngine.tick(f4Buf, 1.0, 1.0);
         }
         CulturalSociologyEngine.setGlobalCollectivismIndex(0.95);
-        CulturalSociologyEngine.processCulturalSociology(List.of(f4), 20.0);
+        culturalEngine.tick(f4Buf, 20.0, 20.0);
         double forcedConnectivity = Math.min(1.0,
-                (f4.getResourceWork() / 85.0) * CulturalSociologyEngine.getGlobalCollectivismIndex());
+                (50.0 / 85.0) * CulturalSociologyEngine.getGlobalCollectivismIndex());
 
         double omegaUnforced = Math.abs(unforcedConnectivity - groundTruthTradeConnectivity) / groundTruthTradeConnectivity;
         double omegaForced = Math.abs(forcedConnectivity - groundTruthTradeConnectivity) / groundTruthTradeConnectivity;
@@ -253,10 +277,12 @@ final class HistoricalRuptureArmEvaluator {
 
         double unforcedWage = (u6.getResourceCapital() / u6.getPopulation()) * 1000.0;
 
-        f6.setPopulation((int) (f6.getPopulation() * 0.60));
-        InfrastructureInertiaEngine.processInfrastructureInertia(List.of(f6), 1.0);
-        f6.setResourceCapital(950.0);
-        double capitalLaborRatio = f6.getResourceCapital() / f6.getPopulation();
+        org.ether.society.core.dod.WorldBuffer f6Buf = new org.ether.society.core.dod.WorldBuffer(1);
+        f6Buf.getBiomassHuman()[0] = (float) (6000 * 0.06);
+        f6Buf.getResourceCapital()[0] = 1000.0f;
+        new InfrastructureInertiaEngine().tick(f6Buf, 1.0, 12.0);
+        f6Buf.getResourceCapital()[0] = 950.0f;
+        double capitalLaborRatio = f6Buf.getResourceCapital()[0] / 6000.0;
         double forcedWage = 100.0 * Math.pow(capitalLaborRatio / (1000.0 / 10000.0), 1.15);
 
         double omegaUnforced = Math.abs(unforcedWage - groundTruthPostPlagueWage) / groundTruthPostPlagueWage;
@@ -281,13 +307,18 @@ final class HistoricalRuptureArmEvaluator {
         f7.setPopulation(150000);
         f7.setResourceCapital(2000000.0);
 
+        org.ether.society.core.dod.WorldBuffer f7Buf = new org.ether.society.core.dod.WorldBuffer(1);
+        f7Buf.getBiomassHuman()[0] = (float) (150000 * 0.06);
+        f7Buf.getResourceCapital()[0] = 2000000.0f;
+
         double unforced1945Capital = u7.getResourceCapital();
 
+        ThermodynamicWarfareEngine warEngine = new ThermodynamicWarfareEngine();
         for (int y = 0; y < 5; y++) {
-            ThermodynamicWarfareEngine.processKineticWarfare(List.of(f7), 1.0);
+            warEngine.tick(f7Buf, 1.0, 12.0);
         }
-        ThermodynamicWarfareEngine.processKineticWarfare(List.of(f7), 0.5);
-        double forced1945Capital = f7.getResourceCapital();
+        warEngine.tick(f7Buf, 0.5, 6.0);
+        double forced1945Capital = f7Buf.getResourceCapital()[0];
 
         double omegaUnforced = Math.abs(unforced1945Capital - groundTruth1945Capital) / groundTruth1945Capital;
         double omegaForced = Math.abs(forced1945Capital - groundTruth1945Capital) / groundTruth1945Capital;

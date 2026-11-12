@@ -66,39 +66,45 @@ final class FalsificationDebateFixtures {
             Map<Integer, Double> malthusTrajectory,
             Map<Integer, Double> boserupTrajectory) {
 
+        org.ether.society.core.dod.WorldBuffer malthusBuf = new org.ether.society.core.dod.WorldBuffer(malthusGrid.size());
+        org.ether.society.core.dod.WorldBuffer boserupBuf = new org.ether.society.core.dod.WorldBuffer(boserupGrid.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(malthusGrid, malthusBuf, false);
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(boserupGrid, boserupBuf, false);
+        EcologicalDegradationEngine ecoEngine = new EcologicalDegradationEngine();
+        BiologicalDemographicsEngine bioEngine = new BiologicalDemographicsEngine();
+
         for (int t = 0; t < 50; t++) {
             int simYear = 1750 + (t * 2);
 
-            EcologicalDegradationEngine.processEcologicalDegradation(malthusGrid, 1.2, 2.0);
-            for (H3Cell c : malthusGrid) {
-                double pop = c.getPopulation();
-                double food = c.getFoodResourceOr(0.0);
+            ecoEngine.tick(malthusBuf, 2.0, 24.0);
+            for (int i = 0; i < malthusGrid.size(); i++) {
+                double pop = malthusBuf.getBiomassHuman()[i] / 0.06;
+                double food = malthusBuf.getFoodResource()[i];
                 if (pop * 1.5 > food) {
-                    c.setFoodResource(Math.max(0.0, food - (pop * 1.5 - food) * 0.1));
-                    c.setPopulation(Math.max(1, (int) (pop * 0.85)));
+                    malthusBuf.getFoodResource()[i] = (float) Math.max(0.0, food - (pop * 1.5 - food) * 0.1);
+                    malthusBuf.getBiomassHuman()[i] = (float) (Math.max(1.0, pop * 0.85) * 0.06);
                 }
             }
 
-            boserupEngine.process(boserupGrid, 2.0);
-            EcologicalDegradationEngine.processEcologicalDegradation(
-                    boserupGrid,
-                    H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(boserupGrid.get(0)),
-                    2.0
-            );
-            BiologicalDemographicsEngine.processBiologicalDemographics(boserupGrid, 2.0);
+            boserupEngine.tick(boserupBuf, 2.0, 24.0);
+            ecoEngine.tick(boserupBuf, 2.0, 24.0);
+            bioEngine.tick(boserupBuf, 2.0, 24.0);
 
-            for (H3Cell c : boserupGrid) {
-                double pop = c.getPopulation();
-                double carryingCap = c.getBiomassAgriculture() * 35.0;
-                if (pop < carryingCap) {
+            double malthusPopSum = 0.0;
+            double boserupPopSum = 0.0;
+            for (int i = 0; i < boserupGrid.size(); i++) {
+                double pop = boserupBuf.getBiomassHuman()[i] / 0.06;
+                double carryingCap = boserupBuf.getBiomassAgriculture()[i] * 35.0;
+                if (pop < carryingCap && carryingCap > 0.0) {
                     double netGrowth = pop * (1.0 - (pop / carryingCap)) * 0.006 * 2.0;
-                    int newPop = (int) Math.round(pop + netGrowth);
-                    c.setPopulation(newPop);
+                    boserupBuf.getBiomassHuman()[i] = (float) ((pop + netGrowth) * 0.06);
                 }
+                malthusPopSum += malthusBuf.getBiomassHuman()[i] / 0.06;
+                boserupPopSum += boserupBuf.getBiomassHuman()[i] / 0.06;
             }
 
-            malthusTrajectory.put(simYear, malthusGrid.stream().mapToDouble(H3Cell::getPopulation).sum());
-            boserupTrajectory.put(simYear, boserupGrid.stream().mapToDouble(H3Cell::getPopulation).sum());
+            malthusTrajectory.put(simYear, malthusPopSum);
+            boserupTrajectory.put(simYear, boserupPopSum);
         }
     }
 
@@ -130,18 +136,19 @@ final class FalsificationDebateFixtures {
     }
 
     static double runLiebigNPKSimulation() {
-        H3Cell farmCell = new H3Cell(0x8428308285fffffL, 45.0, 10.0);
-        farmCell.setPopulation(50000);
-        farmCell.setBiomassAgriculture(30_000_000.0);
-        farmCell.setSoilOrganicCarbon(5.0);
-        farmCell.setResourceMetal(0.0);
-        farmCell.setResourceCapital(500.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 0x8428308285fffffL;
+        buf.getBiomassHuman()[0] = 50000.0f * 0.06f;
+        buf.getBiomassAgriculture()[0] = 30_000_000.0f;
+        buf.getSoilOrganicCarbon()[0] = 5.0f;
+        buf.getMetalResource()[0] = 0.0f;
+        buf.getResourceCapital()[0] = 500.0f;
 
-        List<H3Cell> cells = List.of(farmCell);
+        SoilNutrientNPKEngine npkEngine = new SoilNutrientNPKEngine();
         for (int yr = 0; yr < 10; yr++) {
-            SoilNutrientNPKEngine.processSoilNutrients(cells, 1.0);
+            npkEngine.tick(buf, 1.0, 12.0);
         }
-        return farmCell.getBiomassAgriculture();
+        return buf.getBiomassAgriculture()[0];
     }
 
     static double runBoserupInvolutionSimulation() {
@@ -167,12 +174,21 @@ final class FalsificationDebateFixtures {
             List<Double> pinkerMortalityHistory,
             List<Double> turchinPsiHistory) {
 
+        org.ether.society.core.dod.WorldBuffer pinkerBuf = new org.ether.society.core.dod.WorldBuffer(pinkerCells.size());
+        for (int i = 0; i < pinkerCells.size(); i++) {
+            pinkerBuf.getBiomassHuman()[i] = (float) pinkerCells.get(i).getPopulationOr(0);
+            pinkerBuf.getResourceCapital()[i] = (float) pinkerCells.get(i).getResourceCapitalOr(0.0);
+        }
+        PinkerViolenceDeclinePureEngine pinkerEngine = new PinkerViolenceDeclinePureEngine();
         for (int year = 0; year < 150; year++) {
             double currentGini = 0.35 + 0.30 * (1.0 / (1.0 + Math.exp(-(year - 75.0) / 15.0)));
             imperialCells.forEach(c -> c.setGiniIndex(currentGini));
-            pinkerCells.forEach(c -> c.setGiniIndex(currentGini));
+            for (int i = 0; i < pinkerCells.size(); i++) {
+                pinkerCells.get(i).setGiniIndex(currentGini);
+                pinkerBuf.getGiniIndex()[i] = (float) currentGini;
+            }
 
-            PinkerViolenceDeclinePureEngine.processHybrid(pinkerCells, 1.0);
+            pinkerEngine.tick(pinkerBuf, 1.0, 1.0);
             double violentDeathRate = PinkerViolenceDeclinePureEngine.calculateViolentDeathRatePerCapita(
                     0.70, 0.85, 0.50);
             pinkerMortalityHistory.add(violentDeathRate);
@@ -185,11 +201,16 @@ final class FalsificationDebateFixtures {
 
     static SmilInertiaResult runSmilInertiaSimulation() {
         List<H3Cell> smilCells = createGeographicalAgrarianGrid(50, 50000, 80.0, 100000.0);
-        smilCells.forEach(c -> c.setResourceCapital(10000.0));
-        for (int yr = 0; yr < 20; yr++) {
-            SmilMaterialTransitionsPureEngine.processHybrid(smilCells, 1.0);
+        org.ether.society.core.dod.WorldBuffer smilBuf = new org.ether.society.core.dod.WorldBuffer(smilCells.size());
+        for (int i = 0; i < smilCells.size(); i++) {
+            smilBuf.getBiomassHuman()[i] = (float) smilCells.get(i).getPopulationOr(0);
+            smilBuf.getResourceCapital()[i] = 10000.0f;
         }
-        return new SmilInertiaResult(smilCells.get(0).getResourceCapital());
+        SmilMaterialTransitionsPureEngine smilEngine = new SmilMaterialTransitionsPureEngine();
+        for (int yr = 0; yr < 20; yr++) {
+            smilEngine.tick(smilBuf, 1.0, 1.0);
+        }
+        return new SmilInertiaResult(smilBuf.getResourceCapital()[0]);
     }
 
     static EroeiCliffResult runEroeiCliffSimulation() {

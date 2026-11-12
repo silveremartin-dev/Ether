@@ -28,11 +28,6 @@ public class MonasticDemographicBufferEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
-    @Override
     public void reset() {
         resetState();
     }
@@ -41,33 +36,23 @@ public class MonasticDemographicBufferEngine extends AbstractSimulationEngine {
 
     private static double monasticFraction = 0.04; // 4% default monastic buffer fraction
 
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0 || dtYears <= 0.0) return;
 
-            double food = cell.getFoodResourceOr(0.0);
-            double pop = cell.getPopulation();
-            double foodPerCapita = food / Math.max(1.0, pop);
-
-            // Continuous Malthusian pressure on monastic vocation (Voigtländer & Voth 2013):
-            // Dampens fertility rate according to demographic conservation rather than unphysical population deletion
-            double malthusianDeficit = Math.max(0.0, 1.0 - foodPerCapita / 0.10);
-            if (malthusianDeficit > 0.0) {
-                double monasticDamping = monasticFraction * malthusianDeficit * 0.20 * deltaYears;
-                cell.setFertility(Math.max(1.0, (cell.getFertilityOr(2.1)) - monasticDamping));
-            }
+        double food = buffer.getFoodResource()[i];
+        double foodPerCapita = food / Math.max(1.0, pop);
+        double malthusianDeficit = Math.max(0.0, 1.0 - foodPerCapita / 0.10);
+        if (malthusianDeficit > 0.0) {
+            double fertility = buffer.getFertility()[i];
+            double monasticDamping = monasticFraction * malthusianDeficit * 0.20 * dtYears;
+            acc.dFertility -= (float) Math.min(Math.max(0.0, fertility - 1.0), monasticDamping);
         }
     }
 

@@ -452,7 +452,7 @@ public final class EpochMetadataWriterHelper {
                     java.nio.file.Files.move(tempPath, target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 } catch (Exception ex) {
                     java.nio.file.Files.writeString(target.toPath(), content, StandardCharsets.UTF_8);
-                    try { java.nio.file.Files.deleteIfExists(tempPath); } catch (Exception ignored) {}
+                    try { java.nio.file.Files.deleteIfExists(tempPath); } catch (Exception ignored) { /* ignore temp file deletion failure */ }
                 }
                 return;
             } catch (Exception e) {

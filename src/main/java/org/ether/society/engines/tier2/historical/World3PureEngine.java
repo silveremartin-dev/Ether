@@ -71,17 +71,9 @@ public class World3PureEngine extends AbstractSimulationEngine {
         population = Math.max(0.0, population + (births - deaths) * deltaYears);
     }
 
-    /**
-     * Process plugin.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processPlugin(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        // Pure variant runs global differential state
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
+        processTick(dtYears);
     }
 
     /**

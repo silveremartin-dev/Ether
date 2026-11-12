@@ -28,38 +28,18 @@ public class FrontierAsabiyyahEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(FrontierAsabiyyahEngine.class);
-
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
-
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getResourceCapital() == null) continue;
-
-            double capital = cell.getResourceCapital();
-            // Continuous Asabiyyah dynamics (Turchin 2003 "Historical Dynamics"):
-            // Affluence decays solidarity via luxury, while rugged/frontier conditions build readiness
-            double relAffluence = capital / 1000.0;
-            double decayRate = 0.04 * (relAffluence / (1.0 + relAffluence));
-            double growthRate = 0.04 / (1.0 + relAffluence);
-            double netRate = (growthRate - decayRate) * deltaYears;
-
-            double work = cell.getResourceWorkOr(50.0);
-            cell.setResourceWork(Math.max(10.0, work * (1.0 + netRate)));
-        }
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double capital = buffer.getResourceCapital()[i];
+        double relAffluence = capital / 1000.0;
+        double decayRate = 0.04 * (relAffluence / (1.0 + relAffluence));
+        double growthRate = 0.04 / (1.0 + relAffluence);
+        double netRate = (growthRate - decayRate) * dtYears;
+        acc.dInstitutionalComplexity += (float) netRate;
     }
 }

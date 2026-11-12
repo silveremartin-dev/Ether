@@ -129,54 +129,31 @@ public class LifeHistoryInvariantsEngine extends AbstractSimulationEngine {
         return Math.max(0.01, adultMortalityRate) / safeSurv;
     }
 
-    /**
-     * Executes one time-stepped life-history demographic allocation update across cells.
-     * Adapts population fertility and reproductive pacing according to environmental hazard.
-     *
-     * @param cells List of populated H3 cells
-     * @param dtYears elapsed simulation time step in years
-     */
-    public static void processLifeHistoryDynamics(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
         double dtSafe = Math.max(1e-4, dtYears);
+        double biomassHuman = buffer.getBiomassHuman()[i];
+        if (biomassHuman <= 0.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            // Environmental stress contributes to adult mortality hazard
-            double tempC = cell.getTemperatureOr(15.0);
-            double thermalMortalityHazard = 0.0;
-            if (tempC < -10.0) {
-                thermalMortalityHazard = Math.min(0.15, (-10.0 - tempC) * 0.005);
-            } else if (tempC > 38.0) {
-                thermalMortalityHazard = Math.min(0.20, (tempC - 38.0) * 0.015);
-            }
-
-            // Total adult mortality hazard (baseline + environmental stress)
-            double totalAdultMortality = BASELINE_ADULT_MORTALITY_RATE + thermalMortalityHazard;
-
-            // Optimal maturity age and juvenile survival
-            double optAlpha = calculateOptimalReproductiveAge(totalAdultMortality);
-            double juvSurv = calculateJuvenileSurvivorship(totalAdultMortality, optAlpha);
-
-            // Equilibrium birth rate under current mortality hazard
-            double eqBirthRate = calculateEquilibriumBirthRate(totalAdultMortality, juvSurv);
-
-            // Net demographic growth: stable near zero at optimal baseline (+0.005),
-            // but contracts under extrinsic environmental mortality hazard, mitigated by adaptive earlier maturation
-            double baselineAlpha = calculateOptimalReproductiveAge(BASELINE_ADULT_MORTALITY_RATE);
-            double adaptiveMitigation = optAlpha / baselineAlpha; // < 1.0 when accelerating maturity
-            double excessStress = thermalMortalityHazard * adaptiveMitigation;
-            double netGrowthRate = Math.clamp(0.005 - excessStress, -0.15, 0.03);
-            int newPop = (int) Math.round(pop * (1.0 + netGrowthRate * dtSafe));
-
-            if (newPop != pop && newPop > 0) {
-                cell.setPopulation(newPop);
-            }
+        double tempC = buffer.getTemperature()[i];
+        double thermalMortalityHazard = 0.0;
+        if (tempC < -10.0) {
+            thermalMortalityHazard = Math.min(0.15, (-10.0 - tempC) * 0.005);
+        } else if (tempC > 38.0) {
+            thermalMortalityHazard = Math.min(0.20, (tempC - 38.0) * 0.015);
         }
+
+        double totalAdultMortality = BASELINE_ADULT_MORTALITY_RATE + thermalMortalityHazard;
+        double optAlpha = calculateOptimalReproductiveAge(totalAdultMortality);
+        double baselineAlpha = calculateOptimalReproductiveAge(BASELINE_ADULT_MORTALITY_RATE);
+        double adaptiveMitigation = optAlpha / baselineAlpha;
+        double netGrowthRate = Math.clamp(0.005 - thermalMortalityHazard * adaptiveMitigation, -0.15, 0.03);
+        acc.dBiomassHuman += (float) (biomassHuman * netGrowthRate * dtSafe);
     }
 }

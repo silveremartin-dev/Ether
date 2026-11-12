@@ -6,14 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
-import org.ether.society.database.H3CellPhysicsAndStateHelper;
+import org.ether.society.h3.H3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Global Nuclear Winter & Stratospheric Soot Climate Engine.
@@ -73,40 +71,51 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
         return Math.exp(-opticalDepth);
     }
 
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processNuclearWarfareClimate(buf);
+    }
+
     /**
      * Executes one nuclear conflict trigger, soot injection, and nuclear winter climate tick.
      */
-    public static void processNuclearWarfareClimate(List<H3Cell> cells) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processNuclearWarfareClimate(WorldBuffer buffer) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
         int sootInjectionEvents = 0;
         invocationCounter++;
 
+        float[] bioHuman = buffer.getBiomassHuman();
+        float[] uraniumArr = buffer.getResourceUranium();
+        float[] capArr = buffer.getResourceCapital();
+        float[] pollutionArr = buffer.getPollutionLevel();
+        float[] tempArr = buffer.getTemperature();
+        float[] elevArr = buffer.getElevation();
+        float[] agriArr = buffer.getBiomassAgriculture();
+        long[] h3Arr = buffer.getH3Indexes();
+        int n = buffer.getCapacity();
+
         // 1. Evaluate conflict triggers & stratospheric soot injection
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 5000) continue;
+        for (int i = 0; i < n; i++) {
+            double pop = bioHuman[i] / 0.06;
+            if (pop <= 5000.0) continue;
 
-            double uranium = cell.getResourceUraniumOr(0.0);
-            if (uranium <= 0.0) continue; // Nuclear capability requires uranium fissile stock
+            double uranium = uraniumArr[i];
+            if (uranium <= 0.0) continue;
 
-            double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double capital = cell.getResourceCapitalOr(0.0);
+            double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(buffer, i);
+            double capital = capArr[i];
 
-            // Nuclear war trigger: High power capability & extreme population density conflict
             if (powerPerCapita >= NUCLEAR_CAPABILITY_POWER_WATTS && capital > 20000.0) {
-                long cellId = cell.getH3Index() != null ? cell.getH3Index() : 0L;
+                long cellId = (h3Arr != null && h3Arr[i] != 0L) ? h3Arr[i] : i;
                 double prng = org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, invocationCounter, cellId, 211L);
-                if (prng < 0.0001) { // Deterministic macro war event probability per tick
+                if (prng < 0.0001) {
                     sootInjectionEvents++;
-                    globalSootOpticalDepth += 0.50; // Inject stratospheric soot (Tg)
+                    globalSootOpticalDepth += 0.50;
 
-                    // Immediate local destruction
-                    int targetPop = (int) (pop * 0.20);
-                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, targetPop);
-                    cell.setResourceCapital(capital * 0.10);
-                    cell.setPollutionLevel((cell.getPollutionLevelOr(0.0)) + 25000.0);
+                    bioHuman[i] = (float) (bioHuman[i] * 0.20);
+                    capArr[i] = (float) (capital * 0.10);
+                    pollutionArr[i] = pollutionArr[i] + 25000.0f;
                 }
             }
         }
@@ -114,29 +123,34 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
         // 2. Apply Nuclear Winter global solar attenuation & temperature anomaly
         if (globalSootOpticalDepth > 0.01) {
             double transmittance = calculateSolarTransmittance(globalSootOpticalDepth);
-            double tempAnomaly = -15.0 * (1.0 - transmittance); // Up to -15A°C global temperature drop
+            double tempAnomaly = -15.0 * (1.0 - transmittance);
+            H3Service h3Service = H3Service.getInstance();
 
-            for (H3Cell cell : cells) {
-                if (cell == null) continue;
-                double curTemp = cell.getTemperatureOr(15.0);
-                double elev = cell.getElevationOr(0.0);
-                double lat = cell.getLatitudeOr(0.0);
+            for (int i = 0; i < n; i++) {
+                double curTemp = tempArr[i];
+                double elev = elevArr[i];
+                double lat = 0.0;
+                if (h3Arr != null && h3Arr[i] != 0L) {
+                    try {
+                        lat = h3Service.cellToLatLng(h3Arr[i]).lat;
+                    } catch (Exception ignored) {
+                        lat = 0.0;
+                    }
+                }
                 double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
                 double targetTemp = baselineTemp + tempAnomaly;
-                double thermalRelaxationFactor = 0.50; // Rapid aerosol attenuation
-                cell.setTemperature(curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
+                double thermalRelaxationFactor = 0.50;
+                float nextTemp = (float) (curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
+                tempArr[i] = nextTemp;
 
-                // Agricultural crop failure under nuclear winter freezing
-                if (cell.getTemperature() < 0.0) {
-                    double currentAgri = cell.getBiomassAgricultureOr(0.0);
-                    cell.setBiomassAgriculture(Math.max(0.0, currentAgri * 0.10));
+                if (nextTemp < 0.0f) {
+                    agriArr[i] = Math.max(0.0f, agriArr[i] * 0.10f);
                 }
             }
 
-            // Stratospheric soot atmospheric decay per tick (half-life ~ 5-10 years)
             globalSootOpticalDepth *= 0.98;
 
-            logger.warn("Nuclear Winter Engine: Stratospheric soot optical depth tau={}. Global temperature anomaly: {}Â°C across cells.",
+            logger.warn("Nuclear Winter Engine: Stratospheric soot optical depth tau={}. Global temperature anomaly: {} C across cells.",
                     String.format(java.util.Locale.ROOT, "%.2f", globalSootOpticalDepth), String.format(java.util.Locale.ROOT, "%.1f", tempAnomaly));
         }
 

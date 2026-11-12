@@ -75,7 +75,7 @@ final class HistoricalCalibrationSimulationExecutor {
                             epochs.add(yr);
                         }
                     } catch (NumberFormatException ignored) {
-                        // Ignore non-year metadata folders (e.g., variables, events, history)
+                        org.slf4j.LoggerFactory.getLogger(HistoricalCalibrationSimulationExecutor.class).trace("Ignoring non-year metadata folder: {}", d.getName());
                     }
                 }
             }

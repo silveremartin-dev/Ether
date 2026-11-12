@@ -63,7 +63,14 @@ public class OceanTradeCouplingTest {
         assertFalse(TradeNetworkRouter.getLatestRoutes().isEmpty());
 
         // Now trigger severe ocean acidification lowering fish biomass
-        OceanAcidificationEngine.processOceanAcidification(cells, 800.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, buf, false);
+        for (int i = 0; i < cells.size(); i++) {
+            buf.getPollutionLevel()[i] = (800.0f - 280.0f) / 0.4f;
+        }
+        new OceanAcidificationEngine().tick(buf, 1.0, 12.0);
+        coastalHub1.setBiomassFish((double) buf.getBiomassFish()[0]);
+        coastalHub2.setBiomassFish((double) buf.getBiomassFish()[1]);
         assertTrue(coastalHub1.getBiomassFish() < 500.0);
 
         // Re-simulate trade networks under acidified ocean

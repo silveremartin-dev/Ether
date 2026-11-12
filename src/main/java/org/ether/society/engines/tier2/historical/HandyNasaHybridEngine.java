@@ -29,33 +29,22 @@ public class HandyNasaHybridEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(HandyNasaHybridEngine.class);
 
-    /**
-     * Process plugin.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processPlugin(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0) return;
 
-            double pop = cell.getPopulation();
-            double biomass = cell.getBiomassNaturalOr(100.0);
-            double areaKm2 = Math.max(1.0, cell.getEffectiveSurfaceAreaKm2());
-            double density = pop / areaKm2;
-
-            // HANDY coupled logistic nature dynamics (Motesharrei, Rivas & Kalnay 2014):
-            // Natural biomass regrows logistically toward 100.0 and is depleted by human density
-            double maxBiomass = 100.0;
-            double regeneration = 0.02 * biomass * Math.max(0.0, 1.0 - biomass / maxBiomass);
-            double depletion = 0.0002 * Math.min(density, 500.0) * (biomass / maxBiomass);
-            cell.setBiomassNatural(Math.max(0.0, biomass + (regeneration - depletion) * deltaYears));
-        }
+        double biomass = buffer.getBiomassNatural()[i];
+        double density = pop / 100.0;
+        double maxBiomass = 100.0;
+        double regeneration = 0.02 * biomass * Math.max(0.0, 1.0 - biomass / maxBiomass);
+        double depletion = 0.0002 * Math.min(density, 500.0) * (biomass / maxBiomass);
+        acc.dBiomassNatural += (float) ((regeneration - depletion) * dtYears);
     }
 }

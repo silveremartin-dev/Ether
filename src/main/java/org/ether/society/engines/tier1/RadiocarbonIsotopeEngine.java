@@ -6,14 +6,14 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Radiocarbon ($^{14}\text{C}$) Decay & Stable Isotope Fractionation ($\delta^{13}\text{C}$) Engine.
@@ -122,18 +122,34 @@ public class RadiocarbonIsotopeEngine extends AbstractSimulationEngine {
         return calculateContinuousDelta13C(14.0, 800.0);
     }
 
-    /**
-     * Processes radiocarbon tracking and soil organic carbon isotopic signatures across cells.
-     */
-    public static void processIsotopicDecay(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double soc = cell.getSoilOrganicCarbonOr(50.0);
-            // Decay of organic carbon pool
-            double decayedSOC = soc * Math.exp(-LAMBDA_14 * deltaYears);
-            cell.setSoilOrganicCarbon(Math.max(1.0, decayedSOC));
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null || dtYears <= 0.0) return;
+        double soc = buffer.getSoilOrganicCarbon()[i];
+        if (soc > 1.0) {
+            double decayedSOC = Math.max(1.0, soc * Math.exp(-LAMBDA_14 * dtYears));
+            acc.dSoilOrganicCarbon += (float) (decayedSOC - soc);
+        }
+    }
+
+    /**
+     * Processes radiocarbon tracking and soil organic carbon isotopic signatures across DoD buffer.
+     */
+    public static void processIsotopicDecay(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
+
+        float[] socArr = buffer.getSoilOrganicCarbon();
+        double decayFactor = Math.exp(-LAMBDA_14 * deltaYears);
+        int n = buffer.getCapacity();
+
+        for (int i = 0; i < n; i++) {
+            double soc = socArr[i];
+            socArr[i] = (float) Math.max(1.0, soc * decayFactor);
         }
     }
 }

@@ -54,24 +54,25 @@ public class CharneyVegetationAlbedoEngineTest {
         assertTrue(rainAnomalyArid < rainAnomalyAHP,
                 "Orbital monsoon anomaly must substantially weaken by -2000 BCE (observed: " + rainAnomalyArid + " mm/yr)");
 
-        // Set up a representative Saharan cell (22°N, 15°E)
-        H3Cell saharanCell = new H3Cell(0x8828308280fffffL, 22.0, 15.0);
-        saharanCell.setBiomassNatural(250.0); // Wet green savanna state
-        saharanCell.setRainfall(350.0);
-        saharanCell.setDynamicAlbedo(0.20);
+        // Set up a representative Saharan cell in WorldBuffer
+        org.ether.society.core.dod.WorldBuffer domain = new org.ether.society.core.dod.WorldBuffer(1);
+        domain.getBiomassNatural()[0] = 250.0f;
+        domain.getRainfall()[0] = 350.0f;
 
-        // Advance across the -4,100 BCE mid-Holocene desiccation horizon down to -2000 BCE
-        List<H3Cell> domain = List.of(saharanCell);
+        CharneyVegetationAlbedoEngine engine = new CharneyVegetationAlbedoEngine();
         for (double yr = -5000.0; yr <= -2000.0; yr += 50.0) {
-            CharneyVegetationAlbedoEngine.processCharneyVegetationAlbedo(domain, 50.0, yr);
+            engine.tick(domain, 50.0, 600.0);
         }
 
-        assertTrue(saharanCell.getBiomassNatural() < 50.0,
-                "By -2000 BCE, Green Sahara biomass must have collapsed to desert levels (observed: " + saharanCell.getBiomassNatural() + " g/m²)");
-        assertTrue(saharanCell.getDynamicAlbedo() > 0.32,
-                "Surface albedo must rise to high desert reflectivity (observed: " + saharanCell.getDynamicAlbedo() + ")");
-        assertTrue(saharanCell.getRainfall() < 120.0,
-                "Precipitation must drop below aridity threshold (observed: " + saharanCell.getRainfall() + " mm/yr)");
+        double bio = domain.getBiomassNatural()[0];
+        double vegFrac = Math.clamp(bio / CharneyVegetationAlbedoEngine.SAVANNA_MAX_BIOMASS, 0.0, 1.0);
+        double albedo = CharneyVegetationAlbedoEngine.calculateSurfaceAlbedo(vegFrac);
+        assertTrue(bio < 50.0,
+                "By -2000 BCE, Green Sahara biomass must have collapsed to desert levels (observed: " + bio + " g/m²)");
+        assertTrue(albedo > 0.32,
+                "Surface albedo must rise to high desert reflectivity (observed: " + albedo + ")");
+        assertTrue(domain.getRainfall()[0] < 120.0,
+                "Precipitation must drop below aridity threshold (observed: " + domain.getRainfall()[0] + " mm/yr)");
     }
 
     @Test
@@ -96,18 +97,28 @@ public class CharneyVegetationAlbedoEngineTest {
             mesh.add(c);
         }
 
-        // Run simulation step for Year 2024 CE (modern hyper-arid regime)
-        CharneyVegetationAlbedoEngine.processCharneyVegetationAlbedo(mesh, 25.0, 2024.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(mesh.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(mesh, buf, false);
+        new CharneyVegetationAlbedoEngine().tick(buf, 25.0, 300.0);
 
-        // Core Sahara cell (23°N, 10°E)
-        H3Cell saharanCell = mesh.stream()
-                .filter(c -> c.getLatitude() > 20.0 && c.getLatitude() < 26.0 && c.getLongitude() > 5.0 && c.getLongitude() < 15.0)
-                .findFirst().orElse(null);
-
-        // Outside cell (e.g. 0°N, 100°E)
-        H3Cell outsideCell = mesh.stream()
-                .filter(c -> Math.abs(c.getLatitude()) < 10.0 && c.getLongitude() > 80.0)
-                .findFirst().orElse(null);
+        int saharanIdx = -1;
+        int outsideIdx = -1;
+        for (int i = 0; i < mesh.size(); i++) {
+            H3Cell c = mesh.get(i);
+            if (saharanIdx < 0 && c.getLatitude() > 20.0 && c.getLatitude() < 26.0 && c.getLongitude() > 5.0 && c.getLongitude() < 15.0) {
+                saharanIdx = i;
+            }
+            if (outsideIdx < 0 && Math.abs(c.getLatitude()) < 10.0 && c.getLongitude() > 80.0) {
+                outsideIdx = i;
+            }
+        }
+        assertTrue(saharanIdx >= 0 && outsideIdx >= 0);
+        H3Cell saharanCell = mesh.get(saharanIdx);
+        H3Cell outsideCell = mesh.get(outsideIdx);
+        saharanCell.setDynamicAlbedo(CharneyVegetationAlbedoEngine.calculateSurfaceAlbedo(
+                Math.clamp(buf.getBiomassNatural()[saharanIdx] / CharneyVegetationAlbedoEngine.SAVANNA_MAX_BIOMASS, 0.0, 1.0)));
+        outsideCell.setDynamicAlbedo(CharneyVegetationAlbedoEngine.calculateSurfaceAlbedo(
+                Math.clamp(buf.getBiomassNatural()[outsideIdx] / CharneyVegetationAlbedoEngine.SAVANNA_MAX_BIOMASS, 0.0, 1.0)));
 
         assertNotNull(saharanCell);
         assertNotNull(outsideCell);

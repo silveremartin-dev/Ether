@@ -190,46 +190,33 @@ public class MetabolicEcologyEngine extends AbstractSimulationEngine {
         return T0_GENERATION_YEARS * Math.pow(bodyMassKg, 0.25) * inverseBoltzmann;
     }
 
-    /**
-     * Executes one time-stepped MTE rate adjustment across populated and wilderness cells.
-     * Updates baseline metabolic subsistence needs and biological rates based on local thermodynamics.
-     *
-     * @param cells   spatial H3 cell collection
-     * @param dtYears elapsed simulation step in years
-     */
-    public static void processMetabolicEcology(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double tempK = buffer.getTemperature()[i] + 273.15;
 
-            double tempC = cell.getTemperatureOr(15.0);
-            double tempK = tempC + 273.15;
+        double naturalBiomass = buffer.getBiomassNatural()[i];
+        if (naturalBiomass > 0.0) {
+            double herbivoreWatts = calculateMetabolicRateWatts(150.0, tempK, TaxonGuild.ENDOTHERM_MAMMAL);
+            double annualEnergyGJ = herbivoreWatts * 0.0315576;
+            double metabolicRespirationTons = (annualEnergyGJ * (naturalBiomass * 0.10) / 150.0) / 18.0 * dtYears;
+            double newNat = Math.max(0.1, naturalBiomass - metabolicRespirationTons * 0.05);
+            acc.dBiomassNatural += (float) (newNat - naturalBiomass);
+        }
 
-            // 1. Megafauna / Wild Herbivore mass-specific metabolic dissipation
-            double naturalBiomass = cell.getBiomassNaturalOr(0.0);
-            if (naturalBiomass > 0.0) {
-                // Typical wild herbivore mass ~150 kg (deer/bison/mammoth blend)
-                double herbivoreWatts = calculateMetabolicRateWatts(150.0, tempK, TaxonGuild.ENDOTHERM_MAMMAL);
-                // 1 Watt continuous = 0.0315576 GJ/year
-                double annualEnergyGJ = herbivoreWatts * 0.0315576;
-                // Natural respiratory attrition is thermodynamic and continuous
-                double metabolicRespirationTons = (annualEnergyGJ * (naturalBiomass * 0.10) / 150.0) / 18.0 * dtYears;
-                cell.setBiomassNatural(Math.max(0.1, naturalBiomass - metabolicRespirationTons * 0.05));
-            }
-
-            // 2. Domestic Livestock basal energetics
-            double livestockBiomass = cell.getBiomassLivestockOr(0.0);
-            if (livestockBiomass > 0.0) {
-                // Typical livestock mass ~350 kg (cow/ox/horse blend)
-                double livestockWatts = calculateMetabolicRateWatts(350.0, tempK, TaxonGuild.ENDOTHERM_MAMMAL);
-                double annualLivestockGJ = livestockWatts * 0.0315576;
-                // Energy demand for livestock maintenance reduces forage or agricultural surplus
-                double forageDemandTons = (annualLivestockGJ * livestockBiomass / 350.0) / 18.0 * dtYears;
-                double currentAgri = cell.getBiomassAgricultureOr(0.0);
-                if (currentAgri > forageDemandTons) {
-                    cell.setBiomassAgriculture(currentAgri - forageDemandTons * 0.25);
-                }
+        double livestockBiomass = buffer.getBiomassLivestock()[i];
+        if (livestockBiomass > 0.0) {
+            double livestockWatts = calculateMetabolicRateWatts(350.0, tempK, TaxonGuild.ENDOTHERM_MAMMAL);
+            double annualLivestockGJ = livestockWatts * 0.0315576;
+            double forageDemandTons = (annualLivestockGJ * livestockBiomass / 350.0) / 18.0 * dtYears;
+            double currentAgri = buffer.getBiomassAgriculture()[i];
+            if (currentAgri > forageDemandTons) {
+                acc.dBiomassAgriculture -= (float) (forageDemandTons * 0.25);
             }
         }
     }

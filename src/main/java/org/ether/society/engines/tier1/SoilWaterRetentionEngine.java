@@ -6,12 +6,11 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
-
-import java.util.List;
 
 /**
  * Pedological Soil Water Retention &amp; van Genuchten (1980) Moisture Characteristic Engine.
@@ -69,22 +68,54 @@ public class SoilWaterRetentionEngine extends AbstractSimulationEngine {
         return SmoothMath.softmin(1.0, plantWaterContent / awcMax, 8.0);
     }
 
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double agriBiomass = buffer.getBiomassAgriculture()[i];
+        double cap = buffer.getResourceCapital()[i];
+        if (agriBiomass <= 0.0 || pop <= 0.0 || (cap / Math.max(1.0, pop)) < 0.1) return;
+
+        double rainfall = buffer.getRainfall()[i];
+        double elev = Math.max(0.0, buffer.getElevation()[i]);
+        double slope = 0.03 + 0.35 * Math.tanh(elev / 2000.0);
+
+        double awcIndex = calculatePlantAvailableWaterIndex(rainfall, slope);
+        double capPerCap = cap / Math.max(1.0, pop);
+        double potentialBiomass = Math.max(50.0, pop * (400.0 + 150.0 * SmoothMath.softmin(4.0, Math.log1p(capPerCap / 50.0), 4.0)));
+        double waterStressFactor = 0.2 + 0.8 * awcIndex;
+        double targetYield = potentialBiomass * waterStressFactor;
+
+        double updated = Math.max(10.0, agriBiomass + 0.25 * (targetYield - agriBiomass));
+        acc.dBiomassAgriculture += (float) (updated - agriBiomass);
+    }
+
     /**
-     * Processes soil moisture and updates agricultural water availability across H3 cells.
+     * Processes soil moisture and updates agricultural water availability across DoD buffer.
      */
-    public static void processSoilWaterRetention(List<H3Cell> cells) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processSoilWaterRetention(WorldBuffer buffer) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            double agriBiomass = cell.getBiomassAgricultureOr(0.0);
-            double cap = cell.getResourceCapitalOr(0.0);
-            if (agriBiomass <= 0.0 || pop <= 0 || (cap / Math.max(1.0, pop)) < 0.1) continue;
+        float[] bioHuman = buffer.getBiomassHuman();
+        float[] agriArr = buffer.getBiomassAgriculture();
+        float[] capArr = buffer.getResourceCapital();
+        float[] rainArr = buffer.getRainfall();
+        float[] elevArr = buffer.getElevation();
+        int n = buffer.getCapacity();
 
-            double rainfall = cell.getRainfallOr(500.0);
-            double elev = Math.max(0.0, cell.getElevationOr(0.0));
-            // Continuous terrain slope gradient derived from elevation relief (0.03 lowland -> 0.38 alpine)
+        for (int i = 0; i < n; i++) {
+            double pop = bioHuman[i] / 0.06;
+            double agriBiomass = agriArr[i];
+            double cap = capArr[i];
+            if (agriBiomass <= 0.0 || pop <= 0.0 || (cap / Math.max(1.0, pop)) < 0.1) continue;
+
+            double rainfall = rainArr[i];
+            double elev = Math.max(0.0, elevArr[i]);
             double slope = 0.03 + 0.35 * Math.tanh(elev / 2000.0);
 
             double awcIndex = calculatePlantAvailableWaterIndex(rainfall, slope);
@@ -94,7 +125,7 @@ public class SoilWaterRetentionEngine extends AbstractSimulationEngine {
             double targetYield = potentialBiomass * waterStressFactor;
 
             double updated = agriBiomass + 0.25 * (targetYield - agriBiomass);
-            cell.setBiomassAgriculture(Math.max(10.0, updated));
+            agriArr[i] = (float) Math.max(10.0, updated);
         }
     }
 }

@@ -102,7 +102,7 @@ public class CrisisMilestoneScenariosFalsificationTest {
             if (resProp != null && !resProp.isBlank() && !cfg.windowed()) {
                 try {
                     targetRes = Integer.parseInt(resProp.trim());
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) { /* non-year folder */ }
             }
             s.setH3Resolution(targetRes);
 

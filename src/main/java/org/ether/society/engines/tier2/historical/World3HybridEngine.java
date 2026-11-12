@@ -8,16 +8,12 @@ package org.ether.society.engines.tier2.historical;
 
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 /**
- * World3 Hybrid Model Variant B1.2 (Meadows et al. + Ether H3 Grid Integration).
- * Injects Meadows' FCAOR capital extraction sink and persistent pollution mortality multiplier
- * directly into Ether's fundamental H3 cell mass/energy grid.
+ * Meadows / Forrester World3 Hybrid Engine Variant B21.2.
+ * Couples local cell extraction/pollution directly into resource capital and life expectancy.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -29,38 +25,28 @@ public class World3HybridEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(World3HybridEngine.class);
 
-    /**
-     * Process plugin.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processPlugin(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (buffer.getBiomassHuman()[i] <= 0.0f) return;
 
-            double metal = cell.getResourceMetalOr(0.0);
-            double capital = cell.getResourceCapitalOr(0.0);
-            double pollution = cell.getPollutionLevelOr(0.0);
+        double metal = buffer.getMetalResource()[i];
+        float capital = buffer.getResourceCapital()[i];
+        double pollution = buffer.getPollutionLevel()[i];
 
-            // FCAOR hypothesis: capital diverted to mining increases as local mineral stock drops below 50.0
-            double fcaor = 0.05 + 0.85 * Math.pow(Math.max(0.0, 1.0 - (metal / 50.0)), 2.0);
-            double netCapitalOutput = Math.max(0.0, capital * (1.0 - fcaor * deltaYears));
-            cell.setResourceCapital(netCapitalOutput);
+        double fcaor = 0.05 + 0.85 * Math.pow(Math.max(0.0, 1.0 - (metal / 50.0)), 2.0);
+        double netCapitalOutput = Math.max(0.0, capital * (1.0 - fcaor * dtYears));
+        acc.dResourceCapital += (float) (netCapitalOutput - capital);
 
-            // Pollution mortality multiplier: LE reduction when pollution > 20.0
-            if (pollution > 20.0 && cell.getLifespan() != null) {
-                double pollPenalty = Math.min(0.40, (pollution - 20.0) * 0.005 * deltaYears);
-                cell.setLifespan(Math.max(20.0, cell.getLifespan() * (1.0 - pollPenalty)));
-            }
+        if (pollution > 20.0) {
+            float lifespan = buffer.getLifespan()[i];
+            double pollPenalty = Math.min(0.40, (pollution - 20.0) * 0.005 * dtYears);
+            double newLifespan = Math.max(20.0, lifespan * (1.0 - pollPenalty));
+            acc.dLifespan += (float) (newLifespan - lifespan);
         }
     }
 }
-
-

@@ -30,36 +30,27 @@ public class ProtestantWorkEthicEngine extends AbstractSimulationEngine {
         super("ProtestantWorkEthicEngine", "ProtestantWorkEthicEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
-    @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
+    private static double capitalSavingsMultiplier = 1.30;
+    private static double techAccelerationMultiplier = 1.20;
 
     @Override
     public void reset() {
         resetState();
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(ProtestantWorkEthicEngine.class);
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-    private static double capitalSavingsMultiplier = 1.30;
-    private static double techAccelerationMultiplier = 1.20;
-
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-
-            double capital = cell.getResourceCapitalOr(100.0);
-            double pop = cell.getPopulation();
-
-            // Accelerated capital formation via frugal savings (Weber 1905; Becker & Woessmann 2009)
-            // Human capital weighting derived continuously from capital per capita
-            double literacyWeight = SmoothMath.smoothClamp(capital / (pop * 2000.0), 0.10, 1.0, 10.0);
-            double capitalGain = (pop * 0.10 * (1.0 + (capitalSavingsMultiplier - 1.0) * literacyWeight)) * deltaYears;
-            cell.setResourceCapital(capital + capitalGain);
-        }
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0 || dtYears <= 0.0) return;
+        double capital = buffer.getResourceCapital()[i];
+        double literacyWeight = SmoothMath.smoothClamp(capital / (pop * 2000.0), 0.10, 1.0, 10.0);
+        double capitalGain = (pop * 0.10 * (1.0 + (capitalSavingsMultiplier - 1.0) * literacyWeight)) * dtYears;
+        acc.dResourceCapital += (float) capitalGain;
     }
 
     public static double getCapitalSavingsMultiplier() { return capitalSavingsMultiplier; }

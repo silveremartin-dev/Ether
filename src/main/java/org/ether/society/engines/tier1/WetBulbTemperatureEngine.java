@@ -6,14 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
-import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Wet-Bulb Temperature (T_wb) & Human Hyperthermia Limit Engine.
@@ -50,56 +48,67 @@ public class WetBulbTemperatureEngine extends AbstractSimulationEngine {
                 - 4.686035;
     }
 
-    /**
-     * Executes one wet-bulb temperature hyperthermia check across cells (monthly default).
-     */
-    public static void processWetBulbHyperthermia(List<H3Cell> cells) {
-        processWetBulbHyperthermia(cells, 1.0 / 12.0);
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null) return;
+        double tempC = buffer.getTemperature()[i];
+        double rain = buffer.getRainfall()[i];
+        double rh = Math.min(100.0, Math.max(20.0, (rain / 1200.0) * 100.0));
+        double wetBulbTempC = calculateWetBulbTemperatureStull(tempC, rh);
+
+        if (wetBulbTempC >= 35.0) {
+            double bioHuman = buffer.getBiomassHuman()[i];
+            if (bioHuman > 0.0) {
+                double mortalityHazard = 1.0 - Math.exp(-0.25 * (wetBulbTempC - 35.0));
+                double exposureScale = Math.clamp(dtYears * 12.0, 0.05, 1.0);
+                acc.dBiomassHuman -= (float) (bioHuman * mortalityHazard * exposureScale);
+            }
+        }
     }
 
     /**
-     * Executes wet-bulb hyperthermia and labor attenuation across cells with explicit time integration.
+     * Executes one wet-bulb temperature hyperthermia check across DoD buffer (monthly default).
+     */
+    public static void processWetBulbHyperthermia(WorldBuffer buffer) {
+        processWetBulbHyperthermia(buffer, 1.0 / 12.0);
+    }
+
+    /**
+     * Executes wet-bulb hyperthermia and labor attenuation across DoD buffer with explicit time integration.
      *
-     * @param cells spatial cells
+     * @param buffer WorldBuffer DoD state
      * @param deltaYears time step in years
      */
-    public static void processWetBulbHyperthermia(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processWetBulbHyperthermia(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
         int hyperthermiaCasualties = 0;
+        float[] tempArr = buffer.getTemperature();
+        float[] rainArr = buffer.getRainfall();
+        float[] bioHuman = buffer.getBiomassHuman();
+        int n = buffer.getCapacity();
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double tempC = cell.getTemperatureOr(20.0);
-            double rain = cell.getRainfallOr(500.0);
+        for (int i = 0; i < n; i++) {
+            double tempC = tempArr[i];
+            double rain = rainArr[i];
             double rh = Math.min(100.0, Math.max(20.0, (rain / 1200.0) * 100.0));
-
             double wetBulbTempC = calculateWetBulbTemperatureStull(tempC, rh);
 
-            // Labor productivity attenuation (Dunne et al. 2013): progressive loss of physical work capacity above 25A°C
-            if (wetBulbTempC > 25.0) {
-                double work = cell.getResourceWorkOr(0.0);
-                if (work > 0.0) {
-                    double workLossFactor = 0.50 / (1.0 + Math.exp(-(wetBulbTempC - 31.0) / 1.5));
-                    cell.setResourceWork(Math.max(0.0, work * (1.0 - Math.clamp(workLossFactor * deltaYears * 12.0, 0.0, 0.90))));
-                }
-            }
-
-            // Continuous hyperthermia lethality limit (Sherwood & Huber 2010): T_wb >= 35.0A°C
-            if (wetBulbTempC >= 35.0 && cell.getPopulation() != null && cell.getPopulation() > 0) {
+            if (wetBulbTempC >= 35.0 && bioHuman[i] > 0.0f) {
                 hyperthermiaCasualties++;
-                int pop = cell.getPopulation();
-                // Exponential mortality hazard beyond 35A°C, scaled by heatwave exposure duration (deltaYears * 12 months)
                 double mortalityHazard = 1.0 - Math.exp(-0.25 * (wetBulbTempC - 35.0));
                 double exposureScale = Math.clamp(deltaYears * 12.0, 0.05, 1.0);
-                int deaths = (int) Math.round(pop * mortalityHazard * exposureScale);
-                int targetPop = Math.max(0, pop - deaths);
-                H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, targetPop);
+                bioHuman[i] = (float) Math.max(0.0, bioHuman[i] * (1.0 - mortalityHazard * exposureScale));
             }
         }
 
         if (hyperthermiaCasualties > 0) {
-            logger.warn("Wet-Bulb Engine: Lethal hyperthermia event (T_wb >= 35Â°C) affecting {} populated cells.", hyperthermiaCasualties);
+            logger.warn("Wet-Bulb Engine: Lethal hyperthermia event (T_wb >= 35 C) affecting {} populated cells.", hyperthermiaCasualties);
         }
     }
 }

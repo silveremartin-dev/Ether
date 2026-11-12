@@ -132,16 +132,28 @@ public class OutofAfricaGlobalDispersalSimulationTest {
         boolean reachedAustralia = false;
         double maxDistanceKm = 0.0;
 
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(planetaryGrid.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(planetaryGrid, buf, false);
+        BiologicalDemographicsEngine bioEngine = new BiologicalDemographicsEngine();
+        SoilNutrientNPKEngine npkEngine = new SoilNutrientNPKEngine();
+        PhysicalLawEngine physEngine = new PhysicalLawEngine();
+
         for (int tick = 1; tick <= totalTicks; tick++) {
+            for (int i = 0; i < planetaryGrid.size(); i++) {
+                buf.getBiomassHuman()[i] = (float) (planetaryGrid.get(i).getPopulationOr(0) * 0.06);
+            }
             // 1. Demographic reproduction & aging
-            BiologicalDemographicsEngine.processBiologicalDemographics(planetaryGrid);
+            bioEngine.tick(buf, 1.0, 12.0);
+            for (int i = 0; i < planetaryGrid.size(); i++) {
+                planetaryGrid.get(i).setPopulation((int) Math.round(buf.getBiomassHuman()[i] / 0.06));
+            }
 
             // 2. Spatial 2D H3 neighbor demographic expansion vector push
             processPlanetary2DH3Migration(planetaryGrid, cellMap, h3Service);
 
             // 3. Environmental physical laws & NPK stoichiometry
-            SoilNutrientNPKEngine.processSoilNutrients(planetaryGrid);
-            PhysicalLawEngine.applyPhysicalLaws(planetaryGrid, 1.0);
+            npkEngine.tick(buf, 1.0, 12.0);
+            physEngine.tick(buf, 1.0, 12.0);
 
             // Calculate telemetry metrics
             long globalPop = planetaryGrid.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
@@ -219,11 +231,28 @@ public class OutofAfricaGlobalDispersalSimulationTest {
                 .findFirst().ifPresent(c -> { c.setPopulation(15_000); c.setFoodResource(1000.0); });
 
         // Run 50 ticks of dispersal
+        org.ether.society.core.dod.WorldBuffer singleBuf = new org.ether.society.core.dod.WorldBuffer(singleOriginGrid.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(singleOriginGrid, singleBuf, false);
+        org.ether.society.core.dod.WorldBuffer multiBuf = new org.ether.society.core.dod.WorldBuffer(multiRegionalGrid.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(multiRegionalGrid, multiBuf, false);
+        BiologicalDemographicsEngine bioEngine2 = new BiologicalDemographicsEngine();
         for (int t = 0; t < 50; t++) {
-            BiologicalDemographicsEngine.processBiologicalDemographics(singleOriginGrid);
+            for (int i = 0; i < singleOriginGrid.size(); i++) {
+                singleBuf.getBiomassHuman()[i] = (float) (singleOriginGrid.get(i).getPopulationOr(0) * 0.06);
+            }
+            bioEngine2.tick(singleBuf, 1.0, 12.0);
+            for (int i = 0; i < singleOriginGrid.size(); i++) {
+                singleOriginGrid.get(i).setPopulation((int) Math.round(singleBuf.getBiomassHuman()[i] / 0.06));
+            }
             processPlanetary2DH3Migration(singleOriginGrid, singleMap, h3Service);
 
-            BiologicalDemographicsEngine.processBiologicalDemographics(multiRegionalGrid);
+            for (int i = 0; i < multiRegionalGrid.size(); i++) {
+                multiBuf.getBiomassHuman()[i] = (float) (multiRegionalGrid.get(i).getPopulationOr(0) * 0.06);
+            }
+            bioEngine2.tick(multiBuf, 1.0, 12.0);
+            for (int i = 0; i < multiRegionalGrid.size(); i++) {
+                multiRegionalGrid.get(i).setPopulation((int) Math.round(multiBuf.getBiomassHuman()[i] / 0.06));
+            }
             processPlanetary2DH3Migration(multiRegionalGrid, multiMap, h3Service);
         }
 

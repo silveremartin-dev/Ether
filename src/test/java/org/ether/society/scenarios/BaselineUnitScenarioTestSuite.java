@@ -71,20 +71,29 @@ public class BaselineUnitScenarioTestSuite {
      *
      */
     public void testPopulationPersistence() {
-        H3Cell cell = testCells.get(0);
-        double initialPop = cell.getPopulation();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 613503380827930701L;
+        buf.getBiomassHuman()[0] = 1000.0f * 0.06f;
+        buf.getFoodResource()[0] = 5000.0f;
+        buf.getResourceCapital()[0] = 100.0f;
+        buf.getLifespan()[0] = 50.0f;
+        buf.getElevation()[0] = 100.0f;
+        buf.getTemperature()[0] = 15.0f;
+
+        BiologicalDemographicsEngine bioEngine = new BiologicalDemographicsEngine();
+        PhysicalLawEngine physEngine = new PhysicalLawEngine();
 
         // Simulate 10 baseline ticks with actual biological demographics and physical law engines
         for (int i = 0; i < 10; i++) {
-            BiologicalDemographicsEngine.processBiologicalDemographics(testCells, 1.0);
-            PhysicalLawEngine.applyPhysicalLaws(testCells, 1.0);
-            double food = cell.getFoodResource();
+            bioEngine.tick(buf, 1.0, 12.0);
+            physEngine.tick(buf, 1.0, 12.0);
+            double food = buf.getFoodResource()[0];
             assertTrue(food > 0, "Food resource should remain positive.");
-            assertTrue(cell.getPopulation() > 0, "Population should persist when food is available.");
+            assertTrue(buf.getBiomassHuman()[0] > 0, "Population should persist when food is available.");
             assertFalse(Double.isNaN(food), "Food resource must not be NaN");
         }
 
-        assertTrue(cell.getPopulation() > 0, "Population should persist when food resources are plentiful.");
+        assertTrue(buf.getBiomassHuman()[0] > 0, "Population should persist when food resources are plentiful.");
     }
 
     /**
@@ -97,27 +106,29 @@ public class BaselineUnitScenarioTestSuite {
      */
     @Test
     public void testCarryingCapacityEquilibrium() {
-        H3Cell hostile = testCells.get(0);
-        hostile.setPopulation(50000);
-        hostile.setElevation(5000.0);   // 2 km above hypoxia threshold
-        hostile.setTemperature(-25.0);  // 15 C below hypothermia threshold
-        hostile.setMovementFriction(3.0); // EPAS1 adaptation = 0 (non-adapted lowland population)
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
+        buf.getH3Indexes()[0] = 613503380827930701L;
+        buf.getBiomassHuman()[0] = 50000.0f * 0.06f;
+        buf.getElevation()[0] = 5000.0f;   // 2 km above hypoxia threshold
+        buf.getTemperature()[0] = -25.0f;  // 15 C below hypothermia threshold
+        buf.getFluxPressure()[0] = 3.0f;   // EPAS1 adaptation = 0 (non-adapted lowland population)
 
-        H3Cell control = new H3Cell(613503380827930702L, 45.0, 10.5);
-        control.setPopulation(50000);
-        control.setElevation(100.0);
-        control.setTemperature(15.0);
-        control.setFoodResource(5000.0);
-        control.setResourceCapital(100.0);
+        buf.getH3Indexes()[1] = 613503380827930702L;
+        buf.getBiomassHuman()[1] = 50000.0f * 0.06f;
+        buf.getElevation()[1] = 100.0f;
+        buf.getTemperature()[1] = 15.0f;
+        buf.getFoodResource()[1] = 5000.0f;
+        buf.getResourceCapital()[1] = 100.0f;
 
-        BiologicalDemographicsEngine.processBiologicalDemographics(List.of(hostile, control), 1.0);
+        new BiologicalDemographicsEngine().tick(buf, 1.0, 12.0);
 
-        assertNotNull(hostile.getAgePyramid(), "Age pyramid must be updated by demographic engine under stress");
-        // Expected: mu_hypoxia = 2.0 * 0.08 * 1.0 = 0.16 ; mu_cold = min(0.25, 15 * 0.012) = 0.18
-        int expected = (int) Math.round(50000 * Math.exp(-(0.16 + 0.18)));
-        assertEquals(expected, hostile.getPopulation(), 1,
+        // Expected: mu_hypoxia = 2.0 * 0.08 * (1 - 0.05*0.85) = 0.1532 ; mu_cold = min(0.25, 15 * 0.012) = 0.18
+        int expected = (int) Math.round(50000 * Math.exp(-(0.1532 + 0.18)));
+        int hostilePop = (int) Math.round(buf.getBiomassHuman()[0] / 0.06);
+        int controlPop = (int) Math.round(buf.getBiomassHuman()[1] / 0.06);
+        assertEquals(expected, hostilePop, 1,
                 "Hypoxia + hypothermia mortality must follow the analytical exponential survival law");
-        assertEquals(50000, control.getPopulation(),
+        assertEquals(50000, controlPop,
                 "Benign sea-level control must not incur extrinsic physiological mortality from this engine");
     }
 

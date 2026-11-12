@@ -38,135 +38,62 @@ public class MarineSubmersionEngine extends AbstractSimulationEngine {
         super("MarineSubmersionEngine", "MarineSubmersionEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
-    @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
-    private static final Logger logger = LoggerFactory.getLogger(MarineSubmersionEngine.class);
-
-    /** Internal state: default dike maintenance base capital (double). */
-    public static final double DEFAULT_DIKE_MAINTENANCE_BASE_CAPITAL = 50.0;
-    /** Internal state: default evacuation tech efficiency (double). */
     public static final double DEFAULT_EVACUATION_TECH_EFFICIENCY = 0.40;
 
-    /**
-     * Executes marine submersion and evacuation using default parameters.
-     */
-    public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
-        processHybrid(cells, timeStepDays, DEFAULT_DIKE_MAINTENANCE_BASE_CAPITAL, DEFAULT_EVACUATION_TECH_EFFICIENCY);
-    }
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
+        if (buf == null) return;
+        int n = buf.getCapacity();
+        float[] elevArr = buf.getElevation();
+        float[] capArr = buf.getResourceCapital();
+        float[] popArr = buf.getBiomassHuman();
+        byte[] biomes = buf.getBiomes();
+        int[][] neighbors = buf.getNeighborIndexes();
 
-    /**
-     * Executes marine submersion and evacuation with parameterizable physical thresholds.
-     */
-    public static void processHybrid(List<H3Cell> cells, double timeStepDays, 
-                                    double dikeMaintenanceCapital, double evacuationTechEfficiency) {
-        if (cells == null || cells.isEmpty()) return;
+        byte oceanOrd = (byte) Biome.OCEAN.ordinal();
+        byte deepOceanOrd = (byte) Biome.DEEP_OCEAN.ordinal();
 
-        Map<Long, H3Cell> cellMap = new HashMap<>();
-        for (H3Cell c : cells) {
-            if (c != null && c.getH3Index() != null) {
-                cellMap.put(c.getH3Index(), c);
-            }
-        }
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double elevation = cell.getElevationOr(0.0);
-            double seaLevelOffset = cell.getSeaLevelOffsetMetersOr(0.0);
-            double capital = cell.getResourceCapitalOr(0.0);
-            int pop = cell.getPopulationOr(0);
-            double kpc = pop > 0 ? capital / pop : 0.0;
-
-            // Determine if polder/coastal cell is flooded (elevation below sea level or dike failure)
-            boolean isSubmerged = (elevation < seaLevelOffset);
-            if (Boolean.TRUE.equals(cell.getIsPolder()) && seaLevelOffset > 0.0) {
-                // Polders require capital investment to pump water and maintain dikes
-                double requiredMaint = dikeMaintenanceCapital * (1.0 + 0.1 * seaLevelOffset);
-                if (capital < requiredMaint) {
-                    isSubmerged = true; // Dike breach due to capital deficit
-                } else {
-                    // Maintenance cost deducted from capital reserve
-                    cell.setResourceCapital(Math.max(0.0, capital - requiredMaint * (timeStepDays / 30.0)));
-                }
-            }
-
-            if (isSubmerged && pop > 0) {
-                // 1. Calculate Physically Realistic Evacuation Ratio (Transport & Early Warning Infrastructure Capital)
+        for (int i = 0; i < n; i++) {
+            float elevation = elevArr[i];
+            float pop = popArr[i];
+            if (elevation < 0.0f && pop > 0.0f) {
+                float capital = capArr[i];
+                double kpc = capital / pop;
                 double capitalFactor = 1.0 + Math.min(5.0, capital / 500.0);
                 double mobilityEfficiency = Math.log1p(kpc / 50.0);
-                double evacuationRatio = 1.0 - Math.exp(-evacuationTechEfficiency * mobilityEfficiency * capitalFactor);
-                evacuationRatio = Math.clamp(evacuationRatio, 0.0, 0.98); // Max 98% evacuated cleanly
+                double evacuationRatio = Math.clamp(1.0 - Math.exp(-DEFAULT_EVACUATION_TECH_EFFICIENCY * mobilityEfficiency * capitalFactor), 0.0, 0.98);
 
-                int evacuatedPop = (int) (pop * evacuationRatio);
-                int remainingPop = pop - evacuatedPop;
+                float evacuatedPop = (float) (pop * evacuationRatio);
+                float remainingPop = pop - evacuatedPop;
 
-                // 2. Locate Safe Neighbor Cells (Elevation > seaLevelOffset)
-                List<H3Cell> safeNeighbors = new ArrayList<>();
-                List<Long> neighborIndices = null;
-                if (cell.getH3Index() != null && cell.getH3Index() != 0L) {
-                    try {
-                        neighborIndices = org.ether.society.h3.H3Service.getInstance().getNeighbors(cell.getH3Index());
-                    } catch (Exception ex) {
-                        logger.debug("H3Service neighbors query failed for cell {}: {}", cell.getH3Index(), ex.getMessage());
-                    }
-                }
-                if (neighborIndices != null && !neighborIndices.isEmpty()) {
-                    for (Long nIdx : neighborIndices) {
-                        H3Cell candidate = cellMap.get(nIdx);
-                        if (candidate != null && !java.util.Objects.equals(candidate.getH3Index(), cell.getH3Index())
-                                && (candidate.getElevation() != null && candidate.getElevation() > seaLevelOffset)
-                                && candidate.getBiome() != Biome.OCEAN && candidate.getBiome() != Biome.DEEP_OCEAN) {
-                            safeNeighbors.add(candidate);
+                int[] nbrs = neighbors != null && i < neighbors.length ? neighbors[i] : null;
+                int safeCount = 0;
+                if (nbrs != null) {
+                    for (int nb : nbrs) {
+                        if (nb >= 0 && nb < n && elevArr[nb] > 0.0f && biomes[nb] != oceanOrd && biomes[nb] != deepOceanOrd) {
+                            safeCount++;
                         }
                     }
                 }
-                // Fallback for non-indexed synthetic test cells or archipelagic refugee jumps
-                if (safeNeighbors.isEmpty()) {
-                    for (H3Cell candidate : cells) {
-                        if (candidate != null && !java.util.Objects.equals(candidate.getH3Index(), cell.getH3Index()) 
-                                && (candidate.getElevation() != null && candidate.getElevation() > seaLevelOffset)
-                                && candidate.getBiome() != Biome.OCEAN && candidate.getBiome() != Biome.DEEP_OCEAN) {
-                            safeNeighbors.add(candidate);
-                            if (safeNeighbors.size() >= 6) break;
+                if (safeCount > 0 && evacuatedPop > 0.0f) {
+                    float popPerNeighbor = evacuatedPop / safeCount;
+                    float capPerNeighbor = (capital * 0.50f) / safeCount;
+                    for (int nb : nbrs) {
+                        if (nb >= 0 && nb < n && elevArr[nb] > 0.0f && biomes[nb] != oceanOrd && biomes[nb] != deepOceanOrd) {
+                            popArr[nb] += popPerNeighbor;
+                            capArr[nb] += capPerNeighbor;
                         }
                     }
+                    popArr[i] = remainingPop;
+                    capArr[i] = capital * 0.50f;
                 }
-
-                if (!safeNeighbors.isEmpty() && evacuatedPop > 0) {
-                    int popPerNeighbor = evacuatedPop / safeNeighbors.size();
-                    double curCap = cell.getResourceCapitalOr(0.0);
-                    double capitalToTransfer = (curCap * 0.50) / safeNeighbors.size();
-
-                    for (H3Cell target : safeNeighbors) {
-                        if (target == null) continue;
-                        int targetPop = target.getPopulationOr(0);
-                        double targetCap = target.getResourceCapitalOr(0.0);
-                        H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(target, targetPop + popPerNeighbor);
-                        target.setResourceCapital(targetCap + capitalToTransfer);
-                    }
-
-                    // Update flooded cell population and capital after evacuation
-                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, remainingPop);
-                    cell.setResourceCapital(curCap * 0.50); // 50% fixed capital submerged
-
-                    logger.info("🌊 Marine Submersion Evacuation: Cell {} evacuated {} humans ({}) to {} safe neighbor cells.",
-                            cell.getH3Index(), evacuatedPop, String.format(java.util.Locale.ROOT, "%.1f%%", evacuationRatio * 100), safeNeighbors.size());
+                if (remainingPop > 0.0f) {
+                    double floodDepth = -elevation;
+                    double mortalityRate = Math.clamp(0.05 * floodDepth, 0.01, 0.30);
+                    popArr[i] = Math.max(0.0f, remainingPop * (float) (1.0 - mortalityRate));
                 }
-
-                // 3. Partial Mortality on Un-evacuated Population (Flood depth proportional)
-                if (remainingPop > 0) {
-                    double floodDepth = seaLevelOffset - elevation;
-                    double mortalityRate = Math.clamp(0.05 * floodDepth, 0.01, 0.30); // 1% to 30% max mortality on unprepared residual
-                    int casualtyCount = (int) (remainingPop * mortalityRate);
-                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, remainingPop - casualtyCount));
-                }
-
-                // 4. Biome update if permanently flooded
-                if (cell.getElevation() != null && cell.getElevation() < -5.0) {
-                    cell.setBiome(Biome.OCEAN);
-                    cell.setIsPolder(false);
+                if (elevation < -5.0f) {
+                    biomes[i] = oceanOrd;
                 }
             }
         }

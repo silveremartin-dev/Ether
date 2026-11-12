@@ -6,13 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Urban Thermodynamics & Infrastructure Grid Engine.
@@ -29,34 +28,54 @@ public class UrbanThermodynamicsEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(UrbanThermodynamicsEngine.class);
 
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop > 50000.0) {
+            double dtSafe = Math.max(0.0001, dtYears);
+            double aquifer = buffer.getFreshwaterAquifer()[i];
+            double nextAquifer = Math.max(0.0, aquifer - (pop * 0.001) * dtSafe);
+            acc.dFreshwaterAquifer += (float) (nextAquifer - aquifer);
+        }
+    }
+
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processUrbanThermodynamics(buf, dtYears);
+    }
+
     /**
-     * Process urban thermodynamics.
+     * Process urban thermodynamics across DoD buffer.
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * @param buffer WorldBuffer DoD state
+     * @param deltaYears time step in years
      */
-    public static void processUrbanThermodynamics(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processUrbanThermodynamics(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
         double dtSafe = Math.max(0.0001, deltaYears);
         double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 0.5);
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() < 5000) continue;
+        float[] bioHuman = buffer.getBiomassHuman();
+        float[] tempArr = buffer.getTemperature();
+        float[] aquiferArr = buffer.getFreshwaterAquifer();
+        int n = buffer.getCapacity();
 
-            long pop = cell.getPopulation();
-            // Urban Heat Island (T_uhi) formula: deltaT = 0.5 * log10(pop / 1000) (Oke 1982)
+        for (int i = 0; i < n; i++) {
+            double pop = bioHuman[i] / 0.06;
+            if (pop < 5000.0) continue;
+
             double uhiDeltaT = 0.5 * Math.log10(pop / 1000.0);
-            double currentTemp = cell.getTemperatureOr(15.0);
+            tempArr[i] = (float) (tempArr[i] + uhiDeltaT * thermalRelaxationFactor);
 
-            // Apply UHI warming relaxation towards local thermodynamic equilibrium
-            cell.setTemperature(currentTemp + uhiDeltaT * thermalRelaxationFactor);
-
-            // High population density accelerates localized aquifer depletion
-            if (pop > 50000) {
-                double aquifer = cell.getAccessibleAquiferOr(0.0);
-                cell.setAccessibleAquifer(Math.max(0.0, aquifer - (pop * 0.001) * dtSafe));
+            if (pop > 50000.0) {
+                aquiferArr[i] = (float) Math.max(0.0, aquiferArr[i] - (pop * 0.001) * dtSafe);
             }
         }
     }

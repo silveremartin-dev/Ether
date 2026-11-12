@@ -36,40 +36,6 @@ public class EntropicMetalDissipationEngine extends AbstractSimulationEngine {
     private static double annualDissipationRate = 0.015; // 1.5% annual thermodynamic loss rate
 
     /**
-     * Integrates irreversible entropic metal dissipation over elapsed temporal intervals.
-     * <p>
-     * Implements continuous exponential decay based on Philippe Bihouix's physical dissipation limits:
-     * \[
-     * M(t + \Delta t) = M(t) \cdot e^{-\lambda_{\text{diss}} \cdot \Delta t}
-     * \]
-     * where \(\lambda_{\text{diss}}\) is the annual dissipation rate (\(\text{yr}^{-1}\)).
-     * Lost metallic mass is converted into persistent particulate pollution \(\Delta P = 0.1 \cdot \Delta M\).
-     * </p>
-     *
-     * @param cells target planetary hex cells containing metallic capital reserves
-     * @param deltaYears time step interval in terrestrial decimal years (\(\Delta t > 0\))
-     */
-    public static void processEntropicDissipation(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getResourceMetal() == null) continue;
-
-            double metal = cell.getResourceMetal();
-            // Irreversible entropic loss (continuous exponential decay)
-            double remainingMetal = Math.max(0.0, metal * Math.exp(-annualDissipationRate * deltaYears));
-            double dissipated = metal - remainingMetal;
-            cell.setResourceMetal(remainingMetal);
-
-            // Dissipated metals add to micro-pollution concentration normalized by cell surface area (km^2)
-            if (cell.getPollutionLevel() != null && dissipated > 0.0) {
-                double areaKm2 = Math.max(10.0, cell.getEffectiveSurfaceAreaKm2());
-                cell.setPollutionLevel(cell.getPollutionLevel() + (dissipated / areaKm2) * 0.1);
-            }
-        }
-    }
-
-    /**
      * Gets current annual thermodynamic dissipation rate \(\lambda_{\text{diss}}\).
      *
      * @return annual dissipation fraction in \(\text{yr}^{-1}\)

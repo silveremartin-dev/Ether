@@ -158,36 +158,25 @@ public class BergmannAllenMorphologyEngine extends AbstractSimulationEngine {
         return baseMassKg * calculateFosterIslandDwarfismFactor(isIsland);
     }
 
-    /**
-     * Executes one time-stepped ecomorphological adaptation update across cells.
-     * Evaluates adapted body mass and applies thermoregulatory metabolic energy surcharges in cold climates.
-     *
-     * @param cells   populated cell domain
-     * @param dtYears elapsed simulation step in years
-     */
-    public static void processMorphologicalAdaptation(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        double dtSafe = Math.max(1e-4, dtYears);
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double tempC = cell.getTemperatureOr(15.0);
-            boolean isIsland = Boolean.TRUE.equals(cell.getIsCoastal()) && cell.getElevationOr(0.0) > 0.0;
-            double adaptedMassKg = getAdaptedBodyMassKg(tempC, isIsland);
-
-            // Thermoregulatory metabolic surcharge in cold climates modulates caloric food consumption
-            double maintMult = calculateThermoregulatoryMaintenanceMultiplier(tempC, adaptedMassKg);
-            if (maintMult > 1.0) {
-                double food = cell.getFoodResourceOr(0.0);
-                if (food > 0.0) {
-                    double extraConsumption = (maintMult - 1.0) * (pop * 0.02) * dtSafe;
-                    cell.setFoodResource(Math.max(0.0, food - extraConsumption));
-                }
+        double tempC = buffer.getTemperature()[i];
+        double adaptedMassKg = getAdaptedBodyMassKg(tempC, false);
+        double maintMult = calculateThermoregulatoryMaintenanceMultiplier(tempC, adaptedMassKg);
+        if (maintMult > 1.0) {
+            double food = buffer.getFoodResource()[i];
+            if (food > 0.0) {
+                double extraConsumption = Math.min(food, (maintMult - 1.0) * (pop * 0.02) * dtYears);
+                acc.dFoodResource -= (float) extraConsumption;
             }
         }
     }

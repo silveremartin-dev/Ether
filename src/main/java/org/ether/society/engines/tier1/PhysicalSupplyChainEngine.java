@@ -6,14 +6,13 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Physical Supply Chain & Transport Bottleneck Engine.
@@ -49,44 +48,77 @@ public class PhysicalSupplyChainEngine extends AbstractSimulationEngine {
         landTransportFrictionCoeff = 0.05;
     }
 
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
+
+        byte biomeOrd = buffer.getBiomes()[i];
+        boolean isMaritime = biomeOrd == (byte) Biome.BEACH.ordinal()
+                || biomeOrd == (byte) Biome.OCEAN.ordinal()
+                || biomeOrd == (byte) Biome.DEEP_OCEAN.ordinal()
+                || biomeOrd == (byte) Biome.LAKE.ordinal();
+
+        double baseFrictionCoeff = isMaritime ? seaTransportFrictionCoeff : landTransportFrictionCoeff;
+        double blockadeMultiplier = maritimeChokepointBlockadeActive ? (isMaritime ? 2.5 : 1.25) : 1.0;
+
+        double capital = buffer.getResourceCapital()[i];
+        double capPerCap = capital / Math.max(1.0, pop);
+        double infraFrictionDamping = Math.clamp(1.0 / (1.0 + 0.25 * capPerCap), 0.15, 1.0);
+
+        double effectiveFriction = baseFrictionCoeff * blockadeMultiplier * infraFrictionDamping;
+        double logisticsLossFactor = Math.clamp(effectiveFriction * dtYears, 0.0, 0.95);
+
+        double energyFire = buffer.getEnergyFire()[i];
+        acc.dEnergyFire -= (float) (energyFire * logisticsLossFactor);
+    }
+
     /**
-     * Process supply chains across spatial cells with physical friction and infrastructure damping.
+     * Process supply chains across DoD WorldBuffer with physical friction and infrastructure damping.
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
+     * @param buffer WorldBuffer DoD state
      * @param deltaYears time step in years (double)
      */
-    public static void processSupplyChains(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processSupplyChains(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
+        float[] bioHuman = buffer.getBiomassHuman();
+        byte[] biomes = buffer.getBiomes();
+        float[] capArr = buffer.getResourceCapital();
+        float[] energyFireArr = buffer.getEnergyFire();
+        byte beachOrd = (byte) Biome.BEACH.ordinal();
+        byte oceanOrd = (byte) Biome.OCEAN.ordinal();
+        byte deepOceanOrd = (byte) Biome.DEEP_OCEAN.ordinal();
+        byte lakeOrd = (byte) Biome.LAKE.ordinal();
+        int n = buffer.getCapacity();
 
-            // Physical logistics friction: differentiate between coastal/maritime corridors vs inland overland freight
-            boolean isMaritime = Boolean.TRUE.equals(cell.getIsCoastal())
-                    || cell.getBiome() == Biome.BEACH
-                    || cell.getBiome() == Biome.OCEAN
-                    || cell.getBiome() == Biome.DEEP_OCEAN
-                    || cell.getBiome() == Biome.LAKE;
+        for (int i = 0; i < n; i++) {
+            double pop = bioHuman[i] / 0.06;
+            if (pop <= 0.0) continue;
 
-            // Hydrodynamic sea transport is an order of magnitude more energy-efficient than overland cartage (Smil 2017)
+            byte biomeOrd = biomes[i];
+            boolean isMaritime = biomeOrd == beachOrd
+                    || biomeOrd == oceanOrd
+                    || biomeOrd == deepOceanOrd
+                    || biomeOrd == lakeOrd;
+
             double baseFrictionCoeff = isMaritime ? seaTransportFrictionCoeff : landTransportFrictionCoeff;
-
-            // Maritime chokepoint blockade disproportionately disrupts maritime sea lines of communication (SLOC)
-            // Overland routes experience secondary diversion strain
             double blockadeMultiplier = maritimeChokepointBlockadeActive ? (isMaritime ? 2.5 : 1.25) : 1.0;
 
-            // Infrastructure capital (paved roads, canals, railroads) dampens mechanical transport resistance
-            double work = cell.getResourceWorkOr(0.0);
-            double capital = cell.getResourceCapitalOr(0.0);
-            int pop = cell.getPopulationOr(1);
+            double capital = capArr[i];
             double capPerCap = capital / Math.max(1.0, pop);
             double infraFrictionDamping = Math.clamp(1.0 / (1.0 + 0.25 * capPerCap), 0.15, 1.0);
 
             double effectiveFriction = baseFrictionCoeff * blockadeMultiplier * infraFrictionDamping;
             double logisticsLossFactor = Math.clamp(effectiveFriction * deltaYears, 0.0, 0.95);
 
-            cell.setResourceWork(Math.max(0.0, work * (1.0 - logisticsLossFactor)));
+            energyFireArr[i] = (float) Math.max(0.0, energyFireArr[i] * (1.0 - logisticsLossFactor));
         }
     }
 

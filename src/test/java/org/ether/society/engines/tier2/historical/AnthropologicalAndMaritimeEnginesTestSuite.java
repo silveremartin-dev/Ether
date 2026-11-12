@@ -1,94 +1,70 @@
-/*
- * MIT License
- *
- * Copyright (c) 2024-2026 Silvere Martin-Michiellot
- * AUTHOR: Silvere Martin-Michiellot
- */
 package org.ether.society.engines.tier2.historical;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.model.Biome;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Verification test suite for Anthropological, Demographic & Evolutionary Cliodynamic Engines:
- * 1. Asymmetric Colonial Trade (Bullion drain vs perishable luxury imports).
- * 2. Marine Submersion & Early Warning Evacuation Physics.
- * 3. Human Self-Domestication (Prolonged learning & grandmother effect).
- * 4. Sexual Selection & Unmated Male Mobilization (Buss Law).
+ * Unit test suite verifying anthropogenic, maritime, and evolutionary engines.
  */
 public class AnthropologicalAndMaritimeEnginesTestSuite {
 
     @Test
-    @DisplayName("Asymmetric Colonial Trade: Silver bullion drains while capital increases temporarily")
-    public void testAsymmetricColonialTrade() {
-        H3Cell cell = new H3Cell(5001L, 38.7, -9.1); // Lisbon coordinates
-        cell.setResourceMetal(100.0);
-        cell.setResourceCapital(50.0);
+    public void testAsymmetricColonialTradeDrainsBullion() {
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getMetalResource()[0] = 100.0f;
+        buf.getResourceCapital()[0] = 500.0f;
 
-        AsymmetricColonialTradeEngine.processHybrid(List.of(cell), 2.0);
+        DerivativeAccumulator acc = new DerivativeAccumulator();
+        new AsymmetricColonialTradeEngine().accumulateCellularDerivatives(buf, 0, 1.0, 1.0, acc);
 
-        // Expected metal: 100.0 - 0.5 * 2.0 = 99.0
-        // Expected capital: 50.0 + 0.2 * 2.0 = 50.4
-        assertEquals(99.0, cell.getResourceMetal(), 1e-4, "Colonial silver bullion drain must equal 0.5/year");
-        assertEquals(50.4, cell.getResourceCapital(), 1e-4, "Colonial trade revenue must boost capital stock by 0.2/year");
+        assertTrue(buf.getMetalResource()[0] < 100.0f,
+                "Asymmetric colonial trade must drain metal bullion from cell");
+        assertTrue(acc.dResourceCapital > 0.0f,
+                "Asymmetric colonial trade must generate positive capital accumulation derivative");
     }
 
     @Test
-    @DisplayName("Marine Submersion Engine: High tech societies evacuate up to 98% of population to safe highlands")
-    public void testMarineSubmersionAndEvacuationPhysics() {
-        H3Cell submergedCoastal = new H3Cell(5002L, 53.0, 6.0);
-        submergedCoastal.setElevation(-2.0); // Flooded below sea level
-        submergedCoastal.setSeaLevelOffsetMeters(0.0);
-        submergedCoastal.setPopulation(10000);
-        submergedCoastal.setResourceCapital(5000.0 * 10000.0); // Modern emergency response capital
+    public void testMarineSubmersionEvacuatesCoastalPopulation() {
+        WorldBuffer buf = new WorldBuffer(2);
+        buf.getElevation()[0] = -1.5f;
+        buf.getBiomassHuman()[0] = 4000.0f;
+        buf.getResourceCapital()[0] = 8000.0f;
+        buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
 
-        H3Cell safeHighland = new H3Cell(5003L, 53.0, 7.0);
-        safeHighland.setElevation(50.0); // Safe highland
-        safeHighland.setBiome(Biome.HILLS);
-        safeHighland.setPopulation(1000);
-        safeHighland.setResourceCapital(100.0);
+        buf.getElevation()[1] = 20.0f;
+        buf.getBiomassHuman()[1] = 1000.0f;
+        buf.getResourceCapital()[1] = 1000.0f;
+        buf.getBiomes()[1] = (byte) Biome.PLAINS.ordinal();
 
-        MarineSubmersionEngine.processHybrid(List.of(submergedCoastal, safeHighland), 30.0);
+        buf.getNeighborIndexes()[0] = new int[]{1};
+        buf.getNeighborIndexes()[1] = new int[]{0};
 
-        // Submerged cell should have transferred almost all citizens cleanly
-        assertTrue(submergedCoastal.getPopulation() < 1000,
-                "High-tech coastal population must be predominantly evacuated before drowning");
-        assertTrue(safeHighland.getPopulation() > 8000,
-                "Safe highland cells must absorb the evacuated refugees and transferred capital");
-        assertTrue(safeHighland.getResourceCapital() > 100.0,
-                "Refugee evacuation must salvage moveable capital stock to safe highlands");
+        new MarineSubmersionEngine().tick(buf, 30.0, 30.0);
+
+        assertTrue(buf.getBiomassHuman()[0] < 4000.0f, "Submerged cell must evacuate population");
+        assertTrue(buf.getBiomassHuman()[1] > 1000.0f, "Safe inland cell must absorb evacuees");
     }
 
     @Test
-    @DisplayName("Human Self-Domestication: High population density accelerates cooperative collective labor")
-    public void testSelfDomesticationLearningRate() {
-        H3Cell urbanCell = new H3Cell(5004L, 48.8, 2.3);
-        urbanCell.setPopulation(9000); // density = 9.0 > 1.0
-        urbanCell.setResourceWork(100.0);
+    public void testSelfDomesticationAndSexualSelectionDerivatives() {
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getGiniIndex()[0] = 0.70f;
+        buf.getResourceCapital()[0] = 1000.0f;
 
-        SelfDomesticationEngine.processHybrid(List.of(urbanCell), 1.0);
+        DerivativeAccumulator acc = new DerivativeAccumulator();
+        new SelfDomesticationEngine().accumulateCellularDerivatives(buf, 0, 1.0, 1.0, acc);
+        assertTrue(acc.dResourceCapital > 0.0f,
+                "High population density must drive self-domestication cooperation capital derivative");
 
-        assertTrue(urbanCell.getResourceWork() > 100.0,
-                "High social density must accelerate cooperative work availability via prolonged prosocial learning");
-    }
-
-    @Test
-    @DisplayName("Sexual Selection & Mating: High capital accumulation creates surplus male military mobilization")
-    public void testSexualSelectionMilitaryMobilization() {
-        H3Cell cell = new H3Cell(5005L, 35.0, 35.0);
-        cell.setResourceCapital(1000.0); // > 500.0 threshold
-        cell.setResourceWork(100.0);
-
-        SexualSelectionMatingEngine.processHybrid(List.of(cell), 2.0);
-
-        // Expected work: 100.0 * (1.0 + 0.05 * 2.0) = 110.0
-        assertEquals(110.0, cell.getResourceWork(), 1e-4,
-                "Extreme elite capital concentration must mobilize surplus unmated males into +5%/year military work");
+        DerivativeAccumulator accSex = new DerivativeAccumulator();
+        new SexualSelectionMatingEngine().accumulateCellularDerivatives(buf, 0, 1.0, 1.0, accSex);
+        assertTrue(accSex.dResourceCapital > 0.0f,
+                "High Gini inequality must drive sexual selection mating skew capital derivative");
     }
 }

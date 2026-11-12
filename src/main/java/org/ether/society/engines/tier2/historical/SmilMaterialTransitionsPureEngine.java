@@ -53,28 +53,6 @@ public class SmilMaterialTransitionsPureEngine extends AbstractSimulationEngine 
         }
     }
 
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
-    /**
-     * Executes legacy object-based step for cell collections.
-     *
-     * @param cells      the cells list
-     * @param deltaYears time step in years
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        double decayFactor = Math.exp(-deltaYears / transitionInertiaYears);
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getResourceCapital() == null) continue;
-            double capital = cell.getResourceCapital();
-            cell.setResourceCapital(capital * decayFactor + capital * (1.0 - decayFactor) * 0.95);
-        }
-    }
-
     public static double getTransitionInertiaYears() {
         return transitionInertiaYears;
     }

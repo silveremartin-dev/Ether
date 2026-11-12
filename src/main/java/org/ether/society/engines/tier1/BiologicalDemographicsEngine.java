@@ -48,54 +48,35 @@ public class BiologicalDemographicsEngine extends AbstractSimulationEngine {
         return GOMPERTZ_ALPHA * Math.exp(GOMPERTZ_BETA * ageYears) + environmentalHazardGamma;
     }
 
-    /**
-     * Executes one biological demographic mortality tick across cells over {@code deltaYears}.
-     */
-    public static void processBiologicalDemographics(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        double dt = Math.max(0.001, deltaYears);
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double elev = cell.getElevationOr(0.0);
-            double tempC = cell.getTemperatureOr(15.0);
-
-            // Altitude Hypoxia Hazard (barometric PO2 drop above ~3000 m, West 2012)
-            double epas1Adaptation = cell.getMovementFriction() != null
-                    ? Math.clamp(1.0 - (cell.getMovementFriction() / 3.0), 0.0, 1.0)
-                    : 0.05;
-            double excessElevKm = Math.max(0.0, (elev - 3000.0) / 1000.0);
-            double altitudeVulnerability = Math.max(0.10, 1.0 - epas1Adaptation * 0.85);
-            double hypoxiaHazard = excessElevKm * 0.08 * altitudeVulnerability;
-
-            // Extreme Cold Hazard (hypothermia / frostbite below -10A°C, mitigated by shelter capital)
-            double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
-            double shelterProtection = 1.0 - 0.70 * Math.tanh(capPerCap / 150.0);
-            double subZeroExcess = Math.max(0.0, -10.0 - tempC);
-            double coldHazard = Math.min(0.25, subZeroExcess * 0.012 * shelterProtection);
-
-            double environmentalHazard = hypoxiaHazard + coldHazard;
-            if (environmentalHazard > 1e-6) {
-                double survivalRate = Math.exp(-environmentalHazard * dt);
-                int survivingPop = (int) Math.round(pop * survivalRate);
-                org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, survivingPop));
-                pop = cell.getPopulationOr(0);
-            }
-
-            if (pop > 0) {
-                cell.updateAgePyramidFromObservables();
-            }
-        }
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Executes one monthly biological demographic mortality tick across cells.
-     */
-    public static void processBiologicalDemographics(List<H3Cell> cells) {
-        processBiologicalDemographics(cells, 30.0 / 365.25);
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double biomassHuman = buffer.getBiomassHuman()[i];
+        double pop = biomassHuman / 0.06;
+        if (pop <= 0.0) return;
+
+        double elev = buffer.getElevation()[i];
+        double tempC = buffer.getTemperature()[i];
+
+        double epas1Adaptation = 0.05;
+        double excessElevKm = Math.max(0.0, (elev - 3000.0) / 1000.0);
+        double altitudeVulnerability = Math.max(0.10, 1.0 - epas1Adaptation * 0.85);
+        double hypoxiaHazard = excessElevKm * 0.08 * altitudeVulnerability;
+
+        double capPerCap = buffer.getResourceCapital()[i] / Math.max(1.0, pop);
+        double shelterProtection = 1.0 - 0.70 * Math.tanh(capPerCap / 150.0);
+        double subZeroExcess = Math.max(0.0, -10.0 - tempC);
+        double coldHazard = Math.min(0.25, subZeroExcess * 0.012 * shelterProtection);
+
+        double environmentalHazard = hypoxiaHazard + coldHazard;
+        if (environmentalHazard > 1e-6) {
+            double survivalRate = Math.exp(-environmentalHazard * Math.max(0.001, dtYears));
+            acc.dBiomassHuman += (float) (biomassHuman * (survivalRate - 1.0));
+        }
     }
 }

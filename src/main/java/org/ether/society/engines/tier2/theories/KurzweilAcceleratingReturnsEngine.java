@@ -81,30 +81,6 @@ public class KurzweilAcceleratingReturnsEngine extends AbstractSimulationEngine 
         super.tick(buffer, dtYears, dtMonthly);
     }
 
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processAcceleratingReturns(cells, deltaYears);
-    }
-
-    public static void processAcceleratingReturns(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
-
-        double dW = accelerationRate * Math.min(1e6, globalKnowledgeStock) * Math.log(globalKnowledgeStock + 1.0) * deltaYears;
-        globalKnowledgeStock = Math.min(1e6, globalKnowledgeStock + dW);
-
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-            int pop = cell.getPopulation();
-            double currentCap = cell.getResourceCapitalOr(0.0);
-            double capPerCapita = pop > 0 ? (currentCap / pop) : 0.0;
-            double paradigmCapacity = 100_000.0 / (1.0 + Math.exp(-0.01 * globalKnowledgeStock));
-
-            double headroom = Math.max(0.0, 1.0 - capPerCapita / paradigmCapacity);
-            double dCapPerCapita = dW * 10.0 * headroom;
-            cell.setResourceCapital(currentCap + dCapPerCapita * pop);
-        }
-    }
-
     public static double getGlobalKnowledgeStock() {
         return globalKnowledgeStock;
     }

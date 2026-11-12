@@ -6,14 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Marine Methane Clathrate Thermodynamic Stability &amp; Dissociation Engine.
@@ -168,35 +166,45 @@ public class MethaneClathrateStabilityEngine extends AbstractSimulationEngine {
         return deepBase + (surfaceTempC - deepBase) * thermoclineFactor;
     }
 
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processClathrateDissociation(buf, dtYears, 0.0);
+    }
+
     /**
      * Executes one time-stepped marine clathrate stability evaluation across ocean cells.
      *
-     * @param cells List of H3 cells
+     * @param buffer WorldBuffer DoD state
      * @param dtYears elapsed simulation step in years
      * @param globalBenthicWarmingAnomalyC global bottom water temperature anomaly in \(^\circ\text{C}\)
      * @return total methane released into ocean-atmosphere in ppm equivalent
      */
-    public static double processClathrateDissociation(List<H3Cell> cells, double dtYears, double globalBenthicWarmingAnomalyC) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0 || globalBenthicWarmingAnomalyC <= 0.0) return 0.0;
+    public static double processClathrateDissociation(WorldBuffer buffer, double dtYears, double globalBenthicWarmingAnomalyC) {
+        if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0 || globalBenthicWarmingAnomalyC <= 0.0) return 0.0;
 
         double dtSafe = Math.max(1e-4, dtYears);
         double totalMethanePpmOutgassed = 0.0;
         int activeDissociationCells = 0;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
+        float[] elevArr = buffer.getElevation();
+        byte[] biomes = buffer.getBiomes();
+        float[] tempArr = buffer.getTemperature();
+        byte oceanOrd = (byte) Biome.OCEAN.ordinal();
+        byte deepOceanOrd = (byte) Biome.DEEP_OCEAN.ordinal();
+        int n = buffer.getCapacity();
 
-            double elevation = cell.getElevationOr(0.0);
-            Biome biome = cell.getBiome();
+        for (int i = 0; i < n; i++) {
+            double elevation = elevArr[i];
+            byte biomeOrd = biomes[i];
 
             // Marine benthic criteria: submerged cells (elevation < 0) or marine biomes
-            boolean isMarine = elevation < 0.0 || biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN;
+            boolean isMarine = elevation < 0.0 || biomeOrd == oceanOrd || biomeOrd == deepOceanOrd;
             if (!isMarine) continue;
 
             double depthMeters = Math.max(0.0, -elevation);
             if (depthMeters < MIN_HYDRATE_DEPTH_METERS) continue;
 
-            double surfTemp = cell.getTemperatureOr(15.0);
+            double surfTemp = tempArr[i];
             double bottomWaterTemp = estimateBottomWaterTemperature(surfTemp, depthMeters, globalBenthicWarmingAnomalyC);
 
             double ghszThickness = calculateGHSZThicknessMeters(depthMeters, bottomWaterTemp);
@@ -205,14 +213,13 @@ public class MethaneClathrateStabilityEngine extends AbstractSimulationEngine {
             double tempExcess = Math.max(0.0, globalBenthicWarmingAnomalyC);
             if (tempExcess > 0.0 && ghszThickness > 0.0) {
                 activeDissociationCells++;
-                // Outgassing flux scales with excess bottom warming, time step, and depth-limited sediment reservoir
                 double cellRelease = tempExcess * SPECIFIC_METHANE_DISSOCIATION_RATE * dtSafe;
                 totalMethanePpmOutgassed += cellRelease;
             }
         }
 
         if (activeDissociationCells > 0 && totalMethanePpmOutgassed > 0.01) {
-            logger.info("Methane Clathrate Engine: Dissociation across {} deep marine cells released {} ppm CH4 equivalent (Anomaly: +{}Â°C).",
+            logger.info("Methane Clathrate Engine: Dissociation across {} deep marine cells released {} ppm CH4 equivalent (Anomaly: +{} C).",
                     activeDissociationCells,
                     String.format(java.util.Locale.ROOT, "%.3f", totalMethanePpmOutgassed),
                     String.format(java.util.Locale.ROOT, "%.2f", globalBenthicWarmingAnomalyC));

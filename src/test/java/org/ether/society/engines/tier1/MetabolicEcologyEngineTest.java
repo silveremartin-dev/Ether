@@ -118,22 +118,26 @@ class MetabolicEcologyEngineTest {
             mesh.add(c);
         }
 
+        org.ether.society.core.dod.WorldBuffer meshBuf = new org.ether.society.core.dod.WorldBuffer(mesh.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(mesh, meshBuf, false);
+        MetabolicEcologyEngine mteEngine = new MetabolicEcologyEngine();
+
         // Simulate 20 years of continuous metabolic dissipation
         for (int yr = 1; yr <= 20; yr++) {
             // Seasonal primary productivity replenishes biomass
-            for (H3Cell c : mesh) {
-                c.setBiomassNatural(c.getBiomassNatural() + 5.0);
-                c.setBiomassAgriculture(c.getBiomassAgriculture() + 3.0);
+            for (int i = 0; i < mesh.size(); i++) {
+                meshBuf.getBiomassNatural()[i] += 5.0f;
+                meshBuf.getBiomassAgriculture()[i] += 3.0f;
             }
 
-            MetabolicEcologyEngine.processMetabolicEcology(mesh, 1.0);
+            mteEngine.tick(meshBuf, 1.0, 12.0);
 
-            for (H3Cell c : mesh) {
-                assertTrue(c.getBiomassNatural() >= 0.1, "Natural biomass must remain strictly positive");
-                assertTrue(c.getBiomassLivestock() >= 0.0, "Livestock biomass must remain non-negative");
-                assertTrue(c.getBiomassAgriculture() >= 0.0, "Agricultural biomass must remain non-negative");
-                assertFalse(Double.isNaN(c.getBiomassNatural()), "Natural biomass must never be NaN");
-                assertFalse(Double.isNaN(c.getBiomassLivestock()), "Livestock biomass must never be NaN");
+            for (int i = 0; i < mesh.size(); i++) {
+                assertTrue(meshBuf.getBiomassNatural()[i] >= 0.1f, "Natural biomass must remain strictly positive");
+                assertTrue(meshBuf.getBiomassLivestock()[i] >= 0.0f, "Livestock biomass must remain non-negative");
+                assertTrue(meshBuf.getBiomassAgriculture()[i] >= 0.0f, "Agricultural biomass must remain non-negative");
+                assertFalse(Float.isNaN(meshBuf.getBiomassNatural()[i]), "Natural biomass must never be NaN");
+                assertFalse(Float.isNaN(meshBuf.getBiomassLivestock()[i]), "Livestock biomass must never be NaN");
             }
         }
     }
@@ -141,34 +145,34 @@ class MetabolicEcologyEngineTest {
     @Test
     @DisplayName("3.6 Bitwise Determinism across Repeated MTE Mesh Executions")
     void testBitwiseDeterminismMTE() {
-        List<H3Cell> runA = new ArrayList<>(100);
-        List<H3Cell> runB = new ArrayList<>(100);
+        org.ether.society.core.dod.WorldBuffer runA = new org.ether.society.core.dod.WorldBuffer(100);
+        org.ether.society.core.dod.WorldBuffer runB = new org.ether.society.core.dod.WorldBuffer(100);
 
         for (int i = 0; i < 100; i++) {
-            H3Cell cA = new H3Cell(0x88a000000000000L + i, 20.0 + i * 0.1, 10.0);
-            cA.setTemperature(15.0 + (i % 15));
-            cA.setBiomassNatural(100.0 + i);
-            cA.setBiomassLivestock(20.0 + i * 0.5);
-            cA.setBiomassAgriculture(50.0 + i);
-            runA.add(cA);
+            runA.getH3Indexes()[i] = 0x88a000000000000L + i;
+            runA.getTemperature()[i] = 15.0f + (i % 15);
+            runA.getBiomassNatural()[i] = 100.0f + i;
+            runA.getBiomassLivestock()[i] = 20.0f + i * 0.5f;
+            runA.getBiomassAgriculture()[i] = 50.0f + i;
 
-            H3Cell cB = new H3Cell(0x88a000000000000L + i, 20.0 + i * 0.1, 10.0);
-            cB.setTemperature(15.0 + (i % 15));
-            cB.setBiomassNatural(100.0 + i);
-            cB.setBiomassLivestock(20.0 + i * 0.5);
-            cB.setBiomassAgriculture(50.0 + i);
-            runB.add(cB);
+            runB.getH3Indexes()[i] = 0x88a000000000000L + i;
+            runB.getTemperature()[i] = 15.0f + (i % 15);
+            runB.getBiomassNatural()[i] = 100.0f + i;
+            runB.getBiomassLivestock()[i] = 20.0f + i * 0.5f;
+            runB.getBiomassAgriculture()[i] = 50.0f + i;
         }
 
+        MetabolicEcologyEngine engineA = new MetabolicEcologyEngine();
+        MetabolicEcologyEngine engineB = new MetabolicEcologyEngine();
         for (int yr = 0; yr < 10; yr++) {
-            MetabolicEcologyEngine.processMetabolicEcology(runA, 1.0);
-            MetabolicEcologyEngine.processMetabolicEcology(runB, 1.0);
+            engineA.tick(runA, 1.0, 12.0);
+            engineB.tick(runB, 1.0, 12.0);
         }
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(runA.get(i).getBiomassNatural(), runB.get(i).getBiomassNatural(), 1e-12, "Natural biomass must be bitwise identical");
-            assertEquals(runA.get(i).getBiomassLivestock(), runB.get(i).getBiomassLivestock(), 1e-12, "Livestock biomass must be bitwise identical");
-            assertEquals(runA.get(i).getBiomassAgriculture(), runB.get(i).getBiomassAgriculture(), 1e-12, "Agriculture biomass must be bitwise identical");
+            assertEquals(runA.getBiomassNatural()[i], runB.getBiomassNatural()[i], 1e-6f, "Natural biomass must be bitwise identical");
+            assertEquals(runA.getBiomassLivestock()[i], runB.getBiomassLivestock()[i], 1e-6f, "Livestock biomass must be bitwise identical");
+            assertEquals(runA.getBiomassAgriculture()[i], runB.getBiomassAgriculture()[i], 1e-6f, "Agriculture biomass must be bitwise identical");
         }
     }
 }

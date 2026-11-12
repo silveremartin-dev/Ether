@@ -34,90 +34,55 @@ public class HydrologicalEngineeringEngine extends AbstractSimulationEngine {
         super("HydrologicalEngineeringEngine", "HydrologicalEngineeringEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
-    @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
-    private static final Logger logger = LoggerFactory.getLogger(HydrologicalEngineeringEngine.class);
-
-    /** Internal state: default tenochtitlan tech threshold (double). */
-    public static final double DEFAULT_TENOCHTITLAN_TECH_THRESHOLD = 3.5;
-    /** Internal state: default tenochtitlan capital threshold (double). */
     public static final double DEFAULT_TENOCHTITLAN_CAPITAL_THRESHOLD = 150.0;
-
-    /** Internal state: default aral sea rainfall threshold mm (double). */
     public static final double DEFAULT_ARAL_SEA_RAINFALL_THRESHOLD_MM = 300.0;
-
-    /** Internal state: default dam tech threshold (double). */
-    public static final double DEFAULT_DAM_TECH_THRESHOLD = 4.5;
-    /** Internal state: default dam capital threshold (double). */
     public static final double DEFAULT_DAM_CAPITAL_THRESHOLD = 250.0;
-    /** Internal state: default dam min elevation meters (double). */
     public static final double DEFAULT_DAM_MIN_ELEVATION_METERS = 300.0;
 
-    /**
-     * Executes hydrological engineering transformations using default parameters.
-     */
-    public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
-        processHybrid(cells, timeStepDays,
-                DEFAULT_TENOCHTITLAN_TECH_THRESHOLD, DEFAULT_TENOCHTITLAN_CAPITAL_THRESHOLD,
-                DEFAULT_ARAL_SEA_RAINFALL_THRESHOLD_MM,
-                DEFAULT_DAM_TECH_THRESHOLD, DEFAULT_DAM_CAPITAL_THRESHOLD, DEFAULT_DAM_MIN_ELEVATION_METERS);
-    }
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
+        if (buf == null) return;
+        int n = buf.getCapacity();
+        byte[] biomes = buf.getBiomes();
+        float[] capArr = buf.getResourceCapital();
+        float[] elevArr = buf.getElevation();
+        float[] rainArr = buf.getRainfall();
+        float[] tempArr = buf.getTemperature();
+        float[] popArr = buf.getBiomassHuman();
+        float[] foodArr = buf.getFoodResource();
+        float[] socArr = buf.getSoilOrganicCarbon();
+        float[] waterArr = buf.getWaterResource();
+        float[] solarArr = buf.getEnergySolar();
 
-    /**
-     * Executes hydrological engineering transformations with parameterizable physical thresholds.
-     */
-    public static void processHybrid(List<H3Cell> cells, double timeStepDays,
-                                    double tenochtitlanTech, double tenochtitlanCapital,
-                                    double aralRainfallThreshold,
-                                    double damTech, double damCapital, double damMinElevation) {
-        if (cells == null || cells.isEmpty()) return;
+        byte lakeOrd = (byte) Biome.LAKE.ordinal();
+        byte plainsOrd = (byte) Biome.PLAINS.ordinal();
+        byte desertOrd = (byte) Biome.DESERT.ordinal();
+        double timeStepDays = dtYears * 365.25;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
+        for (int i = 0; i < n; i++) {
+            float capital = capArr[i];
+            float elevation = elevArr[i];
+            float rainfall = rainArr[i];
+            float tempC = tempArr[i];
+            float pop = popArr[i];
+            byte biome = biomes[i];
 
-            double capital = cell.getResourceCapitalOr(0.0);
-            double elevation = cell.getElevationOr(0.0);
-            double rainfall = cell.getRainfallOr(500.0);
-            double tempC = cell.getTemperatureOr(15.0);
-            int pop = cell.getPopulationOr(0);
-            Biome biome = cell.getBiome();
+            if (biome == lakeOrd && pop >= 1500.0f && capital >= DEFAULT_TENOCHTITLAN_CAPITAL_THRESHOLD) {
+                biomes[i] = plainsOrd;
+                foodArr[i] = Math.min(1000.0f, foodArr[i] + 50.0f);
+                socArr[i] = Math.max(100.0f, socArr[i] + 15.0f);
+            }
 
-            // 1. Tenochtitlan / Lake Texcoco Urban Reclamation & Wetland Drainage (governed by physical hydraulic capital & labor)
-            if (biome == Biome.LAKE && pop >= 1500 && !Boolean.TRUE.equals(cell.getIsPolder())) {
-                if (capital >= tenochtitlanCapital) {
-                    cell.setBiome(Biome.PLAINS);
-                    cell.setIsPolder(true);
-                    cell.setFoodResource(Math.min(1000.0, cell.getFoodResourceOr(0.0) + 50.0));
-                    cell.setSoilOrganicCarbon(Math.max(100.0, cell.getSoilOrganicCarbonOr(50.0) + 15.0));
-                    logger.info("Hydrological Reclamation (Tenochtitlan Model): Cell {} drained Lake Texcoco for urban expansion.", cell.getH3Index());
+            if (biome == lakeOrd && rainfall < DEFAULT_ARAL_SEA_RAINFALL_THRESHOLD_MM && tempC >= 10.0f && capital >= 100.0f) {
+                waterArr[i] = (float) Math.max(10.0, waterArr[i] - 20.0 * (timeStepDays / 30.0));
+                if (waterArr[i] <= 50.0f) {
+                    biomes[i] = desertOrd;
                 }
             }
 
-            // 2. Aral Sea Endorheic Desiccation & Water Diversion (governed by irrigation capital & high evaporation)
-            if (biome == Biome.LAKE && rainfall < aralRainfallThreshold && tempC >= 10.0) {
-                if (capital >= 100.0) {
-                    cell.setWaterResource(Math.max(10.0, cell.getWaterResourceOr(100.0) - 20.0 * (timeStepDays / 30.0)));
-                    if (cell.getWaterResourceOr(100.0) <= 50.0) {
-                        cell.setBiome(Biome.DESERT);
-                        cell.setMovementFriction(Math.min(10.0, cell.getMovementFrictionOr(1.0) * 1.35));
-                        logger.info("Endorheic Desiccation (Aral Sea Model): Cell {} lake basin desiccated into salt desert.", cell.getH3Index());
-                    }
-                }
-            }
-
-            // 3. Mountain Water Reservoirs & Hydroelectric Dam Construction (governed by structural masonry/concrete capital & elevation head)
-            if (elevation >= damMinElevation && (cell.getMovementFrictionOr(1.0) >= 1.3 || elevation >= 500.0)) {
-                if (capital >= damCapital && !Boolean.TRUE.equals(cell.getHasDam()) && !Boolean.TRUE.equals(cell.getIsPolder())) {
-                    cell.setHasDam(true);
-                    cell.setWaterResource(Math.max(1000.0, cell.getWaterResourceOr(0.0)));
-                    cell.setEnergySolar(cell.getEnergySolarOr(0.0) + 100.0);
-                    cell.setHabitatEnergyKw(cell.getHabitatEnergyKwOr(0.0) + 500.0);
-                    cell.setResourceWork(cell.getResourceWorkOr(0.0) + 30.0);
-                    logger.info("Mountain Reservoir Dam Construction: Cell {} built hydroelectric water retention dam.", cell.getH3Index());
-                }
+            if (elevation >= DEFAULT_DAM_MIN_ELEVATION_METERS && capital >= DEFAULT_DAM_CAPITAL_THRESHOLD && biome != lakeOrd) {
+                waterArr[i] = Math.max(1000.0f, waterArr[i]);
+                solarArr[i] += 100.0f * (float) dtYears;
             }
         }
     }

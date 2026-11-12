@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class SimulationRunRepository {
+public final class SimulationRunRepository {
     private static final Logger logger = LoggerFactory.getLogger(SimulationRunRepository.class);
     private static SimulationRunRepository instance;
 

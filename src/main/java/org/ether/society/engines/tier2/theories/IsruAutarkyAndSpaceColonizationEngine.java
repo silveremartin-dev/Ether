@@ -30,40 +30,21 @@ public class IsruAutarkyAndSpaceColonizationEngine extends AbstractSimulationEng
 
     private static final Logger logger = LoggerFactory.getLogger(IsruAutarkyAndSpaceColonizationEngine.class);
 
-    public static void processSpaceColonizationCliodynamics(List<H3Cell> cells, Object ignored, double deltaYears) {
-        processIsruAndAutarky(cells, deltaYears);
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    public static void processIsruAndAutarky(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-        double dt = Math.max(0.001, deltaYears);
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double dt = Math.max(0.001, dtYears);
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            HabitatType habitatType = cell.getHabitatType();
-            if (habitatType == HabitatType.NONE) continue;
-
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double capital = cell.getResourceCapitalOr(0.0);
-            double metal = cell.getResourceMetalOr(0.0);
-
-            // 1. ISRU Extraction & Transformation Rate
-            // Local mineral exploitation efficiency scales with capital intensity
-            double capPerCap = capital / pop;
-            double isruEfficiency = SmoothMath.smoothClamp(0.20 + (capPerCap * 0.005), 0.20, 2.50, 20.0);
-            double metalYield = pop * 0.50 * isruEfficiency * dt;
-            double capitalGrowth = pop * 2.0 * isruEfficiency * dt;
-
-            cell.setResourceMetal(metal + metalYield);
-            cell.setResourceCapital(capital + capitalGrowth);
-
-            // 2. High Pioneer Social Cohesion (Asabiyyah)
-            // Life under hostile dome conditions elevates collective mutual aid
-            double workAvailable = cell.getResourceWorkOr(0.0);
-            cell.setResourceWork(workAvailable + (pop * 1.10 * dt));
-        }
+        double capital = buffer.getResourceCapital()[i];
+        double capPerCap = capital / pop;
+        double isruEfficiency = SmoothMath.smoothClamp(0.20 + (capPerCap * 0.005), 0.20, 2.50, 20.0);
+        acc.dMetalResource += (float) (pop * 0.50 * isruEfficiency * dt);
+        acc.dResourceCapital += (float) (pop * 2.0 * isruEfficiency * dt);
     }
 }

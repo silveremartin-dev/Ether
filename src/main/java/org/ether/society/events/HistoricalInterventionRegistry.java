@@ -21,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Catalog manager for deterministic Earth historical leader interventions and reforms.
  * Loads pre-defined scenarios from earth_historical_leaders.json and supports custom user injections.
  */
-public class HistoricalInterventionRegistry {
+public final class HistoricalInterventionRegistry {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalInterventionRegistry.class);
     /** Internal state: resource path (String). */
     private static final String RESOURCE_PATH = "/data/presets/leaders/earth_historical_leaders.json";
@@ -41,10 +41,9 @@ public class HistoricalInterventionRegistry {
     }
 
     /**
-     * Historical intervention catalog.
-     *
+     * Historical intervention catalog singleton constructor.
      */
-    public HistoricalInterventionRegistry() {
+    private HistoricalInterventionRegistry() {
         loadCatalog();
     }
 

@@ -30,70 +30,33 @@ public class MaritimeHighwayEngine extends AbstractSimulationEngine {
         super("MaritimeHighwayEngine", "MaritimeHighwayEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
+    public static final double DEFAULT_CAPITAL_BOOST_RATE = 0.05;
+
     @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(MaritimeHighwayEngine.class);
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0 || dtYears <= 0.0) return;
 
-    // Default physical transport parameters
-    public static final double DEFAULT_CAPITAL_BOOST_RATE = 0.05; // +5% trade & capital return per tick
-    public static final double DEFAULT_FRICTION_MULTIPLIER = 0.20; // 80% reduction in transport friction
+        byte biome = buffer.getBiomes()[i];
+        boolean isMaritimeBasin = biome == Biome.OCEAN.ordinal()
+                || biome == Biome.DEEP_OCEAN.ordinal()
+                || buffer.getElevation()[i] <= 0.0f;
 
-    /**
-     * Executes maritime transport & trade acceleration using default physical constants.
-     */
-    public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        processHybrid(cells, timeStepDays, DEFAULT_CAPITAL_BOOST_RATE, DEFAULT_FRICTION_MULTIPLIER);
-    }
-
-    /**
-     * Executes maritime transport & trade acceleration with parameterizable constants.
-     */
-    public static void processHybrid(List<H3Cell> cells, double timeStepDays, double capitalBoostRate, double frictionMultiplier) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-
-            // Universal physical check: coastal cell, polder, floating infrastructure, or water biome
-            boolean isMaritimeBasin = Boolean.TRUE.equals(cell.getIsCoastal())
-                    || Boolean.TRUE.equals(cell.getIsPolder())
-                    || Boolean.TRUE.equals(cell.getHasFloatingInfrastructure())
-                    || cell.getBiome() == Biome.OCEAN
-                    || cell.getBiome() == Biome.DEEP_OCEAN
-                    || (cell.getElevation() != null && cell.getElevation() <= 0);
-
-            double tempC = cell.getTemperatureOr(15.0);
-
-            if (isMaritimeBasin && tempC > 0.0) {
-                // Coastal & maritime trade acceleration: buoyancy eliminates solid dry friction,
-                // scaled by integration step dtYears and bounded by Solow maritime capital saturation
-                double currentCap = cell.getResourceCapitalOr(0.0);
-                int pop = cell.getPopulationOr(1);
-                double capPerCapita = currentCap / Math.max(1.0, (double) pop);
-                double powerW = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-                double propulsionFactor = 1.0 + Math.log10(1.0 + Math.max(0.0, powerW - 300.0) / 150.0);
-                double maritimeEquilibriumCap = 120.0 * Math.pow(propulsionFactor, 2.0);
-                double saturation = Math.clamp(1.0 - (capPerCapita / maritimeEquilibriumCap), 0.02, 1.0);
-                double dtYears = Math.clamp(timeStepDays / 365.25, 0.002, 1.0);
-                cell.setResourceCapital(currentCap * (1.0 + capitalBoostRate * dtYears * saturation));
-
-                // Hydrodynamic friction reduction over open ice-free water
-                double friction = cell.getMovementFrictionOr(1.0);
-                cell.setMovementFriction(Math.max(0.1, friction * frictionMultiplier));
-            } else if (isMaritimeBasin && tempC <= 0.0) {
-                // Sub-zero sea ice increases friction for maritime navigation
-                double friction = cell.getMovementFrictionOr(1.0);
-                cell.setMovementFriction(Math.min(20.0, friction * 1.50));
-            }
+        if (isMaritimeBasin && buffer.getTemperature()[i] > 0.0f) {
+            double currentCap = buffer.getResourceCapital()[i];
+            double capPerCapita = currentCap / Math.max(1.0, pop);
+            double totalWatts = buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i] + buffer.getEnergySolar()[i]
+                    + (buffer.getResourceCoal()[i] * 24.0) + (buffer.getResourceOil()[i] * 42.0);
+            double powerW = totalWatts / Math.max(1.0, pop);
+            double propulsionFactor = 1.0 + Math.log10(1.0 + Math.max(0.0, powerW - 300.0) / 150.0);
+            double maritimeEquilibriumCap = 120.0 * propulsionFactor * propulsionFactor;
+            double saturation = Math.clamp(1.0 - (capPerCapita / maritimeEquilibriumCap), 0.02, 1.0);
+            acc.dResourceCapital += (float) (currentCap * DEFAULT_CAPITAL_BOOST_RATE * dtYears * saturation);
         }
     }
 }

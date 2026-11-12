@@ -855,8 +855,9 @@ public final class CounterfactualBenchmarkFixtures {
 
             int simYears = 25;
             double deltaYears = 1.0;
+            PomeranzGreatDivergenceEngine pomeranzEngine = new PomeranzGreatDivergenceEngine();
             for (int year = 0; year < simYears; year++) {
-                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(treatmentGrid, deltaYears);
+                runDoD(pomeranzEngine, treatmentGrid, deltaYears);
             }
 
             controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);

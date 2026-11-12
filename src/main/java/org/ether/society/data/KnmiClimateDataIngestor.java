@@ -126,7 +126,7 @@ public final class KnmiClimateDataIngestor {
                         }
                     }
                 } catch (NumberFormatException ignored) {
-                    // skip header or corrupted line
+                    logger.trace("Skipping header or invalid line in KNMI series: {}", line);
                 }
             }
         }

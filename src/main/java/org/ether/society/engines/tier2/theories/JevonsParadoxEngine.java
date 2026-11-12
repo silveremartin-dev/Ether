@@ -65,42 +65,6 @@ public class JevonsParadoxEngine extends AbstractSimulationEngine {
         }
     }
 
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processJevonsRebound(cells, deltaYears);
-    }
-
-    /**
-     * Process Jevons rebound across spatial cells with continuous \(C^1\) physical transducer efficiency activation.
-     *
-     * @param cells the spatial cells list
-     * @param deltaYears time step in years
-     */
-    public static void processJevonsRebound(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            int pop = Math.max(1, cell.getPopulationOr(100));
-            double kPerCapita = cell.getResourceCapitalOr(0.0) / pop;
-
-            double kRatio = kPerCapita / JEVONS_HALF_SATURATION_CAPITAL_KG_PC;
-            double transducerEfficiencyFactor = (kRatio * kRatio) / (1.0 + kRatio * kRatio);
-            if (transducerEfficiencyFactor > 0.05) {
-                double machineryIntensity = Math.log1p(kPerCapita / 50.0);
-                double reboundDemand = machineryIntensity * reboundCoefficient * transducerEfficiencyFactor * 0.005 * deltaYears;
-
-                double habitatKw = cell.getHabitatEnergyKwOr(0.0);
-                cell.setHabitatEnergyKw(habitatKw + reboundDemand * 100.0);
-
-                double currentFoodEnergy = cell.getEnergyFoodConsumedOr(0.0);
-                double maxMetabolicFood = Math.max(10.0, pop * 1.5);
-                cell.setEnergyFoodConsumed(Math.min(maxMetabolicFood, currentFoodEnergy + reboundDemand));
-            }
-        }
-    }
-
     public static double getReboundCoefficient() {
         return reboundCoefficient;
     }

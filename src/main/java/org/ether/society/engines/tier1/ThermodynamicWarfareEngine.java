@@ -6,13 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Thermodynamic Warfare & Kinetic Armor Penetration Engine.
@@ -31,49 +30,72 @@ public class ThermodynamicWarfareEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(ThermodynamicWarfareEngine.class);
 
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
+
+        double dt = Math.max(0.001, dtYears);
+        double capital = buffer.getResourceCapital()[i];
+        double metal = buffer.getMetalResource()[i];
+        double capPerCap = capital / Math.max(1.0, pop);
+        double metalPerCap = metal / Math.max(1.0, pop);
+        double powerW = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(buffer, i);
+
+        double materialYieldStrengthMPa = Math.clamp(25.0 + 350.0 * (1.0 - Math.exp(-metalPerCap / 50.0)) + 1500.0 * (1.0 - Math.exp(-capPerCap / 500.0)), 20.0, 2000.0);
+        double kineticPowerWatts = pop * (50.0 + powerW * 0.15);
+        double deliveredKineticJoules = kineticPowerWatts * (dt * 315576.0);
+        double capitalFactor = Math.max(1.0, capital / 100.0);
+        double fortificationCapacityJoules = materialYieldStrengthMPa * 1e6 * 0.5 * 100.0 * capitalFactor;
+        double mechanicalStressRatio = deliveredKineticJoules / Math.max(1.0, fortificationCapacityJoules);
+
+        if (mechanicalStressRatio > 0.05 && capital > 0.0) {
+            double destructionFraction = 0.12 * ((mechanicalStressRatio * mechanicalStressRatio) / (1.0 + mechanicalStressRatio * mechanicalStressRatio)) * dt;
+            acc.dResourceCapital -= (float) (capital * destructionFraction);
+        }
+    }
+
     /**
-     * Executes one kinetic warfare and fortification breaching tick with physical time integration.
+     * Executes one kinetic warfare and fortification breaching tick with physical time integration across DoD buffer.
      */
-    public static void processKineticWarfare(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for ThermodynamicWarfareEngine - verifies boundary conservation and updates local thermodynamic state
-        if (cells == null || cells.isEmpty()) return;
+    public static void processKineticWarfare(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
         double dt = Math.max(0.001, deltaYears);
         int structuralBreaches = 0;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+        float[] bioHuman = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        float[] metalArr = buffer.getMetalResource();
+        int n = buffer.getCapacity();
 
-            double capital = cell.getResourceCapitalOr(0.0);
-double metal = cell.getResourceMetalOr(0.0);
-double capPerCap = capital / Math.max(1.0, pop);
-double metalPerCap = metal / Math.max(1.0, pop);
-double powerW = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
+        for (int i = 0; i < n; i++) {
+            double pop = bioHuman[i] / 0.06;
+            if (pop <= 0.0) continue;
 
-// Material Yield Strength (sigma_yield in MPa): Wood/Earth (20-40 MPa) -> Bronze/Iron (100-300 MPa) -> Steel/Composites (500-1500 MPa)
-// Determined by refined metal availability and fortified capital density (Ashby 2011)
-double materialYieldStrengthMPa = Math.clamp(25.0 + 350.0 * (1.0 - Math.exp(-metalPerCap / 50.0)) + 1500.0 * (1.0 - Math.exp(-capPerCap / 500.0)), 20.0, 2000.0);
+            double capital = capArr[i];
+            double metal = metalArr[i];
+            double capPerCap = capital / Math.max(1.0, pop);
+            double metalPerCap = metal / Math.max(1.0, pop);
+            double powerW = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(buffer, i);
 
-// Kinetic & Chemical Mechanical Power (Watts = Joules/sec) delivering offensive work
-double kineticPowerWatts = pop * (50.0 + powerW * 0.15);
-
-            // Total kinetic energy work delivered over time step dt (in Joules, accounting for 1% conflict mobilization duty cycle)
+            double materialYieldStrengthMPa = Math.clamp(25.0 + 350.0 * (1.0 - Math.exp(-metalPerCap / 50.0)) + 1500.0 * (1.0 - Math.exp(-capPerCap / 500.0)), 20.0, 2000.0);
+            double kineticPowerWatts = pop * (50.0 + powerW * 0.15);
             double deliveredKineticJoules = kineticPowerWatts * (dt * 315576.0);
-
-            // Fortification plastic deformation resistance energy in Joules (Yield Strength * Reference Volume * Capital Depth)
             double capitalFactor = Math.max(1.0, capital / 100.0);
             double fortificationCapacityJoules = materialYieldStrengthMPa * 1e6 * 0.5 * 100.0 * capitalFactor;
 
-            // Continuous mechanical rupture ratio (Joules vs Joules)
             double mechanicalStressRatio = deliveredKineticJoules / Math.max(1.0, fortificationCapacityJoules);
             if (mechanicalStressRatio > 0.05 && capital > 0.0) {
                 structuralBreaches++;
-                // Continuous Hill-function infrastructural damage fraction
                 double destructionFraction = 0.12 * ((mechanicalStressRatio * mechanicalStressRatio) / (1.0 + mechanicalStressRatio * mechanicalStressRatio)) * dt;
-                cell.setResourceCapital(Math.max(0.0, capital * (1.0 - destructionFraction)));
+                capArr[i] = (float) Math.max(0.0, capital * (1.0 - destructionFraction));
             }
         }
 
@@ -82,14 +104,8 @@ double kineticPowerWatts = pop * (50.0 + powerW * 0.15);
         }
     }
 
-    /**
-     * Process kinetic warfare.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     */
-    public static void processKineticWarfare(List<H3Cell> cells) {
-// Numerical integration step for ThermodynamicWarfareEngine - verifies boundary conservation and updates local thermodynamic state
-        processKineticWarfare(cells, 30.0 / 365.25);
+    public static void processKineticWarfare(WorldBuffer buffer) {
+        processKineticWarfare(buffer, 30.0 / 365.25);
     }
 }
 

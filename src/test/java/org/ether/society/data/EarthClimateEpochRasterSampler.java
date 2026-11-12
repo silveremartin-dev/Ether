@@ -327,7 +327,7 @@ final class EarthClimateEpochRasterSampler {
             try {
                 ImageIO.write(imgElev, "png", new File("data/maps/reference_earth_elevation.png"));
                 ImageIO.write(imgBiomes, "png", new File("data/maps/reference_earth_biomes.png"));
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) { /* harmless test raster write */ }
         }
     }
 

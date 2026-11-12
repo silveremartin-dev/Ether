@@ -6,15 +6,15 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Mechanical Work &amp; Hydrodynamic Transport Engine.
@@ -68,34 +68,81 @@ public class PhysicsTransportEngine extends AbstractSimulationEngine {
         return effectiveFriction * 9.81 * 1000.0;
     }
 
-    /** Executes one monthly transport work evaluation step across cells. */
-    public static void processPhysicsTransport(List<H3Cell> cells) {
-        processPhysicsTransport(cells, 1.0 / 12.0);
+    /**
+     * Calculates the mechanical work (\(\text{J}/\text{kg}\cdot\text{km}\)) required to transport cargo across DoD cell {@code i}.
+     */
+    public static double calculateTransportWorkJoules(WorldBuffer buffer, int i) {
+        if (buffer == null || i < 0 || i >= buffer.getCapacity()) return 1000.0;
+
+        byte biomeOrd = buffer.getBiomes()[i];
+        double elev = buffer.getElevation()[i];
+        boolean isWaterBody = (biomeOrd == (byte) Biome.OCEAN.ordinal()
+                || biomeOrd == (byte) Biome.DEEP_OCEAN.ordinal()
+                || biomeOrd == (byte) Biome.LAKE.ordinal());
+
+        double landFraction = isWaterBody ? 0.0 : SmoothMath.sigmoid(elev, 2.0, 5.0);
+        double waterFriction = 0.001;
+
+        double posElev = SmoothMath.softplus(elev, 0.05);
+        double slopeImpedance = 0.16 * Math.tanh(posElev / 1600.0);
+        double rain = buffer.getRainfall()[i];
+        double duneImpedance = 0.10 * (1.0 - SmoothMath.sigmoid(rain, 180.0, 50.0));
+        double woodBio = buffer.getWoodResource()[i] + buffer.getBiomassNatural()[i] * 0.2;
+        double canopyImpedance = 0.06 * Math.tanh(woodBio / 2500.0);
+
+        double landFriction = 0.05 + slopeImpedance + duneImpedance + canopyImpedance;
+        double effectiveFriction = waterFriction + landFraction * (landFriction - waterFriction);
+
+        return effectiveFriction * 9.81 * 1000.0;
+    }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop > 0.0) {
+            double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
+            double workPerKgKm = calculateTransportWorkJoules(buffer, i);
+            double cargoMassKg = pop * 2.0 * dtMonthlyRatio;
+            double cellWorkGJ = (workPerKgKm * cargoMassKg) / 1.0e9;
+            acc.dFluxPressure += (float) cellWorkGJ;
+        }
+    }
+
+    /** Executes one monthly transport work evaluation step across DoD buffer. */
+    public static void processPhysicsTransport(WorldBuffer buffer) {
+        processPhysicsTransport(buffer, 1.0 / 12.0);
     }
 
     /**
-     * Executes transport work evaluation step across cells, scaling cargo mass by {@code dtYears}
-     * and deducting mechanical work from cellular energetic labor capacity.
+     * Executes transport work evaluation step across DoD buffer, scaling cargo mass by {@code dtYears}.
      */
-    public static void processPhysicsTransport(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processPhysicsTransport(WorldBuffer buffer, double dtYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
         double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
 
         double totalWorkExpendedJoules = 0.0;
         int activeTransportCells = 0;
+        float[] bioHuman = buffer.getBiomassHuman();
+        float[] fluxArr = buffer.getFluxPressure();
+        int n = buffer.getCapacity();
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop > 0) {
-                double workPerKgKm = calculateTransportWorkJoules(cell);
+        for (int i = 0; i < n; i++) {
+            double pop = bioHuman[i] / 0.06;
+            if (pop > 0.0) {
+                double workPerKgKm = calculateTransportWorkJoules(buffer, i);
                 double cargoMassKg = pop * 2.0 * dtMonthlyRatio;
                 double cellWorkJoules = workPerKgKm * cargoMassKg;
                 totalWorkExpendedJoules += cellWorkJoules;
                 activeTransportCells++;
 
                 double cellWorkGJ = cellWorkJoules / 1.0e9;
-                cell.setResourceWork(Math.max(0.0, cell.getResourceWorkOr(0.0) - cellWorkGJ));
+                fluxArr[i] = (float) Math.max(0.0, fluxArr[i] + cellWorkGJ);
             }
         }
 

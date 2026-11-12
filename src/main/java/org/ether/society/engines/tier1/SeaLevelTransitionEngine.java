@@ -4,14 +4,14 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
+import org.ether.society.h3.H3Service;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Dynamic Sea Level Transition & Coastal Inundation/Emergence Engine.
@@ -34,85 +34,154 @@ public class SeaLevelTransitionEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(SeaLevelTransitionEngine.class);
 
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        // Sea level transition is an epoch/climate boundary event applied explicitly via applySeaLevelTransition(WorldBuffer, double).
+    }
+
     /**
-     * Applies a global sea level offset (in meters) across all H3 cells.
+     * Applies a global sea level offset (in meters) across all DoD buffer cells.
      *
-     * @param cells List of H3 cells to process
+     * @param buffer WorldBuffer DoD state
      * @param targetSeaLevelOffsetMeters Sea level offset in meters (e.g., -120.0 for LGM, 0.0 for modern, +70.0 for full ice melt)
      */
-    public static void applySeaLevelTransition(List<H3Cell> cells, double targetSeaLevelOffsetMeters) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void applySeaLevelTransition(WorldBuffer buffer, double targetSeaLevelOffsetMeters) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
-        logger.info("🌊 Applying Dynamic Sea Level Transition: offset = {} meters across {} cells",
-                targetSeaLevelOffsetMeters, cells.size());
+        int n = buffer.getCapacity();
+        logger.info("Applying Dynamic Sea Level Transition: offset = {} meters across {} cells",
+                targetSeaLevelOffsetMeters, n);
 
         int submergedCount = 0;
         int emergedCount = 0;
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            cell.setSeaLevelOffsetMeters(targetSeaLevelOffsetMeters);
-            Double rawElevation = cell.getElevation();
-            if (rawElevation == null) rawElevation = 0.0;
+        float[] elevArr = buffer.getElevation();
+        byte[] biomes = buffer.getBiomes();
+        float[] waterArr = buffer.getWaterResource();
+        float[] frictionArr = buffer.getFluxPressure();
+        long[] h3Arr = buffer.getH3Indexes();
+        H3Service h3Service = H3Service.getInstance();
 
-            double lat = cell.getLatitude();
+        byte oceanOrd = (byte) Biome.OCEAN.ordinal();
+        byte deepOceanOrd = (byte) Biome.DEEP_OCEAN.ordinal();
+        byte beachOrd = (byte) Biome.BEACH.ordinal();
+        byte glacierOrd = (byte) Biome.GLACIER.ordinal();
+        byte tundraOrd = (byte) Biome.TUNDRA.ordinal();
+        byte forestOrd = (byte) Biome.FOREST.ordinal();
+        byte savannahOrd = (byte) Biome.SAVANNAH.ordinal();
+        byte plainsOrd = (byte) Biome.PLAINS.ordinal();
+
+        for (int i = 0; i < n; i++) {
+            double rawElevation = elevArr[i];
+            double lat = 0.0;
+            if (h3Arr != null && h3Arr[i] != 0L) {
+                try {
+                    lat = h3Service.cellToLatLng(h3Arr[i]).lat;
+                } catch (Exception ignored) {
+                    lat = 0.0;
+                }
+            }
             double absLat = Math.abs(lat);
-            Biome currentBiome = cell.getBiome();
+            byte currentBiome = biomes[i];
 
-            // Cell is submerged if its absolute elevation is below the sea level offset
             boolean isSubmerged = (rawElevation < targetSeaLevelOffsetMeters);
 
             if (isSubmerged) {
-                if (currentBiome != Biome.OCEAN && currentBiome != Biome.DEEP_OCEAN) {
+                if (currentBiome != oceanOrd && currentBiome != deepOceanOrd) {
                     submergedCount++;
                 }
 
-                // Submerged cell biome assignment
                 if (rawElevation < (targetSeaLevelOffsetMeters - 200.0)) {
-                    cell.setBiome(Biome.DEEP_OCEAN);
+                    biomes[i] = deepOceanOrd;
                 } else {
-                    cell.setBiome(Biome.OCEAN);
+                    biomes[i] = oceanOrd;
                 }
 
-                // Water resource for ocean cells
-                cell.setWaterResource(0.0);
-                cell.setMovementFriction(0.2); // Low friction for maritime navigation
+                waterArr[i] = 0.0f;
+                frictionArr[i] = 0.2f;
             } else {
-                // Cell is above sea level (land)
-                if (currentBiome == Biome.OCEAN || currentBiome == Biome.DEEP_OCEAN) {
+                if (currentBiome == oceanOrd || currentBiome == deepOceanOrd) {
                     emergedCount++;
-                    // Re-evaluate biome for newly emerged continental shelf (e.g., Doggerland, Beringia)
                     double effectiveElevationAboveSea = rawElevation - targetSeaLevelOffsetMeters;
 
                     if (effectiveElevationAboveSea <= 10.0) {
-                        cell.setBiome(Biome.BEACH);
+                        biomes[i] = beachOrd;
                     } else if (absLat > 70.0) {
-                        cell.setBiome(Biome.GLACIER);
+                        biomes[i] = glacierOrd;
                     } else if (absLat > 58.0) {
-                        cell.setBiome(Biome.TUNDRA);
+                        biomes[i] = tundraOrd;
                     } else if (absLat > 40.0) {
-                        cell.setBiome(Biome.FOREST);
+                        biomes[i] = forestOrd;
                     } else if (absLat < 20.0) {
-                        cell.setBiome(Biome.SAVANNAH);
+                        biomes[i] = savannahOrd;
                     } else {
-                        cell.setBiome(Biome.PLAINS);
+                        biomes[i] = plainsOrd;
                     }
                 }
 
-                // Ensure non-zero water resource and terrestrial friction for land cells
-                if (cell.getWaterResource() == null || cell.getWaterResource() <= 0.0) {
+                if (waterArr[i] <= 0.0f) {
                     double precipFactor = Math.max(100.0, 1000.0 * (1.0 - absLat / 90.0));
-                    cell.setWaterResource(precipFactor);
+                    waterArr[i] = (float) precipFactor;
                 }
-                if (cell.getMovementFriction() == null || cell.getMovementFriction() <= 0.2) {
-                    cell.setMovementFriction(1.0);
+                if (frictionArr[i] <= 0.2f) {
+                    frictionArr[i] = 1.0f;
                 }
             }
         }
 
-        logger.info("🌊 Sea Level Transition Complete: {} cells submerged, {} cells emerged.",
+        logger.info("Sea Level Transition Complete: {} cells submerged, {} cells emerged.",
                 submergedCount, emergedCount);
+    }
+
+    /**
+     * Applies a global sea level offset (in meters) to a single {@link H3Cell} during initial world setup.
+     *
+     * @param cell target H3 cell
+     * @param targetSeaLevelOffsetMeters sea level offset in meters
+     */
+    public static void applySeaLevelTransitionCell(H3Cell cell, double targetSeaLevelOffsetMeters) {
+        if (cell == null) return;
+        cell.setSeaLevelOffsetMeters(targetSeaLevelOffsetMeters);
+        Double rawElevation = cell.getElevation();
+        if (rawElevation == null) rawElevation = 0.0;
+
+        double lat = cell.getLatitude();
+        double absLat = Math.abs(lat);
+        Biome currentBiome = cell.getBiome();
+
+        if (rawElevation < targetSeaLevelOffsetMeters) {
+            if (rawElevation < (targetSeaLevelOffsetMeters - 200.0)) {
+                cell.setBiome(Biome.DEEP_OCEAN);
+            } else {
+                cell.setBiome(Biome.OCEAN);
+            }
+            cell.setWaterResource(0.0);
+            cell.setMovementFriction(0.2);
+        } else {
+            if (currentBiome == Biome.OCEAN || currentBiome == Biome.DEEP_OCEAN) {
+                double effectiveElevationAboveSea = rawElevation - targetSeaLevelOffsetMeters;
+                if (effectiveElevationAboveSea <= 10.0) {
+                    cell.setBiome(Biome.BEACH);
+                } else if (absLat > 70.0) {
+                    cell.setBiome(Biome.GLACIER);
+                } else if (absLat > 58.0) {
+                    cell.setBiome(Biome.TUNDRA);
+                } else if (absLat > 40.0) {
+                    cell.setBiome(Biome.FOREST);
+                } else if (absLat < 20.0) {
+                    cell.setBiome(Biome.SAVANNAH);
+                } else {
+                    cell.setBiome(Biome.PLAINS);
+                }
+            }
+            if (cell.getWaterResource() == null || cell.getWaterResource() <= 0.0) {
+                double precipFactor = Math.max(100.0, 1000.0 * (1.0 - absLat / 90.0));
+                cell.setWaterResource(precipFactor);
+            }
+            if (cell.getMovementFriction() == null || cell.getMovementFriction() <= 0.2) {
+                cell.setMovementFriction(1.0);
+            }
+        }
     }
 }
 

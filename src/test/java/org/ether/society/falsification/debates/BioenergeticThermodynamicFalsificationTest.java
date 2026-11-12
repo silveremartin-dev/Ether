@@ -60,17 +60,23 @@ public class BioenergeticThermodynamicFalsificationTest {
             double rIntrinsic = 0.035;
 
             // Run 50-year benchmark
+            org.ether.society.core.dod.WorldBuffer debBuf = new org.ether.society.core.dod.WorldBuffer(grid.size());
+            org.ether.society.data.DODDataGenerator.populateWorldBuffer(grid, debBuf, false);
+            DynamicEnergyBudgetEngine debEngine = new DynamicEnergyBudgetEngine();
             for (int year = 1; year <= 50; year++) {
                 // Decadal volcanic/monsoon crisis occurring every 10 years for a duration of 2 years
                 boolean isCrisisYear = (year % 10 == 0 || year % 10 == 1);
                 double foodStock = isCrisisYear ? 7000.0 : 25000.0; // 72% drop in harvest during crisis
 
                 // Update DEB grid
-                for (H3Cell c : grid) {
-                    c.setFoodResource(foodStock);
+                for (int i = 0; i < grid.size(); i++) {
+                    debBuf.getFoodResource()[i] = (float) foodStock;
                 }
-                DynamicEnergyBudgetEngine.processHumanDEB(grid, 1.0);
-                double currentDebPop = grid.stream().mapToDouble(H3Cell::getPopulation).sum();
+                debEngine.tick(debBuf, 1.0, 12.0);
+                double currentDebPop = 0.0;
+                for (int i = 0; i < grid.size(); i++) {
+                    currentDebPop += debBuf.getBiomassHuman()[i] / 0.06;
+                }
                 debPopTrajectory.add(currentDebPop);
 
                 // Update Verhulst step

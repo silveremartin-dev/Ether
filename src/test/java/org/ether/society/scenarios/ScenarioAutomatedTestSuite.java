@@ -140,21 +140,31 @@ public class ScenarioAutomatedTestSuite {
                 "Initial population should be within paleolithic starting range (10k-100k)");
 
         // Run simulation ticks (simulating demographic kernel & physical engines)
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(mockCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(mockCells, buf, false);
+        BiologicalDemographicsEngine bioEngine = new BiologicalDemographicsEngine();
+        PhysicalLawEngine physEngine = new PhysicalLawEngine();
+        ThermodynamicMigrationEngine migEngine = new ThermodynamicMigrationEngine();
         for (int tick = 0; tick < 30; tick++) {
-            BiologicalDemographicsEngine.processBiologicalDemographics(mockCells);
-            PhysicalLawEngine.applyPhysicalLaws(mockCells, 1.0);
-            ThermodynamicMigrationEngine.processThermodynamicMigration(mockCells);
+            bioEngine.tick(buf, 1.0, 12.0);
+            physEngine.tick(buf, 1.0, 12.0);
+            migEngine.tick(buf, 1.0, 12.0);
 
-            long currentPop = mockCells.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
+            long currentPop = 0L;
+            for (int i = 0; i < mockCells.size(); i++) {
+                currentPop += Math.round(buf.getBiomassHuman()[i] / 0.06);
+            }
             assertTrue(currentPop > 0, "Population must persist during paleolithic expansion");
             assertTrue(currentPop <= 5_000_000L, "Population must remain within hunter-gatherer global capacity (<5M)");
         }
 
         // Verify spatial migration from East Africa to neighboring cells
-        long nonOriginPop = mockCells.stream()
-                .filter(c -> c.getH3Index() != 1001L)
-                .mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0)
-                .sum();
+        long nonOriginPop = 0L;
+        for (int i = 0; i < mockCells.size(); i++) {
+            if (buf.getH3Indexes()[i] != 1001L) {
+                nonOriginPop += Math.round(buf.getBiomassHuman()[i] / 0.06);
+            }
+        }
         assertTrue(nonOriginPop > 0, "Out-of-Africa demographic wave must migrate to neighboring cells");
     }
 
@@ -183,24 +193,29 @@ public class ScenarioAutomatedTestSuite {
             PreComputePhase preCompute = new PreComputePhase(scenario);
             preCompute.execute(mockCells);
 
+            org.ether.society.core.dod.WorldBuffer stabBuf = new org.ether.society.core.dod.WorldBuffer(mockCells.size());
+            org.ether.society.data.DODDataGenerator.populateWorldBuffer(mockCells, stabBuf, false);
+            BiologicalDemographicsEngine bioEngine = new BiologicalDemographicsEngine();
+            PhysicalEnergyGridEngine gridEngine = new PhysicalEnergyGridEngine();
+            EcologicalDegradationEngine ecoEngine = new EcologicalDegradationEngine();
             for (int tick = 0; tick < 20; tick++) {
-                BiologicalDemographicsEngine.processBiologicalDemographics(mockCells);
-                PhysicalEnergyGridEngine.processPhysicalEnergyGrid(mockCells);
-                EcologicalDegradationEngine.processEcologicalDegradation(mockCells, 1.0);
+                bioEngine.tick(stabBuf, 1.0, 12.0);
+                gridEngine.tick(stabBuf, 1.0, 12.0);
+                ecoEngine.tick(stabBuf, 1.0, 12.0);
 
-                for (H3Cell cell : mockCells) {
-                    assertNotNull(cell.getPopulation(), "Population must not be null");
-                    assertTrue(cell.getPopulation() >= 0, "Population must be non-negative");
+                for (int i = 0; i < mockCells.size(); i++) {
+                    double pop = stabBuf.getBiomassHuman()[i] / 0.06;
+                    assertTrue(pop >= 0, "Population must be non-negative");
 
-                    Double capital = cell.getResourceCapital();
-                    assertNotNull(capital, "Capital must not be null");
-                    assertFalse(Double.isNaN(capital), "Capital must not be NaN");
-                    assertFalse(Double.isInfinite(capital), "Capital must not be Infinite");
+                    float capital = stabBuf.getResourceCapital()[i];
+                    assertFalse(Float.isNaN(capital), "Capital must not be NaN");
+                    assertFalse(Float.isInfinite(capital), "Capital must not be Infinite");
                     assertTrue(capital >= 0, "Resource capital must not drop below zero");
+                    mockCells.get(i).setPopulation((int) Math.round(pop));
+                    mockCells.get(i).setResourceCapital((double) capital);
 
-                    Double temp = cell.getTemperature();
-                    assertNotNull(temp, "Temperature must not be null");
-                    assertFalse(Double.isNaN(temp), "Temperature must not be NaN");
+                    float temp = stabBuf.getTemperature()[i];
+                    assertFalse(Float.isNaN(temp), "Temperature must not be NaN");
                 }
             }
         }
@@ -231,24 +246,34 @@ public class ScenarioAutomatedTestSuite {
         PreComputePhase preCompute = new PreComputePhase(scenario);
         preCompute.execute(mockCells);
 
+        org.ether.society.core.dod.WorldBuffer tier2Buf = new org.ether.society.core.dod.WorldBuffer(mockCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(mockCells, tier2Buf, false);
+        RenewableEnergyPhysicsEngine renewEngine = new RenewableEnergyPhysicsEngine();
+        AtmosphericOxygenEngine o2Engine = new AtmosphericOxygenEngine();
+        SoilNutrientNPKEngine npkEngine = new SoilNutrientNPKEngine();
+        NetEnergyEROEIEngine eroeiEngine = new NetEnergyEROEIEngine();
+        MetallurgyEnthalpyEngine metalEngine = new MetallurgyEnthalpyEngine();
+        InformationEntropyEngine infoEngine = new InformationEntropyEngine();
+        KurzweilAcceleratingReturnsEngine kurzweilEngine = new KurzweilAcceleratingReturnsEngine();
+        World3CouplingEngine world3Engine = new World3CouplingEngine();
         for (int step = 0; step < 15; step++) {
-            RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(mockCells);
-            AtmosphericOxygenEngine.processAtmosphericOxygen(mockCells, 0.21, 1.0);
-            SoilNutrientNPKEngine.processSoilNutrients(mockCells);
-            NetEnergyEROEIEngine.processNetEnergyEROEI(mockCells);
-            MetallurgyEnthalpyEngine.processOreSmelting(mockCells);
-            InformationEntropyEngine.processInformationEntropy(mockCells);
-            KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(mockCells, 1.0);
-            World3CouplingEngine.processWorld3System(mockCells, 1.0);
+            renewEngine.tick(tier2Buf, 1.0, 12.0);
+            o2Engine.tick(tier2Buf, 1.0, 12.0);
+            npkEngine.tick(tier2Buf, 1.0, 12.0);
+            eroeiEngine.tick(tier2Buf, 1.0, 12.0);
+            metalEngine.tick(tier2Buf, 1.0, 12.0);
+            infoEngine.tick(tier2Buf, 1.0, 1.0);
+            kurzweilEngine.tick(tier2Buf, 1.0, 1.0);
+            world3Engine.tick(tier2Buf, 1.0, 1.0);
 
-            for (H3Cell cell : mockCells) {
-                double pop = cell.getPopulation();
-                double capital = cell.getResourceCapital();
-                double food = cell.getFoodResource();
+            for (int i = 0; i < mockCells.size(); i++) {
+                float pop = tier2Buf.getBiomassHuman()[i] / 0.06f;
+                float capital = tier2Buf.getResourceCapital()[i];
+                float food = tier2Buf.getFoodResource()[i];
 
-                assertFalse(Double.isNaN(pop), "Cell population must be a valid number");
-                assertFalse(Double.isNaN(capital), "Cell capital must be a valid number");
-                assertFalse(Double.isNaN(food), "Cell food resource must be a valid number");
+                assertFalse(Float.isNaN(pop), "Cell population must be a valid number");
+                assertFalse(Float.isNaN(capital), "Cell capital must be a valid number");
+                assertFalse(Float.isNaN(food), "Cell food resource must be a valid number");
 
                 assertTrue(pop >= 0, "Cell population must remain non-negative");
                 assertTrue(capital >= 0, "Cell capital must remain non-negative");
@@ -299,9 +324,13 @@ public class ScenarioAutomatedTestSuite {
 
             // Run 5 ticks of physics
             assertDoesNotThrow(() -> {
+                org.ether.society.core.dod.WorldBuffer batBuf = new org.ether.society.core.dod.WorldBuffer(mockCells.size());
+                org.ether.society.data.DODDataGenerator.populateWorldBuffer(mockCells, batBuf, false);
+                PhysicalLawEngine physEngine = new PhysicalLawEngine();
+                BiologicalDemographicsEngine bioEngine = new BiologicalDemographicsEngine();
                 for (int t = 0; t < 5; t++) {
-                    PhysicalLawEngine.applyPhysicalLaws(mockCells, 1.0);
-                    BiologicalDemographicsEngine.processBiologicalDemographics(mockCells);
+                    physEngine.tick(batBuf, 1.0, 12.0);
+                    bioEngine.tick(batBuf, 1.0, 12.0);
                 }
             }, "Physics execution must complete safely for scenario: " + scenario.getName());
         }

@@ -87,21 +87,22 @@ class ConstructalFlowArchitectureEngineTest {
     @Test
     @DisplayName("4.4 500-Cell Spatial Domain: Continuous Constructal Friction Minimization across Topography")
     void test500CellConstructalSimulation() {
-        List<H3Cell> largeGrid = new ArrayList<>(500);
+        org.ether.society.core.dod.WorldBuffer largeGrid = new org.ether.society.core.dod.WorldBuffer(500);
         for (int i = 0; i < 500; i++) {
-            H3Cell cell = new H3Cell(0x88b000000000000L + i, 30.0 + (i * 0.01), 10.0 + (i * 0.01));
-            cell.setBiomassNatural(150.0);
-            cell.setMovementFriction(1.0);
-            largeGrid.add(cell);
+            largeGrid.getH3Indexes()[i] = 0x88b000000000000L + i;
+            largeGrid.getBiomassNatural()[i] = 150.0f;
+            largeGrid.getFluxPressure()[i] = 1.0f;
         }
 
+        ConstructalFlowArchitectureEngine engine = new ConstructalFlowArchitectureEngine();
         for (int yr = 1; yr <= 10; yr++) {
-            ConstructalFlowArchitectureEngine.processConstructalFlow(largeGrid, 1.0);
+            engine.tick(largeGrid, 1.0, 12.0);
 
-            for (H3Cell c : largeGrid) {
-                assertTrue(c.getMovementFriction() <= 1.0, "Constructal movement must reduce corridor friction");
-                assertTrue(c.getMovementFriction() >= 0.20, "Friction must remain bounded by physical topography");
-                assertFalse(Double.isNaN(c.getMovementFriction()), "Friction must never be NaN");
+            for (int i = 0; i < 500; i++) {
+                float f = largeGrid.getFluxPressure()[i];
+                assertTrue(f <= 1.0f, "Constructal movement must reduce corridor friction");
+                assertTrue(f >= 0.20f, "Friction must remain bounded by physical topography");
+                assertFalse(Float.isNaN(f), "Friction must never be NaN");
             }
         }
     }
@@ -109,28 +110,27 @@ class ConstructalFlowArchitectureEngineTest {
     @Test
     @DisplayName("4.5 Bitwise Determinism across Repeated Constructal Flow Executions")
     void testBitwiseDeterminismConstructal() {
-        List<H3Cell> runA = new ArrayList<>(100);
-        List<H3Cell> runB = new ArrayList<>(100);
+        org.ether.society.core.dod.WorldBuffer runA = new org.ether.society.core.dod.WorldBuffer(100);
+        org.ether.society.core.dod.WorldBuffer runB = new org.ether.society.core.dod.WorldBuffer(100);
 
         for (int i = 0; i < 100; i++) {
-            H3Cell cA = new H3Cell(0x88c000000000000L + i, 20.0, 15.0);
-            cA.setBiomassNatural(120.0 + i);
-            cA.setMovementFriction(0.85);
-            runA.add(cA);
+            runA.getH3Indexes()[i] = 0x88c000000000000L + i;
+            runA.getBiomassNatural()[i] = 120.0f + i;
+            runA.getFluxPressure()[i] = 0.85f;
 
-            H3Cell cB = new H3Cell(0x88c000000000000L + i, 20.0, 15.0);
-            cB.setBiomassNatural(120.0 + i);
-            cB.setMovementFriction(0.85);
-            runB.add(cB);
+            runB.getH3Indexes()[i] = 0x88c000000000000L + i;
+            runB.getBiomassNatural()[i] = 120.0f + i;
+            runB.getFluxPressure()[i] = 0.85f;
         }
 
+        ConstructalFlowArchitectureEngine engine = new ConstructalFlowArchitectureEngine();
         for (int yr = 0; yr < 5; yr++) {
-            ConstructalFlowArchitectureEngine.processConstructalFlow(runA, 1.0);
-            ConstructalFlowArchitectureEngine.processConstructalFlow(runB, 1.0);
+            engine.tick(runA, 1.0, 12.0);
+            engine.tick(runB, 1.0, 12.0);
         }
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(runA.get(i).getMovementFriction(), runB.get(i).getMovementFriction(), 1e-12,
+            assertEquals(runA.getFluxPressure()[i], runB.getFluxPressure()[i], 1e-12,
                     "Movement friction must be bitwise identical across deterministic runs");
         }
     }

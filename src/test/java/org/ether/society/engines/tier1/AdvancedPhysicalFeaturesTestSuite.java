@@ -73,11 +73,17 @@ public class AdvancedPhysicalFeaturesTestSuite {
         TerraformingEngine.setSolarMirrorInsolationMultiplier(1.05);
         TerraformingEngine.setAsteroidMiningFluxTonnesPerYear(1000.0);
 
-        double initialTemp = testCells.get(0).getTemperature();
-        TerraformingEngine.processTerraforming(testCells, 1.0);
+        TerraformingEngine.setTerraformingActive(true);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getTemperature()[0] = testCells.get(0).getTemperature() != null ? testCells.get(0).getTemperature().floatValue() : 15.0f;
+        buf.getBiomassHuman()[0] = (float) testCells.get(0).getPopulationOr(1000);
+        buf.getMetalResource()[0] = (float) testCells.get(0).getResourceMetalOr(1.0);
 
-        assertTrue(testCells.get(0).getTemperature() > initialTemp, "Terraforming radiative forcing should increase temperature.");
-        assertTrue(testCells.get(0).getResourceMetal() > 1.0, "Asteroid mining influx should increase mineral density.");
+        double initialTemp = buf.getTemperature()[0];
+        new TerraformingEngine().tick(buf, 1.0, 1.0);
+
+        assertTrue(buf.getTemperature()[0] > initialTemp, "Terraforming radiative forcing should increase temperature.");
+        assertTrue(buf.getMetalResource()[0] > 1.0f, "Asteroid mining influx should increase mineral density.");
     }
 
     @Test
@@ -93,45 +99,42 @@ public class AdvancedPhysicalFeaturesTestSuite {
         TrophicEcosystemEngine.setPleistoceneRewildingActive(true);
         TrophicEcosystemEngine.setMegafaunaDensityPerKm2(2.0);
 
-        double initialSoc = testCells.get(0).getSoilOrganicCarbon();
-        TrophicEcosystemEngine.processTrophicEcosystem(testCells, 1.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
+        double initialSoc = buf.getSoilOrganicCarbon()[0];
+        new TrophicEcosystemEngine().tick(buf, 1.0, 12.0);
 
-        assertTrue(testCells.get(0).getSoilOrganicCarbon() > initialSoc, "Pleistocene rewilding megafauna should accumulate soil organic carbon.");
+        assertTrue(buf.getSoilOrganicCarbon()[0] > initialSoc, "Pleistocene rewilding megafauna should accumulate soil organic carbon.");
     }
 
     @Test
     /*
      * Test physical supply chain engine operation.
-     * <p>
-     * Executes operational logic for {@code AdvancedPhysicalFeaturesTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
      */
     public void testPhysicalSupplyChainEngine() {
         PhysicalSupplyChainEngine.setMaritimeChokepointBlockadeActive(true);
-        double initialWork = testCells.get(0).getResourceWork();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
+        buf.getEnergyFire()[0] = 100.0f;
+        double initialWork = buf.getEnergyFire()[0];
 
-        PhysicalSupplyChainEngine.processSupplyChains(testCells, 1.0);
+        new PhysicalSupplyChainEngine().tick(buf, 1.0, 12.0);
 
-        assertTrue(testCells.get(0).getResourceWork() < initialWork, "Chokepoint blockade logistics friction should lower work output.");
+        assertTrue(buf.getEnergyFire()[0] < initialWork, "Chokepoint blockade logistics friction should lower work output.");
     }
 
     @Test
     /*
      * Test urban thermodynamics engine operation.
-     * <p>
-     * Executes operational logic for {@code AdvancedPhysicalFeaturesTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
      */
     public void testUrbanThermodynamicsEngine() {
-        double initialTemp = testCells.get(0).getTemperature();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
+        double initialTemp = buf.getTemperature()[0];
 
-        UrbanThermodynamicsEngine.processUrbanThermodynamics(testCells, 1.0);
+        new UrbanThermodynamicsEngine().tick(buf, 1.0, 12.0);
 
-        assertTrue(testCells.get(0).getTemperature() > initialTemp, "Urban Heat Island effect should increase city temperature.");
+        assertTrue(buf.getTemperature()[0] > initialTemp, "Urban Heat Island effect should increase city temperature.");
     }
 
     @Test

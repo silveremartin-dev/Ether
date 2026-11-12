@@ -58,13 +58,17 @@ public class Tier2UntestedTheoriesAndCompilerTest {
         marsDome.setResourceMetal(200.0);
         domeCells.add(marsDome);
 
-        double initialCapital = marsDome.getResourceCapital();
-        System.out.println("BEFORE ISRU: capital=" + initialCapital + ", habitat=" + marsDome.getHabitatType());
-        IsruAutarkyAndSpaceColonizationEngine.processSpaceColonizationCliodynamics(domeCells, PlanetPreset.MARS_LIKE, 1.0);
-        System.out.println("AFTER ISRU: capital=" + marsDome.getResourceCapital());
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getElevation()[0] = 100.0f;
+        buf.getBiomes()[0] = (byte) Biome.DESERT.ordinal();
+        buf.getBiomassHuman()[0] = 1200.0f;
+        buf.getResourceCapital()[0] = 500.0f;
+        buf.getMetalResource()[0] = 200.0f;
+
+        double initialCapital = buf.getResourceCapital()[0];
+        new IsruAutarkyAndSpaceColonizationEngine().tick(buf, 1.0, 1.0);
 
         // ISRU extraction on off-world colony should generate capital and metal
-        assertNotNull(marsDome.getResourceCapital());
-        assertTrue(marsDome.getResourceCapital() >= initialCapital, "ISRU operations must maintain or grow capital stock in domes");
+        assertTrue(buf.getResourceCapital()[0] >= initialCapital, "ISRU operations must maintain or grow capital stock in domes");
     }
 }

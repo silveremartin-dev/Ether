@@ -6,13 +6,13 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
+import org.ether.society.h3.H3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Trophic Ecosystem, Rewilding & Biodiversity Engine.
@@ -40,35 +40,59 @@ public class TrophicEcosystemEngine extends AbstractSimulationEngine {
     /** Internal state: megafauna density per km2 (double). */
     private static double megafaunaDensityPerKm2 = 0.0;
 
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null || !pleistoceneRewildingActive) return;
+
+        double temp = buffer.getTemperature()[i];
+        double absLat = 0.0;
+        long[] h3Arr = buffer.getH3Indexes();
+        if (h3Arr != null && h3Arr[i] != 0L) {
+            try {
+                absLat = Math.abs(H3Service.getInstance().cellToLatLng(h3Arr[i]).lat);
+            } catch (Exception ignored) {
+                absLat = 0.0;
+            }
+        }
+        if (temp <= 4.0 || absLat > 45.0) {
+            double dtSafe = Math.max(0.0001, dtYears);
+            acc.dSoilOrganicCarbon += (float) (megafaunaDensityPerKm2 * 0.05 * dtSafe);
+        }
+    }
+
     /**
-     * Process trophic ecosystem and pleistocene megafauna rewilding effects.
-     * Megafauna trampling snow increases winter soil cooling, preserving permafrost
-     * and sequestering Soil Organic Carbon (SOC) in cold and periglacial biomes (Zimov 2012).
+     * Process trophic ecosystem and pleistocene megafauna rewilding effects across DoD buffer.
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * @param buffer WorldBuffer DoD state
+     * @param deltaYears time step in years
      */
-    public static void processTrophicEcosystem(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || !pleistoceneRewildingActive) return;
+    public static void processTrophicEcosystem(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || buffer.getCapacity() == 0 || !pleistoceneRewildingActive) return;
 
         double dtSafe = Math.max(0.0001, deltaYears);
+        float[] tempArr = buffer.getTemperature();
+        float[] socArr = buffer.getSoilOrganicCarbon();
+        long[] h3Arr = buffer.getH3Indexes();
+        H3Service h3Service = H3Service.getInstance();
+        int n = buffer.getCapacity();
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            // Rewilding effect: Megafauna trampling snow increases winter soil cooling,
-            // preserving permafrost and sequestering Soil Organic Carbon (SOC) in cold/periglacial biomes.
-            double temp = cell.getTemperatureOr(10.0);
-            double absLat = cell.getLatitude() != null ? Math.abs(cell.getLatitude()) : 0.0;
+        for (int i = 0; i < n; i++) {
+            double temp = tempArr[i];
+            double absLat = 0.0;
+            if (h3Arr != null && h3Arr[i] != 0L) {
+                try {
+                    absLat = Math.abs(h3Service.cellToLatLng(h3Arr[i]).lat);
+                } catch (Exception ignored) {
+                    absLat = 0.0;
+                }
+            }
             if (temp <= 4.0 || absLat > 45.0) {
-                double soc = cell.getSoilOrganicCarbonOr(0.0);
-                cell.setSoilOrganicCarbon(soc + megafaunaDensityPerKm2 * 0.05 * dtSafe);
-
-                // Grassland albedo maintenance vs dark shrub encroachment, bounded by physical optics
-                double baseAlbedo = cell.calculateDynamicAlbedo();
-                double rewildingAlbedoBonus = Math.min(0.04, 0.002 * megafaunaDensityPerKm2);
-                cell.setDynamicAlbedo(Math.min(0.80, baseAlbedo + rewildingAlbedoBonus));
+                socArr[i] = (float) (socArr[i] + megafaunaDensityPerKm2 * 0.05 * dtSafe);
             }
         }
     }

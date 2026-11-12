@@ -158,7 +158,7 @@ public class MacroHistoricalEpochsFalsificationTest {
             if (resProp != null && !resProp.isBlank()) {
                 try {
                     targetRes = Integer.parseInt(resProp.trim());
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) { /* non-year folder */ }
             }
             s.setH3Resolution(targetRes);
 

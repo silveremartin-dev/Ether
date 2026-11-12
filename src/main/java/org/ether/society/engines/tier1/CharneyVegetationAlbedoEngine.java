@@ -125,52 +125,30 @@ public class CharneyVegetationAlbedoEngine extends AbstractSimulationEngine {
         return latWeight * lonWeight;
     }
 
-    /**
-     * Executes one time-stepped Charney vegetation-albedo feedback evaluation across spatial land cells.
-     *
-     * @param cells land cell domain
-     * @param dtYears elapsed simulation step in years
-     * @param currentYear simulation calendar year (negative for BCE/BP)
-     */
-    public static void processCharneyVegetationAlbedo(List<H3Cell> cells, double dtYears, double currentYear) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
-
-        double orbitalRainAnomaly = calculateOrbitalMonsoonAnomalyMm(currentYear);
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
+        if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0) return;
         double dtSafe = Math.clamp(dtYears, 0.001, 50.0);
         double relaxationFactor = 1.0 - Math.exp(-dtSafe / TAU_VEGETATION_YEARS);
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double lat = cell.getLatitudeOr(0.0);
-            double lng = cell.getLongitudeOr(0.0);
-
-            double saharaWeight = calculateSaharaSpatialWeight(lat, lng);
-            if (saharaWeight < 1e-3) continue;
-
-            double curRain = cell.getRainfallOr(100.0);
-            double curBiomass = cell.getBiomassNaturalOr(20.0);
-
-            // Infer current vegetation fraction from biomass
+        float[] rainArr = buffer.getRainfall();
+        float[] bioNatArr = buffer.getBiomassNatural();
+        int n = buffer.getCapacity();
+        for (int i = 0; i < n; i++) {
+            double curRain = rainArr[i];
+            double curBiomass = bioNatArr[i];
             double curVeg = Math.clamp(curBiomass / SAVANNA_MAX_BIOMASS, 0.0, 1.0);
             double curAlbedo = calculateSurfaceAlbedo(curVeg);
 
-            // 1. Couplage Charney: precipitation response with orbital and albedo feedback
-            double basePrecip = 80.0 + orbitalRainAnomaly * saharaWeight;
-            double albedoConvectiveBonus = ALBEDO_FEEDBACK_GAMMA * (0.35 - curAlbedo) * saharaWeight;
+            double basePrecip = Math.max(80.0, curRain);
+            double albedoConvectiveBonus = ALBEDO_FEEDBACK_GAMMA * (0.35 - curAlbedo);
             double targetPrecip = Math.max(15.0, basePrecip + albedoConvectiveBonus);
-
-            // 2. Equilibrium vegetation for this updated rainfall regime
             double targetVeg = calculateEquilibriumVegetation(targetPrecip);
 
-            // 3. Dynamic relaxation of vegetation and biomass
-            double newVeg = curVeg + (targetVeg - curVeg) * relaxationFactor * saharaWeight;
-            double newAlbedo = calculateSurfaceAlbedo(newVeg);
+            double newVeg = curVeg + (targetVeg - curVeg) * relaxationFactor;
             double newBiomass = Math.max(5.0, newVeg * SAVANNA_MAX_BIOMASS);
 
-            // Update cell state
-            cell.setDynamicAlbedo(newAlbedo);
-            cell.setBiomassNatural(newBiomass);
-            cell.setRainfall(curRain + (targetPrecip - curRain) * relaxationFactor * saharaWeight);
+            bioNatArr[i] = (float) newBiomass;
+            rainArr[i] = (float) (curRain + (targetPrecip - curRain) * relaxationFactor);
         }
     }
 }

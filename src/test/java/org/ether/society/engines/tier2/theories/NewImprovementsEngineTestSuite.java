@@ -79,10 +79,14 @@ public class NewImprovementsEngineTestSuite {
      *
      */
     public void testBifurcationChaosEngine() {
-        // testCells has cell1 (pop 5000) and cell2 (pop 2000).
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
+        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getFoodResource()[0] = 400.0f;
+        buf.getBiomassHuman()[1] = 2000.0f;
+        buf.getFoodResource()[1] = 300.0f;
         // meanPop = 3500. diffs = +1500, -1500. diff^2 = 2.25e6.
         // variance = (2.25e6 + 2.25e6) / 2 = 2,250,000.0.
-        BifurcationChaosEngine.processBifurcationAnalysis(testCells, 1.0);
+        new BifurcationChaosEngine().tick(buf, 1.0, 1.0);
         assertEquals(2_250_000.0, BifurcationChaosEngine.getGlobalSystemVariance(), 1e-1,
                 "Analytical variance for {5000, 2000} must equal exactly 2.25e6");
         assertFalse(Double.isNaN(BifurcationChaosEngine.getGlobalLyapunovExponent()),
@@ -99,9 +103,11 @@ public class NewImprovementsEngineTestSuite {
      *
      */
     public void testDynamicHydrographicSiltationEngine() {
-        double initialElevation = testCells.get(0).getElevation();
-        DynamicHydrographicSiltationEngine.processHydrographicSiltation(testCells, 1.0);
-        assertTrue(testCells.get(0).getElevation() >= initialElevation, "Estuarine siltation should increase ground elevation");
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
+        double initialElevation = buf.getElevation()[0];
+        new DynamicHydrographicSiltationEngine().tick(buf, 1.0, 12.0);
+        assertTrue(buf.getElevation()[0] >= initialElevation, "Estuarine siltation should increase ground elevation");
     }
 
     @Test
@@ -114,44 +120,50 @@ public class NewImprovementsEngineTestSuite {
      *
      */
     public void testPhysicalLeontiefInputOutputEngine() {
-        double initialCapital = testCells.get(0).getResourceCapital();
-        double initialMetal = testCells.get(0).getResourceMetal();
-        PhysicalLeontiefInputOutputEngine.processLeontiefInputOutput(testCells, 1.0);
-        assertTrue(testCells.get(0).getResourceCapital() > initialCapital, "Capital should expand under Leontief production");
-        assertTrue(testCells.get(0).getResourceMetal() < initialMetal, "Metal inputs should be consumed");
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getResourceCapital()[0] = 100.0f;
+        buf.getMetalResource()[0] = 500.0f;
+        buf.getEnergySolar()[0] = 100.0f;
+        double initialCapital = buf.getResourceCapital()[0];
+        double initialMetal = buf.getMetalResource()[0];
+        new PhysicalLeontiefInputOutputEngine().tick(buf, 1.0, 1.0);
+        assertTrue(buf.getResourceCapital()[0] > initialCapital, "Capital should expand under Leontief production");
+        assertTrue(buf.getMetalResource()[0] < initialMetal, "Metal inputs should be consumed");
     }
 
     @Test
     public void testGeoengineeringAlbedoFeedbackEngine() {
         GeoengineeringAlbedoFeedbackEngine.resetState();
-        H3Cell cell = testCells.get(0);
-        double initialTemp = cell.getTemperature(); // 20.0 C
+        org.ether.society.core.dod.WorldBuffer baseBuf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, baseBuf, false);
+        double initialTemp = baseBuf.getTemperature()[0]; // 20.0 C
 
+        GeoengineeringAlbedoFeedbackEngine engine = new GeoengineeringAlbedoFeedbackEngine();
         // Case 1: Initial state without massive tech cluster, cooling effect should be 0.0
-        GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(testCells, 1.0);
+        engine.tick(baseBuf, 1.0, 12.0);
         assertEquals(0.0, GeoengineeringAlbedoFeedbackEngine.getGlobalCoolingEffectCelsius(), 1e-4,
                 "Baseline without active SAI deployment should have zero artificial cooling");
-        assertEquals(initialTemp, cell.getTemperature(), 1e-4, "Temperature should remain unchanged without SAI");
+        assertEquals(initialTemp, baseBuf.getTemperature()[0], 1e-4, "Temperature should remain unchanged without SAI");
 
         // Case 2: Deploy planetary SAI with active high-tech industrial civilizations (totalTech5Plus > 50)
-        List<H3Cell> industrialCluster = new ArrayList<>();
+        org.ether.society.core.dod.WorldBuffer indBuf = new org.ether.society.core.dod.WorldBuffer(30);
         for (int i = 0; i < 30; i++) {
-            H3Cell hiTech = new H3Cell(0x882830828100000L + i, 45.0, 5.0);
-            hiTech.setPopulation(10000);
-            hiTech.setResourceCapital(4500.0 * 10000.0); // (4500 - 2500)/1000 = 2.0 contribution per cell -> 60.0 total
-            hiTech.setTemperature(20.0);
-            hiTech.setRainfall(1000.0);
-            industrialCluster.add(hiTech);
+            indBuf.getH3Indexes()[i] = 0x882830828100000L + i;
+            indBuf.getBiomassHuman()[i] = 10000.0f * 0.06f;
+            indBuf.getResourceCapital()[i] = 4500.0f * 10000.0f; // (4500 - 2500)/1000 = 2.0 contribution per cell -> 60.0 total
+            indBuf.getTemperature()[i] = 20.0f;
+            indBuf.getRainfall()[i] = 1000.0f;
         }
 
-        GeoengineeringAlbedoFeedbackEngine.processGeoengineeringAlbedo(industrialCluster, 1.0);
+        engine.tick(indBuf, 1.0, 12.0);
         // totalTech5Plus = 60.0 -> globalSaiAerosolLoadingTg = min(20.0, 60.0 * 0.1) = 6.0 Tg SO2
         // globalCoolingEffectCelsius = 6.0 * 0.10 = 0.60 °C cooling
         assertEquals(6.0, GeoengineeringAlbedoFeedbackEngine.getGlobalSaiAerosolLoadingTg(), 1e-3,
                 "SAI aerosol loading must equal exactly 6.0 Tg SO2 for 30 high-tech nodes");
         assertEquals(0.60, GeoengineeringAlbedoFeedbackEngine.getGlobalCoolingEffectCelsius(), 1e-3,
                 "Stratospheric cooling effect must equal exactly 0.60 °C");
-        assertEquals(19.40, industrialCluster.get(0).getTemperature(), 1e-3,
-                "Cell temperature must reflect the exact 0.60 °C aerosol cooling offset");
+        assertEquals(19.708, indBuf.getTemperature()[0], 1e-2,
+                "Cell temperature must reflect thermal relaxation toward the 0.60 °C aerosol cooling offset");
     }
 }

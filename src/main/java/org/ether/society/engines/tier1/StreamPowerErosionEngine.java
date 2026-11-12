@@ -6,14 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Stream Power Fluvial Erosion &amp; Bagnold Alluvial Siltation Engine.
@@ -109,36 +107,51 @@ public class StreamPowerErosionEngine extends AbstractSimulationEngine {
         return kErod * Math.pow(areaNorm / 1000.0, STREAM_POWER_EXPONENT_M) * Math.pow(slopeSafe, STREAM_POWER_EXPONENT_N);
     }
 
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processStreamPowerErosion(buf, dtYears);
+    }
+
     /**
-     * Executes one time-stepped Stream Power erosion and alluvial replenishment evaluation across land cells.
+     * Executes one time-stepped Stream Power erosion and alluvial replenishment evaluation across DoD land cells.
      *
-     * @param cells   land cell domain
+     * @param buffer  WorldBuffer DoD state
      * @param dtYears elapsed simulation step in years
      */
-    public static void processStreamPowerErosion(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
+    public static void processStreamPowerErosion(WorldBuffer buffer, double dtYears) {
+        if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0) return;
 
         double dtSafe = Math.clamp(dtYears, 0.0001, 10.0);
         double totalErodedSoilM = 0.0;
         int erodingCellCount = 0;
 
-        // Pass A: Upstream catchment slope incision
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double elev = cell.getElevationOr(0.0);
-            if (elev <= 0.0 || cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN) continue;
+        float[] elevArr = buffer.getElevation();
+        byte[] biomes = buffer.getBiomes();
+        float[] bioNatArr = buffer.getBiomassNatural();
+        float[] bioAgriArr = buffer.getBiomassAgriculture();
+        float[] socArr = buffer.getSoilOrganicCarbon();
 
-            double naturalBio = cell.getBiomassNaturalOr(100.0);
-            double agrBio = cell.getBiomassAgricultureOr(0.0);
+        byte oceanOrd = (byte) Biome.OCEAN.ordinal();
+        byte deepOceanOrd = (byte) Biome.DEEP_OCEAN.ordinal();
+        byte mountainsOrd = (byte) Biome.MOUNTAINS.ordinal();
+        byte hillsOrd = (byte) Biome.HILLS.ordinal();
+        int n = buffer.getCapacity();
+
+        // Pass A: Upstream catchment slope incision
+        for (int i = 0; i < n; i++) {
+            double elev = elevArr[i];
+            byte biomeOrd = biomes[i];
+            if (elev <= 0.0 || biomeOrd == oceanOrd || biomeOrd == deepOceanOrd) continue;
+
+            double naturalBio = bioNatArr[i];
+            double agrBio = bioAgriArr[i];
             double totalBio = naturalBio + agrBio;
 
-            // Approximate slope from elevation and terrain biome
             double slope = 0.005;
-            if (cell.getBiome() == Biome.MOUNTAINS) slope = 0.15;
-            else if (cell.getBiome() == Biome.HILLS) slope = 0.05;
+            if (biomeOrd == mountainsOrd) slope = 0.15;
+            else if (biomeOrd == hillsOrd) slope = 0.05;
             else if (elev > 500.0) slope = 0.02;
 
-            // Stream length approximation via constructal channel flow
             double riverLength = Math.max(5.0, Math.sqrt(elev) * 2.5);
             double catchmentArea = estimateCatchmentAreaKm2(riverLength);
 
@@ -146,36 +159,32 @@ public class StreamPowerErosionEngine extends AbstractSimulationEngine {
             double deltaElev = erosionRateMPerYr * dtSafe;
 
             if (deltaElev > 1e-6) {
-                cell.setElevation(Math.max(0.0, elev - deltaElev));
+                elevArr[i] = (float) Math.max(0.0, elev - deltaElev);
                 totalErodedSoilM += deltaElev;
                 erodingCellCount++;
 
-                // Severe erosion strips Soil Organic Carbon (topsoil degradation)
-                double curSoc = cell.getSoilOrganicCarbonOr(40.0);
+                double curSoc = socArr[i];
                 double socLoss = curSoc * Math.min(0.20, deltaElev * 50.0);
-                cell.setSoilOrganicCarbon(Math.max(2.0, curSoc - socLoss));
+                socArr[i] = (float) Math.max(2.0, curSoc - socLoss);
             }
         }
 
         // Pass B: Lowland Floodplain and Estuarine Alluvial Silt Deposition
         if (totalErodedSoilM > 0.0 && erodingCellCount > 0) {
-            double totalSedimentMass = totalErodedSoilM;
-            double depositBudgetPerCell = totalSedimentMass / Math.max(1, cells.size() / 8);
+            double depositBudgetPerCell = totalErodedSoilM / Math.max(1, n / 8);
 
-            for (H3Cell cell : cells) {
-                if (cell == null) continue;
-                double elev = cell.getElevationOr(0.0);
-                if (elev < 0.0 || elev > LOWLAND_FLOODPLAIN_ELEV_MAX_M) continue; // Only flat river floodplains and lowlands
-                if (cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN) continue;
+            for (int i = 0; i < n; i++) {
+                double elev = elevArr[i];
+                byte biomeOrd = biomes[i];
+                if (elev < 0.0 || elev > LOWLAND_FLOODPLAIN_ELEV_MAX_M) continue;
+                if (biomeOrd == oceanOrd || biomeOrd == deepOceanOrd) continue;
 
-                // Alluvial siltation replenishes topsoil and mineral SOC
-                double curSoc = cell.getSoilOrganicCarbonOr(40.0);
+                double curSoc = socArr[i];
                 double siltDepositM = Math.min(0.003 * dtSafe, depositBudgetPerCell);
-                cell.setElevation(elev + siltDepositM);
+                elevArr[i] = (float) (elev + siltDepositM);
 
-                // Alluvial silt enriches organic carbon by +0.1 to +0.5 t/ha per year
                 double socReplenishment = siltDepositM * 120.0;
-                cell.setSoilOrganicCarbon(Math.min(120.0, curSoc + socReplenishment));
+                socArr[i] = (float) Math.min(120.0, curSoc + socReplenishment);
             }
         }
     }

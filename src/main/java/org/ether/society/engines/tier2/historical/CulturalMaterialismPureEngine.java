@@ -8,11 +8,8 @@ package org.ether.society.engines.tier2.historical;
 
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Marvin Harris Cultural Materialism Model Variant B13.1 (Pure) & B13.2 (Hybrid).
@@ -26,40 +23,21 @@ public class CulturalMaterialismPureEngine extends AbstractSimulationEngine {
         super("CulturalMaterialismPureEngine", "CulturalMaterialismPureEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
-    @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(CulturalMaterialismPureEngine.class);
 
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            // Infrastructure constraint: food and water determine political structure stability
-            double food = cell.getFoodResourceOr(0.0);
-            int pop = cell.getPopulationOr(0);
-
-            if (pop > 0 && (food / pop) < 0.05) {
-                // Infrastructural deficit forces structural collapse
-                double decay = Math.max(0.0, 1.0 - 0.10 * deltaYears);
-                cell.setResourceCapital(Math.max(0.0, (cell.getResourceCapitalOr(0.0)) * decay));
-            }
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double food = buffer.getFoodResource()[i];
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop > 0.0 && (food / pop) < 0.05) {
+            double decay = Math.max(0.0, 1.0 - 0.10 * dtYears);
+            float capital = buffer.getResourceCapital()[i];
+            acc.dResourceCapital += (float) (Math.max(0.0, capital * decay) - capital);
         }
     }
 }
-
-

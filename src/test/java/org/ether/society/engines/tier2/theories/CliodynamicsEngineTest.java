@@ -89,10 +89,12 @@ public class CliodynamicsEngineTest {
         cell.setBiomassNatural(50.0); // Clear-cut biomass
         cell.setPopulation(50000); // Extreme overpopulation
 
-        double initialSoil = cell.getSoilOrganicCarbon();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(List.of(cell), buf, false);
+        double initialSoil = buf.getSoilOrganicCarbon()[0];
 
-        DeforestationErosionEngine.processDeforestationErosion(List.of(cell));
+        new DeforestationErosionEngine().tick(buf, 1.0, 12.0);
 
-        assertTrue(cell.getSoilOrganicCarbon() < initialSoil, "Soil carbon should deplete due to deforestation and erosion");
+        assertTrue(buf.getSoilOrganicCarbon()[0] < initialSoil, "Soil carbon should deplete due to deforestation and erosion");
     }
 }

@@ -30,37 +30,40 @@ public class LeslieWhitePureEngine extends AbstractSimulationEngine {
         super("LeslieWhitePureEngine", "LeslieWhitePureEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
+    /**
+     * Computes Leslie White's cultural complexity metric \(C = E \cdot \eta\).
+     *
+     * @param energyPerCapita per-capita energy flux \(E\)
+     * @param toolEfficiency  structural tool efficiency \(\eta\)
+     * @return cultural complexity index \(C\)
+     */
+    public static double calculateCulturalComplexity(double energyPerCapita, double toolEfficiency) {
+        return Math.max(0.0, energyPerCapita) * Math.max(0.0, toolEfficiency);
+    }
+
     @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(LeslieWhitePureEngine.class);
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0) return;
 
-    public static double calculateCulturalComplexity(double energyPerCapita, double toolEfficiencyFactor) {
-        return energyPerCapita * toolEfficiencyFactor;
-    }
+        double foodEnergy = buffer.getEnergyFoodConsumed()[i];
+        if (foodEnergy <= 0.0) foodEnergy = 3.5 * pop;
+        double exosomaticEnergy = buffer.getEnergyFire()[i]
+                + buffer.getEnergyWind()[i]
+                + buffer.getEnergySolar()[i]
+                + (buffer.getBiomassLivestock()[i] * 15.0)
+                + (buffer.getResourceCoal()[i] * 24.0)
+                + (buffer.getResourceOil()[i] * 42.0);
+        double totalEnergy = foodEnergy + exosomaticEnergy;
+        double energyPerCapita = totalEnergy / pop;
 
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-
-            int pop = cell.getPopulation();
-            double foodEnergy = cell.getEnergyFoodConsumedOr(3.5 * pop);
-            double exosomaticEnergy = cell.getEnergyFireOr(0.0)
-                    + cell.getEnergyWindOr(0.0)
-                    + cell.getEnergySolarOr(0.0)
-                    + (cell.getBiomassLivestockOr(0.0) * 15.0)
-                    + (cell.getResourceCoalOr(0.0) * 24.0)
-                    + (cell.getResourceOilOr(0.0) * 42.0);
-            double totalEnergy = foodEnergy + exosomaticEnergy;
-            double energyPerCapita = totalEnergy / pop;
-
-            // Exosomatic energy capture enables physical capital deepening (tools, machinery, infrastructure)
-            double capitalIncrement = pop * (energyPerCapita / 50.0) * 0.005 * deltaYears;
-            cell.setResourceCapital(cell.getResourceCapitalOr(0.0) + capitalIncrement);
-        }
+        double capitalIncrement = pop * (energyPerCapita / 50.0) * 0.005 * dtYears;
+        acc.dResourceCapital += (float) capitalIncrement;
     }
 }

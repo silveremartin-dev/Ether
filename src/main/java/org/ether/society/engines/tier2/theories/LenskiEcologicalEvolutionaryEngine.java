@@ -105,9 +105,4 @@ public class LenskiEcologicalEvolutionaryEngine extends AbstractSimulationEngine
     public void processBuffer(WorldBuffer buffer, double deltaYears) {
         LenskiPureEngine.processLenskiPikettyInequality(buffer, deltaYears);
     }
-
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        LenskiPureEngine.processHybrid(cells, deltaYears);
-    }
 }

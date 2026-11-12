@@ -147,38 +147,4 @@ public class TurchinGoldstoneSDTEngine extends AbstractSimulationEngine {
             }
         }
     }
-
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop < 100) continue;
-
-            double gini = cell.getGiniIndexOr(0.35);
-            double capital = cell.getResourceCapitalOr(10.0);
-            double food = cell.getFoodResourceOr(500.0);
-
-            double areaKm2 = cell.getEffectiveSurfaceAreaKm2();
-            double density = pop / Math.max(0.1, areaKm2);
-            double foodPerCap = food / Math.max(1.0, pop);
-            double mmp = Math.max(0.2, (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0));
-            double emp = Math.max(0.2, Math.pow(Math.max(0.0, gini - 0.25) / 0.20, 2.0));
-            double kPerCap = capital / Math.max(1.0, pop);
-            double sf = Math.max(0.2, 0.4 * (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(kPerCap / 800.0));
-            double psi = mmp * emp * sf;
-
-            double psiStress = (psi * psi) / (25.0 + psi * psi);
-            double unrestDamage = capital * 0.08 * psiStress * deltaYears;
-            cell.setResourceCapital(Math.max(5.0, capital - unrestDamage));
-
-            double friction = cell.getMovementFrictionOr(1.0);
-            cell.setMovementFriction(Math.min(10.0, friction + (0.15 * psiStress * deltaYears)));
-
-            double purgeIntensity = Math.pow(psi, 3.0) / (200.0 + Math.pow(psi, 3.0));
-            cell.setGiniIndex(Math.max(0.25, gini - (0.04 * purgeIntensity * (gini - 0.25) * deltaYears)));
-        }
-    }
 }

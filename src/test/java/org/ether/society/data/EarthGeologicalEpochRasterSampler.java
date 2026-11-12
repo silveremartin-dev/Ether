@@ -91,7 +91,7 @@ final class EarthGeologicalEpochRasterSampler {
                                 }
                                 list.add(new double[]{lon, lat, radius, weight});
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) { /* harmless test raster write */ }
                     }
                 }
             }

@@ -71,8 +71,8 @@ final class H3EngineLifecycleAndTickCoordinator {
             } else {
                 engine.performanceConfig.setExecutionEngineMode(SimulationPerformanceConfig.ExecutionEngineMode.JAVA_VECTOR_SIMD);
             }
-        } catch (Throwable ignored) {
-            // Headless or restricted security context fallback
+        } catch (Throwable t) {
+            logger.debug("Falling back to standard execution engine in restricted or headless context: {}", t.getMessage());
         }
 
         engine.cells = cells;

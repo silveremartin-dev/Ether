@@ -8,16 +8,11 @@ package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 /**
- * Cliodynamic Cultural Sociology & Values Vector Engine.
- * Models societal value vectors (Collectivism vs Individualism, Environmental Stewardship, Risk Aversion)
- * and their physical impact on per-capita energy footprints and soil maintenance labor.
+ * Cultural Sociology Engine (Tier 2).
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -34,72 +29,32 @@ public class CulturalSociologyEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(CulturalSociologyEngine.class);
 
-    private static double globalCollectivismIndex = 0.5; // 0.0 Individualist -> 1.0 Collectivist
-    private static double globalEnvironmentalStewardship = 0.5; // 0.0 Exploitative -> 1.0 Sustainable
+    private static double globalCollectivismIndex = 0.5;
+    private static double globalEnvironmentalStewardship = 0.5;
 
-    /**
-     * Process cultural sociology.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processCulturalSociology(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (buffer.getBiomassHuman()[i] <= 0.0f) return;
 
-            // Environmental stewardship allocates labor to Soil Organic Carbon (SOC) preservation
-            if (globalEnvironmentalStewardship > 0.6) {
-                double soc = cell.getSoilOrganicCarbonOr(0.0);
-                cell.setSoilOrganicCarbon(soc + (globalEnvironmentalStewardship - 0.5) * 0.1 * deltaYears);
-            }
-
-            // High collectivism reduces per-capita luxury energy dissipation and pollution
-            if (globalCollectivismIndex > 0.6 && cell.getPollutionLevel() != null) {
-                double pollution = cell.getPollutionLevel();
-                cell.setPollutionLevel(Math.max(0.0, pollution - (globalCollectivismIndex - 0.5) * 0.5 * deltaYears));
-            }
+        if (globalEnvironmentalStewardship > 0.6) {
+            acc.dSoilOrganicCarbon += (float) ((globalEnvironmentalStewardship - 0.5) * 0.1 * dtYears);
+        }
+        if (globalCollectivismIndex > 0.6) {
+            float pollution = buffer.getPollutionLevel()[i];
+            double reduction = Math.min(pollution, (globalCollectivismIndex - 0.5) * 0.5 * dtYears);
+            acc.dPollutionLevel -= (float) reduction;
         }
     }
 
-    // Getters and Setters
-    /**
-     * Get global collectivism index.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getGlobalCollectivismIndex() { return globalCollectivismIndex; }
-    /**
-     * Set global collectivism index operation.
-     * <p>
-     * Executes operational logic for {@code CulturalSociologyEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param idx the idx argument (double)
-     */
     public static void setGlobalCollectivismIndex(double idx) { globalCollectivismIndex = Math.max(0.0, Math.min(1.0, idx)); }
 
-    /**
-     * Get global environmental stewardship.
-     *
-     * @return the resulting computation or state reference
-     */
     public static double getGlobalEnvironmentalStewardship() { return globalEnvironmentalStewardship; }
-    /**
-     * Set global environmental stewardship operation.
-     * <p>
-     * Executes operational logic for {@code CulturalSociologyEngine} within the Tier 2 cliodynamic and macroeconomic theoretical model.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     * @param stw the stw argument (double)
-     */
     public static void setGlobalEnvironmentalStewardship(double stw) { globalEnvironmentalStewardship = Math.max(0.0, Math.min(1.0, stw)); }
 
     public static void resetState() {
@@ -107,5 +62,3 @@ public class CulturalSociologyEngine extends AbstractSimulationEngine {
         globalEnvironmentalStewardship = 0.5;
     }
 }
-
-

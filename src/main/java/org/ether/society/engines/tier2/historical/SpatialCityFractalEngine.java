@@ -31,65 +31,53 @@ public class SpatialCityFractalEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
+    public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
+        if (buf == null || buf.getCapacity() < 2) return;
+        int n = buf.getCapacity();
+        float[] popArr = buf.getBiomassHuman();
 
-    private static final Logger logger = LoggerFactory.getLogger(SpatialCityFractalEngine.class);
-
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.size() < 2) return;
-
-        // Collect populated cells without allocating Streams
-        List<H3Cell> sortedCells = new ArrayList<>();
-        for (int i = 0; i < cells.size(); i++) {
-            H3Cell c = cells.get(i);
-            if (c != null && c.getPopulationOr(0) > 0) {
-                sortedCells.add(c);
-            }
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (popArr[i] > 0.0f) count++;
         }
+        if (count < 2) return;
 
-        if (sortedCells.isEmpty()) return;
+        Integer[] indices = new Integer[count];
+        int k = 0;
+        for (int i = 0; i < n; i++) {
+            if (popArr[i] > 0.0f) indices[k++] = i;
+        }
+        java.util.Arrays.sort(indices, (a, b) -> Float.compare(popArr[b], popArr[a]));
 
-        // Sort descending by population
-        sortedCells.sort((a, b) -> Integer.compare(b.getPopulationOr(0), a.getPopulationOr(0)));
-
-        double topCityPop = sortedCells.get(0).getPopulation();
-        // Zipf-Mori spatial power law target shape: Pop_target(rank) proportional to 1 / rank^1.05,
-        // renormalized so that the redistribution conserves total population (migration, not creation).
-        long totalPop = 0L;
+        double topCityPop = popArr[indices[0]];
+        double totalPop = 0.0;
         double shapeSum = 0.0;
-        for (int rank = 1; rank <= sortedCells.size(); rank++) {
-            totalPop += sortedCells.get(rank - 1).getPopulation();
+        for (int rank = 1; rank <= count; rank++) {
+            totalPop += popArr[indices[rank - 1]];
             shapeSum += 1.0 / Math.pow(rank, 1.05);
         }
-        if (totalPop <= 0L || shapeSum <= 0.0 || topCityPop <= 0.0) return;
-        boolean isMacroPlanetaryGrid = sortedCells.size() > 50;
+        if (totalPop <= 0.0 || shapeSum <= 0.0 || topCityPop <= 0.0) return;
+
+        boolean isMacroPlanetaryGrid = count > 50;
         double relax = isMacroPlanetaryGrid
-                ? Math.min(0.002, 0.0001 * deltaYears)
-                : Math.min(1.0, 0.01 * deltaYears);
-        long assigned = 0L;
-        for (int rank = 1; rank <= sortedCells.size(); rank++) {
-            H3Cell cell = sortedCells.get(rank - 1);
+                ? Math.min(0.002, 0.0001 * dtYears)
+                : Math.min(1.0, 0.01 * dtYears);
+        double assigned = 0.0;
+        for (int rank = 1; rank <= count; rank++) {
+            int idx = indices[rank - 1];
             double targetPop = totalPop * (1.0 / Math.pow(rank, 1.05)) / shapeSum;
-            double currentPop = cell.getPopulation();
+            double currentPop = popArr[idx];
             double delta = (targetPop - currentPop) * relax;
             if (isMacroPlanetaryGrid) {
-                double maxShift = Math.max(1.0, currentPop * 0.005 * Math.min(1.0, deltaYears));
+                double maxShift = Math.max(1.0, currentPop * 0.005 * Math.min(1.0, dtYears));
                 delta = Math.clamp(delta, -maxShift, maxShift);
             }
-            int newPop = (int) Math.round(currentPop + delta);
-            if (rank == sortedCells.size()) {
-                newPop = (int) Math.max(0L, totalPop - assigned); // absorb rounding residue to conserve the total
+            double newPop = Math.max(0.0, currentPop + delta);
+            if (rank == count) {
+                newPop = Math.max(0.0, totalPop - assigned);
             }
-            H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, newPop));
-            assigned += cell.getPopulation();
+            popArr[idx] = (float) newPop;
+            assigned += newPop;
         }
     }
 }

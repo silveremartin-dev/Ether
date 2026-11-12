@@ -8,7 +8,11 @@ package org.ether.society.ui.util;
  * Formats LaTeX mathematical expressions and sanitizes text strings
  * into clean, human-readable Unicode mathematical notation for JavaFX tooltips and UI components.
  */
-public class LaTeXFormatter {
+public final class LaTeXFormatter {
+
+    private LaTeXFormatter() {
+        // Prevent instantiation of static utility class
+    }
 
     /**
      * Converts LaTeX syntax into elegant Unicode math characters.

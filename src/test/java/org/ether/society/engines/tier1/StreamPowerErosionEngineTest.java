@@ -61,16 +61,18 @@ public class StreamPowerErosionEngineTest {
         alluvialDeltaCell.setSoilOrganicCarbon(50.0);
 
         List<H3Cell> basin = List.of(uplandCell, alluvialDeltaCell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(basin.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(basin, buf, false);
 
-        double initialUplandElev = uplandCell.getElevation();
-        double initialDeltaSoc = alluvialDeltaCell.getSoilOrganicCarbon();
+        double initialUplandElev = buf.getElevation()[0];
+        double initialDeltaSoc = buf.getSoilOrganicCarbon()[1];
 
         // Run 10 years of fluvial sediment dynamics
-        StreamPowerErosionEngine.processStreamPowerErosion(basin, 10.0);
+        StreamPowerErosionEngine.processStreamPowerErosion(buf, 10.0);
 
-        assertTrue(uplandCell.getElevation() < initialUplandElev,
+        assertTrue(buf.getElevation()[0] < initialUplandElev,
                 "Upland mountain cell must undergo fluvial incision and erosion.");
-        assertTrue(alluvialDeltaCell.getSoilOrganicCarbon() > initialDeltaSoc,
+        assertTrue(buf.getSoilOrganicCarbon()[1] > initialDeltaSoc,
                 "Lowland alluvial floodplain must receive deposited sediment, replenishing SOC fertility.");
     }
 
@@ -91,17 +93,15 @@ public class StreamPowerErosionEngineTest {
             mesh.add(c);
         }
 
-        double initialAvgElevation = mesh.stream().mapToDouble(H3Cell::getElevation).average().orElse(0.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(mesh.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(mesh, buf, false);
 
         // Advance 5 years
-        StreamPowerErosionEngine.processStreamPowerErosion(mesh, 5.0);
+        StreamPowerErosionEngine.processStreamPowerErosion(buf, 5.0);
 
-        H3Cell mountainCell = mesh.get(450); // High mountain
-        H3Cell deltaCell = mesh.get(5);      // Lowland alluvial plain (elev ~25m)
-
-        assertTrue(mountainCell.getElevation() < (5.0 + (1995.0 * 450 / 499.0)),
+        assertTrue(buf.getElevation()[450] < (5.0 + (1995.0 * 450 / 499.0)),
                 "Mountain cells must erode under steep slope hydraulic stream power.");
-        assertTrue(deltaCell.getSoilOrganicCarbon() >= 40.0,
+        assertTrue(buf.getSoilOrganicCarbon()[5] >= 40.0,
                 "Lowland alluvial plain must maintain or increase SOC from upstream sediment wash.");
     }
 }

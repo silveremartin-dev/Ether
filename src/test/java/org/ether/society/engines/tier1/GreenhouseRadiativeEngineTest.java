@@ -45,16 +45,15 @@ class GreenhouseRadiativeEngineTest {
     void testApplyToGrid() {
         GreenhouseRadiativeEngine engine = new GreenhouseRadiativeEngine();
 
-        H3Cell cell = new H3Cell(613503380827930702L, 45.0, 5.0);
-        cell.setElevation(250.0);
-
-        List<H3Cell> list = new ArrayList<>();
-        list.add(cell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 613503380827930702L;
+        buf.getElevation()[0] = 250.0f;
+        buf.getTemperature()[0] = 15.0f;
 
         engine.addEmissions(280.0, 0.0); // Double CO2
-        engine.applyToGrid(list);
+        engine.tick(buf, 1.0, 12.0);
 
-        assertTrue(cell.getTemperature() > 15.0, "Temperature should rise after emissions");
-        assertTrue(cell.getElevation() < 250.0, "Elevation should decrease due to sea level rise");
+        assertTrue(buf.getTemperature()[0] > 15.0f, "Temperature should rise after emissions");
+        assertTrue(buf.getElevation()[0] < 250.0f, "Elevation should decrease due to sea level rise");
     }
 }

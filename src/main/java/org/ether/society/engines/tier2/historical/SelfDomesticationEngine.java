@@ -31,25 +31,18 @@ public class SelfDomesticationEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(SelfDomesticationEngine.class);
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0) return;
 
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-
-            int pop = cell.getPopulation();
-            double popDensity = pop / 1000.0;
-            double cooperationFactor = SmoothMath.sigmoid(popDensity, 1.0, 0.3);
-
-            // Boosts cooperative collective labor availability
-            double currentWork = cell.getResourceWorkOr(0.0);
-            cell.setResourceWork(currentWork + pop * 0.05 * cooperationFactor * Math.log1p(popDensity) * deltaYears);
-        }
+        double popDensity = pop / 1000.0;
+        double cooperationFactor = SmoothMath.sigmoid(popDensity, 1.0, 0.3);
+        acc.dResourceCapital += (float) (pop * 0.05 * cooperationFactor * Math.log1p(popDensity) * dtYears);
     }
 }

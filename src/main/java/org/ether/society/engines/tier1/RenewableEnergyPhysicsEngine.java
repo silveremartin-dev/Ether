@@ -6,13 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
+import org.ether.society.h3.H3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Betz Wind Kinetic Power & Solar Radiance Physics Engine.
@@ -51,35 +50,46 @@ public class RenewableEnergyPhysicsEngine extends AbstractSimulationEngine {
         return 0.5 * AIR_DENSITY_KG_PER_M3 * Math.pow(windSpeedMetersPerSec, 3.0) * BETZ_LIMIT_CP;
     }
 
-    /**
-     * Executes one renewable energy physics tick across cells.
-     */
-    public static void processRenewableEnergyPhysics(List<H3Cell> cells) {
-// Numerical integration step for RenewableEnergyPhysicsEngine - verifies boundary conservation and updates local thermodynamic state
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processRenewableEnergyPhysics(buf);
+    }
 
-        // Invariant skip: Wind and solar baseline fluxes depend strictly on elevation and latitude,
-        // which are geophysically static across simulation ticks.
-        H3Cell first = cells.get(0);
-        if (first != null && first.getEnergyWind() != null && first.getEnergySolar() != null) {
+    /**
+     * Executes one renewable energy physics tick across DoD buffer.
+     */
+    public static void processRenewableEnergyPhysics(WorldBuffer buffer) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
+
+        float[] elevArr = buffer.getElevation();
+        float[] windArr = buffer.getEnergyWind();
+        float[] solarArr = buffer.getEnergySolar();
+        long[] h3Arr = buffer.getH3Indexes();
+        int n = buffer.getCapacity();
+
+        // Invariant skip if already populated
+        if (windArr[0] > 0.0f && solarArr[0] > 0.0f) {
             return;
         }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double elev = cell.getElevationOr(0.0);
-
-            // Wind speed increases with altitude & slope (v ~ 5.0 to 15.0 m/s)
+        H3Service h3Service = H3Service.getInstance();
+        for (int i = 0; i < n; i++) {
+            double elev = elevArr[i];
             double windSpeed = 5.0 + Math.min(10.0, elev / 300.0);
             double betzWindPowerW = calculateBetzWindPowerWattsPerM2(windSpeed);
+            windArr[i] = (float) betzWindPowerW;
 
-            cell.setEnergyWind(betzWindPowerW);
-
-            // Solar irradiance attenuated by latitude & optical depth
-            double latRad = Math.toRadians(cell.getLatitudeOr(0.0));
-            double solarIrradianceW = SOLAR_CONSTANT_W_PER_M2 * Math.max(0.1, Math.cos(latRad)) * 0.70; // 70% atmospheric transmittance
-
-            cell.setEnergySolar(solarIrradianceW);
+            double latDeg = 0.0;
+            if (h3Arr != null && h3Arr[i] != 0L) {
+                try {
+                    latDeg = h3Service.cellToLatLng(h3Arr[i]).lat;
+                } catch (Exception ignored) {
+                    latDeg = 0.0;
+                }
+            }
+            double latRad = Math.toRadians(latDeg);
+            double solarIrradianceW = SOLAR_CONSTANT_W_PER_M2 * Math.max(0.1, Math.cos(latRad)) * 0.70;
+            solarArr[i] = (float) solarIrradianceW;
         }
     }
 }

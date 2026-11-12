@@ -6,14 +6,13 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Permafrost Thaw & Methane (CHâ‚„) Outgassing Engine.
@@ -37,38 +36,71 @@ public class PermafrostThawEngine extends AbstractSimulationEngine {
      * @param cells List of H3 cells
      * @return Total methane outgassing amount in abstract units (ppm equivalent)
      */
-    public static double processPermafrostThaw(List<H3Cell> cells) {
-        return processPermafrostThaw(cells, 1.0 / 12.0);
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null) return;
+        byte biomeOrd = buffer.getBiomes()[i];
+        if (biomeOrd != (byte) Biome.SNOW.ordinal() && biomeOrd != (byte) Biome.TUNDRA.ordinal()) {
+            return;
+        }
+        double temp = buffer.getTemperature()[i];
+        if (temp > 0.0) {
+            double dtSafe = Math.max(0.0001, dtYears);
+            double soc = buffer.getSoilOrganicCarbon()[i];
+            double nextSoc = Math.max(5.0, soc - 0.2 * dtSafe);
+            acc.dSoilOrganicCarbon += (float) (nextSoc - soc);
+        }
+    }
+
+    /**
+     * Executes one permafrost thaw update step with default monthly step.
+     *
+     * @param buffer WorldBuffer DoD state
+     * @return Total methane outgassing amount in abstract units (ppm equivalent)
+     */
+    public static double processPermafrostThaw(WorldBuffer buffer) {
+        return processPermafrostThaw(buffer, 1.0 / 12.0);
     }
 
     /**
      * Executes one permafrost thaw update step scaled by dtYears.
      *
-     * @param cells List of H3 cells
+     * @param buffer WorldBuffer DoD state
      * @param dtYears Time step in years
      * @return Total methane outgassing amount in abstract units (ppm equivalent)
      */
-    public static double processPermafrostThaw(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty()) return 0.0;
+    public static double processPermafrostThaw(WorldBuffer buffer, double dtYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return 0.0;
 
         double dtSafe = Math.max(0.0001, dtYears);
         double totalMethaneOutgassing = 0.0;
         int thawingCells = 0;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            Biome biome = cell.getBiome();
-            double temp = cell.getTemperature() != null ? cell.getTemperature() : -10.0;
+        byte[] biomes = buffer.getBiomes();
+        float[] tempArr = buffer.getTemperature();
+        float[] socArr = buffer.getSoilOrganicCarbon();
+        byte snowOrd = (byte) Biome.SNOW.ordinal();
+        byte tundraOrd = (byte) Biome.TUNDRA.ordinal();
+        int n = buffer.getCapacity();
 
-            // Polar / Tundra permafrost thawing condition (T > 0A°C)
-            if ((biome == Biome.SNOW || biome == Biome.TUNDRA) && temp > 0.0) {
+        for (int i = 0; i < n; i++) {
+            byte biomeOrd = biomes[i];
+            double temp = tempArr[i];
+
+            // Polar / Tundra permafrost thawing condition (T > 0 C)
+            if ((biomeOrd == snowOrd || biomeOrd == tundraOrd) && temp > 0.0) {
                 thawingCells++;
-                double methaneRelease = temp * 0.15 * dtSafe; // Methane release proportional to temperature excess and time step
+                double methaneRelease = temp * 0.15 * dtSafe;
                 totalMethaneOutgassing += methaneRelease;
 
                 // Ground thaw converts tundra to wetland / taiga, boosting soil organic carbon loss
-                double soc = cell.getSoilOrganicCarbonOr(20.0);
-                cell.setSoilOrganicCarbon(Math.max(5.0, soc - 0.2 * dtSafe));
+                double soc = socArr[i];
+                socArr[i] = (float) Math.max(5.0, soc - 0.2 * dtSafe);
             }
         }
 

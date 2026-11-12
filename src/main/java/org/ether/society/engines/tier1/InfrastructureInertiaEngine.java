@@ -42,30 +42,28 @@ public class InfrastructureInertiaEngine extends AbstractSimulationEngine {
      * @param cells the cells parameter (List&lt;H3Cell&gt;)
      * @param deltaYears the delta years parameter (double)
      */
-    public static void processInfrastructureInertia(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for InfrastructureInertiaEngine - verifies boundary conservation and updates local thermodynamic state
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double metal = buffer.getMetalResource()[i];
+        double work = buffer.getInstitutionalComplexity()[i] * 100.0;
+        double capital = buffer.getResourceCapital()[i];
+        if (capital <= 0.0) return;
 
-            double metal = cell.getResourceMetalOr(0.0);
-            double work = cell.getResourceWorkOr(0.0);
-            double capital = cell.getResourceCapitalOr(0.0);
-            // Dynamic half-life scaling (Jorgenson 1963): Metal durability and ongoing maintenance work increase asset longevity
-            // Primitive unmaintained wood/earth: ~24 years | Metal-reinforced maintained infrastructure: 35-50 years
-            double maintenanceRatio = (capital > 0.0) ? (work + metal * 0.5) / capital : 0.05;
-            double longevityFactor = 0.65 + 0.35 * Math.min(2.5, Math.log1p(maintenanceRatio * 5.0));
-            double dynamicHalfLife = baseCapitalTurnoverHalfLifeYears * Math.clamp(longevityFactor, 0.5, 2.0);
-            double decayFactor = Math.exp(-deltaYears / dynamicHalfLife);
+        double maintenanceRatio = (work + metal * 0.5) / capital;
+        double longevityFactor = 0.65 + 0.35 * Math.min(2.5, Math.log1p(maintenanceRatio * 5.0));
+        double dynamicHalfLife = baseCapitalTurnoverHalfLifeYears * Math.clamp(longevityFactor, 0.5, 2.0);
+        double decayFactor = Math.exp(-dtYears / dynamicHalfLife);
 
-            // Physical depreciation of unmaintained capital vs active maintenance replacement in inhabited cells (Jorgenson 1963)
-            int pop = cell.getPopulationOr(0);
-            double activeReplacement = 0.98 * org.ether.society.core.math.SmoothMath.sigmoid(pop, 10.0, 3.0);
-            double netCapital = capital * decayFactor + capital * (1.0 - decayFactor) * activeReplacement;
-            cell.setResourceCapital(netCapital);
-        }
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double activeReplacement = 0.98 * org.ether.society.core.math.SmoothMath.sigmoid(pop, 10.0, 3.0);
+        double netCapital = capital * decayFactor + capital * (1.0 - decayFactor) * activeReplacement;
+        acc.dResourceCapital += (float) (netCapital - capital);
     }
 
     /**

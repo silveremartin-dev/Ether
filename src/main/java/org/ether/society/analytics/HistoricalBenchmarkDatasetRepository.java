@@ -146,7 +146,7 @@ final class HistoricalBenchmarkDatasetRepository {
                         try {
                             ts.put(Integer.parseInt(pt.getKey()), pt.getValue().asDouble());
                         } catch (NumberFormatException ignored) {
-                            // Skip non-numeric metadata keys
+                            logger.trace("Skipping non-numeric metadata key: {}", pt.getKey());
                         }
                     }
                     etherMetricMap.put(ve.getKey(), Collections.unmodifiableMap(ts));

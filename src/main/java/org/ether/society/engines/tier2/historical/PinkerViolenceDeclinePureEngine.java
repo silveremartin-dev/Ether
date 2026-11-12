@@ -27,11 +27,6 @@ public class PinkerViolenceDeclinePureEngine extends AbstractSimulationEngine {
         super("PinkerViolenceDeclinePureEngine", "PinkerViolenceDeclinePureEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
-    @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(PinkerViolenceDeclinePureEngine.class);
 
     /**
@@ -51,57 +46,25 @@ public class PinkerViolenceDeclinePureEngine extends AbstractSimulationEngine {
         return Math.max(0.00001, 0.005 * Math.exp(-3.0 * pacificationFactor));
     }
 
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0) return;
 
-            int pop = cell.getPopulation();
-            double kpc = cell.getResourceCapitalOr(0.0) / pop;
-            // Endogenous scribal & print literacy and Leviathan administrative capacity from physical infrastructure capital (AGENTS.md A§8)
-            double literacy = kpc < 30.0 ? 0.0 : Math.clamp(Math.tanh((kpc - 30.0) / 1500.0), 0.0, 1.0);
-            double stateStrength = kpc < 50.0 ? 0.0 : Math.clamp(Math.tanh((kpc - 50.0) / 800.0), 0.0, 1.0);
-            double tradeOpenness = 0.50;
+        double kpc = buffer.getResourceCapital()[i] / pop;
+        double literacy = kpc < 30.0 ? 0.0 : Math.clamp(Math.tanh((kpc - 30.0) / 1500.0), 0.0, 1.0);
+        double stateStrength = kpc < 50.0 ? 0.0 : Math.clamp(Math.tanh((kpc - 50.0) / 800.0), 0.0, 1.0);
+        double tradeOpenness = 0.50;
 
-            double violentMortalityRate = calculateViolentDeathRatePerCapita(literacy, stateStrength, tradeOpenness);
-
-            // Calculate violent deaths scaling with deltaYears
-            int violentDeaths = (int) Math.round(pop * violentMortalityRate * deltaYears);
-            if (violentDeaths <= 0) continue;
-
-            // Historical violent mortality targeting (Eisner 2003): interpersonal violence & raids
-            // fall overwhelmingly on young adult cohorts (pop15to24: 60%, pop25to49: 35%)
-            int pop15 = cell.getPop15to24Or(0);
-            int pop25 = cell.getPop25to49Or(0);
-            int cas15 = Math.min(pop15, (int) Math.round(violentDeaths * 0.60));
-            int cas25 = Math.min(pop25, (int) Math.round(violentDeaths * 0.35));
-            int remainingCas = Math.max(0, violentDeaths - cas15 - cas25);
-
-            cell.setPop15to24(pop15 - cas15);
-            cell.setPop25to49(pop25 - cas25);
-
-            if (remainingCas > 0) {
-                int pop50 = cell.getPop50to64Or(0);
-                int cas50 = Math.min(pop50, remainingCas);
-                cell.setPop50to64(pop50 - cas50);
-            }
-
-            // Enforce exact demographic mass closure across all 7 cohorts
-            int newTotal = cell.getPop0to4Or(0) + cell.getPop5to14Or(0)
-                    + cell.getPop15to24Or(0) + cell.getPop25to49Or(0)
-                    + cell.getPop50to64Or(0) + cell.getPop65to79Or(0)
-                    + cell.getPop80PlusOr(0);
-            cell.setPopulation(Math.max(1, newTotal));
+        double violentMortalityRate = calculateViolentDeathRatePerCapita(literacy, stateStrength, tradeOpenness);
+        double violentDeaths = pop * violentMortalityRate * dtYears;
+        if (violentDeaths > 0.0) {
+            acc.dBiomassHuman -= (float) Math.min(Math.max(0.0, pop - 1.0), violentDeaths);
         }
     }
 }

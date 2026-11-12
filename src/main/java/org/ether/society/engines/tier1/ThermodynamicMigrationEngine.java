@@ -7,21 +7,14 @@
 
 package org.ether.society.engines.tier1;
 
-import org.ether.society.core.engine.AbstractSimulationEngine;
-import org.ether.society.core.engine.EngineTier;
-import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.core.dod.AgentBuffer;
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.database.H3Cell;
-import org.ether.society.database.H3CellPhysicsAndStateHelper;
-import org.ether.society.h3.DeterministicSpatialAdjacencyTable;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
+import org.ether.society.model.Biome;
 import org.ether.society.model.PhysicalConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <h1>ThermodynamicMigrationEngine</h1>
@@ -71,276 +64,107 @@ public class ThermodynamicMigrationEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(ThermodynamicMigrationEngine.class);
 
-    // Cached spatial topology avoiding cell re-hashing and candidate allocations every tick
-    private static volatile DeterministicSpatialAdjacencyTable cachedAdjacencyTable = null;
-    private static volatile Map<Long, List<H3Cell>> cachedSpatialGrid = null;
-    private static volatile Map<H3Cell, Integer> cachedCellIndexMap = null;
-    private static volatile int cachedGridCellCount = 0;
-    private static volatile Object cachedCellsIdentity = null;
-
     /**
-     * Clears all cached spatial grids and topological adjacency tables.
+     * Clears any cached spatial state (no-op in pure DoD mode).
      */
     public static void clearSpatialCache() {
-        cachedAdjacencyTable = null;
-        cachedSpatialGrid = null;
-        cachedCellIndexMap = null;
-        cachedGridCellCount = 0;
-        cachedCellsIdentity = null;
+    }
+
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processThermodynamicMigration(buf, null);
     }
 
     /**
-     * Executes one thermodynamic free energy migration tick across cells using spatial neighbor Onsager flux relations.
+     * Executes one thermodynamic free energy migration tick across DoD {@link WorldBuffer} using spatial neighbor Onsager flux relations.
      *
-     * @param cells list of H3 cells in the active simulation domain
-     */
-    public static void processThermodynamicMigration(List<H3Cell> cells) {
-        processThermodynamicMigration(cells, null);
-    }
-
-    /**
-     * Executes thermodynamic free energy migration tick using spatial neighbor topology.
-     *
-     * @param cells list of H3 cells in the active simulation domain
-     * @param config performance and execution configuration
-     */
-    public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config) {
-        processThermodynamicMigration(cells, config, 6371.0);
-    }
-
-    /**
-     * Process thermodynamic migration across spatial cells.
-     *
-     * @param cells list of H3 cells in the active simulation domain
-     * @param config performance and execution configuration
-     * @param planetRadiusKm planetary radius in kilometers (default 6371.0)
-     */
-    public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config, double planetRadiusKm) {
-        processThermodynamicMigration(cells, config, planetRadiusKm, null, null);
-    }
-
-    /**
-     * Process thermodynamic migration across spatial cells and synchronizes cohorts into DOD buffers.
-     *
-     * @param cells list of H3 cells in the active simulation domain
-     * @param config performance and execution configuration
      * @param worldBuffer DOD world state tensor buffer
-     * @param agentBuffer DOD demographic cohort agent buffer
      */
-    public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config,
-                                                     WorldBuffer worldBuffer,
-                                                     AgentBuffer agentBuffer) {
-        processThermodynamicMigration(cells, config, 6371.0, worldBuffer, agentBuffer);
+    public static void processThermodynamicMigration(WorldBuffer worldBuffer) {
+        processThermodynamicMigration(worldBuffer, null);
     }
 
     /**
-     * Process thermodynamic migration across spatial cells and synchronizes cohorts into DOD buffers.
+     * Process thermodynamic migration across DoD {@link WorldBuffer} and synchronizes cohorts into {@link AgentBuffer}.
      *
-     * @param cells list of H3 cells in the active simulation domain
-     * @param config performance and execution configuration
-     * @param planetRadiusKm planetary radius in kilometers
      * @param worldBuffer DOD world state tensor buffer
-     * @param agentBuffer DOD demographic cohort agent buffer
+     * @param agentBuffer DOD demographic cohort agent buffer (nullable)
      */
-    public static void processThermodynamicMigration(List<H3Cell> cells, SimulationPerformanceConfig config, double planetRadiusKm,
-                                                     WorldBuffer worldBuffer,
-                                                     AgentBuffer agentBuffer) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processThermodynamicMigration(WorldBuffer worldBuffer, AgentBuffer agentBuffer) {
+        if (worldBuffer == null || worldBuffer.getCapacity() == 0) return;
+
+        int n = worldBuffer.getCapacity();
+        int[][] neighborTable = worldBuffer.getNeighborIndexes();
+        if (neighborTable == null) return;
+
+        float[] popBuffer = worldBuffer.getBiomassHuman();
+        float[] foodArr = worldBuffer.getFoodResource();
+        float[] agriArr = worldBuffer.getBiomassAgriculture();
+        float[] natArr = worldBuffer.getBiomassNatural();
+        float[] waterArr = worldBuffer.getWaterResource();
+        float[] elevArr = worldBuffer.getElevation();
+        float[] capArr = worldBuffer.getResourceCapital();
+        byte[] biomes = worldBuffer.getBiomes();
+
+        byte oceanOrd = (byte) Biome.OCEAN.ordinal();
+        byte deepOceanOrd = (byte) Biome.DEEP_OCEAN.ordinal();
+        byte glacierOrd = (byte) Biome.GLACIER.ordinal();
+        byte desertOrd = (byte) Biome.DESERT.ordinal();
 
         int migrationEvents = 0;
-        int n = cells.size();
 
-        // 1. Maintain or precompute topological adjacency cache
-        DeterministicSpatialAdjacencyTable adj = cachedAdjacencyTable;
-        if (adj == null || cachedGridCellCount != n || cachedCellsIdentity != cells) {
-            adj = new DeterministicSpatialAdjacencyTable(cells);
-            cachedAdjacencyTable = adj;
-            cachedGridCellCount = n;
-            cachedCellsIdentity = cells;
-            cachedSpatialGrid = null;
-            cachedCellIndexMap = null;
-        }
+        for (int i = 0; i < n; i++) {
+            double popOrigin = popBuffer[i] / 0.06;
+            if (popOrigin < 10.0) continue;
 
-        float[] popBuffer = worldBuffer != null ? worldBuffer.getBiomassHuman() : null;
+            double foodOrigin = foodArr[i] + agriArr[i] * 0.0105 + natArr[i] * 0.12;
+            double waterOrigin = waterArr[i];
+            double phiOrigin = (foodOrigin + waterOrigin * 0.2) / (popOrigin + 1.0);
 
-        // 2. High-performance topological manifold transport (H3 resolutions 2 to 7)
-        if (adj.hasValidH3Topology()) {
-            for (int i = 0; i < n; i++) {
-                if (popBuffer != null && popBuffer[i] < 10.0f) continue;
-                H3Cell origin = cells.get(i);
-                if (origin == null) continue;
-                int popOrigin = origin.getPopulationOr(0);
-                if (popOrigin < 10) continue;
+            if (phiOrigin >= PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * 1.15) {
+                continue;
+            }
 
-                double foodOrigin = origin.getFoodResourceOr(0.0)
-                        + origin.getBiomassAgricultureOr(0.0) * 0.0105
-                        + origin.getBiomassNaturalOr(0.0) * 0.12;
-                double waterOrigin = origin.getWaterResourceOr(0.0);
-                double phiOrigin = (foodOrigin + waterOrigin * 0.2) / (popOrigin + 1.0);
+            int[] neighbors = neighborTable[i];
+            if (neighbors == null) continue;
 
-                // Sedentism constraint: well-provisioned cells above metabolic subsistence do not undergo mass exodus
-                if (phiOrigin >= PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * 1.15) {
+            int bestDestIdx = -1;
+            double maxDeltaPhi = 0.25;
+
+            for (int destIdx : neighbors) {
+                if (destIdx < 0 || destIdx >= n) continue;
+                byte destBiome = biomes[destIdx];
+                double waterDest = waterArr[destIdx];
+                if (destBiome == oceanOrd
+                        || destBiome == deepOceanOrd
+                        || destBiome == glacierOrd
+                        || elevArr[destIdx] < 0.0f
+                        || (destBiome == desertOrd && waterDest < 10.0 && capArr[destIdx] < 100.0)) {
                     continue;
                 }
 
-                int bestDestIdx = -1;
-                double maxDeltaPhi = 0.25; // Minimum potential gradient threshold
+                double popDest = popBuffer[destIdx] / 0.06;
+                double foodDest = foodArr[destIdx] + agriArr[destIdx] * 0.0105 + natArr[destIdx] * 0.12;
+                double phiDest = (foodDest + waterDest * 0.2) / Math.max(10.0, popDest + 1.0);
 
-                int[] neighbors = adj.getNeighborIndices(i);
-                for (int k = 0; k < 6; k++) {
-                    int destIdx = neighbors[k];
-                    if (destIdx < 0) continue;
-                    H3Cell destination = cells.get(destIdx);
-                    if (destination == null) continue;
-                    org.ether.society.model.Biome destBiome = destination.getBiome();
-                    double waterDest = destination.getWaterResourceOr(0.0);
-                    if (destBiome == org.ether.society.model.Biome.OCEAN
-                            || destBiome == org.ether.society.model.Biome.DEEP_OCEAN
-                            || destBiome == org.ether.society.model.Biome.GLACIER
-                            || (destination.getElevation() != null && destination.getElevation() < 0.0)
-                            || (destBiome == org.ether.society.model.Biome.DESERT
-                                && waterDest < 10.0 && destination.getResourceCapitalOr(0.0) < 100.0)) {
-                        continue;
-                    }
-
-                    int popDest = destination.getPopulationOr(0);
-                    double foodDest = destination.getFoodResourceOr(0.0)
-                            + destination.getBiomassAgricultureOr(0.0) * 0.0105
-                            + destination.getBiomassNaturalOr(0.0) * 0.12;
-                    double phiDest = (foodDest + waterDest * 0.2) / Math.max(10.0, popDest + 1.0);
-
-                    double deltaPhi = phiDest - phiOrigin;
-                    if (deltaPhi > maxDeltaPhi) {
-                        maxDeltaPhi = deltaPhi;
-                        bestDestIdx = destIdx;
-                    }
-                }
-
-                if (bestDestIdx >= 0) {
-                    H3Cell bestDestination = cells.get(bestDestIdx);
-                    migrationEvents++;
-
-                    double fluxFraction = Math.clamp(PhysicalConstants.ONSAGER_BASELINE_MOBILITY * maxDeltaPhi * 0.05, 0.001, 0.015);
-                    int migrants = Math.clamp((int) (popOrigin * fluxFraction), 1, popOrigin / 10);
-
-                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(origin, popOrigin - migrants);
-                    origin.setBiomassHuman((double) (popOrigin - migrants));
-                    int destPop = (bestDestination.getPopulationOr(0)) + migrants;
-                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(bestDestination, destPop);
-                    bestDestination.setBiomassHuman((double) destPop);
-
-                    if (agentBuffer != null && worldBuffer != null) {
-                        transferAgentBufferMass(agentBuffer, worldBuffer, i, bestDestIdx, migrants);
-                    }
+                double deltaPhi = phiDest - phiOrigin;
+                if (deltaPhi > maxDeltaPhi) {
+                    maxDeltaPhi = deltaPhi;
+                    bestDestIdx = destIdx;
                 }
             }
-        } else {
-            // 3. Fallback: Adaptive Spatial Binning for synthetic / planar mock test environments
-            final double maxMigrationRadiusKm = 150.0;
-            final double radius = (planetRadiusKm > 0) ? planetRadiusKm : 6371.0;
-            final double binSizeDeg = Math.max(0.5, maxMigrationRadiusKm / 111.32);
 
-            Map<Long, List<H3Cell>> spatialGrid = cachedSpatialGrid;
-            Map<H3Cell, Integer> cellIndexMap = cachedCellIndexMap;
-            if (spatialGrid == null || cellIndexMap == null) {
-                spatialGrid = new java.util.HashMap<>(Math.min(65536, n / 4 + 16));
-                cellIndexMap = new IdentityHashMap<>(n);
-                for (int idx = 0; idx < n; idx++) {
-                    H3Cell c = cells.get(idx);
-                    if (c == null) continue;
-                    cellIndexMap.put(c, idx);
-                    double cLat = c.getLatitudeOr(0.0);
-                    double cLon = c.getLongitudeOr(0.0);
-                    int bLat = (int) Math.floor((cLat + 90.0) / binSizeDeg);
-                    int bLon = (int) Math.floor((cLon + 180.0) / binSizeDeg);
-                    long key = (((long) bLat) << 32) | (bLon & 0xFFFFFFFFL);
-                    spatialGrid.computeIfAbsent(key, k -> new java.util.ArrayList<>(8)).add(c);
-                }
-                cachedSpatialGrid = spatialGrid;
-                cachedCellIndexMap = cellIndexMap;
-            }
+            if (bestDestIdx >= 0) {
+                migrationEvents++;
+                double fluxFraction = Math.clamp(PhysicalConstants.ONSAGER_BASELINE_MOBILITY * maxDeltaPhi * 0.05, 0.001, 0.015);
+                double migrants = Math.clamp(popOrigin * fluxFraction, 1.0, popOrigin / 10.0);
+                float massMoved = (float) (migrants * 0.06);
 
-            double degToKmLat = (Math.PI / 180.0) * radius;
-            double maxRadiusSq = maxMigrationRadiusKm * maxMigrationRadiusKm;
-
-            for (int i = 0; i < n; i++) {
-                if (popBuffer != null && popBuffer[i] < 10.0f) continue;
-                H3Cell origin = cells.get(i);
-                if (origin == null) continue;
-                int popOrigin = origin.getPopulationOr(0);
-                if (popOrigin < 10) continue;
-
-                double foodOrigin = origin.getFoodResourceOr(0.0);
-                double waterOrigin = origin.getWaterResourceOr(0.0);
-                double phiOrigin = (foodOrigin + waterOrigin) / (popOrigin + 1.0);
-
-                H3Cell bestDestination = null;
-                double maxDeltaPhi = 0.05;
-
-                double latOrigin = origin.getLatitudeOr(0.0);
-                double lonOrigin = origin.getLongitudeOr(0.0);
-                double degToKmLon = degToKmLat * Math.cos(Math.toRadians(latOrigin));
-
-                int bLat = (int) Math.floor((latOrigin + 90.0) / binSizeDeg);
-                int bLon = (int) Math.floor((lonOrigin + 180.0) / binSizeDeg);
-
-                for (int dLat = -1; dLat <= 1; dLat++) {
-                    for (int dLon = -1; dLon <= 1; dLon++) {
-                        long key = (((long) (bLat + dLat)) << 32) | ((bLon + dLon) & 0xFFFFFFFFL);
-                        List<H3Cell> bucket = spatialGrid.get(key);
-                        if (bucket == null) continue;
-
-                        for (H3Cell destination : bucket) {
-                            if (destination == origin) continue;
-                            double destLat = destination.getLatitudeOr(0.0);
-                            double destLon = destination.getLongitudeOr(0.0);
-                            double dLatKm = (destLat - latOrigin) * degToKmLat;
-                            double dLonKm = (destLon - lonOrigin) * degToKmLon;
-                            double distSq = dLatKm * dLatKm + dLonKm * dLonKm;
-                            if (distSq > maxRadiusSq) continue;
-
-                            org.ether.society.model.Biome destBiome = destination.getBiome();
-                            double waterDest = destination.getWaterResourceOr(0.0);
-                            if (destBiome == org.ether.society.model.Biome.OCEAN
-                                    || destBiome == org.ether.society.model.Biome.DEEP_OCEAN
-                                    || destBiome == org.ether.society.model.Biome.GLACIER
-                                    || (destination.getElevation() != null && destination.getElevation() < 0.0)
-                                    || (destBiome == org.ether.society.model.Biome.DESERT
-                                        && waterDest < 10.0 && destination.getResourceCapitalOr(0.0) < 100.0)) {
-                                continue;
-                            }
-
-                            int popDest = destination.getPopulationOr(0);
-                            double foodDest = destination.getFoodResourceOr(0.0);
-                            double phiDest = (foodDest + waterDest) / (popDest + 1.0);
-
-                            double deltaPhi = phiDest - phiOrigin;
-                            if (deltaPhi > maxDeltaPhi) {
-                                maxDeltaPhi = deltaPhi;
-                                bestDestination = destination;
-                            }
-                        }
-                    }
-                }
-
-                if (bestDestination != null) {
-                    migrationEvents++;
-                    double fluxFraction = Math.clamp(PhysicalConstants.ONSAGER_BASELINE_MOBILITY * maxDeltaPhi, 0.01, 0.20);
-                    int migrants = Math.clamp((int) (popOrigin * fluxFraction), 1, popOrigin / 2);
-
-                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(origin, popOrigin - migrants);
-                    origin.setBiomassHuman((double) (popOrigin - migrants));
-                    int destPop = (bestDestination.getPopulationOr(0)) + migrants;
-                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(bestDestination, destPop);
-                    bestDestination.setBiomassHuman((double) destPop);
-
-                    if (agentBuffer != null && worldBuffer != null) {
-                        int originIdx = i;
-                        int destIdx = cellIndexMap.getOrDefault(bestDestination, -1);
-                        if (originIdx >= 0 && destIdx >= 0) {
-                            transferAgentBufferMass(agentBuffer, worldBuffer, originIdx, destIdx, migrants);
-                        }
-                    }
+                if (agentBuffer != null) {
+                    transferAgentBufferMass(agentBuffer, worldBuffer, i, bestDestIdx, massMoved);
+                } else {
+                    popBuffer[i] = Math.max(0.0f, popBuffer[i] - massMoved);
+                    popBuffer[bestDestIdx] += massMoved;
                 }
             }
         }

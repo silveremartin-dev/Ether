@@ -1,12 +1,9 @@
 package org.ether.society.engines.tier2.theories;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,46 +30,43 @@ public class TerraformingEngineTest {
 
     @Test
     public void testTerraformingWarmingRadiativeForcing() {
-        H3Cell cell = new H3Cell(613503380827930800L, 0.0, 0.0);
-        cell.setTemperature(15.0);
-        cell.setPopulation(5000);
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getTemperature()[0] = 15.0f;
+        buf.getBiomassHuman()[0] = 5000.0f;
 
         // CO2 doubled (560 ppm) -> radiative forcing ~ 5.35 * ln(2) = 3.71 W/m²
         TerraformingEngine.setCo2Ppm(560.0);
-        TerraformingEngine.processTerraforming(List.of(cell), 1.0);
+        new TerraformingEngine().tick(buf, 1.0, 1.0);
 
-        assertTrue(cell.getTemperature() > 15.0, "Increased CO2 must produce positive radiative warming");
-        assertTrue(Double.isFinite(cell.getTemperature()), "Temperature must remain finite");
+        assertTrue(buf.getTemperature()[0] > 15.0f, "Increased CO2 must produce positive radiative warming");
+        assertTrue(Double.isFinite(buf.getTemperature()[0]), "Temperature must remain finite");
     }
 
     @Test
     public void testSingularityGuardsOnCo2AndEmptyCells() {
-        // Edge case: co2Ppm <= 0 must not produce -Infinity or NaN
+        TerraformingEngine engine = new TerraformingEngine();
         TerraformingEngine.setCo2Ppm(0.0);
-        H3Cell cell = new H3Cell(613503380827930801L, 10.0, 10.0);
-        cell.setTemperature(15.0);
-        cell.setPopulation(null); // Null population
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getTemperature()[0] = 15.0f;
 
-        assertDoesNotThrow(() -> {
-            TerraformingEngine.processTerraforming(List.of(cell), 1.0);
-        }, "CO2 <= 0 and null population must not throw an exception");
+        assertDoesNotThrow(() -> engine.tick(buf, 1.0, 1.0),
+                "CO2 <= 0 and zero population must not throw an exception");
 
-        assertTrue(Double.isFinite(cell.getTemperature()), "Temperature must not become -Infinity or NaN with 0 CO2");
+        assertTrue(Double.isFinite(buf.getTemperature()[0]), "Temperature must not become -Infinity or NaN with 0 CO2");
 
-        // Edge case: empty or null list
-        assertDoesNotThrow(() -> TerraformingEngine.processTerraforming(null, 1.0));
-        assertDoesNotThrow(() -> TerraformingEngine.processTerraforming(new ArrayList<>(), 1.0));
+        assertDoesNotThrow(() -> engine.tick(null, 1.0, 1.0));
+        assertDoesNotThrow(() -> engine.tick(new WorldBuffer(0), 1.0, 1.0));
     }
 
     @Test
     public void testAsteroidMiningMetalFlux() {
-        H3Cell cell = new H3Cell(613503380827930802L, 20.0, 20.0);
-        cell.setPopulation(10000);
-        cell.setResourceMetal(50.0);
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getMetalResource()[0] = 50.0f;
 
         TerraformingEngine.setAsteroidMiningFluxTonnesPerYear(100000.0);
-        TerraformingEngine.processTerraforming(List.of(cell), 1.0);
+        new TerraformingEngine().tick(buf, 1.0, 1.0);
 
-        assertTrue(cell.getResourceMetal() > 50.0, "Asteroid mining flux must enrich cell metal reserves");
+        assertTrue(buf.getMetalResource()[0] > 50.0f, "Asteroid mining flux must enrich cell metal reserves");
     }
 }

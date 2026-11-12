@@ -6,12 +6,11 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
-
-import java.util.List;
 
 /**
  * Physical Energy Grid &amp; Exergy-to-Work Conversion Engine.
@@ -100,35 +99,88 @@ public class PhysicalEnergyGridEngine extends AbstractSimulationEngine {
         return SmoothMath.softmin(maxHarnessableWatts, SmoothMath.softmax(50.0, mechanicalPowerWatts, 0.2), 0.01);
     }
 
-    /** Executes one monthly physical energy grid tick across cells. */
-    public static void processPhysicalEnergyGrid(List<H3Cell> cells) {
-        processPhysicalEnergyGrid(cells, 1.0 / 12.0);
+    /**
+     * Calculates available per-capita useful mechanical &amp; thermal power output (\(\text{W/capita}\))
+     * from DoD {@link WorldBuffer} arrays at cell index {@code i}.
+     */
+    public static double calculatePerCapitaMechanicalPowerWatts(WorldBuffer buffer, int i) {
+        if (buffer == null || i < 0 || i >= buffer.getCapacity()) return 0.0;
+
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return 0.0;
+
+        double capital = buffer.getResourceCapital()[i];
+        double capitalPerCapita = Math.max(0.0, capital / pop);
+
+        double maxHarnessableWatts = 350.0 + 100000.0 * (1.0 - Math.exp(-capitalPerCapita / 5.0));
+        double somaticWatts = 135.0;
+
+        double woodBiomassKg = Math.max(buffer.getBiomassNatural()[i], buffer.getWoodResource()[i]);
+        double woodThermalWatts = 212.0 * Math.tanh((woodBiomassKg + 50.0) / 50.0);
+
+        double animalTractionWatts = 25.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 150.0, 0.05) / 250.0);
+        double millAndCharcoalWatts = 220.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 520.0, 0.05) / 420.0);
+
+        double coalStock = buffer.getResourceCoal()[i];
+        double oilStock = buffer.getResourceOil()[i];
+        double gasStock = buffer.getResourceGas()[i];
+        double fossilReserves = coalStock + oilStock + gasStock;
+        double fossilAvailability = (fossilReserves > 0.0)
+                ? Math.tanh(fossilReserves / SmoothMath.softmax(5.0, pop * 0.02, 0.5))
+                : 0.0;
+        double steamCoalWatts = 600.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 1800.0, 0.02) / 2500.0) * fossilAvailability;
+
+        double uraniumStock = buffer.getResourceUranium()[i];
+        double fissileBonus = 1.0 + 0.25 * Math.tanh(Math.max(0.0, uraniumStock) / SmoothMath.softmax(1.0, pop * 0.001, 2.0));
+        double modernGridWatts = 1350.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 4000.0, 0.01) / 10000.0) * fissileBonus;
+
+        double highFluxGate = SmoothMath.sigmoid(capitalPerCapita, 28000.0, 4000.0);
+        double postScarcityWatts = highFluxGate * 25000.0 * SmoothMath.softmin(5.0, capitalPerCapita / 28000.0, 2.0);
+
+        double mechanicalPowerWatts = somaticWatts + woodThermalWatts + animalTractionWatts
+                + millAndCharcoalWatts + steamCoalWatts + modernGridWatts + postScarcityWatts;
+
+        return SmoothMath.softmin(maxHarnessableWatts, SmoothMath.softmax(50.0, mechanicalPowerWatts, 0.2), 0.01);
+    }
+
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processPhysicalEnergyGrid(buf, dtYears);
+    }
+
+    /** Executes one monthly physical energy grid tick across DoD buffer. */
+    public static void processPhysicalEnergyGrid(WorldBuffer buffer) {
+        processPhysicalEnergyGrid(buffer, 1.0 / 12.0);
     }
 
     /**
      * Executes physical energy grid tick, smoothly consuming finite fossil and fissile fuels
      * according to Marchetti-Nakicenovic (1979) logistic carrier shares and accumulating physical capital.
      */
-    public static void processPhysicalEnergyGrid(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processPhysicalEnergyGrid(WorldBuffer buffer, double dtYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
         double dtSafe = Math.max(0.0001, dtYears);
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+        float[] bioHuman = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        float[] coalArr = buffer.getResourceCoal();
+        float[] oilArr = buffer.getResourceOil();
+        float[] gasArr = buffer.getResourceGas();
+        float[] uraniumArr = buffer.getResourceUranium();
+        int n = buffer.getCapacity();
 
-            double powerPerCapitaW = calculatePerCapitaMechanicalPowerWatts(cell);
-            double curCap = cell.getResourceCapitalOr(0.0);
+        for (int i = 0; i < n; i++) {
+            double pop = bioHuman[i] / 0.06;
+            if (pop <= 0.0) continue;
+
+            double powerPerCapitaW = calculatePerCapitaMechanicalPowerWatts(buffer, i);
+            double curCap = capArr[i];
             double capPerCapita = curCap / pop;
 
-            cell.setResourceWork(pop * 0.60);
-
-            double coalStock = cell.getResourceCoalOr(0.0);
-            double oilStock = cell.getResourceOilOr(0.0);
-            double gasStock = cell.getResourceGasOr(0.0);
-            double uraniumStock = cell.getResourceUraniumOr(0.0);
-            double reeStock = cell.getResourceRareEarthsOr(0.0);
+            double coalStock = coalArr[i];
+            double oilStock = oilArr[i];
+            double gasStock = gasArr[i];
+            double uraniumStock = uraniumArr[i];
 
             double coalShare = Math.tanh(coalStock / 2.0)
                     * 0.80 * SmoothMath.sigmoid(powerPerCapitaW, 400.0, 100.0)
@@ -136,40 +188,31 @@ public class PhysicalEnergyGridEngine extends AbstractSimulationEngine {
             double oilShare = Math.tanh(oilStock / 2.0) * 0.50 * SmoothMath.sigmoid(powerPerCapitaW, 600.0, 200.0);
             double gasShare = Math.tanh(gasStock / 2.0) * 0.40 * SmoothMath.sigmoid(powerPerCapitaW, 800.0, 200.0);
             double nuclearShare = Math.tanh(uraniumStock / 0.5) * 0.25 * SmoothMath.sigmoid(powerPerCapitaW, 1500.0, 250.0);
-            double reeShare = Math.tanh(reeStock / 0.5) * 0.20 * SmoothMath.sigmoid(powerPerCapitaW, 1200.0, 333.3);
 
             if (coalShare > 1e-4) {
                 double coalBurnTons = (pop * (powerPerCapitaW * coalShare) * 0.0013 * dtSafe) / 1000.0;
-                cell.setResourceCoal(Math.max(0.0, coalStock - coalBurnTons));
+                coalArr[i] = (float) Math.max(0.0, coalStock - coalBurnTons);
             }
             if (oilShare > 1e-4) {
                 double oilBurnTons = (pop * (powerPerCapitaW * oilShare) * 0.0008 * dtSafe) / 1000.0;
-                cell.setResourceOil(Math.max(0.0, oilStock - oilBurnTons));
+                oilArr[i] = (float) Math.max(0.0, oilStock - oilBurnTons);
             }
             if (gasShare > 1e-4) {
                 double gasBurnTons = (pop * (powerPerCapitaW * gasShare) * 0.0006 * dtSafe) / 1000.0;
-                cell.setResourceGas(Math.max(0.0, gasStock - gasBurnTons));
+                gasArr[i] = (float) Math.max(0.0, gasStock - gasBurnTons);
             }
             if (nuclearShare > 1e-4) {
                 double uBurnTons = (pop * (powerPerCapitaW * nuclearShare) * 1e-8 * dtSafe) / 1000.0;
-                cell.setResourceUranium(Math.max(0.0, uraniumStock - uBurnTons));
-            }
-            if (reeShare > 1e-4) {
-                double reeBurnTons = (pop * (powerPerCapitaW * reeShare) * 2e-7 * dtSafe) / 1000.0;
-                cell.setResourceRareEarths(Math.max(0.0, reeStock - reeBurnTons));
+                uraniumArr[i] = (float) Math.max(0.0, uraniumStock - uBurnTons);
             }
 
-            // Authentic Solow-Swan capital accumulation model grounded in useful mechanical power (Solow 1956, Garrett 2011, Krausmann et al. 2017)
-            // Steady-state material capital stock per capita k* scales thermodynamically with available power above somatic hearth baseline (~348 W):
             double kStar = 5.0
                     + 580.0 * Math.tanh(SmoothMath.softplus(powerPerCapitaW - 348.0, 0.2) / 38.0)
                     + 62.0 * Math.pow(SmoothMath.softplus(powerPerCapitaW - 400.0, 0.1) / 100.0, 1.95);
-            // Capital depreciation rate delta = 4.0% per year (entropy of physical structures/tools)
             double deltaAnnual = 0.04;
-            // Convergence towards thermodynamic steady state k*: dk/dt = delta * (k* - k)
             double dCapitalPerCapita = deltaAnnual * (kStar - capPerCapita) * dtSafe;
             double newCapPerCapita = Math.max(0.0, capPerCapita + dCapitalPerCapita);
-            cell.setResourceCapital(pop * newCapPerCapita);
+            capArr[i] = (float) (pop * newCapPerCapita);
         }
     }
 }

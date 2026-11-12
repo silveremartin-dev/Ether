@@ -64,34 +64,29 @@ public class CrustalGeothermalEngine extends AbstractSimulationEngine {
         return dSurface + (dMax - dSurface) * depthProgress;
     }
 
-    /**
-     * Evaluates crustal geothermal temperature at accessible shaft depth and applies thermal/ventilation
-     * constraints to subsurface extraction labor efficiency across cells (strictly mass-conserving).
-     *
-     * @param cells active H3 cells
-     */
-    public static void processCrustalGeothermal(List<H3Cell> cells) {
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
 
-            double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double capital = cell.getResourceCapitalOr(0.0);
-            double maxDepthMeters = calculateMaxMiningDepthMeters(powerPerCapita, capital);
+        double totalWatts = buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i] + buffer.getEnergySolar()[i] + buffer.getEnergyFoodConsumed()[i];
+        double powerPerCapita = Math.max(85.0, totalWatts / Math.max(1.0, pop));
+        double capital = buffer.getResourceCapital()[i];
+        double maxDepthMeters = calculateMaxMiningDepthMeters(powerPerCapita, capital);
 
-            double surfaceTempC = cell.getTemperatureOr(15.0);
-            double heatFlowRatio = cell.getMantleHeatFlowOr(CONTINENTAL_HEAT_FLUX_MW_PER_M2) / CONTINENTAL_HEAT_FLUX_MW_PER_M2;
-            double effectiveGradient = GEOTHERMAL_GRADIENT_C_PER_KM * Math.clamp(heatFlowRatio, 0.5, 3.0);
-            double miningSubsurfaceTempC = surfaceTempC + (maxDepthMeters / 1000.0) * effectiveGradient;
+        double surfaceTempC = buffer.getTemperature()[i];
+        double miningSubsurfaceTempC = surfaceTempC + (maxDepthMeters / 1000.0) * GEOTHERMAL_GRADIENT_C_PER_KM;
 
-            // Smooth C^infty geothermal HVAC energy penalty when deep rock exceeds wet-bulb physiological limit (35A°C)
-            double thermalCoolingLoad = SmoothMath.softplus(miningSubsurfaceTempC - 35.0, 0.5) * 0.002;
-            double curWork = cell.getResourceWorkOr(pop * 0.60);
-            double hvacWorkFraction = SmoothMath.softmin(0.25, thermalCoolingLoad, 20.0);
-            cell.setResourceWork(Math.max(0.0, curWork * (1.0 - hvacWorkFraction)));
+        double thermalCoolingLoad = SmoothMath.softplus(miningSubsurfaceTempC - 35.0, 0.5) * 0.002;
+        double hvacWorkFraction = SmoothMath.softmin(0.25, thermalCoolingLoad, 20.0);
+        if (hvacWorkFraction > 0.0) {
+            float curComp = buffer.getInstitutionalComplexity()[i];
+            acc.dInstitutionalComplexity -= (float) (curComp * hvacWorkFraction * Math.min(1.0, dtYears));
         }
     }
 }

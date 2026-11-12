@@ -66,47 +66,6 @@ public class OceanAcidificationEngine extends AbstractSimulationEngine {
         return calculateHenrySolubility(tempCelsius) * pCO2Atm;
     }
 
-    /**
-     * Executes one ocean acidification and Henry solubility pump tick.
-     *
-     * @param cells   List of H3 cells
-     * @param co2Ppm  Global atmospheric COÃ¢â€šâ€š concentration in ppm
-     */
-    public static void processOceanAcidification(List<H3Cell> cells, double co2Ppm) {
-// Numerical integration step for OceanAcidificationEngine - verifies boundary conservation and updates local thermodynamic state
-        if (cells == null || cells.isEmpty()) return;
-
-        // Baseline COÃ¢a€ša€š = 280 ppm. Acidification occurs when COÃ¢a€ša€š > 350 ppm
-        if (co2Ppm <= 350.0) return;
-
-        double acidificationFactor = (co2Ppm - 350.0) / 650.0; // 0.0 to 1.0
-        int impactedCells = 0;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            Biome biome = cell.getBiome();
-            if (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || biome == Biome.BEACH
-                    || cell.getElevationOr(0.0) <= 0.0 || Boolean.TRUE.equals(cell.getIsCoastal())) {
-                impactedCells++;
-                double tempC = cell.getTemperatureOr(15.0);
-                double henrySolubility = calculateHenrySolubility(tempC);
-
-                // Colder polar waters absorb more CO2 and acidify faster
-                double polarAcidificationMultiplier = henrySolubility / HENRY_K0_CO2;
-
-                double fish = cell.getBiomassFishOr(500.0);
-                // Acidification & coral reef degradation reduces fish nursery capacity
-                double updatedFish = Math.max(0.0, fish * (1.0 - 0.05 * acidificationFactor * polarAcidificationMultiplier));
-                cell.setBiomassFish(updatedFish);
-            }
-        }
-
-        if (impactedCells > 0 && acidificationFactor > 0.05) {
-            logger.info("Ocean Acidification Engine: Marine stock degradation across {} ocean/coastal cells (CO2: {} ppm).",
-                    impactedCells, String.format("%.1f", co2Ppm));
-        }
-    }
-
     @Override
     public boolean supportsCellularDerivatives() {
         return true;

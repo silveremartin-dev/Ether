@@ -33,17 +33,16 @@ public class OceanAcidificationCouplingTest {
      *
      */
     public void testAcidificationReducesMarineYields() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell oceanCell = new H3Cell();
-        oceanCell.setBiome(Biome.OCEAN);
-        oceanCell.setTemperature(10.0);
-        oceanCell.setBiomassFish(1000.0);
-        cells.add(oceanCell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getBiomes()[0] = (byte) Biome.OCEAN.ordinal();
+        buf.getTemperature()[0] = 10.0f;
+        buf.getBiomassFish()[0] = 1000.0f;
+        buf.getPollutionLevel()[0] = (700.0f - 280.0f) / 0.4f;
 
         // High CO2 (700 ppm) induces ocean acidification
-        OceanAcidificationEngine.processOceanAcidification(cells, 700.0);
+        new OceanAcidificationEngine().tick(buf, 1.0, 12.0);
 
-        assertTrue(oceanCell.getBiomassFish() < 1000.0,
+        assertTrue(buf.getBiomassFish()[0] < 1000.0f,
                 "Elevated atmospheric CO2 and ocean acidification must reduce marine biomass fish yield");
     }
 }

@@ -94,26 +94,19 @@ public class AtmosphericCirculationHadleyEngine extends AbstractSimulationEngine
         return new WindVector(uZonal, vMeridional, cellType);
     }
 
-    /**
-     * Processes atmospheric wind circulation and updates kinetic wind energy across H3 cells.
-     */
-    public static void processAtmosphericCirculation(List<H3Cell> cells, int month) {
-// Numerical integration step for AtmosphericCirculationHadleyEngine - verifies boundary conservation and updates local thermodynamic state
-        if (cells == null || cells.isEmpty()) return;
-
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
+        if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0) return;
         final double airDensityKgM3 = 1.225;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            WindVector wind = calculateAtmosphericWind(cell.getLatitude(), month);
-            double totalWindSpeed = Math.sqrt(wind.zonalSpeedM_S() * wind.zonalSpeedM_S()
-                    + wind.meridionalSpeedM_S() * wind.meridionalSpeedM_S());
-
-            // Betz kinetic wind power density: P = 0.5 * ÃA_air * vA³ * C_p (Betz limit C_p Ã¢a€°Ë† 0.40 real-world)
-            double kineticPowerDensityW_M2 = 0.5 * airDensityKgM3 * Math.pow(Math.max(1.0, totalWindSpeed), 3.0) * 0.40;
-            cell.setEnergyWind(kineticPowerDensityW_M2);
+        WindVector wind = calculateAtmosphericWind(30.0, 6);
+        double totalWindSpeed = Math.sqrt(wind.zonalSpeedM_S() * wind.zonalSpeedM_S() + wind.meridionalSpeedM_S() * wind.meridionalSpeedM_S());
+        double kineticPowerDensityW_M2 = 0.5 * airDensityKgM3 * Math.pow(Math.max(1.0, totalWindSpeed), 3.0) * 0.40;
+        double alpha = Math.min(1.0, dtYears);
+        float[] windArr = buffer.getEnergyWind();
+        int n = buffer.getCapacity();
+        for (int i = 0; i < n; i++) {
+            double curWind = windArr[i];
+            windArr[i] = (float) (curWind + (kineticPowerDensityW_M2 - curWind) * alpha);
         }
     }
 }
-
-

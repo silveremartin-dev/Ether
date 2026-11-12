@@ -102,7 +102,7 @@ public class H3SpatialPartitioner {
                 return computeHilbertKey(lat, lng);
             }));
         } catch (UnsupportedOperationException e) {
-            // List is unmodifiable (e.g. List.of), ignore in-place sort
+            org.slf4j.LoggerFactory.getLogger(H3SpatialPartitioner.class).trace("List is unmodifiable (e.g. List.of), skipping in-place sort: {}", e.getMessage());
         }
     }
 

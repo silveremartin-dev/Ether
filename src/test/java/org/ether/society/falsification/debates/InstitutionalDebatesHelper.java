@@ -63,10 +63,24 @@ final class InstitutionalDebatesHelper {
     }
 
     static double runOstromWatershedSimulation(List<H3Cell> cells, int years) {
-        for (int yr = 0; yr < years; yr++) {
-            OstromCommonsPureEngine.processHybrid(cells, 1.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            buf.getBiomassHuman()[i] = (float) c.getPopulationOr(0);
+            buf.getFreshwaterAquifer()[i] = c.getAccessibleAquifer() != null ? c.getAccessibleAquifer().floatValue() : 0.0f;
+            buf.getRainfall()[i] = (float) c.getRainfallOr(800.0);
+            buf.getResourceCapital()[i] = (float) c.getResourceCapitalOr(0.0);
         }
-        return cells.stream().mapToDouble(H3Cell::getAccessibleAquifer).average().orElse(0.0);
+        OstromCommonsPureEngine engine = new OstromCommonsPureEngine();
+        for (int yr = 0; yr < years; yr++) {
+            engine.tick(buf, 1.0, 1.0);
+        }
+        double sum = 0.0;
+        for (int i = 0; i < cells.size(); i++) {
+            cells.get(i).setAccessibleAquifer((double) buf.getFreshwaterAquifer()[i]);
+            sum += buf.getFreshwaterAquifer()[i];
+        }
+        return cells.isEmpty() ? 0.0 : sum / cells.size();
     }
 
     static double runHardinDepletionSimulation(List<H3Cell> cells, int years, double perCapitaPumping) {
@@ -128,65 +142,81 @@ final class InstitutionalDebatesHelper {
         mobileForagerCamp.setLifespan(40.0);
         mobileForagerCamp.setPollutionLevel(0.0);
 
-        List<H3Cell> cells = List.of(earlyGrainTown, mobileForagerCamp);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
+        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getResourceCapital()[0] = 10000.0f * 150.0f;
+        buf.getLifespan()[0] = 40.0f;
+        buf.getPollutionLevel()[0] = 0.0f;
+        buf.getBiomassHuman()[1] = 100.0f;
+        buf.getResourceCapital()[1] = 100.0f * 20.0f;
+        buf.getLifespan()[1] = 40.0f;
+        buf.getPollutionLevel()[1] = 0.0f;
+
+        ScottAgainstTheGrainPureEngine engine = new ScottAgainstTheGrainPureEngine();
         for (int yr = 0; yr < 10; yr++) {
-            ScottAgainstTheGrainPureEngine.processHybrid(cells, 1.0);
+            engine.tick(buf, 1.0, 1.0);
         }
-        return new ScottZoonoticResult(earlyGrainTown.getLifespan(), mobileForagerCamp.getLifespan());
+        return new ScottZoonoticResult(buf.getLifespan()[0], buf.getLifespan()[1]);
     }
 
     static ZomiaEscapeResult runZomiaEscapeSimulation() {
-        H3Cell valleyCell = new H3Cell(0x8828308285fffffL, 31.3, 45.6);
-        valleyCell.setPopulation(10000);
-        valleyCell.setResourceCapital(10000 * 150.0);
-        valleyCell.setLifespan(40.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
+        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getResourceCapital()[0] = 10000.0f * 150.0f;
+        buf.getLifespan()[0] = 40.0f;
+        buf.getBiomassHuman()[1] = 2000.0f;
+        buf.getResourceCapital()[1] = 2000.0f * 20.0f;
+        buf.getLifespan()[1] = 40.0f;
 
-        H3Cell highlandZomia = new H3Cell(0x8828308287fffffL, 31.0, 47.0);
-        highlandZomia.setPopulation(2000);
-        highlandZomia.setResourceCapital(2000 * 20.0);
-        highlandZomia.setLifespan(40.0);
-
-        List<H3Cell> cells = List.of(valleyCell, highlandZomia);
+        ScottAgainstTheGrainPureEngine engine = new ScottAgainstTheGrainPureEngine();
         for (int yr = 0; yr < 20; yr++) {
-            ScottAgainstTheGrainPureEngine.processHybrid(cells, 1.0);
-            if (valleyCell.getLifespan() != null && valleyCell.getLifespan() < 35.0) {
-                int migrants = 150;
-                valleyCell.setPopulation(valleyCell.getPopulation() - migrants);
-                highlandZomia.setPopulation(highlandZomia.getPopulation() + migrants);
+            engine.tick(buf, 1.0, 1.0);
+            if (buf.getLifespan()[0] < 35.0f) {
+                float migrants = 150.0f;
+                buf.getBiomassHuman()[0] -= migrants;
+                buf.getBiomassHuman()[1] += migrants;
             }
         }
-        return new ZomiaEscapeResult(valleyCell.getPopulation(), highlandZomia.getPopulation());
+        return new ZomiaEscapeResult((int) buf.getBiomassHuman()[0], (int) buf.getBiomassHuman()[1]);
     }
 
     static TasmanianRegressionResult runTasmanianRegressionSimulation() {
-        List<H3Cell> islandCells = new ArrayList<>();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(7);
+        double initialSum = 0.0;
         for (int i = 0; i < 7; i++) {
-            H3Cell cell = new H3Cell(0x8428308289fffffL + i, -42.0 + (i * 0.1), 147.0 + (i * 0.1));
-            cell.setPopulation(420);
-            cell.setResourceCapital(420 * 100.0);
-            islandCells.add(cell);
+            buf.getBiomassHuman()[i] = 420.0f;
+            buf.getResourceCapital()[i] = 420.0f * 100.0f;
+            initialSum += buf.getResourceCapital()[i];
         }
-        double initialCap = islandCells.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
+        double initialCap = initialSum / 7.0;
+        TasmanianCulturalRegressionEngine engine = new TasmanianCulturalRegressionEngine();
         for (int yr = 0; yr < 30; yr++) {
-            TasmanianCulturalRegressionEngine.processHybrid(islandCells, 1.0);
+            engine.tick(buf, 1.0, 1.0);
         }
-        double avgFinalCap = islandCells.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
-        return new TasmanianRegressionResult(initialCap, avgFinalCap);
+        double finalSum = 0.0;
+        for (int i = 0; i < 7; i++) {
+            finalSum += buf.getResourceCapital()[i];
+        }
+        return new TasmanianRegressionResult(initialCap, finalSum / 7.0);
     }
 
     static ReconnectedArchipelagoResult runReconnectedArchipelagoSimulation() {
-        List<H3Cell> connectedGrid = new ArrayList<>();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(7);
+        double initialSum = 0.0;
         for (int i = 0; i < 7; i++) {
-            H3Cell cell = new H3Cell(0x8428308289fffffL + i, -42.0 + (i * 0.1), 147.0 + (i * 0.1));
-            cell.setPopulation(3500);
-            cell.setResourceCapital(3500 * 100.0);
-            connectedGrid.add(cell);
+            buf.getBiomassHuman()[i] = 3500.0f;
+            buf.getResourceCapital()[i] = 3500.0f * 100.0f;
+            initialSum += buf.getResourceCapital()[i];
         }
-        double initialCap = connectedGrid.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
+        double initialCap = initialSum / 7.0;
+        TasmanianCulturalRegressionEngine engine = new TasmanianCulturalRegressionEngine();
         for (int yr = 0; yr < 30; yr++) {
-            TasmanianCulturalRegressionEngine.processHybrid(connectedGrid, 1.0);
+            engine.tick(buf, 1.0, 1.0);
         }
-        double avgCap = connectedGrid.stream().mapToDouble(H3Cell::getResourceCapital).average().orElse(0.0);
-        return new ReconnectedArchipelagoResult(initialCap, avgCap);
+        double finalSum = 0.0;
+        for (int i = 0; i < 7; i++) {
+            finalSum += buf.getResourceCapital()[i];
+        }
+        return new ReconnectedArchipelagoResult(initialCap, finalSum / 7.0);
     }
 }

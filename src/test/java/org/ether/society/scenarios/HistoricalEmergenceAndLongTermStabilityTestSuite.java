@@ -162,20 +162,28 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
         nileCellDest.setFoodResource((africaCell.getFoodResource() != null ? africaCell.getFoodResource() : 500.0) * 2.0);
 
         // Execute 40 simulation ticks of demographic growth & spatial migration
+        org.ether.society.core.dod.WorldBuffer buf1 = new org.ether.society.core.dod.WorldBuffer(globalCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(globalCells, buf1, true);
+        BiologicalDemographicsEngine bioEngine1 = new BiologicalDemographicsEngine();
+        ThermodynamicMigrationEngine migEngine1 = new ThermodynamicMigrationEngine();
+        PhysicalLawEngine physEngine1 = new PhysicalLawEngine();
         for (int t = 0; t < 40; t++) {
-            BiologicalDemographicsEngine.processBiologicalDemographics(globalCells);
-            ThermodynamicMigrationEngine.processThermodynamicMigration(globalCells);
-            PhysicalLawEngine.applyPhysicalLaws(globalCells, 1.0);
+            bioEngine1.tick(buf1, 1.0, 12.0);
+            migEngine1.tick(buf1, 1.0, 12.0);
+            physEngine1.tick(buf1, 1.0, 12.0);
         }
 
         // Verify demographic wave spread to non-origin cells
-        long nonOriginTotalPop = globalCells.stream()
-                .filter(c -> c.getH3Index() != 2001L)
-                .mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0)
-                .sum();
+        long nonOriginTotalPop = 0L;
+        long globalPop = 0L;
+        for (int i = 0; i < globalCells.size(); i++) {
+            long pop = Math.round(buf1.getBiomassHuman()[i] / 0.06);
+            globalPop += pop;
+            if (buf1.getH3Indexes()[i] != 2001L) {
+                nonOriginTotalPop += pop;
+            }
+        }
         assertTrue(nonOriginTotalPop > 0, "Demographic wave out of Africa must spread to neighboring regions");
-
-        long globalPop = globalCells.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
         assertTrue(globalPop >= 1_000L && globalPop <= 5_000_000L,
                 "Global paleolithic population must remain within ecological bounds (1k to 5M)");
     }
@@ -213,17 +221,25 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
         desertCell.setBiomassAgriculture(20.0);
 
         // Run 50 simulation ticks with agricultural soil, NPK, and demographic engines
+        org.ether.society.core.dod.WorldBuffer buf2 = new org.ether.society.core.dod.WorldBuffer(globalCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(globalCells, buf2, false);
+        buf2.getBiomassHuman()[1] = Math.max(buf2.getBiomassHuman()[1], 5000.0f * 0.06f);
+        buf2.getBiomassHuman()[6] = 10.0f * 0.06f;
+        SoilNutrientNPKEngine npkEngine2 = new SoilNutrientNPKEngine();
+        BiologicalDemographicsEngine bioEngine2 = new BiologicalDemographicsEngine();
+        EcologicalDegradationEngine ecoEngine2 = new EcologicalDegradationEngine();
+        PhysicalLawEngine physEngine2 = new PhysicalLawEngine();
         for (int t = 0; t < 50; t++) {
-            SoilNutrientNPKEngine.processSoilNutrients(globalCells);
-            BiologicalDemographicsEngine.processBiologicalDemographics(globalCells);
-            EcologicalDegradationEngine.processEcologicalDegradation(globalCells, 1.0);
-            PhysicalLawEngine.applyPhysicalLaws(globalCells, 1.0);
+            npkEngine2.tick(buf2, 1.0 / 12.0, 1.0);
+            bioEngine2.tick(buf2, 1.0 / 12.0, 1.0);
+            ecoEngine2.tick(buf2, 1.0 / 12.0, 1.0);
+            physEngine2.tick(buf2, 1.0, 12.0);
         }
 
-        assertTrue(nileCell.getWaterResource() > desertCell.getWaterResource(),
+        assertTrue(buf2.getWaterResource()[1] > buf2.getWaterResource()[6],
                 "River valley fertile cells must retain significantly higher water resources than arid desert");
 
-        assertTrue(nileCell.getBiomassAgriculture() >= desertCell.getBiomassAgriculture(),
+        assertTrue(buf2.getBiomassAgriculture()[1] >= buf2.getBiomassAgriculture()[6],
                 "Neolithic river valley cells must sustain equal or higher agricultural biomass than desert hinterlands");
     }
 
@@ -254,15 +270,19 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
         nations.add(mesopotamiaState);
 
         // Run 30 political and thermodynamic simulation ticks
+        org.ether.society.core.dod.WorldBuffer coGovBuf = new org.ether.society.core.dod.WorldBuffer(globalCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(globalCells, coGovBuf, false);
+        BiologicalDemographicsEngine bioEngine3 = new BiologicalDemographicsEngine();
+        CoGovernanceTradeEngine coGovEngine = new CoGovernanceTradeEngine();
         for (int t = 0; t < 30; t++) {
-            BiologicalDemographicsEngine.processBiologicalDemographics(globalCells);
-            CoGovernanceTradeEngine.processTradeAndGovernance(globalCells, 1.0);
+            bioEngine3.tick(coGovBuf, 1.0, 12.0);
+            coGovEngine.tick(coGovBuf, 1.0, 1.0);
         }
 
         assertTrue(nations.size() >= 2,
                 "State entities must persist and compete across the simulation timeframe");
 
-        assertTrue(nileCell.getResourceCapital() > 50.0,
+        assertTrue(coGovBuf.getResourceCapital()[1] > 50.0f,
                 "Nile state core must accumulate physical capital infrastructure");
     }
 
@@ -291,35 +311,43 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
         preCompute.execute(globalCells);
 
         // Run 100 full multi-engine simulation ticks
+        org.ether.society.core.dod.WorldBuffer buf4 = new org.ether.society.core.dod.WorldBuffer(globalCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(globalCells, buf4, false);
+        BiologicalDemographicsEngine bioEngine4 = new BiologicalDemographicsEngine();
+        RenewableEnergyPhysicsEngine renewEngine4 = new RenewableEnergyPhysicsEngine();
+        AtmosphericOxygenEngine o2Engine4 = new AtmosphericOxygenEngine();
+        SoilNutrientNPKEngine npkEngine4 = new SoilNutrientNPKEngine();
+        NetEnergyEROEIEngine eroeiEngine4 = new NetEnergyEROEIEngine();
+        PhysicalLawEngine physEngine4 = new PhysicalLawEngine();
         for (int tick = 1; tick <= 100; tick++) {
-            BiologicalDemographicsEngine.processBiologicalDemographics(globalCells);
-            RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(globalCells);
-            AtmosphericOxygenEngine.processAtmosphericOxygen(globalCells, 0.21, 1.0);
-            SoilNutrientNPKEngine.processSoilNutrients(globalCells);
-            NetEnergyEROEIEngine.processNetEnergyEROEI(globalCells);
-            PhysicalLawEngine.applyPhysicalLaws(globalCells, 1.0);
+            bioEngine4.tick(buf4, 1.0, 12.0);
+            renewEngine4.tick(buf4, 1.0, 12.0);
+            o2Engine4.tick(buf4, 1.0, 12.0);
+            npkEngine4.tick(buf4, 1.0, 12.0);
+            eroeiEngine4.tick(buf4, 1.0, 12.0);
+            physEngine4.tick(buf4, 1.0, 12.0);
 
             // Assert absolute numerical safety across all cells
-            for (H3Cell cell : globalCells) {
-                int pop = cell.getPopulation();
-                double capital = cell.getResourceCapital();
-                double food = cell.getFoodResource();
-                double temp = cell.getTemperature();
-                double metals = cell.getResourceMetal();
+            for (int i = 0; i < globalCells.size(); i++) {
+                long pop = Math.round(buf4.getBiomassHuman()[i] / 0.06);
+                float capital = buf4.getResourceCapital()[i];
+                float food = buf4.getFoodResource()[i];
+                float temp = buf4.getTemperature()[i];
+                float metals = buf4.getMetalResource()[i];
 
                 assertTrue(pop >= 0, "Population must be non-negative at tick " + tick);
-                assertFalse(Double.isNaN(capital), "Capital must not be NaN at tick " + tick);
-                assertFalse(Double.isInfinite(capital), "Capital must not be Infinite at tick " + tick);
-                assertTrue(capital >= 0.0, "Capital must be non-negative at tick " + tick);
+                assertFalse(Float.isNaN(capital), "Capital must not be NaN at tick " + tick);
+                assertFalse(Float.isInfinite(capital), "Capital must not be Infinite at tick " + tick);
+                assertTrue(capital >= 0.0f, "Capital must be non-negative at tick " + tick);
 
-                assertFalse(Double.isNaN(food), "Food resource must not be NaN at tick " + tick);
-                assertTrue(food >= 0.0, "Food resource must be non-negative at tick " + tick);
+                assertFalse(Float.isNaN(food), "Food resource must not be NaN at tick " + tick);
+                assertTrue(food >= 0.0f, "Food resource must be non-negative at tick " + tick);
 
-                assertFalse(Double.isNaN(temp), "Temperature must not be NaN at tick " + tick);
-                assertTrue(temp >= -100.0 && temp <= 100.0, "Temperature must remain within plausible planetary bounds [-100C, 100C]");
+                assertFalse(Float.isNaN(temp), "Temperature must not be NaN at tick " + tick);
+                assertTrue(temp >= -100.0f && temp <= 100.0f, "Temperature must remain within plausible planetary bounds [-100C, 100C]");
 
-                assertFalse(Double.isNaN(metals), "Metal resource must not be NaN at tick " + tick);
-                assertTrue(metals >= 0.0, "Metal resource must be non-negative at tick " + tick);
+                assertFalse(Float.isNaN(metals), "Metal resource must not be NaN at tick " + tick);
+                assertTrue(metals >= 0.0f, "Metal resource must be non-negative at tick " + tick);
             }
         }
     }
@@ -346,15 +374,27 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
         logger.info("=== HISTORICAL TELEMETRY CHRONICLE REPORT START ===");
         logger.info("Tick | Total Pop | Populated Cells | Total Capital | Avg Tech | Avg Temp (C)");
 
+        org.ether.society.core.dod.WorldBuffer buf5 = new org.ether.society.core.dod.WorldBuffer(globalCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(globalCells, buf5, false);
+        BiologicalDemographicsEngine bioEngine5 = new BiologicalDemographicsEngine();
+        PhysicalLawEngine physEngine5 = new PhysicalLawEngine();
         for (int t = 1; t <= 20; t++) {
-            BiologicalDemographicsEngine.processBiologicalDemographics(globalCells);
-            PhysicalLawEngine.applyPhysicalLaws(globalCells, 1.0);
+            bioEngine5.tick(buf5, 1.0, 12.0);
+            physEngine5.tick(buf5, 1.0, 12.0);
 
-            long totalPop = globalCells.stream().mapToLong(H3Cell::getPopulation).sum();
-            long populatedCount = globalCells.stream().filter(c -> c.getPopulation() > 0).count();
-            double totalCap = globalCells.stream().mapToDouble(H3Cell::getResourceCapital).sum();
-            double avgTech = globalCells.stream().mapToDouble(org.ether.society.database.H3CellPhysicsAndStateHelper::computeEmergentTechnologyDiagnostic).average().orElse(0.0);
-            double avgTemp = globalCells.stream().mapToDouble(H3Cell::getTemperature).average().orElse(0.0);
+            long totalPop = 0L;
+            long populatedCount = 0L;
+            double totalCap = 0.0;
+            double avgTemp = 0.0;
+            for (int i = 0; i < globalCells.size(); i++) {
+                long pop = Math.round(buf5.getBiomassHuman()[i] / 0.06);
+                totalPop += pop;
+                if (pop > 0) populatedCount++;
+                totalCap += buf5.getResourceCapital()[i];
+                avgTemp += buf5.getTemperature()[i];
+            }
+            avgTemp /= globalCells.size();
+            double avgTech = totalPop > 0 ? Math.log1p(totalCap / totalPop) : 0.0;
 
             if (t % 5 == 0 || t == 1) {
                 logger.info(String.format("%4d | %9d | %15d | %13.2f | %8.2f | %12.2f",
@@ -362,7 +402,10 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
             }
         }
         logger.info("=== HISTORICAL TELEMETRY CHRONICLE REPORT END ===");
-        long finalPop = globalCells.stream().mapToLong(H3Cell::getPopulation).sum();
+        long finalPop = 0L;
+        for (int i = 0; i < globalCells.size(); i++) {
+            finalPop += Math.round(buf5.getBiomassHuman()[i] / 0.06);
+        }
         assertTrue(finalPop > 0, "Global population must remain non-zero across 20 chronicle ticks");
         assertFalse(globalCells.isEmpty(), "Global cells must not be empty");
     }

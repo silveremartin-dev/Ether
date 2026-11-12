@@ -6,14 +6,13 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
+import org.ether.society.h3.H3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Dynamic Thermohaline Circulation &amp; Stommel (1961) 2-Box Overturning Engine.
@@ -222,39 +221,44 @@ public class ThermohalineStommelAMOCEngine extends AbstractSimulationEngine {
         return orbitalMeltSv + greenhouseMeltSv;
     }
 
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processThermohalineCirculation(buf, dtYears, 0.0);
+    }
+
     /**
-     * Executes one thermohaline circulation step and applies smooth spatial anomalies across planetary cells.
+     * Executes one thermohaline circulation step and applies smooth spatial anomalies across DoD buffer.
      *
-     * @param cells Simulation H3 cells
+     * @param buffer WorldBuffer DoD state
      * @param dtYears Timestep duration in years
      * @param currentYear Simulation year
      */
-    public static void processThermohalineCirculation(List<H3Cell> cells, double dtYears, double currentYear) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processThermohalineCirculation(WorldBuffer buffer, double dtYears, double currentYear) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
         double meltwaterAnomalySv = calculateMeltwaterAnomalySv(currentYear, 0.0);
-        processThermohalineCirculationWithMeltwater(cells, meltwaterAnomalySv, dtYears);
+        processThermohalineCirculationWithMeltwater(buffer, meltwaterAnomalySv, dtYears);
     }
 
     /**
      * Executes one thermohaline circulation step for current baseline era (year 0 CE).
      *
-     * @param cells Simulation H3 cells
+     * @param buffer WorldBuffer DoD state
      * @param dtYears Timestep duration in years
      */
-    public static void processThermohalineCirculation(List<H3Cell> cells, double dtYears) {
-        processThermohalineCirculation(cells, dtYears, 0.0);
+    public static void processThermohalineCirculation(WorldBuffer buffer, double dtYears) {
+        processThermohalineCirculation(buffer, dtYears, 0.0);
     }
 
     /**
      * Executes one thermohaline circulation step with explicit freshwater meltwater anomaly.
      *
-     * @param cells Simulation H3 cells
+     * @param buffer WorldBuffer DoD state
      * @param freshwaterMeltwaterAnomalySv Freshwater discharge in Sverdrups
      * @param dtYears Timestep duration in years
      */
-    public static void processThermohalineCirculationWithMeltwater(List<H3Cell> cells, double freshwaterMeltwaterAnomalySv, double dtYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processThermohalineCirculationWithMeltwater(WorldBuffer buffer, double freshwaterMeltwaterAnomalySv, double dtYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
         StommelState state = stepStommelDynamics(freshwaterMeltwaterAnomalySv, dtYears);
 
@@ -267,30 +271,43 @@ public class ThermohalineStommelAMOCEngine extends AbstractSimulationEngine {
 
         double dtSafe = Math.max(0.0001, dtYears);
         double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 2.0);
+        float[] tempArr = buffer.getTemperature();
+        long[] h3Arr = buffer.getH3Indexes();
+        H3Service h3Service = H3Service.getInstance();
+        int n = buffer.getCapacity();
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double lat = cell.getLatitudeOr(0.0);
-            double lng = cell.getLongitudeOr(0.0);
+        for (int i = 0; i < n; i++) {
+            double lat = 0.0;
+            double lng = 0.0;
+            if (h3Arr != null && h3Arr[i] != 0L) {
+                try {
+                    com.uber.h3core.util.LatLng coord = h3Service.cellToLatLng(h3Arr[i]);
+                    lat = coord.lat;
+                    lng = coord.lng;
+                } catch (Exception ignored) {
+                    lat = 0.0;
+                    lng = 0.0;
+                }
+            }
 
-            // 1. North Atlantic & Western European Spatial Envelope (40A°N-75A°N, -65A°E to +35A°E)
+            // 1. North Atlantic & Western European Spatial Envelope (40 N-75 N, -65 E to +35 E)
             double northLatWeight = SmoothMath.sigmoid(lat, 40.0, 4.0) * (1.0 - SmoothMath.sigmoid(lat, 75.0, 4.0));
             double northLonWeight = SmoothMath.sigmoid(lng, -65.0, 8.0) * (1.0 - SmoothMath.sigmoid(lng, 35.0, 8.0));
             double northEnvelope = northLatWeight * northLonWeight;
 
-            // 2. Southern Ocean / South Atlantic Bipolar Seesaw Envelope (-70A°S to -30A°S, -60A°E to +30A°E)
+            // 2. Southern Ocean / South Atlantic Bipolar Seesaw Envelope (-70 S to -30 S, -60 E to +30 E)
             double southLatWeight = SmoothMath.sigmoid(lat, -70.0, 5.0) * (1.0 - SmoothMath.sigmoid(lat, -30.0, 5.0));
             double southLonWeight = SmoothMath.sigmoid(lng, -60.0, 10.0) * (1.0 - SmoothMath.sigmoid(lng, 30.0, 10.0));
             double southEnvelope = southLatWeight * southLonWeight;
 
-            double curTemp = cell.getTemperatureOr(10.0);
+            double curTemp = tempArr[i];
 
             if (northEnvelope > 1e-3) {
                 double deltaTNorth = state.northAtlanticCoolingShiftC() * northEnvelope;
-                cell.setTemperature(curTemp + deltaTNorth * thermalRelaxationFactor);
+                tempArr[i] = (float) (curTemp + deltaTNorth * thermalRelaxationFactor);
             } else if (southEnvelope > 1e-3) {
                 double deltaTSouth = state.southernOceanWarmingShiftC() * southEnvelope;
-                cell.setTemperature(curTemp + deltaTSouth * thermalRelaxationFactor);
+                tempArr[i] = (float) (curTemp + deltaTSouth * thermalRelaxationFactor);
             }
         }
     }

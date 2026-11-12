@@ -195,44 +195,6 @@ public class KummelAyresExergyEngine extends AbstractSimulationEngine {
             }
         }
     }
-
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double capital = cell.getResourceCapital() != null ? Math.max(1.0, cell.getResourceCapital()) : 10.0;
-            double labor = cell.getResourceWork() != null ? Math.max(1.0, cell.getResourceWork()) : (pop * 0.5);
-
-            double powerPerCapitaWatts = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double totalPrimaryWatts = powerPerCapitaWatts * pop;
-
-            double tColdK = (cell.getTemperatureOr(15.0f)) + 273.15;
-            double coal = cell.getResourceCoalOr(0.0);
-            double oil = cell.getResourceOilOr(0.0);
-            double deltaTFlame = 450.0
-                    + 700.0 * SmoothMath.sigmoid(coal, 100.0, 30.0)
-                    + 500.0 * SmoothMath.sigmoid(oil, 100.0, 30.0);
-            double tHotK = tColdK + deltaTFlame;
-            double etaCarnot = 1.0 - (tColdK / tHotK);
-
-            double kPerCapita = capital / pop;
-            double recoveryFactor = 0.08 + (0.58 - 0.08) * SmoothMath.sigmoid(kPerCapita, 1200.0, 400.0);
-            double etaThermo = Math.clamp(etaCarnot * recoveryFactor, 0.05, 0.50);
-            double usefulExergy = SmoothMath.softplus(totalPrimaryWatts * etaThermo, 1.0, 5.0);
-
-            double tfp = 1.0;
-            double economicOutput = tfp * Math.pow(capital, ALPHA_K) * Math.pow(labor, BETA_L) * Math.pow(usefulExergy, GAMMA_E);
-
-            double capitalReinvestment = economicOutput * 0.05 * deltaYears;
-            double capitalDepreciation = capital * 0.04 * deltaYears;
-            cell.setResourceCapital(Math.max(1.0, capital + capitalReinvestment - capitalDepreciation));
-        }
-    }
 }
 
 

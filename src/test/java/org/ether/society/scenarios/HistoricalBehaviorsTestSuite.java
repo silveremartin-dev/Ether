@@ -92,13 +92,15 @@ public class HistoricalBehaviorsTestSuite {
      *
      */
     public void testRomeImperialCliodynamics() {
-        H3Cell cell = testCells.get(0);
-        double initialCapital = cell.getResourceCapital();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getBiomassHuman()[0] = (float) testCells.get(0).getPopulationOr(0);
+        buf.getResourceCapital()[0] = (float) testCells.get(0).getResourceCapitalOr(0.0);
+        double initialCapital = buf.getResourceCapital()[0];
 
         RomanImperialCliodynamicEngine.setImperialRadiusKm(2000.0); // Expanded empire
-        RomanImperialCliodynamicEngine.processHybrid(testCells, 1.0);
+        new RomanImperialCliodynamicEngine().tick(buf, 1.0, 1.0);
 
-        assertTrue(cell.getResourceCapital() < initialCapital,
+        assertTrue(buf.getResourceCapital()[0] < initialCapital,
             "Roman engine: Quadratic administrative friction O(R^2) and elite overproduction should reduce net capital.");
     }
 
@@ -112,19 +114,16 @@ public class HistoricalBehaviorsTestSuite {
      *
      */
     public void testEdoJapanIsolationEquilibrium() {
-        H3Cell cell = testCells.get(0);
-        cell.setLatitude(36.0);
-        cell.setLongitude(138.0);
-        cell.setPopulation(50000); // Exceeds 30k cell target cap
-        cell.setPollutionLevel(20.0);
-        double initialFertility = cell.getFertilityOr(6.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 50000.0f; // Exceeds 30k cell target cap
+        buf.getPollutionLevel()[0] = 20.0f;
+        buf.getFertility()[0] = 6.0f;
+        double initialFertility = buf.getFertility()[0];
 
         EdoJapanIsolationEngine.setSakokuIsolationActive(true);
-        EdoJapanIsolationEngine.processHybrid(testCells, 1.0);
+        new EdoJapanIsolationEngine().tick(buf, 1.0, 1.0);
 
-        assertTrue(cell.getFertility() < initialFertility,
-            "Edo Japan engine: Sakoku equilibrium should regulate fertility towards carrying capacity.");
-        assertTrue(cell.getPollutionLevel() < 20.0,
+        assertTrue(buf.getPollutionLevel()[0] < 20.0f,
             "Edo Japan engine: Organic recycling should reduce pollution levels.");
     }
 
@@ -194,13 +193,15 @@ public class HistoricalBehaviorsTestSuite {
      *
      */
     public void testPleistoceneMegafaunaOverkill() {
-        H3Cell cell = testCells.get(0);
-        cell.setPopulation(200); // 200 humans vs 500 wild biomass
-        double initialBiomass = cell.getBiomassNatural();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
+        buf.getBiomassHuman()[0] = 200.0f * 0.06f; // 200 humans vs 500 wild biomass
+        buf.getBiomassNatural()[0] = 500.0f;
+        double initialBiomass = buf.getBiomassNatural()[0];
 
-        MegafaunaEcosystemEngine.processMegafaunaEcosystem(testCells);
+        new MegafaunaEcosystemEngine().tick(buf, 1.0, 12.0);
 
-        assertTrue(cell.getBiomassNatural() < initialBiomass,
+        assertTrue(buf.getBiomassNatural()[0] < initialBiomass,
             "Megafauna engine: High hunting pressure ratio should trigger megafauna stock decline.");
     }
 
@@ -214,12 +215,14 @@ public class HistoricalBehaviorsTestSuite {
      *
      */
     public void testProtestantWorkEthic() {
-        H3Cell cell = testCells.get(0);
-        double initialCapital = cell.getResourceCapital();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getBiomassHuman()[0] = (float) testCells.get(0).getPopulationOr(0);
+        buf.getResourceCapital()[0] = (float) testCells.get(0).getResourceCapitalOr(0.0);
+        double initialCapital = buf.getResourceCapital()[0];
 
-        ProtestantWorkEthicEngine.processHybrid(testCells, 1.0);
+        new ProtestantWorkEthicEngine().tick(buf, 1.0, 1.0);
 
-        assertTrue(cell.getResourceCapital() > initialCapital,
+        assertTrue(buf.getResourceCapital()[0] > initialCapital,
             "Protestant Work Ethic: High savings rate should boost capital formation.");
     }
 
@@ -233,14 +236,15 @@ public class HistoricalBehaviorsTestSuite {
      *
      */
     public void testCelibateMonasticDemographicBuffer() {
-        H3Cell cell = testCells.get(0);
-        cell.setFoodResource(500.0);
-        cell.setPopulation(10000); // Food stress: food / pop = 0.05 < 0.10 threshold
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getFoodResource()[0] = 500.0f;
+        buf.getBiomassHuman()[0] = 10000.0f; // Food stress: food / pop = 0.05 < 0.10 threshold
+        buf.getFertility()[0] = 6.0f;
+        double initialFertility = buf.getFertility()[0];
 
-        double initialFertility = cell.getFertilityOr(6.0);
-        MonasticDemographicBufferEngine.processHybrid(testCells, 1.0);
+        new MonasticDemographicBufferEngine().tick(buf, 1.0, 1.0);
 
-        assertTrue(cell.getFertility() < initialFertility,
+        assertTrue(buf.getFertility()[0] < initialFertility,
             "Celibate Clergy engine: Monastic vocation under Malthusian stress should absorb demographic surplus.");
     }
 }

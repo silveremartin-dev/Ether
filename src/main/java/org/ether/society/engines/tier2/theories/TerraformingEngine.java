@@ -46,43 +46,36 @@ public class TerraformingEngine extends AbstractSimulationEngine {
     private static double asteroidMiningFluxTonnesPerYear = 0.0;
     private static double offWorldEroeiRatio = 15.0; // Asteroid mining EROEI
 
-    /**
-     * Process terraforming.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processTerraforming(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
+        if (buf == null || buf.getCapacity() == 0) return;
         if (!terraformingActive && asteroidMiningFluxTonnesPerYear <= 0.0 && solarMirrorInsolationMultiplier == 1.0) {
             return;
         }
-
-        // Apply orbital mirror solar forcing & greenhouse atmospheric warming
+        int n = buf.getCapacity();
         double safeCo2 = Math.max(1.0, co2Ppm);
         double radiativeForcingWm2 = 5.35 * Math.log(safeCo2 / 280.0) + (solarMirrorInsolationMultiplier - 1.0) * 1361.0;
-        double globalTempAnomaly = radiativeForcingWm2 * 0.8; // Equilibrium temperature anomaly in A°C
-        double dtSafe = Math.max(0.0001, deltaYears);
+        double globalTempAnomaly = radiativeForcingWm2 * 0.8;
+        double dtSafe = Math.max(0.0001, dtYears);
         double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 5.0);
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
+        float[] tempArr = buf.getTemperature();
+        float[] elevArr = buf.getElevation();
+        float[] popArr = buf.getBiomassHuman();
+        float[] metalArr = buf.getMetalResource();
 
-            // Update cell temperature based on global terraforming radiative forcing relaxed towards equilibrium
-            double curTemp = cell.getTemperatureOr(15.0);
-            double elev = cell.getElevationOr(0.0);
-            double lat = cell.getLatitudeOr(0.0);
-            double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
+        for (int i = 0; i < n; i++) {
+            double curTemp = tempArr[i];
+            double elev = elevArr[i];
+            double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev);
             double targetTemp = baselineTemp + globalTempAnomaly;
-            cell.setTemperature(curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
+            tempArr[i] = (float) (curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
 
-            // Asteroid mining influx boosts local metal/mineral density
-            int pop = cell.getPopulationOr(0);
-            double popWeight = pop / (500.0 + pop);
-            if (asteroidMiningFluxTonnesPerYear > 0 && pop > 0) {
-                double mineralBoost = (asteroidMiningFluxTonnesPerYear / cells.size()) * 0.0001 * popWeight * dtSafe;
-                cell.setResourceMetal((cell.getResourceMetalOr(0.0)) + mineralBoost);
+            double pop = popArr[i];
+            if (asteroidMiningFluxTonnesPerYear > 0.0 && pop > 0.0) {
+                double popWeight = pop / (500.0 + pop);
+                double mineralBoost = (asteroidMiningFluxTonnesPerYear / n) * 0.0001 * popWeight * dtSafe;
+                metalArr[i] += (float) mineralBoost;
             }
         }
     }

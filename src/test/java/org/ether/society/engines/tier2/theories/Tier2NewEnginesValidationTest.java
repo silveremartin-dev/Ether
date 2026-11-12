@@ -340,9 +340,10 @@ public class Tier2NewEnginesValidationTest {
         britishCell.setBiomassNatural(15000.0);
 
         List<H3Cell> grid = List.of(britishCell);
+        PomeranzGreatDivergenceEngine pomeranzEngine = new PomeranzGreatDivergenceEngine();
 
         for (int yr = 0; yr < 20; yr++) {
-            PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(grid, 1.0);
+            runDoD(pomeranzEngine, grid, 1.0);
         }
 
         assertTrue(britishCell.getResourceCapital() > 400000.0 * 1.5,

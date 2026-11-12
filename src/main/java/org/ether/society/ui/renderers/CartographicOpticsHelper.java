@@ -74,7 +74,7 @@ public final class CartographicOpticsHelper {
                     }
                 }
             } catch (Exception ignored) {
-                // Ignore topology errors during asynchronous updates
+                org.slf4j.LoggerFactory.getLogger(CartographicOpticsHelper.class).trace("Ignored topology error during hillshade: {}", ignored.getMessage());
             }
         }
 

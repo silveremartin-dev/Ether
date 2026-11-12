@@ -73,7 +73,9 @@ final class PreComputeClimateAndResourceHelper {
                     }
                 }
                 if (isGlacialMax) {
-                    SeaLevelTransitionEngine.applySeaLevelTransition(cells, -120.0);
+                    for (H3Cell cell : cells) {
+                        SeaLevelTransitionEngine.applySeaLevelTransitionCell(cell, -120.0);
+                    }
                 }
             }
             return;
@@ -153,7 +155,9 @@ final class PreComputeClimateAndResourceHelper {
         }
 
         double seaOffset = isGlacialMax ? -120.0 : 0.0;
-        SeaLevelTransitionEngine.applySeaLevelTransition(cells, seaOffset);
+        for (H3Cell cell : cells) {
+            SeaLevelTransitionEngine.applySeaLevelTransitionCell(cell, seaOffset);
+        }
     }
 
     /**

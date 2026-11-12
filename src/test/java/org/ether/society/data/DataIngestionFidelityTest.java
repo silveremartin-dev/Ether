@@ -115,21 +115,23 @@ public class DataIngestionFidelityTest {
         coastalLandCell.setBiome(org.ether.society.model.Biome.PLAINS);
 
         java.util.List<org.ether.society.database.H3Cell> testCells = java.util.List.of(shallowShelfCell, coastalLandCell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
 
         // 1. Apply Glacial Maximum regression (-120m)
-        org.ether.society.engines.tier1.SeaLevelTransitionEngine.applySeaLevelTransition(testCells, -120.0);
+        org.ether.society.engines.tier1.SeaLevelTransitionEngine.applySeaLevelTransition(buf, -120.0);
 
-        assertNotEquals(org.ether.society.model.Biome.OCEAN, shallowShelfCell.getBiome(),
+        assertNotEquals((byte) org.ether.society.model.Biome.OCEAN.ordinal(), buf.getBiomes()[0],
                 "Continental shelf at -50m elevation must emerge from ocean when sea level drops by -120m");
-        assertEquals(org.ether.society.model.Biome.PLAINS, coastalLandCell.getBiome(),
+        assertEquals((byte) org.ether.society.model.Biome.PLAINS.ordinal(), buf.getBiomes()[1],
                 "Coastal land at +5m remains land during sea level drop");
 
         // 2. Apply Super-Greenhouse submersion (+50m)
-        org.ether.society.engines.tier1.SeaLevelTransitionEngine.applySeaLevelTransition(testCells, +50.0);
+        org.ether.society.engines.tier1.SeaLevelTransitionEngine.applySeaLevelTransition(buf, +50.0);
 
-        assertEquals(org.ether.society.model.Biome.OCEAN, shallowShelfCell.getBiome(),
+        assertEquals((byte) org.ether.society.model.Biome.OCEAN.ordinal(), buf.getBiomes()[0],
                 "Shelf at -50m must submerge under +50m sea level rise");
-        assertEquals(org.ether.society.model.Biome.OCEAN, coastalLandCell.getBiome(),
+        assertEquals((byte) org.ether.society.model.Biome.OCEAN.ordinal(), buf.getBiomes()[1],
                 "Coastal land at +5m elevation must submerge into ocean under +50m sea level rise");
     }
 }

@@ -6,12 +6,11 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
-
-import java.util.List;
 
 /**
  * Selective Species Domestication &amp; Cultivar Harvest-Index Evolution Engine.
@@ -50,35 +49,62 @@ public class SelectiveBreedingEngine extends AbstractSimulationEngine {
         return SmoothMath.softmin(3.5, domesticationEffect * breedingCapitalEffect, 4.0);
     }
 
-    /**
-     * Executes one monthly selective breeding tick across cells.
-     */
-    public static void processSelectiveBreeding(List<H3Cell> cells) {
-        processSelectiveBreeding(cells, 1.0 / 12.0);
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null) return;
+        double currentAgri = buffer.getBiomassAgriculture()[i];
+        double cultivationGate = SmoothMath.sigmoid(currentAgri, 10.0, 3.0);
+        if (cultivationGate > 1e-4) {
+            double dtSafe = Math.max(0.0001, dtYears);
+            double pop = buffer.getBiomassHuman()[i] / 0.06;
+            double capPerCap = buffer.getResourceCapital()[i] / Math.max(1.0, pop);
+            double breedingFactor = calculateSelectiveBreedingYieldFactor(currentAgri, capPerCap);
+            double laborCultivatedBiomass = pop * (400.0 + 150.0 * SmoothMath.softmin(4.0, Math.log1p(capPerCap / 50.0), 4.0));
+            double landCeiling = Math.max(laborCultivatedBiomass * 1.5,
+                    (360000.0 + 550000.0 * SmoothMath.softmin(5.0, 1.0 + capPerCap / 100.0, 2.0)));
+            double maxBreedableBiomass = landCeiling * SmoothMath.softmin(1.5, breedingFactor * 0.85, 6.0);
+            double growthFactor = 1.0 + cultivationGate * (breedingFactor - 1.0) * 0.005 * dtSafe;
+            double nextAgri = Math.min(maxBreedableBiomass, currentAgri * growthFactor);
+            acc.dBiomassAgriculture += (float) (nextAgri - currentAgri);
+        }
     }
 
     /**
-     * Executes one selective breeding tick across cells scaled by {@code dtYears} and cell surface area.
+     * Executes one monthly selective breeding tick across DoD buffer.
      */
-    public static void processSelectiveBreeding(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty()) return;
-        double dtSafe = Math.max(0.0001, dtYears);
+    public static void processSelectiveBreeding(WorldBuffer buffer) {
+        processSelectiveBreeding(buffer, 1.0 / 12.0);
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double currentAgri = cell.getBiomassAgricultureOr(0.0);
+    /**
+     * Executes one selective breeding tick across DoD buffer scaled by {@code dtYears}.
+     */
+    public static void processSelectiveBreeding(WorldBuffer buffer, double dtYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
+        double dtSafe = Math.max(0.0001, dtYears);
+        float[] agriArr = buffer.getBiomassAgriculture();
+        float[] bioHuman = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        int n = buffer.getCapacity();
+
+        for (int i = 0; i < n; i++) {
+            double currentAgri = agriArr[i];
             double cultivationGate = SmoothMath.sigmoid(currentAgri, 10.0, 3.0);
             if (cultivationGate > 1e-4) {
-                int pop = cell.getPopulationOr(0);
-                double areaScale = Math.max(0.05, cell.getEffectiveSurfaceAreaKm2() / 1770.0);
-                double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+                double pop = bioHuman[i] / 0.06;
+                double capPerCap = capArr[i] / Math.max(1.0, pop);
                 double breedingFactor = calculateSelectiveBreedingYieldFactor(currentAgri, capPerCap);
                 double laborCultivatedBiomass = pop * (400.0 + 150.0 * SmoothMath.softmin(4.0, Math.log1p(capPerCap / 50.0), 4.0));
                 double landCeiling = Math.max(laborCultivatedBiomass * 1.5,
-                        (360000.0 + 550000.0 * SmoothMath.softmin(5.0, 1.0 + capPerCap / 100.0, 2.0)) * areaScale);
+                        (360000.0 + 550000.0 * SmoothMath.softmin(5.0, 1.0 + capPerCap / 100.0, 2.0)));
                 double maxBreedableBiomass = landCeiling * SmoothMath.softmin(1.5, breedingFactor * 0.85, 6.0);
                 double growthFactor = 1.0 + cultivationGate * (breedingFactor - 1.0) * 0.005 * dtSafe;
-                cell.setBiomassAgriculture(Math.min(maxBreedableBiomass, currentAgri * growthFactor));
+                agriArr[i] = (float) Math.min(maxBreedableBiomass, currentAgri * growthFactor);
             }
         }
     }

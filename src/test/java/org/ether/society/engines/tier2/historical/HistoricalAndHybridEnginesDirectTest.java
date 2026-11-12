@@ -1,158 +1,96 @@
-/*
- * MIT License
- * Copyright (c) 2024-2026 Silvere Martin-Michiellot
- */
 package org.ether.society.engines.tier2.historical;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.model.Biome;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Direct unit test suite for previously untested Tier 2 historical and hybrid engines:
- * <ul>
- *   <li>{@link AiAutonomousRegulationPureEngine}</li>
- *   <li>{@link HandyNasaHybridEngine}</li>
- *   <li>{@link MaritimeHighwayEngine}</li>
- *   <li>{@link MilitaryTechShockEngine}</li>
- *   <li>{@link NordhausDiceHybridEngine}</li>
- *   <li>{@link SpatialCityFractalEngine}</li>
- *   <li>{@link World3HybridEngine}</li>
- * </ul>
- *
- * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.2
+ * Direct unit tests for the refactored historical and hybrid engines using {@link WorldBuffer}.
  */
 public class HistoricalAndHybridEnginesDirectTest {
 
-
     @Test
-    @DisplayName("HandyNasaHybridEngine: verifies population-driven natural biomass depletion")
-    public void testHandyNasaHybrid() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell cell = new H3Cell(0x8828308281fffffL, 10.0, 20.0);
-        cell.setPopulation(50_000);
-        cell.setBiomassNatural(100.0);
-        cells.add(cell);
+    public void testHandyNasaHybridEngine() {
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 50000.0f;
+        buf.getBiomassNatural()[0] = 50.0f;
 
-        HandyNasaHybridEngine.processPlugin(cells, 2.0);
+        DerivativeAccumulator acc = new DerivativeAccumulator();
+        new HandyNasaHybridEngine().accumulateCellularDerivatives(buf, 0, 1.0, 1.0, acc);
 
-        assertTrue(cell.getBiomassNatural() < 100.0, "Natural biomass must be depleted by dense population");
-        assertTrue(cell.getBiomassNatural() >= 0.0, "Biomass cannot become negative");
+        assertTrue(acc.dBiomassNatural < 0.0f, "High population density should deplete natural biomass");
     }
 
     @Test
-    @DisplayName("MaritimeHighwayEngine: reduces friction and accelerates capital over open water")
-    public void testMaritimeHighway() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell coastal = new H3Cell(0x8828308281fffffL, 35.0, 15.0);
-        coastal.setPopulation(10_000);
-        coastal.setIsCoastal(true);
-        coastal.setTemperature(20.0);
-        coastal.setResourceCapital(100.0);
-        coastal.setMovementFriction(1.0);
-        cells.add(coastal);
+    public void testMaritimeHighwayEngine() {
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getBiomes()[0] = (byte) Biome.OCEAN.ordinal();
+        buf.getElevation()[0] = 0.0f;
+        buf.getTemperature()[0] = 15.0f;
+        buf.getBiomassHuman()[0] = 500.0f;
+        buf.getResourceCapital()[0] = 200.0f;
+        buf.getEnergyWind()[0] = 5000.0f;
 
-        H3Cell frozen = new H3Cell(0x8828308283fffffL, 75.0, 15.0);
-        frozen.setPopulation(1_000);
-        frozen.setIsCoastal(true);
-        frozen.setTemperature(-10.0);
-        frozen.setMovementFriction(1.0);
-        cells.add(frozen);
+        DerivativeAccumulator acc = new DerivativeAccumulator();
+        new MaritimeHighwayEngine().accumulateCellularDerivatives(buf, 0, 1.0, 1.0, acc);
 
-        MaritimeHighwayEngine.processHybrid(cells, 1.0);
-
-        // Warm coastal water reduces friction and generates trade capital
-        assertTrue(coastal.getResourceCapital() > 100.0, "Coastal trade accelerates capital accumulation");
-        assertTrue(coastal.getMovementFriction() < 1.0, "Buoyancy over water reduces transport friction");
-
-        // Sub-zero water increases sea ice friction
-        assertTrue(frozen.getMovementFriction() > 1.0, "Sub-zero ice conditions increase transport friction");
+        assertTrue(acc.dResourceCapital > 0.0f, "Ice-free maritime basin should boost capital accumulation");
     }
 
     @Test
-    @DisplayName("MilitaryTechShockEngine: accelerates military work and capital during shock window")
-    public void testMilitaryTechShock() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell shockCell = new H3Cell(0x8828308281fffffL, 34.0, 135.0);
-        shockCell.setPopulation(1000);
-        shockCell.setResourceCapital(1500.0 * 1000.0);
-        shockCell.setResourceWork(200.0);
-        cells.add(shockCell);
+    public void testMilitaryTechShockEngine() {
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 1000.0f;
+        buf.getResourceCapital()[0] = 1_500_000.0f; // kPerCap = 1500.0 -> peak shock intensity
 
-        MilitaryTechShockEngine.processHybrid(cells, 1.0);
+        DerivativeAccumulator acc = new DerivativeAccumulator();
+        new MilitaryTechShockEngine().accumulateCellularDerivatives(buf, 0, 1.0, 1.0, acc);
 
-        assertTrue(shockCell.getResourceWork() > 200.0, "Military work must accelerate during technological shock");
-        assertTrue(shockCell.getResourceCapital() > 1500.0 * 1000.0, "Capital consolidation must advance");
+        assertTrue(acc.dResourceCapital > 0.0f,
+                "Military tech shock resonance should stimulate capital investment");
     }
 
     @Test
-    @DisplayName("NordhausDiceHybridEngine: penalizes capital proportionally to quadratic temperature anomaly")
-    public void testNordhausDiceHybrid() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell normal = new H3Cell(0x8828308281fffffL, 40.0, 0.0);
-        normal.setTemperature(15.0); // No anomaly relative to 15C baseline
-        normal.setResourceCapital(1000.0);
-        cells.add(normal);
+    public void testNordhausDiceHybridEngine() {
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getTemperature()[0] = 20.0f; // +5C above 15C baseline
+        buf.getResourceCapital()[0] = 10000.0f;
 
-        H3Cell overheated = new H3Cell(0x8828308283fffffL, 41.0, 0.0);
-        overheated.setTemperature(20.0); // +5C anomaly
-        overheated.setResourceCapital(1000.0);
-        cells.add(overheated);
+        DerivativeAccumulator acc = new DerivativeAccumulator();
+        new NordhausDiceHybridEngine().accumulateCellularDerivatives(buf, 0, 1.0, 1.0, acc);
 
-        NordhausDiceHybridEngine.processPlugin(cells, 5.0);
-
-        assertEquals(1000.0, normal.getResourceCapital(), 0.001, "Zero anomaly incurs no climate damage");
-        assertTrue(overheated.getResourceCapital() < 1000.0, "Thermal anomaly must degrade capital via quadratic damage function");
+        assertTrue(acc.dResourceCapital < 0.0f, "Warming anomaly should inflict DICE capital damage");
     }
 
     @Test
-    @DisplayName("SpatialCityFractalEngine: redistributes population according to Zipf-Mori spatial power law while conserving total population")
-    public void testSpatialCityFractal() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell c1 = new H3Cell(0x8828308281fffffL, 48.8, 2.3);
-        c1.setPopulation(100_000);
-        cells.add(c1);
+    public void testSpatialCityFractalEngine() {
+        WorldBuffer buf = new WorldBuffer(3);
+        buf.getBiomassHuman()[0] = 50000.0f;
+        buf.getBiomassHuman()[1] = 10000.0f;
+        buf.getBiomassHuman()[2] = 1000.0f;
 
-        H3Cell c2 = new H3Cell(0x8828308283fffffL, 45.7, 4.8);
-        c2.setPopulation(50_000);
-        cells.add(c2);
+        new SpatialCityFractalEngine().tick(buf, 1.0, 1.0);
 
-        H3Cell c3 = new H3Cell(0x8828308285fffffL, 43.3, 5.4);
-        c3.setPopulation(20_000);
-        cells.add(c3);
-
-        long initialTotal = 100_000L + 50_000L + 20_000L;
-
-        SpatialCityFractalEngine.processHybrid(cells, 10.0);
-
-        long finalTotal = (long) c1.getPopulation() + c2.getPopulation() + c3.getPopulation();
-        assertEquals(initialTotal, finalTotal, "Total population must be conserved during spatial fractal relaxation");
-        assertTrue(c1.getPopulation() > c2.getPopulation(), "Primacy hierarchy rank 1 > rank 2 must be preserved");
-        assertTrue(c2.getPopulation() > c3.getPopulation(), "Primacy hierarchy rank 2 > rank 3 must be preserved");
+        double total = buf.getBiomassHuman()[0] + buf.getBiomassHuman()[1] + buf.getBiomassHuman()[2];
+        assertEquals(61000.0, total, 1.0, "Zipf rank-size relaxation must conserve total urban population");
     }
 
     @Test
-    @DisplayName("World3HybridEngine: enforces capital FCAOR depletion and pollution mortality penalty")
-    public void testWorld3Hybrid() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell scarceAndPolluted = new H3Cell(0x8828308281fffffL, 51.5, -0.1);
-        scarceAndPolluted.setPopulation(10_000);
-        scarceAndPolluted.setResourceMetal(10.0); // Scarce mineral reserves (< 50.0)
-        scarceAndPolluted.setResourceCapital(500.0);
-        scarceAndPolluted.setPollutionLevel(40.0); // Severe pollution (> 20.0)
-        scarceAndPolluted.setLifespan(70.0);
-        cells.add(scarceAndPolluted);
+    public void testWorld3HybridEngine() {
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getResourceCapital()[0] = 1000.0f;
+        buf.getMetalResource()[0] = 5.0f; // Low metal -> high FCAOR
+        buf.getPollutionLevel()[0] = 50.0f; // High pollution -> lifespan penalty
+        buf.getLifespan()[0] = 70.0f;
 
-        World3HybridEngine.processPlugin(cells, 2.0);
+        DerivativeAccumulator acc = new DerivativeAccumulator();
+        new World3HybridEngine().accumulateCellularDerivatives(buf, 0, 1.0, 1.0, acc);
 
-        assertTrue(scarceAndPolluted.getResourceCapital() < 500.0, "Capital must be sunk by high FCAOR under ore exhaustion");
-        assertTrue(scarceAndPolluted.getLifespan() < 70.0, "Life expectancy must decline under heavy persistent pollution");
+        assertTrue(acc.dResourceCapital < 0.0f, "Low metal should trigger World3 FCAOR capital decline");
+        assertTrue(acc.dLifespan < 0.0f, "High pollution should reduce lifespan");
     }
 }

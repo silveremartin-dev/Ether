@@ -26,11 +26,6 @@ public class NordhausDicePureEngine extends AbstractSimulationEngine {
         super("NordhausDicePureEngine", "NordhausDicePureEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
-    @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(NordhausDicePureEngine.class);
 
     /** Internal state: gdp (double). */
@@ -70,14 +65,20 @@ public class NordhausDicePureEngine extends AbstractSimulationEngine {
      */
     public double getTemperatureAnomaly() { return temperatureAnomaly; }
 
-    /**
-     * Executes hybrid spatial coupling for populated grid cells applying Nordhaus quadratic climate damage.
-     *
-     * @param cells List of populated cells
-     * @param deltaYears Simulation time step in years
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        NordhausDiceHybridEngine.processPlugin(cells, deltaYears);
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double temp = buffer.getTemperature()[i];
+        double tempAnomaly = Math.max(0.0, temp - 15.0);
+        double damageFraction = Math.min(0.50, 0.00236 * tempAnomaly * tempAnomaly);
+        float capital = buffer.getResourceCapital()[i];
+        if (capital > 0.0f && damageFraction > 0.0) {
+            acc.dResourceCapital += (float) (Math.max(0.0, capital * Math.exp(-damageFraction * dtYears)) - capital);
+        }
     }
 }
 

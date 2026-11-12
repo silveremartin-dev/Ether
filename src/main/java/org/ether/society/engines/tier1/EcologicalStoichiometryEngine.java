@@ -108,48 +108,32 @@ public class EcologicalStoichiometryEngine extends AbstractSimulationEngine {
         return 1.0 - penalty;
     }
 
-    /**
-     * Executes one time-stepped biogeochemical stoichiometric calibration across agricultural land cells.
-     *
-     * @param cells   land cell domain
-     * @param co2Ppm  global atmospheric \(\text{CO}_2\) in ppm
-     * @param dtYears elapsed simulation step in years
-     */
-    public static void processEcologicalStoichiometry(List<H3Cell> cells, double co2Ppm, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double agriBiomass = buffer.getBiomassAgriculture()[i];
+        if (agriBiomass <= 0.0) return;
+
+        double co2Ppm = 280.0 + buffer.getPollutionLevel()[i] * 0.4;
         double proteinFactor = calculateProteinDilutionFactor(co2Ppm);
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
+        double soc = buffer.getSoilOrganicCarbon()[i] > 0.0f ? buffer.getSoilOrganicCarbon()[i] : 25.0;
+        double metal = buffer.getMetalResource()[i];
+        double capital = buffer.getResourceCapital()[i];
+        double pop = Math.max(1.0, buffer.getBiomassHuman()[i] / 0.06);
+        double capPerCap = capital / pop;
 
-            double agriBiomass = cell.getBiomassAgricultureOr(0.0);
-            if (agriBiomass <= 0.0) continue;
+        double nRatio = Math.clamp(soc / 30.0 + 0.30 * Math.tanh(capPerCap / 50.0), 0.20, 1.50);
+        double pRatio = Math.clamp(soc / 35.0 + 0.20 * Math.tanh(metal / 200.0), 0.20, 1.50);
+        double kRatio = Math.clamp(soc / 35.0 + 0.20 * Math.tanh(metal / 200.0), 0.20, 1.50);
 
-            // Soil nutrient ratios derived from conserved edaphic and mineral observables
-            double soc = cell.getSoilOrganicCarbonOr(25.0);
-            double metal = cell.getResourceMetalOr(50.0);
-            double capital = cell.getResourceCapitalOr(0.0);
-            int pop = cell.getPopulationOr(1);
-            double capPerCap = capital / Math.max(1.0, pop);
-
-            // Soil organic carbon directly buffers nitrogen pool (C:N ratio in soil organic matter ~ 10-12)
-            double nRatio = Math.clamp(soc / 30.0 + 0.30 * Math.tanh(capPerCap / 50.0), 0.20, 1.50);
-            // Phosphorus and potassium are buffered by mineral stocks and extraction
-            double pRatio = Math.clamp(soc / 35.0 + 0.20 * Math.tanh(metal / 200.0), 0.20, 1.50);
-            double kRatio = Math.clamp(soc / 35.0 + 0.20 * Math.tanh(metal / 200.0), 0.20, 1.50);
-
-            // Continuous Liebig limiting factor
-            double liebigFactor = calculateContinuousLiebigFactor(nRatio, pRatio, kRatio);
-
-            // Food caloric yield couples with nutritional protein quality
-            // Higher biomass from CO2 fertilization with lower protein density yields slightly lower net nutritional value
-            double effectiveNutritionalYield = agriBiomass * liebigFactor * proteinFactor;
-
-            // Update cell food resource stockpile (1 ton food ~ 15.0 GJ digestible energy)
-            double currentFoodGJ = cell.getFoodResourceOr(0.0);
-            double newlyProducedFoodGJ = effectiveNutritionalYield * 15.0 * dtYears;
-            cell.setFoodResource(currentFoodGJ + newlyProducedFoodGJ);
-        }
+        double liebigFactor = calculateContinuousLiebigFactor(nRatio, pRatio, kRatio);
+        double effectiveNutritionalYield = agriBiomass * liebigFactor * proteinFactor;
+        acc.dFoodResource += (float) (effectiveNutritionalYield * 15.0 * dtYears);
     }
 }

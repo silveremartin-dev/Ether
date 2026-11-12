@@ -141,144 +141,72 @@ public class DynamicEnergyBudgetEngine extends AbstractSimulationEngine {
      * @param cells   populated cell domain
      * @param dtYears elapsed simulation step in years ($\Delta t$)
      */
-    public static void processHumanDEB(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
         double dtSafe = Math.max(1e-4, dtYears);
+        double tempC = buffer.getTemperature()[i];
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double tempC = cell.getTemperatureOr(15.0);
-
-            double foodStockGJ = cell.getFoodResourceOr(0.0);
+        // 1. Human DEB
+        double biomassHuman = buffer.getBiomassHuman()[i];
+        double pop = biomassHuman / HUMAN_LEAN_STRUCTURAL_MASS_TONS;
+        if (pop > 0.0) {
+            double foodStockGJ = buffer.getFoodResource()[i];
             double foodPerCapita = foodStockGJ / Math.max(1.0, pop);
-
-            // 1. Scaled Functional Response & Assimilation
-            // Humans are homeothermic endotherms (core ~37A°C); ambient cold increases thermoregulation load
             double f = calculateFunctionalResponse(foodPerCapita, HUMAN_FOOD_HALF_SATURATION_GJ);
-            double potentialAssimilationPerCapita = HUMAN_MAX_INGESTION_GJ_PER_YEAR * f;
-
-            // Actual consumed food cannot exceed available physical stockpile
-            double maxCellDemandGJ = potentialAssimilationPerCapita * pop * dtSafe;
+            double maxCellDemandGJ = HUMAN_MAX_INGESTION_GJ_PER_YEAR * f * pop * dtSafe;
             double actualConsumedGJ = Math.min(foodStockGJ, maxCellDemandGJ);
-            double effectiveRatePerCapita = actualConsumedGJ / (Math.max(1.0, pop) * dtSafe);
+            double pC = actualConsumedGJ / (Math.max(1.0, pop) * dtSafe);
 
-            // Update remaining food resource and track consumption
-            cell.setFoodResource(Math.max(0.0, foodStockGJ - actualConsumedGJ));
-            cell.setEnergyFoodConsumed(cell.getEnergyFoodConsumedOr(0.0) + actualConsumedGJ);
+            acc.dFoodResource -= (float) actualConsumedGJ;
+            acc.dEnergyFoodConsumed += (float) actualConsumedGJ;
 
-            // 2. Mobilization & The Kappa-Rule Allocation
-            // Mobilized energy from food assimilation: p_C = effectiveRatePerCapita
-            double pC = effectiveRatePerCapita;
             double somaticAllocation = KAPPA_SOMA * pC;
             double reproductiveAllocation = (1.0 - KAPPA_SOMA) * pC;
-
-            // Somatic Maintenance Demand (scaled slightly by cold thermoregulation below 18A°C)
             double coldThermoregulation = tempC < 18.0 ? 1.0 + 0.015 * (18.0 - tempC) : 1.0;
             double somaticDemand = HUMAN_SOMATIC_MAINTENANCE_GJ_PER_YEAR * coldThermoregulation;
 
             if (somaticAllocation >= somaticDemand) {
-                // Surplus regime: full maintenance satisfied, reproductive flux drives fertility
-                double maturityMaintenance = HUMAN_MATURITY_MAINTENANCE_GJ_PER_YEAR;
-                double netReproductiveSurplus = Math.max(0.0, reproductiveAllocation - maturityMaintenance);
-
-                // Endogenous biological births emerging from caloric gestation surplus
+                double netReproductiveSurplus = Math.max(0.0, reproductiveAllocation - HUMAN_MATURITY_MAINTENANCE_GJ_PER_YEAR);
                 double annualBirthRate = Math.min(0.055, netReproductiveSurplus / HUMAN_GESTATION_COST_GJ);
-                int births = (int) Math.round(pop * annualBirthRate * dtSafe);
-                if (births > 0) {
-                    int newPop = pop + births;
-                    cell.setPopulation(newPop);
-                    cell.setBiomassHuman(newPop * HUMAN_LEAN_STRUCTURAL_MASS_TONS);
-                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, newPop);
-                    pop = newPop;
-                }
+                acc.dBiomassHuman += (float) (biomassHuman * annualBirthRate * dtSafe);
             } else {
-                // Deficit regime: acute nutritional stress / starvation
-                // Structural tissue catabolism pays the remaining somatic maintenance deficit
                 double deficitPerCapitaGJ = (somaticDemand - somaticAllocation) * dtSafe;
                 double structuralLossTons = deficitPerCapitaGJ / SPECIFIC_COST_STRUCTURE_GJ_PER_TON;
                 double relativeEmaciation = Math.clamp(structuralLossTons / HUMAN_LEAN_STRUCTURAL_MASS_TONS, 0.0, 1.0);
-
-                // Continuous C^1 starvation mortality hazard:
-                // Actuarial risk increases quadratically with emaciation relative to Cahill critical threshold (Fogel 2004; Sen 1981)
                 double normalizedEmaciation = Math.min(2.0, relativeEmaciation / CRITICAL_STRUCTURAL_LOSS_FRACTION);
                 double starvationHazardRate = 0.35 * (normalizedEmaciation * normalizedEmaciation);
-
                 double survivalFraction = Math.exp(-starvationHazardRate * dtSafe);
-                int survivingPop = (int) Math.round(pop * survivalFraction);
-
-                if (survivingPop < pop) {
-                    int deaths = pop - survivingPop;
-                    cell.setPopulation(survivingPop);
-                    cell.setBiomassHuman(survivingPop * HUMAN_LEAN_STRUCTURAL_MASS_TONS);
-                    H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, survivingPop);
-                    pop = survivingPop;
-                }
-            }
-
-            if (pop > 0) {
-                cell.updateAgePyramidFromObservables();
+                acc.dBiomassHuman += (float) (biomassHuman * (survivalFraction - 1.0));
             }
         }
-    }
 
-    /**
-     * Executes one time-stepped Dynamic Energy Budget update for wild megafaunal and herbivore biomass.
-     * <p>
-     * Replaces phenomenological Verhulst capacity ($K_{\text{veg}}$) with explicit mass-energy conservation
-     * between primary producers (natural biomass $B_{\text{nat}}$) and primary consumers ($B_{\text{herb}}$).
-     * </p>
-     *
-     * @param cells   land cell domain
-     * @param dtYears elapsed simulation step in years ($\Delta t$)
-     */
-    public static void processEcologicalDEB(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
-
-        double dtSafe = Math.max(1e-4, dtYears);
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            double naturalBiomass = cell.getBiomassNaturalOr(0.0);
-            if (naturalBiomass <= 1.0) continue;
-
-            double tempC = cell.getTemperatureOr(15.0);
+        // 2. Ecological DEB
+        double naturalBiomass = buffer.getBiomassNatural()[i];
+        if (naturalBiomass > 1.0) {
             double arrhenius = calculateArrheniusCorrection(tempC);
-
-            // Herbivore guild occupies a natural trophic fraction of natural biomass (~10-15%)
             double herbivoreBiomass = naturalBiomass * 0.12;
-
-            // 1. Scaled Forage Functional Response
             double f = calculateFunctionalResponse(naturalBiomass, MEGAFAUNA_FORAGE_HALF_SAT_TONS);
-            double assimilationRatePerTon = MEGAFAUNA_MAX_INGESTION_GJ_PER_TON_YEAR * f * arrhenius;
-
-            // Total forage ingested in Gigajoules
-            double forageIngestedGJ = herbivoreBiomass * assimilationRatePerTon * dtSafe;
-            // 1 metric ton dry plant matter ~ 18.0 GJ
+            double forageIngestedGJ = herbivoreBiomass * MEGAFAUNA_MAX_INGESTION_GJ_PER_TON_YEAR * f * arrhenius * dtSafe;
             double dryVegetationConsumedTons = forageIngestedGJ / 18.0;
-
-            // Deplete primary producer biomass by actual forage eaten
             double remainingVegetation = Math.max(0.5, naturalBiomass - dryVegetationConsumedTons);
-
-            // 2. Kappa-rule allocation to somatic maintenance vs growth/recruitment
             double somaticMaintenanceTotal = herbivoreBiomass * MEGAFAUNA_SOMATIC_MAINTENANCE_GJ_PER_TON_YEAR * dtSafe;
             double somaticAllocationTotal = KAPPA_SOMA * forageIngestedGJ;
 
+            double updatedBiomass;
             if (somaticAllocationTotal >= somaticMaintenanceTotal) {
-                // Surplus: recruitment adds net biomass to ecosystem
                 double growthSurplusGJ = somaticAllocationTotal - somaticMaintenanceTotal;
-                double newBiomassTons = growthSurplusGJ / SPECIFIC_COST_STRUCTURE_GJ_PER_TON;
-                cell.setBiomassNatural(remainingVegetation + newBiomassTons);
+                updatedBiomass = remainingVegetation + (growthSurplusGJ / SPECIFIC_COST_STRUCTURE_GJ_PER_TON);
             } else {
-                // Deficit: starvation catabolism and natural herbivore attrition
                 double deficitGJ = somaticMaintenanceTotal - somaticAllocationTotal;
-                double biomassLostTons = deficitGJ / SPECIFIC_COST_STRUCTURE_GJ_PER_TON;
-                cell.setBiomassNatural(Math.max(0.5, remainingVegetation - biomassLostTons * 0.5));
+                updatedBiomass = Math.max(0.5, remainingVegetation - (deficitGJ / SPECIFIC_COST_STRUCTURE_GJ_PER_TON) * 0.5);
             }
+            acc.dBiomassNatural += (float) (updatedBiomass - naturalBiomass);
         }
     }
 }

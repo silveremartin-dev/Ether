@@ -77,10 +77,12 @@ public class AdvancedSociologyAndLawsTest {
      */
     public void testPhysicalLawEngine() {
         PhysicalLawEngine.setPhotosyntheticEfficiencyMultiplier(2.0);
-        double initialBiomass = testCells.get(0).getBiomassNatural();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getBiomassNatural()[0] = 100.0f;
+        double initialBiomass = buf.getBiomassNatural()[0];
 
-        PhysicalLawEngine.applyPhysicalLaws(testCells, 1.0);
-        assertTrue(testCells.get(0).getBiomassNatural() > initialBiomass, "Doubled photosynthetic yield should increase natural biomass.");
+        new PhysicalLawEngine().tick(buf, 1.0, 12.0);
+        assertTrue(buf.getBiomassNatural()[0] > initialBiomass, "Doubled photosynthetic yield should increase natural biomass.");
     }
 
     @Test
@@ -94,10 +96,13 @@ public class AdvancedSociologyAndLawsTest {
      */
     public void testCulturalSociologyEngine() {
         CulturalSociologyEngine.setGlobalEnvironmentalStewardship(0.9);
-        double initialSoc = testCells.get(0).getSoilOrganicCarbon();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getSoilOrganicCarbon()[0] = 40.0f;
+        double initialSoc = buf.getSoilOrganicCarbon()[0];
 
-        CulturalSociologyEngine.processCulturalSociology(testCells, 1.0);
-        assertTrue(testCells.get(0).getSoilOrganicCarbon() > initialSoc, "High environmental stewardship should increase soil organic carbon.");
+        new CulturalSociologyEngine().tick(buf, 1.0, 1.0);
+        assertTrue(buf.getSoilOrganicCarbon()[0] > initialSoc, "High environmental stewardship should increase soil organic carbon.");
     }
 
     @Test
@@ -111,10 +116,12 @@ public class AdvancedSociologyAndLawsTest {
      */
     public void testCoGovernanceTradeEngine() {
         CoGovernanceTradeEngine.setGlobalCarbonQuotaTreatyActive(true);
-        double initialPollution = testCells.get(0).getPollutionLevel();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getPollutionLevel()[0] = 300.0f;
+        double initialPollution = buf.getPollutionLevel()[0];
 
-        CoGovernanceTradeEngine.processTradeAndGovernance(testCells, 1.0);
-        assertTrue(testCells.get(0).getPollutionLevel() < initialPollution, "Carbon quota treaty should reduce high pollution levels.");
+        new CoGovernanceTradeEngine().tick(buf, 1.0, 1.0);
+        assertTrue(buf.getPollutionLevel()[0] < initialPollution, "Carbon quota treaty should reduce high pollution levels.");
     }
 
     @Test

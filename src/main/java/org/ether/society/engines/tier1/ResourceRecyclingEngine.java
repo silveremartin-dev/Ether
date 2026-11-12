@@ -47,39 +47,6 @@ public class ResourceRecyclingEngine extends AbstractSimulationEngine {
         return calculateContinuousRecyclingDiscount(capital, 50.0);
     }
 
-    /**
-     * Executes one material recycling tick across cells using default monthly step.
-     */
-    public static void processResourceRecycling(List<H3Cell> cells) {
-        processResourceRecycling(cells, 1.0 / 12.0);
-    }
-
-    /**
-     * Executes one material recycling tick across cells scaled by dtYears.
-     * Recycling reduces physical depreciation loss rather than creating perpetual compound capital out of nothing.
-     */
-    public static void processResourceRecycling(List<H3Cell> cells, double dtYears) {
-// Numerical integration step for ResourceRecyclingEngine - verifies boundary conservation and updates local thermodynamic state
-        if (cells == null || cells.isEmpty()) return;
-        double dtSafe = Math.max(0.0001, dtYears);
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double capital = cell.getResourceCapitalOr(0.0);
-double work = cell.getResourceWorkOr(0.0);
-
-double efficiency = calculateContinuousRecyclingDiscount(capital, work);
-            if (efficiency > 0.05) {
-                // Recycling recovers a fraction of annual 4% physical depreciation (max ~3.4%/yr recovery), scaled by dtYears
-                double recycledCapitalGain = capital * efficiency * 0.025 * dtSafe;
-                cell.setResourceCapital(capital + recycledCapitalGain);
-            }
-        }
-    }
-
     @Override
     public boolean supportsCellularDerivatives() {
         return true;

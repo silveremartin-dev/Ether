@@ -57,11 +57,6 @@ public class RomanImperialCliodynamicEngine extends AbstractSimulationEngine {
         }
     }
 
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
     public static void resetState() {
         imperialRadiusKm = 1500.0;
         eliteOverproductionFactor = 0.15;
@@ -70,24 +65,6 @@ public class RomanImperialCliodynamicEngine extends AbstractSimulationEngine {
     @Override
     public void reset() {
         resetState();
-    }
-
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-
-            double capital = cell.getResourceCapitalOr(500.0);
-            double pop = cell.getPopulation();
-
-            double overstretchRate = (0.02 * Math.pow(imperialRadiusKm / 1000.0, 2.0) + 0.03 * eliteOverproductionFactor);
-            double netCapital = capital * Math.exp(-overstretchRate * deltaYears);
-            cell.setResourceCapital(Math.max(10.0, netCapital));
-
-            double urbanCrowding = pop / (10000.0 + pop);
-            cell.setLifespan(Math.max(25.0, (cell.getLifespanOr(35.0)) - 0.25 * urbanCrowding * deltaYears));
-        }
     }
 
     public static double getImperialRadiusKm() {

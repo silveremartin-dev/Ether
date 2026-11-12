@@ -6,12 +6,9 @@
  */
 package org.ether.society.engines.tier1;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -76,19 +73,20 @@ class UnifiedNeutralBiodiversityEngineTest {
     @Test
     @DisplayName("5.4 500-Cell Spatial Domain: 20-Year Metacommunity Neutral Drift & Biomass Conservation")
     void test500CellNeutralBiodiversitySimulation() {
-        List<H3Cell> largeGrid = new ArrayList<>(500);
+        WorldBuffer buf = new WorldBuffer(500);
         for (int i = 0; i < 500; i++) {
-            H3Cell cell = new H3Cell(0x88d000000000000L + i, -10.0 + (i * 0.04), 45.0 + (i * 0.04));
-            cell.setBiomassNatural(20.0 + (i % 80));
-            largeGrid.add(cell);
+            buf.getH3Indexes()[i] = 0x88d000000000000L + i;
+            buf.getBiomassNatural()[i] = 20.0f + (i % 80);
         }
 
+        UnifiedNeutralBiodiversityEngine engine = new UnifiedNeutralBiodiversityEngine();
         for (int yr = 1; yr <= 20; yr++) {
-            UnifiedNeutralBiodiversityEngine.processNeutralBiodiversity(largeGrid, 1.0);
+            engine.tick(buf, 1.0, 12.0);
 
-            for (H3Cell c : largeGrid) {
-                assertTrue(c.getBiomassNatural() >= 1.0, "Natural biomass must remain strictly positive");
-                assertFalse(Double.isNaN(c.getBiomassNatural()), "Biomass must never be NaN");
+            for (int i = 0; i < 500; i++) {
+                float bioNat = buf.getBiomassNatural()[i];
+                assertTrue(bioNat >= 1.0f, "Natural biomass must remain strictly positive");
+                assertFalse(Float.isNaN(bioNat), "Biomass must never be NaN");
             }
         }
     }
@@ -96,26 +94,26 @@ class UnifiedNeutralBiodiversityEngineTest {
     @Test
     @DisplayName("5.5 Bitwise Determinism across Repeated Neutral Biodiversity Spatial Runs")
     void testBitwiseDeterminismBiodiversity() {
-        List<H3Cell> runA = new ArrayList<>(100);
-        List<H3Cell> runB = new ArrayList<>(100);
+        WorldBuffer runA = new WorldBuffer(100);
+        WorldBuffer runB = new WorldBuffer(100);
 
         for (int i = 0; i < 100; i++) {
-            H3Cell cA = new H3Cell(0x88e000000000000L + i, 15.0, 10.0);
-            cA.setBiomassNatural(50.0 + i);
-            runA.add(cA);
+            runA.getH3Indexes()[i] = 0x88e000000000000L + i;
+            runA.getBiomassNatural()[i] = 50.0f + i;
 
-            H3Cell cB = new H3Cell(0x88e000000000000L + i, 15.0, 10.0);
-            cB.setBiomassNatural(50.0 + i);
-            runB.add(cB);
+            runB.getH3Indexes()[i] = 0x88e000000000000L + i;
+            runB.getBiomassNatural()[i] = 50.0f + i;
         }
 
+        UnifiedNeutralBiodiversityEngine engineA = new UnifiedNeutralBiodiversityEngine();
+        UnifiedNeutralBiodiversityEngine engineB = new UnifiedNeutralBiodiversityEngine();
         for (int yr = 0; yr < 5; yr++) {
-            UnifiedNeutralBiodiversityEngine.processNeutralBiodiversity(runA, 1.0);
-            UnifiedNeutralBiodiversityEngine.processNeutralBiodiversity(runB, 1.0);
+            engineA.tick(runA, 1.0, 12.0);
+            engineB.tick(runB, 1.0, 12.0);
         }
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(runA.get(i).getBiomassNatural(), runB.get(i).getBiomassNatural(), 1e-12,
+            assertEquals(runA.getBiomassNatural()[i], runB.getBiomassNatural()[i], 1e-6f,
                     "Biomass state must be bitwise identical across deterministic runs");
         }
     }

@@ -83,34 +83,6 @@ public class TasmanianCulturalRegressionEngine extends AbstractSimulationEngine 
         super.tick(buffer, dtYears, dtMonthly);
     }
 
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
-
-        double totalPop = 0.0;
-        for (H3Cell c : cells) {
-            if (c != null && c.getPopulation() != null && c.getPopulation() > 0) {
-                totalPop += c.getPopulation();
-            }
-        }
-
-        double lossIntensity = SmoothMath.sigmoid(2500.0 - totalPop, 0.0, 800.0);
-        double lossRate = 0.04 * lossIntensity * deltaYears;
-        if (lossRate > 1e-6) {
-            for (H3Cell cell : cells) {
-                if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-                double cap = cell.getResourceCapitalOr(0.0);
-                if (cap > 0.0) {
-                    cell.setResourceCapital(Math.max(0.0, cap * (1.0 - lossRate)));
-                }
-            }
-        }
-    }
-
     public static double getIsolationPopulationThreshold() {
         return isolationPopulationThreshold;
     }

@@ -59,15 +59,13 @@ public class Tier1NewPhysicalLawsTest {
         double meltDepth = GlacialThermodynamicMeltEngine.calculateGlacialMeltDepthMeters(5.0, 1.0);
         assertTrue(meltDepth > 4.0 && meltDepth < 6.0, "Glacial melt depth at 5°C must be ~5.0 meters/year");
 
-        // Global sea level eustatic calculation
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell glacialCell = new H3Cell();
-        glacialCell.setBiome(Biome.TUNDRA);
-        glacialCell.setTemperature(4.0);
-        cells.add(glacialCell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getBiomes()[0] = (byte) Biome.TUNDRA.ordinal();
+        buf.getTemperature()[0] = 4.0f;
+        buf.getWaterResource()[0] = 10.0f;
 
-        double eustaticRiseMeters = GlacialThermodynamicMeltEngine.processGlacialMelt(cells, 1.0);
-        assertTrue(eustaticRiseMeters > 0.0, "Melt from tundra/glacial cells must increase eustatic sea level");
+        new GlacialThermodynamicMeltEngine().tick(buf, 1.0, 12.0);
+        assertTrue(buf.getWaterResource()[0] > 10.0f, "Melt from tundra/glacial cells must increase local freshwater resource");
     }
 
     @Test

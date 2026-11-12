@@ -28,38 +28,18 @@ public class OstromCommonsPureEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(OstromCommonsPureEngine.class);
-
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
-
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getAccessibleAquifer() == null) continue;
-
-            double aquifer = cell.getAccessibleAquifer();
-            // Ostrom polycentric governance (Ostrom 1990) institutes community extraction quotas
-            // that prevent overdraft beyond natural Darcy precipitation recharge.
-            // Strict mass conservation (AGENTS.md A§8): water recharge is bounded by actual precipitation inflow
-            if (aquifer < 50.0) {
-                double rainfall = cell.getRainfallOr(0.0);
-                double naturalInflowCap = Math.max(0.0, (rainfall / 500.0) * 0.5 * deltaYears);
-                double sustainableRecharge = Math.min(0.5 * deltaYears, naturalInflowCap);
-                cell.setAccessibleAquifer(aquifer + sustainableRecharge);
-            }
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double aquifer = buffer.getFreshwaterAquifer()[i];
+        if (aquifer < 50.0) {
+            double rainfall = buffer.getRainfall()[i];
+            double naturalInflowCap = Math.max(0.0, (rainfall / 500.0) * 0.5 * dtYears);
+            double sustainableRecharge = Math.min(0.5 * dtYears, naturalInflowCap);
+            acc.dFreshwaterAquifer += (float) sustainableRecharge;
         }
     }
 }

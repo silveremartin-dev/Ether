@@ -77,58 +77,23 @@ public class GlacialThermodynamicMeltEngine extends AbstractSimulationEngine {
 
     /**
      * Processes cryospheric ablation across all glacial and tundra cells and computes global sea level rise.
-     *
-     * @param cells List of H3 cells
-     * @param deltaYears Simulation time step in years
-     * @return Global eustatic sea level increment in meters
      */
-    public static double processGlacialMelt(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for GlacialThermodynamicMeltEngine - verifies boundary conservation and updates local thermodynamic state
-        if (cells == null || cells.isEmpty()) return 0.0;
+    @Override
+    public boolean supportsCellularDerivatives() { return true; }
 
-        double totalMeltedMassKg = 0.0;
-        int activeGlacialCells = 0;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            Biome biome = cell.getBiome();
-            boolean isGlacial = (biome == Biome.GLACIER || biome == Biome.SNOW || biome == Biome.TUNDRA
-                    || (cell.getElevation() != null && cell.getElevation() > 2500.0));
-            double tempC = cell.getTemperatureOr(0.0);
-
-            if (isGlacial && tempC > 0.0) {
-                double meltDepthM = calculateGlacialMeltDepthMeters(tempC, deltaYears);
-                if (meltDepthM > 0.0) {
-                    activeGlacialCells++;
-                    // Typical H3 cell area at Res 3 is ~11,000 kmA² = 1.1 x 10^10 mA²
-                    double cellAreaM2 = 1.1e10;
-                    double cellMeltMassKg = meltDepthM * ICE_DENSITY_KG_M3 * cellAreaM2;
-                    totalMeltedMassKg += cellMeltMassKg;
-
-                    // Reduce ice sheet thickness if present
-                    if (cell.getIceSheetThicknessMeters() != null && cell.getIceSheetThicknessMeters() > 0.0) {
-                        cell.setIceSheetThicknessMeters(Math.max(0.0, cell.getIceSheetThicknessMeters() - meltDepthM));
-                    }
-
-                    // Release meltwater into local water resource
-                    double currentWater = cell.getWaterResourceOr(500.0);
-                    cell.setWaterResource(Math.min(1000.0, currentWater + Math.min(100.0, meltDepthM * 10.0)));
-                }
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        byte biome = buffer.getBiomes()[i];
+        boolean isGlacial = (biome == (byte) Biome.GLACIER.ordinal() || biome == (byte) Biome.SNOW.ordinal() || biome == (byte) Biome.TUNDRA.ordinal() || buffer.getElevation()[i] > 2500.0f);
+        double tempC = buffer.getTemperature()[i];
+        if (isGlacial && tempC > 0.0) {
+            double meltDepthM = calculateGlacialMeltDepthMeters(tempC, dtYears);
+            if (meltDepthM > 0.0) {
+                double currentWater = buffer.getWaterResource()[i];
+                double newWater = Math.min(1000.0, currentWater + Math.min(100.0, meltDepthM * 10.0));
+                acc.dWaterResource += (float) (newWater - currentWater);
             }
         }
-
-        // Eustatic sea level rise: ÃŽa€S_L = Total Mass / (ÃA_water * A_ocean)
-        double eustaticRiseMeters = totalMeltedMassKg / (WATER_DENSITY_KG_M3 * GLOBAL_OCEAN_AREA_M2);
-
-        if (activeGlacialCells > 0) {
-            logger.debug("Glacial Thermodynamic Melt: {} active cells, total melt = {} kg, eustatic rise = {} mm",
-                    activeGlacialCells,
-                    String.format(java.util.Locale.ROOT, "%.2e", totalMeltedMassKg),
-                    String.format(java.util.Locale.ROOT, "%.4f", eustaticRiseMeters * 1000.0));
-        }
-
-        return eustaticRiseMeters;
     }
 }
-
-

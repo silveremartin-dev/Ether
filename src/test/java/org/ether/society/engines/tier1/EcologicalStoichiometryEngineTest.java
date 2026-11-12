@@ -118,13 +118,17 @@ class EcologicalStoichiometryEngineTest {
         }
 
         // Run 10 years at modern atmospheric CO2 (420 ppm)
+        org.ether.society.core.dod.WorldBuffer agriBuf = new org.ether.society.core.dod.WorldBuffer(agriculturalMesh.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(agriculturalMesh, agriBuf, false);
+        EcologicalStoichiometryEngine stoichEngine = new EcologicalStoichiometryEngine();
         for (int yr = 1; yr <= 10; yr++) {
-            EcologicalStoichiometryEngine.processEcologicalStoichiometry(agriculturalMesh, 420.0, 1.0);
+            stoichEngine.tick(agriBuf, 1.0, 12.0);
 
-            for (H3Cell c : agriculturalMesh) {
-                assertTrue(c.getFoodResource() > 200.0, "Agricultural stoichiometric conversion must generate food");
-                assertFalse(Double.isNaN(c.getFoodResource()), "Food resource must never be NaN");
-                assertFalse(Double.isInfinite(c.getFoodResource()), "Food resource must never be infinite");
+            for (int i = 0; i < agriculturalMesh.size(); i++) {
+                float food = agriBuf.getFoodResource()[i];
+                assertTrue(food > 200.0f, "Agricultural stoichiometric conversion must generate food");
+                assertFalse(Float.isNaN(food), "Food resource must never be NaN");
+                assertFalse(Float.isInfinite(food), "Food resource must never be infinite");
             }
         }
     }
@@ -132,32 +136,35 @@ class EcologicalStoichiometryEngineTest {
     @Test
     @DisplayName("2.5 Multi-Decadal Soil Nutrient Depletion & Agricultural Yield Feedback")
     void testMultiDecadalSoilNutrientDepletion() {
-        List<H3Cell> farmBasin = new ArrayList<>(100);
+        org.ether.society.core.dod.WorldBuffer farmBuf = new org.ether.society.core.dod.WorldBuffer(100);
         for (int i = 0; i < 100; i++) {
-            H3Cell c = new H3Cell(0x887000000000000L + i, 30.0, 30.0);
-            c.setBiome(Biome.PLAINS);
-            c.setPopulation(2000);
-            c.setBiomassAgriculture(100.0);
-            c.setSoilOrganicCarbon(45.0); // Rich initial soil organic carbon
-            c.setResourceMetal(100.0);
-            c.setFoodResource(0.0);
-            farmBasin.add(c);
+            farmBuf.getH3Indexes()[i] = 0x887000000000000L + i;
+            farmBuf.getBiomes()[i] = (byte) Biome.PLAINS.ordinal();
+            farmBuf.getBiomassHuman()[i] = 2000.0f * 0.06f;
+            farmBuf.getBiomassAgriculture()[i] = 100.0f;
+            farmBuf.getSoilOrganicCarbon()[i] = 45.0f; // Rich initial soil organic carbon
+            farmBuf.getMetalResource()[i] = 100.0f;
+            farmBuf.getFoodResource()[i] = 0.0f;
         }
 
         List<Double> annualYieldTrajectory = new ArrayList<>();
+        EcologicalStoichiometryEngine stoichEngine = new EcologicalStoichiometryEngine();
 
         // Simulate 40 years of continuous agricultural exploitation without fertilization
         for (int yr = 1; yr <= 40; yr++) {
             // Soil depletion: SOC slowly degrades under continuous plowing
-            for (H3Cell c : farmBasin) {
-                c.setSoilOrganicCarbon(Math.max(5.0, c.getSoilOrganicCarbon() - 0.75));
-                c.setFoodResource(0.0); // Reset annual harvest measurement
+            for (int i = 0; i < 100; i++) {
+                farmBuf.getSoilOrganicCarbon()[i] = Math.max(5.0f, farmBuf.getSoilOrganicCarbon()[i] - 0.75f);
+                farmBuf.getFoodResource()[i] = 0.0f; // Reset annual harvest measurement
             }
 
-            EcologicalStoichiometryEngine.processEcologicalStoichiometry(farmBasin, 350.0, 1.0);
+            stoichEngine.tick(farmBuf, 1.0, 12.0);
 
-            double meanYield = farmBasin.stream().mapToDouble(H3Cell::getFoodResource).average().orElse(0.0);
-            annualYieldTrajectory.add(meanYield);
+            double sumYield = 0.0;
+            for (int i = 0; i < 100; i++) {
+                sumYield += farmBuf.getFoodResource()[i];
+            }
+            annualYieldTrajectory.add(sumYield / 100.0);
         }
 
         double initialYield = annualYieldTrajectory.get(0);
@@ -170,32 +177,32 @@ class EcologicalStoichiometryEngineTest {
     @Test
     @DisplayName("2.6 Bitwise Determinism across Repeated Stoichiometric Spatial Runs")
     void testBitwiseDeterminismStoichiometry() {
-        List<H3Cell> runA = new ArrayList<>(100);
-        List<H3Cell> runB = new ArrayList<>(100);
+        org.ether.society.core.dod.WorldBuffer runA = new org.ether.society.core.dod.WorldBuffer(100);
+        org.ether.society.core.dod.WorldBuffer runB = new org.ether.society.core.dod.WorldBuffer(100);
 
         for (int i = 0; i < 100; i++) {
-            H3Cell cA = new H3Cell(0x888000000000000L + i, 32.0, 20.0);
-            cA.setBiomassAgriculture(80.0 + i * 2);
-            cA.setSoilOrganicCarbon(25.0 + i * 0.2);
-            cA.setResourceMetal(50.0 + i * 1.5);
-            cA.setFoodResource(100.0);
-            runA.add(cA);
+            runA.getH3Indexes()[i] = 0x888000000000000L + i;
+            runA.getBiomassAgriculture()[i] = 80.0f + i * 2;
+            runA.getSoilOrganicCarbon()[i] = 25.0f + i * 0.2f;
+            runA.getMetalResource()[i] = 50.0f + i * 1.5f;
+            runA.getFoodResource()[i] = 100.0f;
 
-            H3Cell cB = new H3Cell(0x888000000000000L + i, 32.0, 20.0);
-            cB.setBiomassAgriculture(80.0 + i * 2);
-            cB.setSoilOrganicCarbon(25.0 + i * 0.2);
-            cB.setResourceMetal(50.0 + i * 1.5);
-            cB.setFoodResource(100.0);
-            runB.add(cB);
+            runB.getH3Indexes()[i] = 0x888000000000000L + i;
+            runB.getBiomassAgriculture()[i] = 80.0f + i * 2;
+            runB.getSoilOrganicCarbon()[i] = 25.0f + i * 0.2f;
+            runB.getMetalResource()[i] = 50.0f + i * 1.5f;
+            runB.getFoodResource()[i] = 100.0f;
         }
 
+        EcologicalStoichiometryEngine engineA = new EcologicalStoichiometryEngine();
+        EcologicalStoichiometryEngine engineB = new EcologicalStoichiometryEngine();
         for (int yr = 0; yr < 5; yr++) {
-            EcologicalStoichiometryEngine.processEcologicalStoichiometry(runA, 400.0, 1.0);
-            EcologicalStoichiometryEngine.processEcologicalStoichiometry(runB, 400.0, 1.0);
+            engineA.tick(runA, 1.0, 12.0);
+            engineB.tick(runB, 1.0, 12.0);
         }
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(runA.get(i).getFoodResource(), runB.get(i).getFoodResource(), 1e-12,
+            assertEquals(runA.getFoodResource()[i], runB.getFoodResource()[i], 1e-6f,
                     "Food resource must be bitwise identical across deterministic runs");
         }
     }

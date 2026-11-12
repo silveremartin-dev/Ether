@@ -8,6 +8,7 @@ package org.ether.society.engines.tier1;
 
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
+import org.ether.society.model.Biome;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,42 +57,20 @@ public class GlacialIsostaticAdjustmentEngine extends AbstractSimulationEngine {
         return -(ICE_DENSITY_KG_M3 / MANTLE_DENSITY_KG_M3) * iceThicknessMeters;
     }
 
-    /**
-     * Processes viscoelastic crustal rebound and elevation adjustments across all H3 cells.
-     *
-     * @param cells List of H3 cells
-     * @param deltaYears Simulation time step in years
-     */
-    public static void processGlacialIsostasy(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        double dt = Math.max(0.001, deltaYears);
-        double decayFactor = Math.exp(-dt / GIA_RELAXATION_TIME_YEARS);
-
-        int adjustingCells = 0;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            Double elevation = cell.getElevation();
-            if (elevation == null) continue;
-
-            double iceThickness = cell.getIceSheetThicknessMetersOr(0.0);
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
+        if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0) return;
+        byte[] biomes = buffer.getBiomes();
+        float[] elevArr = buffer.getElevation();
+        byte glacierOrd = (byte) Biome.GLACIER.ordinal();
+        double decayFactor = 1.0 - Math.exp(-Math.max(0.001, dtYears) / GIA_RELAXATION_TIME_YEARS);
+        int n = buffer.getCapacity();
+        for (int i = 0; i < n; i++) {
+            double iceThickness = (biomes[i] == glacierOrd) ? 1000.0 : 0.0;
             double targetDeflection = calculateEquilibriumDeflectionMeters(iceThickness);
-
-            // Viscoelastic relaxation of crustal deflection towards equilibrium target
-            double currentDeflection = cell.getCrustalDeflectionMetersOr(targetDeflection);
-            double newDeflection = targetDeflection + (currentDeflection - targetDeflection) * decayFactor;
-            double deltaElevation = newDeflection - currentDeflection;
-
-            if (Math.abs(deltaElevation) > 1e-5) {
-                adjustingCells++;
-                cell.setElevation(elevation + deltaElevation);
-                cell.setCrustalDeflectionMeters(newDeflection);
+            if (Math.abs(targetDeflection) > 1e-3) {
+                elevArr[i] += (float) (targetDeflection * decayFactor * 0.01);
             }
-        }
-
-        if (adjustingCells > 0) {
-            logger.debug("Glacial Isostatic Adjustment: Relaxed {} cells over {} years", adjustingCells, String.format(java.util.Locale.ROOT, "%.1f", deltaYears));
         }
     }
 }

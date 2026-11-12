@@ -27,52 +27,27 @@ public class KinSelectionHamiltonEngine extends AbstractSimulationEngine {
         super("KinSelectionHamiltonEngine", "KinSelectionHamiltonEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
-    @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
-    private static final Logger logger = LoggerFactory.getLogger(KinSelectionHamiltonEngine.class);
-
-    /**
-     * Check hamilton rule.
-     *
-     * @param relatednessR the relatedness r parameter (double)
-     * @param benefitB the benefit b parameter (double)
-     * @param costC the cost c parameter (double)
-     * @return the resulting computation or state reference
-     */
     public static boolean checkHamiltonRule(double relatednessR, double benefitB, double costC) {
         return (relatednessR * benefitB) > costC;
     }
 
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getFoodResource() == null) continue;
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0) return;
 
-            double food = cell.getFoodResource();
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double foodPerCapita = food / pop;
-            // Continuous outgroup hostility response under resource scarcity (Hamilton 1964; Bowles 2006)
-            double scarcityStress = 1.0 / (1.0 + Math.exp(20.0 * (foodPerCapita - 0.05)));
-            if (scarcityStress > 0.01) {
-                // Outgroup hostility increases defensive/military work expenditure
-                double work = cell.getResourceWorkOr(50.0);
-                cell.setResourceWork(work * (1.0 + 0.08 * scarcityStress * deltaYears));
-            }
+        double food = buffer.getFoodResource()[i];
+        double foodPerCapita = food / pop;
+        double scarcityStress = 1.0 / (1.0 + Math.exp(20.0 * (foodPerCapita - 0.05)));
+        if (scarcityStress > 0.01) {
+            double capital = Math.max(50.0, buffer.getResourceCapital()[i]);
+            acc.dResourceCapital += (float) (capital * 0.08 * scarcityStress * dtYears);
         }
     }
 }

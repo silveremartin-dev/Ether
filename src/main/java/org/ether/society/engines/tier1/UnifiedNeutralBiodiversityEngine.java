@@ -6,13 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Hubbell's Unified Neutral Theory of Biodiversity &amp; Biogeography (UNTB) Engine.
@@ -155,36 +154,57 @@ public class UnifiedNeutralBiodiversityEngine extends AbstractSimulationEngine {
         return Math.pow(ratio, SPECIES_AREA_EXPONENT_Z);
     }
 
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null || dtYears <= 0.0) return;
+        double naturalBiomass = buffer.getBiomassNatural()[i];
+        if (naturalBiomass <= 0.0) return;
+
+        double pristineBaseline = Math.max(50.0, naturalBiomass * 1.5);
+        double retention = calculateBiodiversityRetention(naturalBiomass, pristineBaseline);
+        if (retention < 0.60) {
+            double degradationRate = (0.60 - retention) * 0.01 * dtYears;
+            double nextBio = Math.max(1.0, naturalBiomass * (1.0 - degradationRate));
+            acc.dBiomassNatural += (float) (nextBio - naturalBiomass);
+        }
+    }
+
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processNeutralBiodiversity(buf, dtYears);
+    }
+
     /**
-     * Executes one time-stepped Hubbell UNTB biodiversity evaluation across spatial land cells.
-     * Replaces heuristic global biodiversity index with localized species retention.
+     * Executes one time-stepped Hubbell UNTB biodiversity evaluation across DoD land cells.
      *
-     * @param cells   land cell domain
+     * @param buffer  WorldBuffer DoD state
      * @param dtYears elapsed simulation step in years
      */
-    public static void processNeutralBiodiversity(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
+    public static void processNeutralBiodiversity(WorldBuffer buffer, double dtYears) {
+        if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0) return;
 
         double totalRetention = 0.0;
         int activeCount = 0;
+        float[] bioNat = buffer.getBiomassNatural();
+        int n = buffer.getCapacity();
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            double naturalBiomass = cell.getBiomassNaturalOr(0.0);
+        for (int i = 0; i < n; i++) {
+            double naturalBiomass = bioNat[i];
             if (naturalBiomass <= 0.0) continue;
 
-            // Cell pristine biomass baseline estimated from climate suitability
             double pristineBaseline = Math.max(50.0, naturalBiomass * 1.5);
             double retention = calculateBiodiversityRetention(naturalBiomass, pristineBaseline);
             totalRetention += retention;
             activeCount++;
 
-            // Ecosystem resilience feedback: biodiversity retention stabilizes soil carbon and vegetation recovery
             if (retention < 0.60) {
-                // Biodiversity deficit accelerates vulnerability to pest/disease degradation
                 double degradationRate = (0.60 - retention) * 0.01 * dtYears;
-                cell.setBiomassNatural(Math.max(1.0, naturalBiomass * (1.0 - degradationRate)));
+                bioNat[i] = (float) Math.max(1.0, naturalBiomass * (1.0 - degradationRate));
             }
         }
 

@@ -8,12 +8,9 @@ package org.ether.society.engines.tier1;
 
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Megafauna Steppe Ecosystem Engineering & Overkill Feedback Engine.
@@ -31,83 +28,28 @@ public class MegafaunaEcosystemEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(MegafaunaEcosystemEngine.class);
 
-    /**
-     * Executes one megafauna ecosystem engineering tick across cells assuming a default monthly step.
-     *
-     * @param cells list of H3 spatial cells
-     */
-    public static void processMegafaunaEcosystem(List<H3Cell> cells) {
-        processMegafaunaEcosystem(cells, 1.0 / 12.0);
-    }
+    @Override
+    public boolean supportsCellularDerivatives() { return true; }
 
-    /**
-     * Executes one time-scaled megafauna ecosystem engineering tick across cells.
-     * Models Zimov's Pleistocene Mammoth Steppe overkill hypothesis: in cryospheric steppe-tundra
-     * ({@link Biome#SNOW}, {@link Biome#TUNDRA}) or Paleolithic hunter-gatherer plains
-     * ({@code tech < 1.5}), excessive foraging pressure extirpates megafaunal grazers, reducing
-     * trampling/manuring and triggering shrub/forest encroachment when soil organic carbon drops.
-     *
-     * @param cells   list of H3 spatial cells
-     * @param dtYears elapsed simulation step in years (\(\Delta t\))
-     */
-    public static void processMegafaunaEcosystem(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty()) return;
-
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        byte biome = buffer.getBiomes()[i];
+        boolean isCryosphericSteppe = (biome == (byte) Biome.SNOW.ordinal() || biome == (byte) Biome.TUNDRA.ordinal());
+        boolean isOpenGrassland = (biome == (byte) Biome.PLAINS.ordinal());
+        if (!isCryosphericSteppe && !isOpenGrassland) return;
         double safeDt = Math.max(1e-4, dtYears);
-        int size = cells.size();
-        java.util.concurrent.atomic.AtomicInteger megafaunaCollapseCounter = new java.util.concurrent.atomic.AtomicInteger(0);
-
-        java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
-            if (cell == null) return;
-            Biome biome = cell.getBiome();
-            boolean isCryosphericSteppe = (biome == Biome.SNOW || biome == Biome.TUNDRA);
-            boolean isOpenGrassland = (biome == Biome.PLAINS);
-
-            if (isCryosphericSteppe || isOpenGrassland) {
-                int humanPop = cell.getPopulationOr(0);
-                double naturalBiomass = cell.getBiomassNaturalOr(1.0);
-                double domesticLivestock = cell.getBiomassLivestockOr(0.0);
-
-                // Universal substitution: pastoral/agricultural societies with high domestic livestock
-                // rely less on wild megafauna hunting, whereas societies without livestock exert full hunting pressure
-                // regardless of technological epoch (e.g., Pleistocene mammoth hunters or 19th-century bison hunters).
-                double wildGameReliance = 1.0 / (1.0 + (domesticLivestock / Math.max(1.0, humanPop * 0.5)));
-
-                // Continuous hunting pressure ratio = Effective Hunting Population / Natural Biomass Stock
-                double huntingPressureRatio = (humanPop * wildGameReliance) / Math.max(10.0, naturalBiomass);
-
-                if (huntingPressureRatio > 0.10) {
-                    megafaunaCollapseCounter.incrementAndGet();
-
-                    // Time-scaled continuous exponential decay of wild megafauna biomass and soil carbon
-                    double annualDepletionRate = Math.min(0.20, huntingPressureRatio * 0.02);
-                    double stepDepletion = Math.min(0.20, annualDepletionRate * safeDt);
-                    cell.setBiomassNatural(Math.max(10.0, naturalBiomass * (1.0 - stepDepletion)));
-                    double soc = cell.getSoilOrganicCarbonOr(15.0);
-                    double updatedSoc = Math.max(2.0, soc - (stepDepletion * 0.5));
-                    cell.setSoilOrganicCarbon(updatedSoc);
-
-                    // Shrub/woodland encroachment converts open steppe plains to forest when grazers & SOC collapse
-                    if (isOpenGrassland && updatedSoc < 8.0) {
-                        cell.setBiome(Biome.FOREST);
-                    }
-                }
-            }
-        };
-
-        if (size >= 10000) {
-            cells.parallelStream().forEach(cellProcessor);
-        } else {
-            for (int i = 0; i < size; i++) {
-                cellProcessor.accept(cells.get(i));
-            }
-        }
-
-        int megafaunaCollapseEvents = megafaunaCollapseCounter.get();
-        if (megafaunaCollapseEvents > 0) {
-            logger.debug("Megafauna Engine: Continuous trophic hunting pressure active across {} cells.", megafaunaCollapseEvents);
+        double humanPop = buffer.getBiomassHuman()[i] / 0.06;
+        double naturalBiomass = buffer.getBiomassNatural()[i];
+        double domesticLivestock = buffer.getBiomassLivestock()[i];
+        double wildGameReliance = 1.0 / (1.0 + (domesticLivestock / Math.max(1.0, humanPop * 0.5)));
+        double huntingPressureRatio = (humanPop * wildGameReliance) / Math.max(10.0, naturalBiomass);
+        if (huntingPressureRatio > 0.10) {
+            double stepDepletion = Math.min(0.20, Math.min(0.20, huntingPressureRatio * 0.02) * safeDt);
+            double newBio = Math.max(10.0, naturalBiomass * (1.0 - stepDepletion));
+            acc.dBiomassNatural += (float) (newBio - naturalBiomass);
+            double soc = buffer.getSoilOrganicCarbon()[i];
+            acc.dSoilOrganicCarbon += (float) (Math.max(2.0, soc - stepDepletion * 0.5) - soc);
         }
     }
 }
-
-

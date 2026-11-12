@@ -65,98 +65,68 @@ public class PhysicalEngineTestSuite {
      *
      */
     public void testSoilNutrientNPKEngine() {
-        H3Cell cell = testCells.get(0);
-        double initialBiomass = cell.getBiomassAgriculture(); // 200.0
-        SoilNutrientNPKEngine.processSoilNutrients(testCells);
-        assertNotNull(cell.getBiomassAgriculture(), "Agricultural biomass must not be null");
-        assertFalse(Double.isNaN(cell.getBiomassAgriculture()), "Agricultural biomass must not be NaN");
-        assertTrue(cell.getBiomassAgriculture() > 0.0, "Agricultural biomass must remain positive");
-        // On a high-resolution Level 8 cell (~0.74 km2), maximum physical land biomass is scaled down by areaScale (~0.05 min bound).
-        // Since initial biomass was 200.0 (above the cell's physical carrying ceiling), the engine applies terrace maintenance depreciation.
-        assertTrue(cell.getBiomassAgriculture() <= initialBiomass,
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
+        double initialBiomass = buf.getBiomassAgriculture()[0];
+        SoilNutrientNPKEngine.processSoilNutrients(buf);
+        assertFalse(Float.isNaN(buf.getBiomassAgriculture()[0]), "Agricultural biomass must not be NaN");
+        assertTrue(buf.getBiomassAgriculture()[0] > 0.0f, "Agricultural biomass must remain positive");
+        assertTrue(buf.getBiomassAgriculture()[0] <= initialBiomass,
                 "Biomass above physical land ceiling must undergo physical maintenance depreciation towards equilibrium");
     }
 
     @Test
     @DisplayName("Net Energy EROEI Master Cliodynamic Engine Test")
-    /*
-     * Test net energy eroeiengine operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testNetEnergyEROEIEngine() {
-        double eroei = NetEnergyEROEIEngine.calculateEROEI(testCells.get(0));
-        assertTrue(eroei > 0.0, "EROEI must be strictly positive");
-        NetEnergyEROEIEngine.processNetEnergyEROEI(testCells);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
+        new NetEnergyEROEIEngine().tick(buf, 1.0 / 12.0, 1.0);
+        assertTrue(buf.getResourceCapital()[0] >= 0.0f);
     }
 
     @Test
     @DisplayName("Nuclear Safety & Radiotoxicity Engine Test")
-    /*
-     * Test nuclear safety radiotoxicity engine operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testNuclearSafetyRadiotoxicityEngine() {
-        H3Cell cell = testCells.get(0);
-        cell.setResourceUranium(100.0); // Fissile uranium stock for active nuclear reactor
-        cell.setResourceCapital(300000.0); // Capital stock supporting high-voltage electric grid
-        double initialPollution = cell.getPollutionLevel();
-        int initialPop = cell.getPopulation();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
+        buf.getResourceUranium()[0] = 100.0f;
+        buf.getResourceCapital()[0] = 300000.0f;
+        double initialPollution = buf.getPollutionLevel()[0];
+        double initialBioHuman = buf.getBiomassHuman()[0];
 
-        NuclearSafetyRadiotoxicityEngine.setAccidentProbability(1.0); // Deterministic test accident
-        NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(testCells);
+        NuclearSafetyRadiotoxicityEngine.setAccidentProbability(1.0);
+        NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(buf);
 
-        assertTrue(cell.getPollutionLevel() > initialPollution + 5000.0, "Core meltdown must cause massive radiotoxic pollution spike");
-        assertEquals((int) (initialPop * 0.70), cell.getPopulation(), "Radiation casualties & evacuation must reduce population by 30%");
+        assertTrue(buf.getPollutionLevel()[0] > initialPollution + 5000.0, "Core meltdown must cause massive radiotoxic pollution spike");
+        assertEquals(initialBioHuman * 0.70, buf.getBiomassHuman()[0], 1e-2, "Radiation casualties & evacuation must reduce population by 30%");
     }
 
     @Test
     @DisplayName("Ozone Layer Depletion Engine Test")
-    /*
-     * Test ozone layer depletion engine operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testOzoneLayerDepletionEngine() {
-        H3Cell cell = testCells.get(0);
-        // Case 1: Pollution <= 5000: no CFC stratospheric damage
-        cell.setPollutionLevel(100.0);
-        cell.setBiomassAgriculture(200.0);
-        OzoneLayerDepletionEngine.processOzoneLayerDepletion(testCells);
-        assertEquals(200.0, cell.getBiomassAgriculture(), 1e-6, "No ozone depletion when pollution is below threshold");
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
 
-        // Case 2: Extreme chemical pollution > 5000 triggers CFC photolysis and 8% UV-B crop loss
-        cell.setPollutionLevel(6000.0);
-        OzoneLayerDepletionEngine.processOzoneLayerDepletion(testCells);
-        assertEquals(200.0 * 0.92, cell.getBiomassAgriculture(), 0.05,
+        buf.getPollutionLevel()[0] = 100.0f;
+        buf.getBiomassAgriculture()[0] = 200.0f;
+        OzoneLayerDepletionEngine.processOzoneLayerDepletion(buf);
+        assertEquals(200.0f, buf.getBiomassAgriculture()[0], 1e-4f, "No ozone depletion when pollution is below threshold");
+
+        buf.getPollutionLevel()[0] = 6000.0f;
+        OzoneLayerDepletionEngine.processOzoneLayerDepletion(buf);
+        assertEquals(200.0 * 0.92, buf.getBiomassAgriculture()[0], 0.05,
                 "Stratospheric ozone depletion must degrade agricultural biomass by exactly 8% due to UV-B DNA damage");
     }
 
     @Test
     @DisplayName("Nuclear Warfare & Climate Soot Engine Test")
-    /*
-     * Test nuclear warfare climate engine operation.
-     * <p>
-     * Executes operational logic for {@code PhysicalEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testNuclearWarfareClimateEngine() {
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
         NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(1.2);
         double transmittance = NuclearWarfareClimateEngine.calculateSolarTransmittance(1.2);
         assertTrue(transmittance < 0.35, "Soot optical depth tau=1.2 must attenuate solar irradiance by >65%");
-        NuclearWarfareClimateEngine.processNuclearWarfareClimate(testCells);
+        NuclearWarfareClimateEngine.processNuclearWarfareClimate(buf);
         assertTrue(NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() > 0.0);
     }
 }

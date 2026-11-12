@@ -122,8 +122,14 @@ final class HistoricalPlanetaryScenarioSupport {
         boolean targetSettled = false;
         double maxDispersalKm = 0.0;
 
+        BiologicalDemographicsEngine bioEngine = new BiologicalDemographicsEngine();
         for (int tick = 1; tick <= ticks; tick++) {
-            BiologicalDemographicsEngine.processBiologicalDemographics(planetaryGrid);
+            org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(planetaryGrid.size());
+            org.ether.society.data.DODDataGenerator.populateWorldBuffer(planetaryGrid, buf, false);
+            bioEngine.tick(buf, 1.0, 12.0);
+            for (int i = 0; i < planetaryGrid.size(); i++) {
+                planetaryGrid.get(i).setPopulation((int) Math.round(buf.getBiomassHuman()[i] / 0.06));
+            }
             processMaritimeAndTerrestrialDispersal(planetaryGrid, cellMap, h3Service, allowSeafaring);
 
             for (H3Cell c : planetaryGrid) {

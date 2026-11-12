@@ -44,86 +44,54 @@ public class BifurcationChaosEngine extends AbstractSimulationEngine {
     /** Internal state: tipping point warning (boolean). */
     private static boolean tippingPointWarning = false;
 
-    /**
-     * Analyzes systemic stability, spatial variance, and critical slowing down indicators.
-     *
-     * @param cells list of H3 cells in the simulation grid
-     * @param deltaYears step size in years
-     */
-    public static void processBifurcationAnalysis(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
+        if (buf == null || buf.getCapacity() == 0) return;
+        int n = buf.getCapacity();
+        float[] popArr = buf.getBiomassHuman();
+        float[] foodArr = buf.getFoodResource();
+        float[] giniArr = buf.getGiniIndex();
 
-        double sumPop = 0;
-        double sumFood = 0;
+        double sumPop = 0.0;
         int count = 0;
-
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            if (cell.getPopulation() != null && cell.getPopulation() > 0) {
-                sumPop += cell.getPopulation();
-                sumFood += cell.getFoodResourceOr(0.0);
+        for (int i = 0; i < n; i++) {
+            if (popArr[i] > 0.0f) {
+                sumPop += popArr[i];
                 count++;
             }
         }
-
         if (count == 0) return;
 
         double meanPop = sumPop / count;
-        double varianceSum = 0;
-
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            if (cell.getPopulation() != null && cell.getPopulation() > 0) {
-                double diff = cell.getPopulation() - meanPop;
-                varianceSum += diff * diff;
-            }
-        }
-
-        globalSystemVariance = varianceSum / count;
-
-        // Lyapunov Exponent Approximation: Rate of divergence between population and food availability
+        double varianceSum = 0.0;
         double divergenceRate = 0.0;
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            if (cell.getPopulation() != null && cell.getPopulation() > 0) {
-                double food = cell.getFoodResourceOr(0.0);
-                double stressRatio = food > 0 ? (cell.getPopulation() / (food + 1.0)) : 10.0;
+        for (int i = 0; i < n; i++) {
+            float pop = popArr[i];
+            if (pop > 0.0f) {
+                double diff = pop - meanPop;
+                varianceSum += diff * diff;
+                double food = foodArr[i];
+                double stressRatio = food > 0.0 ? (pop / (food + 1.0)) : 10.0;
                 divergenceRate += Math.log(Math.max(0.001, Math.abs(stressRatio - 1.0)));
             }
         }
+        globalSystemVariance = varianceSum / count;
         globalLyapunovExponent = divergenceRate / count;
 
-        // Critical Slowing Down Threshold: High variance + positive Lyapunov exponent indicates imminent collapse
         if (globalLyapunovExponent > 0.45 && globalSystemVariance > 5000.0) {
             if (!tippingPointWarning) {
                 tippingPointWarning = true;
                 logger.warn("[WARNING] BIFURCATION: System approaching critical tipping point (Lyapunov={}, Variance={})",
                         String.format("%.4f", globalLyapunovExponent), String.format("%.2f", globalSystemVariance));
             }
-        } else {
-            tippingPointWarning = false;
-        }
-
-        // Apply chaos-induced perturbation on vulnerable cells near bifurcation
-        if (tippingPointWarning) {
-            // Iterate over spatial cell domains and apply localized cellular state transformations
-            for (H3Cell cell : cells) {
-                if (cell == null) continue;
-                if (cell.getPopulation() != null && cell.getPopulation() > 100) {
-                    double gini = cell.getGiniIndexOr(0.3);
-                    if (gini > 0.6) {
-                        // Bifurcation cascade: High inequality + chaos -> accelerated demographic friction
-                        int lostPop = (int) Math.round(cell.getPopulation() * 0.02 * deltaYears);
-                        H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, Math.max(0, cell.getPopulation() - lostPop));
-                    }
+            for (int i = 0; i < n; i++) {
+                float pop = popArr[i];
+                if (pop > 100.0f && giniArr[i] > 0.6f) {
+                    popArr[i] = (float) Math.max(0.0, pop * (1.0 - 0.02 * dtYears));
                 }
             }
+        } else {
+            tippingPointWarning = false;
         }
     }
 

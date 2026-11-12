@@ -27,11 +27,6 @@ public class HandyNasaPureEngine extends AbstractSimulationEngine {
         super("HandyNasaPureEngine", "HandyNasaPureEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
-    @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(HandyNasaPureEngine.class);
 
     /** Internal state: commoners x (double). */
@@ -101,10 +96,8 @@ public class HandyNasaPureEngine extends AbstractSimulationEngine {
      */
     public double getWealthK() { return wealthK; }
 
-    /**
-     * Executes spatial coupling on grid cells by delegating to HandyNasaHybridEngine.
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        HandyNasaHybridEngine.processPlugin(cells, deltaYears);
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
+        processTick(dtYears);
     }
 }

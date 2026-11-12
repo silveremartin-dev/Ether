@@ -22,7 +22,7 @@ import java.util.*;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class MetricRegistry {
+public final class MetricRegistry {
 
     private static final MetricRegistry INSTANCE = new MetricRegistry();
     private final Map<String, MetricDescriptor> metricsById = new LinkedHashMap<>();

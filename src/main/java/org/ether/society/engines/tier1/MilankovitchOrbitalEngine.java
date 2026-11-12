@@ -6,13 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
+import org.ether.society.h3.H3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Astronomical Milankovitch Orbital Forcing & Insolation Engine.
@@ -114,49 +113,66 @@ public class MilankovitchOrbitalEngine extends AbstractSimulationEngine {
         return (SOLAR_CONSTANT_TOA_W_M2 / Math.PI) * distSq * Math.max(0.0, term);
     }
 
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        applyMilankovitchForcing(buf, 2000.0, dtYears);
+    }
+
     /**
      * Applies Milankovitch insolation forcing anomaly to surface temperatures across all planetary cells with default monthly step.
      *
-     * @param cells Simulation H3 cells
+     * @param buffer WorldBuffer DoD state
      * @param currentYear Simulation year
      */
-    public static void applyMilankovitchForcing(List<H3Cell> cells, double currentYear) {
-        applyMilankovitchForcing(cells, currentYear, 1.0 / 12.0);
+    public static void applyMilankovitchForcing(WorldBuffer buffer, double currentYear) {
+        applyMilankovitchForcing(buffer, currentYear, 1.0 / 12.0);
     }
 
     /**
      * Applies Milankovitch insolation forcing anomaly to surface temperatures across all planetary cells scaled by dtYears.
      *
-     * @param cells Simulation H3 cells
+     * @param buffer WorldBuffer DoD state
      * @param currentYear Simulation year
      * @param deltaYears Simulation time step in years
      */
-    public static void applyMilankovitchForcing(List<H3Cell> cells, double currentYear, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void applyMilankovitchForcing(WorldBuffer buffer, double currentYear, double deltaYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
         MilankovitchParameters params = computeOrbitalParameters(currentYear);
 
-        // Compute high-latitude summer insolation anomaly (65A°N at summer solstice day 172)
+        // Compute high-latitude summer insolation anomaly (65 N at summer solstice day 172)
         double refInsolation65N = calculateDailyInsolation(65.0, 172, new MilankovitchParameters(MEAN_ECCENTRICITY, MEAN_OBLIQUITY_DEG, 0.0));
         double curInsolation65N = calculateDailyInsolation(65.0, 172, params);
         double anomalyW_M2 = curInsolation65N - refInsolation65N;
 
-        // Radiative forcing scaling: ~0.08 A°C per W/mA² of 65A°N summer insolation anomaly
+        // Radiative forcing scaling: ~0.08 C per W/m^2 of 65 N summer insolation anomaly
         double globalTempShiftC = anomalyW_M2 * 0.08;
         double dtSafe = Math.max(0.0001, deltaYears);
         double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 2.0);
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double curTemp = cell.getTemperatureOr(15.0);
-            double lat = cell.getLatitudeOr(0.0);
-            double elev = cell.getElevationOr(0.0);
+        float[] tempArr = buffer.getTemperature();
+        float[] elevArr = buffer.getElevation();
+        long[] h3Arr = buffer.getH3Indexes();
+        H3Service h3Service = H3Service.getInstance();
+        int n = buffer.getCapacity();
+
+        for (int i = 0; i < n; i++) {
+            double curTemp = tempArr[i];
+            double lat = 0.0;
+            if (h3Arr != null && h3Arr[i] != 0L) {
+                try {
+                    lat = h3Service.cellToLatLng(h3Arr[i]).lat;
+                } catch (Exception ignored) {
+                    lat = 0.0;
+                }
+            }
+            double elev = elevArr[i];
             double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
             double latFactor = Math.cos(Math.toRadians(lat));
             // Polar amplification: higher latitudes experience greater orbital temperature shifts
             double localShift = globalTempShiftC * (0.5 + 1.0 * (1.0 - latFactor));
             double targetTemp = baselineTemp + localShift;
-            cell.setTemperature(curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
+            tempArr[i] = (float) (curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);
         }
     }
 }

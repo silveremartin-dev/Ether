@@ -55,11 +55,6 @@ public class CoGovernanceTradeEngine extends AbstractSimulationEngine {
         }
     }
 
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processTradeAndGovernance(cells, deltaYears);
-    }
-
     public static void resetState() {
         globalCarbonQuotaTreatyActive = false;
         internationalResourceTradeVolume = 1.0;
@@ -68,19 +63,6 @@ public class CoGovernanceTradeEngine extends AbstractSimulationEngine {
     @Override
     public void reset() {
         resetState();
-    }
-
-    public static void processTradeAndGovernance(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        if (globalCarbonQuotaTreatyActive) {
-            for (H3Cell cell : cells) {
-                if (cell == null || cell.getPollutionLevel() == null) continue;
-                if (cell.getPollutionLevel() > 200.0) {
-                    cell.setPollutionLevel(cell.getPollutionLevel() * Math.exp(-0.02 * deltaYears));
-                }
-            }
-        }
     }
 
     public static boolean isGlobalCarbonQuotaTreatyActive() {

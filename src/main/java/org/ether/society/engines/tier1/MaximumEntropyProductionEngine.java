@@ -128,38 +128,21 @@ public class MaximumEntropyProductionEngine extends AbstractSimulationEngine {
         return (latentHeatWM2 / LATENT_HEAT_VAPORIZATION_J_KG) * 3.15576e7;
     }
 
-    /**
-     * Executes one time-stepped MEPP thermodynamic rate calibration across spatial cells.
-     * Couples surface temperature, solar insolation, and rainfall physics.
-     *
-     * @param cells   spatial H3 cell collection
-     * @param dtYears elapsed simulation step in years
-     */
-    public static void processMaximumEntropyProduction(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            double tempC = cell.getTemperatureOr(15.0);
-            double tempK = tempC + 273.15;
-            double latRad = Math.toRadians(cell.getLatitudeOr(0.0));
-            double insolation = cell.getEnergySolarOr(0.0) > 0.0
-                    ? cell.getEnergySolarOr(0.0)
-                    : 340.0 * Math.max(0.15, Math.cos(latRad));
-
-            // 1. Kinetic wind dissipation and turbine power cap
-            double maxWindKineticWM2 = calculateMaxKineticPowerWM2(tempK, insolation);
-            double sustainableWindHarvest = Math.min(maxWindKineticWM2 * 0.35, MAX_KINETIC_WIND_EXTRACTION_W_M2);
-
-            // 2. Thermodynamic equilibrium rainfall boundary
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
+        if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0) return;
+        float[] tempArr = buffer.getTemperature();
+        float[] solarArr = buffer.getEnergySolar();
+        float[] rainArr = buffer.getRainfall();
+        int n = buffer.getCapacity();
+        for (int i = 0; i < n; i++) {
+            double tempC = tempArr[i];
+            double insolation = solarArr[i] > 0.0f ? solarArr[i] : 250.0;
             double mepRainMm = calculateEquilibriumPrecipitationMmYr(tempC, insolation * 0.60);
-            double currentRain = cell.getRainfallOr(600.0);
-
-            // Smooth thermodynamic relaxation of precipitation toward the Carnot-Penman optimum
+            double currentRain = rainArr[i];
             if (currentRain > 0.0) {
                 double relaxedRain = currentRain * (1.0 - 0.05 * dtYears) + mepRainMm * (0.05 * dtYears);
-                cell.setRainfall(Math.max(10.0, relaxedRain));
+                rainArr[i] = (float) Math.max(10.0, relaxedRain);
             }
         }
     }

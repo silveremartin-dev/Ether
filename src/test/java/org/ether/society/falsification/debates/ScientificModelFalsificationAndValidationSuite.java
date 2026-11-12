@@ -741,19 +741,30 @@ public class ScientificModelFalsificationAndValidationSuite {
                 institutionalOnlyCell.setTradeNetwork(10.0);        // no transoceanic ghost acreage
                 institutionalOnlyCell.setBiomassNatural(20000.0);
 
-                List<H3Cell> h1Grid = List.of(pomeranzTakeoffCell);
-                List<H3Cell> h0Grid = List.of(institutionalOnlyCell);
+                org.ether.society.core.dod.WorldBuffer h1Buf = new org.ether.society.core.dod.WorldBuffer(1);
+                h1Buf.getBiomassHuman()[0] = 8000.0f;
+                h1Buf.getResourceCapital()[0] = 800000.0f;
+                h1Buf.getResourceCoal()[0] = 3000.0f;
+                h1Buf.getCommercialFluxVolume()[0] = 35.0f;
+                h1Buf.getBiomassNatural()[0] = 20000.0f;
+
+                org.ether.society.core.dod.WorldBuffer h0Buf = new org.ether.society.core.dod.WorldBuffer(1);
+                h0Buf.getBiomassHuman()[0] = 8000.0f;
+                h0Buf.getResourceCapital()[0] = 800000.0f;
+                h0Buf.getResourceCoal()[0] = 0.0f;
+                h0Buf.getCommercialFluxVolume()[0] = 10.0f;
+                h0Buf.getBiomassNatural()[0] = 20000.0f;
 
                 // Run 30 annual simulation steps
                 for (int year = 0; year < 30; year++) {
-                    PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(h1Grid, 1.0);
-                    PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(h0Grid, 1.0);
+                    PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(h1Buf, 1.0);
+                    PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(h0Buf, 1.0);
                 }
 
-                h1PomeranzCapitals[i] = pomeranzTakeoffCell.getResourceCapital();
-                h0InstitutionalOnlyCapitals[i] = institutionalOnlyCell.getResourceCapital();
-                h1Biomasses[i] = pomeranzTakeoffCell.getBiomassNatural();
-                h0Biomasses[i] = institutionalOnlyCell.getBiomassNatural();
+                h1PomeranzCapitals[i] = h1Buf.getResourceCapital()[0];
+                h0InstitutionalOnlyCapitals[i] = h0Buf.getResourceCapital()[0];
+                h1Biomasses[i] = h1Buf.getBiomassNatural()[0];
+                h0Biomasses[i] = h0Buf.getBiomassNatural()[0];
             }
 
             double meanH1Cap = java.util.Arrays.stream(h1PomeranzCapitals).average().orElse(0.0);
@@ -802,14 +813,22 @@ public class ScientificModelFalsificationAndValidationSuite {
             yangtzeJiangnan.setMovementFriction(0.80);    // overland coal transport barrier
             yangtzeJiangnan.setTradeNetwork(12.0);        // autarkic regional agrarian loop
 
-            List<H3Cell> cells = List.of(britishMidlands, yangtzeJiangnan);
+            org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
+            buf.getBiomassHuman()[0] = 10000.0f;
+            buf.getResourceCapital()[0] = 1000000.0f;
+            buf.getResourceCoal()[0] = 3000.0f;
+            buf.getCommercialFluxVolume()[0] = 35.0f;
+            buf.getBiomassHuman()[1] = 10000.0f;
+            buf.getResourceCapital()[1] = 1000000.0f;
+            buf.getResourceCoal()[1] = 0.0f;
+            buf.getCommercialFluxVolume()[1] = 12.0f;
 
             for (int yr = 0; yr < 50; yr++) {
-                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(cells, 1.0);
+                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(buf, 1.0);
             }
 
-            double britainKpc = britishMidlands.getResourceCapital() / britishMidlands.getPopulation();
-            double yangtzeKpc = yangtzeJiangnan.getResourceCapital() / yangtzeJiangnan.getPopulation();
+            double britainKpc = buf.getResourceCapital()[0] / buf.getBiomassHuman()[0];
+            double yangtzeKpc = buf.getResourceCapital()[1] / buf.getBiomassHuman()[1];
 
             logger.info("  -> Britain Final K/pc: {}, Yangtze Final K/pc: {}", britainKpc, yangtzeKpc);
 
@@ -839,13 +858,25 @@ public class ScientificModelFalsificationAndValidationSuite {
             ablatedBritain.setMovementFriction(0.35);
             ablatedBritain.setTradeNetwork(5.0); // ablated transatlantic imports
 
-            List<H3Cell> fullGrid = List.of(fullBritain);
-            List<H3Cell> ablatedGrid = List.of(ablatedBritain);
+            org.ether.society.core.dod.WorldBuffer fullBuf = new org.ether.society.core.dod.WorldBuffer(1);
+            fullBuf.getBiomassHuman()[0] = 8000.0f;
+            fullBuf.getResourceCapital()[0] = 800000.0f;
+            fullBuf.getResourceCoal()[0] = 3000.0f;
+            fullBuf.getCommercialFluxVolume()[0] = 35.0f;
+
+            org.ether.society.core.dod.WorldBuffer ablatedBuf = new org.ether.society.core.dod.WorldBuffer(1);
+            ablatedBuf.getBiomassHuman()[0] = 8000.0f;
+            ablatedBuf.getResourceCapital()[0] = 800000.0f;
+            ablatedBuf.getResourceCoal()[0] = 3000.0f;
+            ablatedBuf.getCommercialFluxVolume()[0] = 5.0f;
 
             for (int yr = 0; yr < 40; yr++) {
-                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(fullGrid, 1.0);
-                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(ablatedGrid, 1.0);
+                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(fullBuf, 1.0);
+                PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(ablatedBuf, 1.0);
             }
+
+            fullBritain.setResourceCapital((double) fullBuf.getResourceCapital()[0]);
+            ablatedBritain.setResourceCapital((double) ablatedBuf.getResourceCapital()[0]);
 
             logger.info("  -> Full Britain Capital: {}, Ablated Britain Capital: {}",
                     fullBritain.getResourceCapital(), ablatedBritain.getResourceCapital());

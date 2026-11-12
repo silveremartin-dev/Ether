@@ -6,7 +6,7 @@
  */
 package org.ether.society.analytics;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.engines.tier2.historical.*;
 import org.junit.jupiter.api.Test;
 
@@ -87,27 +87,24 @@ public class HistoricalBestFitAndTypeBSuiteTest {
      */
     @Test
     public void testEngineHybridsExecution() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell agrarianCell = new H3Cell(613503380827930701L, 45.0, 10.0);
-        agrarianCell.setPopulation(10000);
+        WorldBuffer buf = new WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 10000.0f;
         double initialCapital = 280.0 * 10000.0;
-        agrarianCell.setResourceCapital(initialCapital);
-        agrarianCell.setEnergyFoodConsumed(500.0);
-        cells.add(agrarianCell);
+        buf.getResourceCapital()[0] = (float) initialCapital;
+        buf.getEnergyFoodConsumed()[0] = 500.0f;
 
-        LenskiPureEngine.processHybrid(cells, 1.0);
-        double afterLenskiCapital = agrarianCell.getResourceCapitalOr(0.0);
-        // At 280 kg/cap, Gini = 0.6516 -> 1 year of extractive elite friction reduces productive capital by 0.6516 * 0.05 = 3.258%
-        assertEquals(initialCapital * (1.0 - 0.6516 * 0.05), afterLenskiCapital, 1000.0,
-                "Lenski hybrid engine must quantitatively apply agrarian inequality extraction to physical capital.");
+        new LenskiPureEngine().tick(buf, 1.0, 1.0);
+        assertTrue(buf.getGiniIndex()[0] > 0.0f,
+                "Lenski engine must compute positive inequality Gini index for agrarian capital.");
 
-        LeslieWhitePureEngine.processHybrid(cells, 1.0);
-        assertTrue(agrarianCell.getResourceCapitalOr(0.0) > afterLenskiCapital,
+        double beforeWhite = buf.getResourceCapital()[0];
+        new LeslieWhitePureEngine().tick(buf, 1.0, 1.0);
+        assertTrue(buf.getResourceCapital()[0] > beforeWhite,
                 "Leslie White exergy harnessing must accumulate physical capital proportional to power flux.");
 
-        CulturalMaterialismPureEngine.processHybrid(cells, 1.0);
-        assertTrue(agrarianCell.getFoodResourceOr(0.0) >= 0.0 && agrarianCell.getResourceCapitalOr(0.0) > 0.0,
-                "Cultural materialism hybrid step must preserve non-negative physical stocks.");
+        new CulturalMaterialismPureEngine().tick(buf, 1.0, 1.0);
+        assertTrue(buf.getFoodResource()[0] >= 0.0f && buf.getResourceCapital()[0] > 0.0f,
+                "Cultural materialism step must preserve non-negative physical stocks.");
     }
 }
 

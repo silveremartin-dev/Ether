@@ -118,7 +118,7 @@ public final class UnWpp2024DataIngestor {
 
                     variants.get(variant).put(year, new DemographicPoint(year, popMillions, popPersons));
                 } catch (NumberFormatException ignored) {
-                    // Skip invalid data line
+                    logger.trace("Skipping invalid data line in UN WPP: {}", line);
                 }
             }
         }

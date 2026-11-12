@@ -117,16 +117,12 @@ public class GreenhouseRadiativeEngine extends AbstractSimulationEngine {
         this.seaLevelDeltaMeters = computeSeaLevelDeltaMeters();
     }
 
-    /**
-     * Applies incremental temperature anomaly and sea-level shift to the H3 grid.
-     */
-    public void applyToGrid(List<H3Cell> cells) {
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
+        if (buf == null || buf.getCapacity() == 0) return;
 
         double deltaT = computeTemperatureAnomalyC();
         double seaShift = computeSeaLevelDeltaMeters();
-        double ghForcing = computeRadiativeForcingWpm2();
-
         double incrementalDeltaT = deltaT - previousAppliedDeltaT;
         double incrementalSeaShift = seaShift - previousAppliedSeaShift;
 
@@ -135,21 +131,15 @@ public class GreenhouseRadiativeEngine extends AbstractSimulationEngine {
 
         if (Math.abs(incrementalDeltaT) < 1.0e-5 && Math.abs(incrementalSeaShift) < 1.0e-5) return;
 
-        logger.debug("Greenhouse Engine Step: CO2={} ppm, CH4={} ppb | DeltaT=+{}Â°C, SeaLevelDelta=+{}m, Forcing={} W/mÂ²",
-                currentCo2Ppm, currentCh4Ppb,
-                String.format(java.util.Locale.ROOT, "%.2f", deltaT),
-                String.format(java.util.Locale.ROOT, "%.1f", seaShift),
-                String.format(java.util.Locale.ROOT, "%.2f", ghForcing));
-
-        cells.parallelStream().forEach(cell -> {
-            if (cell == null) return;
-            if (cell.getTemperature() != null) {
-                cell.setTemperature(cell.getTemperature() + incrementalDeltaT);
+        int n = buf.getCapacity();
+        float[] tempArr = buf.getTemperature();
+        float[] elevArr = buf.getElevation();
+        for (int i = 0; i < n; i++) {
+            tempArr[i] += (float) incrementalDeltaT;
+            if (elevArr[i] > 0.0f) {
+                elevArr[i] = (float) Math.max(-100.0, elevArr[i] - incrementalSeaShift);
             }
-            if (cell.getElevation() != null && cell.getElevation() > 0) {
-                cell.setElevation(Math.max(-100.0, cell.getElevation() - incrementalSeaShift));
-            }
-        });
+        }
     }
 
     /** @return current atmospheric $\text{CO}_2$ concentration in ppm */

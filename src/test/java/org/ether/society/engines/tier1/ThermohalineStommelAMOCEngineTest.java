@@ -110,7 +110,16 @@ public class ThermohalineStommelAMOCEngineTest {
         }
 
         // Apply AMOC with 0.40 Sv freshwater pulse
-        ThermohalineStommelAMOCEngine.processThermohalineCirculationWithMeltwater(mesh, 0.40, 2.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(mesh.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(mesh, buf, false);
+        org.ether.society.h3.H3Service h3 = org.ether.society.h3.H3Service.getInstance();
+        for (int i = 0; i < mesh.size(); i++) {
+            buf.getH3Indexes()[i] = h3.latLngToH3(mesh.get(i).getLatitude(), mesh.get(i).getLongitude(), 5);
+        }
+        ThermohalineStommelAMOCEngine.processThermohalineCirculationWithMeltwater(buf, 0.40, 2.0);
+        for (int i = 0; i < mesh.size(); i++) {
+            mesh.get(i).setTemperature((double) buf.getTemperature()[i]);
+        }
 
         // Find a North Atlantic subpolar cell (e.g. 55°N, -25°E)
         H3Cell northAtlanticCell = mesh.stream()

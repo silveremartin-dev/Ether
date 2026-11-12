@@ -82,14 +82,14 @@ public class LocalTriScenarioAuditTest {
         if (resProp != null && !resProp.isBlank()) {
             try {
                 resolution = Integer.parseInt(resProp.trim());
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) { /* non-year folder */ }
         }
         int targetSpanYears = 1;
         String spanProp = System.getProperty("audit.years");
         if (spanProp != null && !spanProp.isBlank()) {
             try {
                 targetSpanYears = Math.max(1, Integer.parseInt(spanProp.trim()));
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) { /* non-year folder */ }
         }
         System.out.println("Configured Local Spatial Resolution: H3 Res " + resolution + " | Span: " + targetSpanYears + " year(s)");
 
@@ -149,14 +149,14 @@ public class LocalTriScenarioAuditTest {
         if (resProp != null && !resProp.isBlank()) {
             try {
                 resolution = Integer.parseInt(resProp.trim());
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) { /* non-year folder */ }
         }
         int targetSpanYears = 1;
         String spanProp = System.getProperty("audit.years");
         if (spanProp != null && !spanProp.isBlank()) {
             try {
                 targetSpanYears = Math.max(1, Integer.parseInt(spanProp.trim()));
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) { /* non-year folder */ }
         }
         System.out.println("Configured Local Spatial Resolution: H3 Res " + resolution + " | Span: " + targetSpanYears + " year(s)");
 
@@ -225,7 +225,7 @@ public class LocalTriScenarioAuditTest {
         if (resProp != null && !resProp.isBlank()) {
             try {
                 resolution = Integer.parseInt(resProp.trim());
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) { /* non-year folder */ }
         }
         System.out.println("Configured Local Spatial Resolution: H3 Res " + resolution);
 

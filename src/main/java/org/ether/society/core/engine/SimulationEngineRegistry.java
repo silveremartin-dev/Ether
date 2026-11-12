@@ -111,12 +111,13 @@ public final class SimulationEngineRegistry {
     }
 
     /**
-     * Resolves all active Tier 2 engines enabled for the given scenario.
+     * Resolves all active engines for the given tier and scenario.
      *
+     * @param tier     engine tier (Tier 1 or Tier 2)
      * @param scenario active scenario
-     * @return list of active Tier 2 engines
+     * @return list of active engines for that tier
      */
-    public synchronized List<SimulationEngineModule> getActiveTier2Engines(Scenario scenario) {
+    public synchronized List<SimulationEngineModule> getActiveEngines(EngineTier tier, Scenario scenario) {
         if (scenario != null && scenario.getTypeBEngineStates() != null) {
             for (Map.Entry<String, Boolean> entry : scenario.getTypeBEngineStates().entrySet()) {
                 if (Boolean.TRUE.equals(entry.getValue())) {
@@ -125,12 +126,22 @@ public final class SimulationEngineRegistry {
             }
         }
         List<SimulationEngineModule> active = new ArrayList<>();
-        for (SimulationEngineModule e : tier2Engines) {
-            if (e.isEnabled(scenario)) {
+        for (SimulationEngineModule e : allEngines) {
+            if (e.tier() == tier && e.isEnabled(scenario)) {
                 active.add(e);
             }
         }
         return active;
+    }
+
+    /**
+     * Resolves all active Tier 2 engines enabled for the given scenario.
+     *
+     * @param scenario active scenario
+     * @return list of active Tier 2 engines
+     */
+    public synchronized List<SimulationEngineModule> getActiveTier2Engines(Scenario scenario) {
+        return getActiveEngines(EngineTier.TIER_2_CLIODYNAMIC, scenario);
     }
 
     /**
@@ -153,7 +164,7 @@ public final class SimulationEngineRegistry {
                     return (SimulationEngineModule) clazz.getDeclaredConstructor().newInstance();
                 }
             } catch (ClassNotFoundException ignored) {
-                // Continue searching candidate packages
+                logger.trace("Engine '{}' not found in package '{}'", id, pkg);
             } catch (Throwable t) {
                 logger.warn("Could not dynamically instantiate engine '{}': {}", id, t.getMessage());
             }

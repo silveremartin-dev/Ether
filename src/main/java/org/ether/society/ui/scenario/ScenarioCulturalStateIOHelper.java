@@ -487,7 +487,7 @@ final class ScenarioCulturalStateIOHelper {
             try {
                 return Long.parseLong(rawText.trim());
             } catch (NumberFormatException ignored) {
-                // Fall back below
+                logger.trace("Invalid custom seed '{}', falling back to scenario seed", rawText);
             }
         }
         try {

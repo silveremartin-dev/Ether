@@ -32,28 +32,20 @@ public class InfrastructureEnergyEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(InfrastructureEnergyEngine.class);
 
-    /**
-     * Executes one infrastructure investment and friction reduction tick across cells.
-     */
-    public static void processInfrastructureEnergy(List<H3Cell> cells) {
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        int pavedCells = 0;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double capital = cell.getResourceCapitalOr(0.0);
-
-            // Closed-form terrain and infrastructure friction evaluation (H3CellPhysicsAndStateHelper)
-            // Prevents unbounded multiplicative decay across ticks
-            if (capital > 200.0) {
-                pavedCells++;
-                org.ether.society.database.H3CellPhysicsAndStateHelper.calculateMovementFriction(cell);
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double capital = buffer.getResourceCapital()[i];
+        if (capital > 200.0) {
+            double friction = buffer.getFluxPressure()[i];
+            double targetFriction = Math.max(0.25, 1.0 / (1.0 + Math.log1p((capital - 200.0) / 500.0)));
+            if (friction > targetFriction) {
+                acc.dFluxPressure += (float) ((targetFriction - friction) * Math.min(1.0, dtYears * 0.2));
             }
-        }
-
-        if (pavedCells > 0) {
-            logger.info("Infrastructure Engine: Transport friction reduction active across {} paved infrastructure cells.", pavedCells);
         }
     }
 }

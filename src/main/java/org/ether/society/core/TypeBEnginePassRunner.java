@@ -96,15 +96,16 @@ public final class TypeBEnginePassRunner {
                                           double dtMonthly,
                                           Scenario scenario,
                                           CompiledEngineKernel compiledKernel) {
-        executeActiveTypeBEngines(worldBuffer, null, dtYears, dtMonthly, scenario, compiledKernel);
+        executeActiveEngines(org.ether.society.core.engine.EngineTier.TIER_2_CLIODYNAMIC,
+                worldBuffer, dtYears, dtMonthly, scenario);
     }
 
     /**
      * Executes active Tier 2 cliodynamic theories directly over the Data-Oriented WorldBuffer
-     * and active cells using Single-Pass Cellular Kernel Fusion for maximal CPU cache locality.
+     * using Single-Pass Cellular Kernel Fusion for maximal CPU cache locality.
      *
      * @param worldBuffer    contiguous world buffer
-     * @param cells          optional H3 cell list for legacy or hybrid plugin passes
+     * @param cells          unused legacy parameter retained for signature compatibility
      * @param dtYears        time step in Julian years
      * @param dtMonthly      monthly-scaled year fraction
      * @param scenario       active scenario configuration
@@ -116,16 +117,54 @@ public final class TypeBEnginePassRunner {
                                           double dtMonthly,
                                           Scenario scenario,
                                           CompiledEngineKernel compiledKernel) {
-        if (worldBuffer == null) return;
+        executeActiveEngines(org.ether.society.core.engine.EngineTier.TIER_2_CLIODYNAMIC,
+                worldBuffer, dtYears, dtMonthly, scenario);
+    }
 
-        List<SimulationEngineModule> activeTier2 = SimulationEngineRegistry.getInstance().getActiveTier2Engines(scenario);
-        if (activeTier2.isEmpty()) return;
+    /**
+     * Executes active Tier 1 biophysical engines over the Data-Oriented {@link WorldBuffer}
+     * using the unified Single-Pass Cellular Kernel Fusion + whole-buffer pipeline.
+     *
+     * @param worldBuffer contiguous world memory buffer
+     * @param dtYears     time step in Julian years
+     * @param dtMonthly   monthly-scaled year fraction
+     * @param scenario    active scenario configuration (may be {@code null})
+     */
+    public void executeActiveTier1Engines(WorldBuffer worldBuffer,
+                                          double dtYears,
+                                          double dtMonthly,
+                                          Scenario scenario) {
+        executeActiveEngines(org.ether.society.core.engine.EngineTier.TIER_1_BIOPHYSICAL,
+                worldBuffer, dtYears, dtMonthly, scenario);
+    }
+
+    /**
+     * Unified execution pipeline for all simulation engines of a given {@link org.ether.society.core.engine.EngineTier}.
+     * Both Tier 1 biophysical engines and Tier 2 cliodynamic engines share this exact same
+     * Single-Pass Cellular Kernel Fusion + whole-buffer stencil execution path, differing only in
+     * their {@code EngineTier} metadata and default enablement policy.
+     *
+     * @param tier        engine tier to execute
+     * @param worldBuffer contiguous world memory buffer
+     * @param dtYears     time step in Julian years
+     * @param dtMonthly   monthly-scaled year fraction
+     * @param scenario    active scenario configuration (may be {@code null})
+     */
+    public void executeActiveEngines(org.ether.society.core.engine.EngineTier tier,
+                                     WorldBuffer worldBuffer,
+                                     double dtYears,
+                                     double dtMonthly,
+                                     Scenario scenario) {
+        if (worldBuffer == null || tier == null) return;
+
+        List<SimulationEngineModule> activeEngines = SimulationEngineRegistry.getInstance().getActiveEngines(tier, scenario);
+        if (activeEngines.isEmpty()) return;
 
         // Partition active engines: fused cellular derivative engines vs whole-buffer / stencil engines
         List<SimulationEngineModule> cellularEngines = new java.util.ArrayList<>();
         List<SimulationEngineModule> bufferEngines = new java.util.ArrayList<>();
 
-        for (SimulationEngineModule engine : activeTier2) {
+        for (SimulationEngineModule engine : activeEngines) {
             if (engine.supportsCellularDerivatives()) {
                 cellularEngines.add(engine);
             } else {
@@ -136,7 +175,6 @@ public final class TypeBEnginePassRunner {
         // --- SINGLE-PASS KERNEL FUSION FOR CELLULAR DERIVATIVES ---
         if (!cellularEngines.isEmpty()) {
             int capacity = worldBuffer.getCapacity();
-            // Pre-tick preparation for global parameters / thresholds
             for (SimulationEngineModule e : cellularEngines) {
                 e.prepareTick(worldBuffer, dtYears);
                 if (e instanceof KurzweilAcceleratingReturnsEngine k) {
@@ -144,7 +182,7 @@ public final class TypeBEnginePassRunner {
                 }
             }
 
-            DerivativeAccumulator acc = new org.ether.society.core.engine.DerivativeAccumulator();
+            DerivativeAccumulator acc = new DerivativeAccumulator();
             int engineCount = cellularEngines.size();
 
             for (int i = 0; i < capacity; i++) {
@@ -161,50 +199,6 @@ public final class TypeBEnginePassRunner {
         // --- WHOLE BUFFER / STENCIL PASSES (DIFFUSION, WATER GRID, ETC.) ---
         for (SimulationEngineModule engine : bufferEngines) {
             engine.tick(worldBuffer, dtYears, dtMonthly);
-        }
-    }
-
-    /**
-     * Executes active Tier 1 biophysical engines (thermodynamics, ecological degradation, pollution,
-     * metallurgy) over the Data-Oriented {@link WorldBuffer} using Single-Pass Cellular Kernel Fusion.
-     *
-     * @param worldBuffer contiguous world memory buffer
-     * @param dtYears     time step in Julian years
-     * @param dtMonthly   monthly-scaled year fraction
-     * @param scenario    active scenario configuration (may be {@code null})
-     */
-    public void executeActiveTier1Engines(WorldBuffer worldBuffer,
-                                          double dtYears,
-                                          double dtMonthly,
-                                          Scenario scenario) {
-        if (worldBuffer == null) return;
-
-        List<SimulationEngineModule> tier1Engines = SimulationEngineRegistry.getInstance().getTier1Engines();
-        if (tier1Engines.isEmpty()) return;
-
-        List<SimulationEngineModule> cellularEngines = new java.util.ArrayList<>();
-        for (SimulationEngineModule engine : tier1Engines) {
-            if (engine.supportsCellularDerivatives() && engine.isEnabled(scenario)) {
-                cellularEngines.add(engine);
-            }
-        }
-        if (cellularEngines.isEmpty()) return;
-
-        int capacity = worldBuffer.getCapacity();
-        for (SimulationEngineModule e : cellularEngines) {
-            e.prepareTick(worldBuffer, dtYears);
-        }
-
-        DerivativeAccumulator acc = new DerivativeAccumulator();
-        int engineCount = cellularEngines.size();
-        for (int i = 0; i < capacity; i++) {
-            acc.clear();
-            for (int e = 0; e < engineCount; e++) {
-                cellularEngines.get(e).accumulateCellularDerivatives(worldBuffer, i, dtYears, dtMonthly, acc);
-            }
-            if (acc.hasNonZeroDerivatives()) {
-                org.ether.society.core.engine.AbstractSimulationEngine.applyAccumulatorToCell(worldBuffer, i, acc);
-            }
         }
     }
 }

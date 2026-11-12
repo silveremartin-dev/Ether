@@ -332,9 +332,17 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 c.setResourceMetal(0.0);   // Depleted ore
             }
 
-            int initialPop = cells.stream().mapToInt(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
-            NetEnergyEROEIEngine.processNetEnergyEROEI(cells);
-            int postCollapsePop = cells.stream().mapToInt(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
+            org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+            org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, buf, false);
+            double initialPop = 0.0;
+            for (int i = 0; i < cells.size(); i++) {
+                initialPop += buf.getBiomassHuman()[i] / 0.06;
+            }
+            new NetEnergyEROEIEngine().tick(buf, 1.0, 12.0);
+            double postCollapsePop = 0.0;
+            for (int i = 0; i < cells.size(); i++) {
+                postCollapsePop += buf.getBiomassHuman()[i] / 0.06;
+            }
 
             assertTrue(postCollapsePop < initialPop, "Sub-unity EROEI must trigger rapid energetic starvation and population mortality");
         }
@@ -359,9 +367,15 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 c.setResourceCapital(10_000.0); // Fortified infrastructure
             }
 
-            ThermodynamicWarfareEngine.processKineticWarfare(cells, 1.0);
+            org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+            org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, buf, false);
+            new ThermodynamicWarfareEngine().tick(buf, 1.0, 12.0);
 
-            double remainingCapital = cells.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
+            double sumCap = 0.0;
+            for (int i = 0; i < cells.size(); i++) {
+                sumCap += buf.getResourceCapital()[i];
+            }
+            double remainingCapital = cells.isEmpty() ? 0.0 : sumCap / cells.size();
             assertTrue(remainingCapital < 10_000.0, "Kinetic energy delivery exceeding yield strength must erode capital infrastructure");
         }
     }
@@ -387,9 +401,15 @@ public class EmpiricalEngineCounterfactualValidationSuite {
                 c.setSoilOrganicCarbon(6.0);
             }
 
-            MegafaunaEcosystemEngine.processMegafaunaEcosystem(cells);
+            org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+            org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, buf, false);
+            new MegafaunaEcosystemEngine().tick(buf, 1.0, 12.0);
 
-            double avgBiomass = cells.stream().mapToDouble(c -> c.getBiomassNatural() != null ? c.getBiomassNatural() : 0.0).average().orElse(50.0);
+            double sumBio = 0.0;
+            for (int i = 0; i < cells.size(); i++) {
+                sumBio += buf.getBiomassNatural()[i];
+            }
+            double avgBiomass = cells.isEmpty() ? 50.0 : sumBio / cells.size();
             assertTrue(avgBiomass < 50.0, "High human hunting pressure must deplete natural megafauna biomass");
         }
     }

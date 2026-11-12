@@ -64,39 +64,30 @@ public class LifeHistoryInvariantsEngineTest {
     @DisplayName("4.3 500-Cell Demographic Adaptation & Crisis Resilience")
     public void test500CellDemographicAdaptation() {
         int cellCount = 500;
-        List<H3Cell> cells = new ArrayList<>(cellCount);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cellCount);
 
         for (int i = 0; i < cellCount; i++) {
-            H3Cell cell = new H3Cell();
-            cell.setH3Index((long) (400000 + i));
-            cell.setPopulation(1000);
-
-            if (i < 250) {
-                // Temperate hospitable environment (18°C)
-                cell.setTemperature(18.0);
-            } else {
-                // Severe thermal stress environment (-25°C periglacial or +45°C hyperthermic)
-                cell.setTemperature(-25.0);
-            }
-            cells.add(cell);
+            buf.getH3Indexes()[i] = 400000L + i;
+            buf.getBiomassHuman()[i] = (float) (1000 * 0.06);
+            buf.getTemperature()[i] = (i < 250) ? 18.0f : -25.0f;
         }
 
-        // Simulate 50 years of demographic and life-history adaptation
+        LifeHistoryInvariantsEngine engine = new LifeHistoryInvariantsEngine();
         for (int yr = 0; yr < 50; yr++) {
-            LifeHistoryInvariantsEngine.processLifeHistoryDynamics(cells, 1.0);
+            engine.tick(buf, 1.0, 12.0);
         }
 
-        // Hospitable cells should maintain viable populations
         for (int i = 0; i < 250; i++) {
-            assertTrue(cells.get(i).getPopulation() >= 900,
+            double pop = buf.getBiomassHuman()[i] / 0.06;
+            assertTrue(pop >= 900.0,
                     "Hospitable cells must maintain stable demographic persistence.");
         }
 
-        // Stressed cells should show demographic contraction due to extreme thermal mortality hazard
         for (int i = 250; i < 500; i++) {
-            assertTrue(cells.get(i).getPopulation() < 1000,
+            double pop = buf.getBiomassHuman()[i] / 0.06;
+            assertTrue(pop < 1000.0,
                     "Populations subjected to severe thermal stress must contract.");
-            assertTrue(cells.get(i).getPopulation() > 0,
+            assertTrue(pop > 0.0,
                     "Adaptive fertility response prevents instantaneous demographic extinction.");
         }
     }
@@ -104,29 +95,28 @@ public class LifeHistoryInvariantsEngineTest {
     @Test
     @DisplayName("4.4 Bitwise Determinism Verification")
     public void testBitwiseDeterminism() {
-        List<H3Cell> run1 = createPopulationDomain(100);
-        List<H3Cell> run2 = createPopulationDomain(100);
+        org.ether.society.core.dod.WorldBuffer run1 = createPopulationBuffer(100);
+        org.ether.society.core.dod.WorldBuffer run2 = createPopulationBuffer(100);
 
+        LifeHistoryInvariantsEngine engine = new LifeHistoryInvariantsEngine();
         for (int yr = 0; yr < 10; yr++) {
-            LifeHistoryInvariantsEngine.processLifeHistoryDynamics(run1, 1.0);
-            LifeHistoryInvariantsEngine.processLifeHistoryDynamics(run2, 1.0);
+            engine.tick(run1, 1.0, 12.0);
+            engine.tick(run2, 1.0, 12.0);
         }
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(run1.get(i).getPopulation(), run2.get(i).getPopulation(),
+            assertEquals(run1.getBiomassHuman()[i], run2.getBiomassHuman()[i],
                     "Life history demographic trajectories must be bitwise identical.");
         }
     }
 
-    private List<H3Cell> createPopulationDomain(int count) {
-        List<H3Cell> cells = new ArrayList<>(count);
+    private org.ether.society.core.dod.WorldBuffer createPopulationBuffer(int count) {
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(count);
         for (int i = 0; i < count; i++) {
-            H3Cell cell = new H3Cell();
-            cell.setH3Index((long) (80000 + i));
-            cell.setPopulation(1500);
-            cell.setTemperature(i % 2 == 0 ? 15.0 : -15.0);
-            cells.add(cell);
+            buf.getH3Indexes()[i] = 80000L + i;
+            buf.getBiomassHuman()[i] = (float) (1500 * 0.06);
+            buf.getTemperature()[i] = (i % 2 == 0) ? 15.0f : -15.0f;
         }
-        return cells;
+        return buf;
     }
 }

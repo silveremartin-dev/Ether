@@ -242,8 +242,15 @@ final class GrataloupBoundaryDebateHelper {
     static void runLinguisticDriftSimulation(List<H3Cell> grid, int cycles, long seed) {
         LanguageLinguisticEngine.resetState();
         LanguageLinguisticEngine.setBaseSeed(seed);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(grid.size());
+        for (int i = 0; i < grid.size(); i++) {
+            H3Cell c = grid.get(i);
+            buf.getBiomassHuman()[i] = (float) c.getPopulationOr(0);
+            buf.getElevation()[i] = (float) c.getElevationOr(0.0);
+        }
+        LanguageLinguisticEngine engine = new LanguageLinguisticEngine();
         for (int cycle = 0; cycle < cycles; cycle++) {
-            LanguageLinguisticEngine.processLinguisticDrift(grid, null);
+            engine.tick(buf, 1.0, 1.0);
         }
     }
 }

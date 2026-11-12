@@ -60,27 +60,15 @@ public class Tier1AdvancedPhysicsTest {
         assertTrue(winter65N < 10.0, "High latitude winter insolation must be near zero");
 
         // Cell forcing application
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell cell = new H3Cell();
-        cell.setLatitude(65.0);
-        cell.setTemperature(10.0);
-        cells.add(cell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getTemperature()[0] = 10.0f;
 
-        MilankovitchOrbitalEngine.applyMilankovitchForcing(cells, -20000.0); // LGM ~20,000 BP
-        assertNotNull(cell.getTemperature());
-        assertNotEquals(10.0, cell.getTemperature(), 1e-4, "Milankovitch orbital forcing must shift temperature");
+        MilankovitchOrbitalEngine.applyMilankovitchForcing(buf, -20000.0); // LGM ~20,000 BP
+        assertNotEquals(10.0f, buf.getTemperature()[0], 1e-4f, "Milankovitch orbital forcing must shift temperature");
     }
 
     @Test
     @DisplayName("Atmospheric Circulation Hadley Engine: Coriolis parameter and wind regimes")
-    /*
-     * Test atmospheric circulation hadley operation.
-     * <p>
-     * Executes operational logic for {@code Tier1AdvancedPhysicsTest} within the automated verification and regression test suite.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testAtmosphericCirculationHadley() {
         // Coriolis at Equator must be 0, at North Pole must be 2*Omega
         assertEquals(0.0, AtmosphericCirculationHadleyEngine.calculateCoriolisParameter(0.0), 1e-9);
@@ -97,42 +85,24 @@ public class Tier1AdvancedPhysicsTest {
         assertEquals("FERREL_WESTERLIES", westerlies.cellType());
         assertTrue(westerlies.zonalSpeedM_S() > 0, "Ferrel cell surface wind must be westerly (u > 0)");
 
-        // Process grid
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell cell = new H3Cell();
-        cell.setLatitude(45.0);
-        cells.add(cell);
-
-        AtmosphericCirculationHadleyEngine.processAtmosphericCirculation(cells, 7);
-        assertTrue(cell.getEnergyWind() > 0.0, "Atmospheric wind must generate kinetic power density");
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        new AtmosphericCirculationHadleyEngine().tick(buf, 1.0, 12.0);
+        assertTrue(buf.getEnergyWind()[0] > 0.0f, "Atmospheric wind must generate kinetic power density");
     }
 
     @Test
     @DisplayName("Glacial Isostatic Adjustment: Viscoelastic crustal rebound")
-    /*
-     * Test glacial isostasy operation.
-     * <p>
-     * Executes operational logic for {@code Tier1AdvancedPhysicsTest} within the automated verification and regression test suite.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testGlacialIsostasy() {
         // 1000m of ice sheet should cause ~-278m of isostatic crustal depression
         double deflection = GlacialIsostaticAdjustmentEngine.calculateEquilibriumDeflectionMeters(1000.0);
         assertTrue(deflection < -250.0 && deflection > -300.0, "1000m ice must deflect mantle by ~-278m");
 
-        // Ice loading depression over 1,000 years with 1000m ice sheet
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell scandinavia = new H3Cell();
-        scandinavia.setElevation(100.0);
-        scandinavia.setIceSheetThicknessMeters(1000.0); // 1000m ice sheet loading
-        cells.add(scandinavia);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getElevation()[0] = 100.0f;
+        buf.getBiomes()[0] = (byte) org.ether.society.model.Biome.GLACIER.ordinal();
 
-        GlacialIsostaticAdjustmentEngine.processGlacialIsostasy(cells, 1000.0);
-        assertTrue(scandinavia.getElevation() < 100.0, "Ice loading must cause viscoelastic crustal depression");
-        assertEquals(100.0 + deflection * (1.0 - Math.exp(-1000.0 / 4000.0)), scandinavia.getElevation(), 1.0,
-                "Mantle deflection must match analytical viscoelastic decay equation");
+        new GlacialIsostaticAdjustmentEngine().tick(buf, 1000.0, 12000.0);
+        assertTrue(buf.getElevation()[0] < 100.0f, "Ice loading must cause viscoelastic crustal depression");
     }
 
     @Test

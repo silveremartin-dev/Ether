@@ -28,28 +28,19 @@ public class NordhausDiceHybridEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(NordhausDiceHybridEngine.class);
 
-    /**
-     * Process plugin.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processPlugin(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getTemperature() == null) continue;
-
-            double temp = cell.getTemperature();
-            double tempAnomaly = Math.max(0.0, temp - 15.0); // Anomaly relative to 15A°C baseline
-            double damageFraction = Math.min(0.50, 0.00236 * Math.pow(tempAnomaly, 2.0));
-
-            double capital = cell.getResourceCapitalOr(0.0);
-            cell.setResourceCapital(Math.max(0.0, capital * Math.exp(-damageFraction * deltaYears)));
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double temp = buffer.getTemperature()[i];
+        double tempAnomaly = Math.max(0.0, temp - 15.0);
+        double damageFraction = Math.min(0.50, 0.00236 * tempAnomaly * tempAnomaly);
+        float capital = buffer.getResourceCapital()[i];
+        if (capital > 0.0f && damageFraction > 0.0) {
+            acc.dResourceCapital += (float) (Math.max(0.0, capital * Math.exp(-damageFraction * dtYears)) - capital);
         }
     }
 }

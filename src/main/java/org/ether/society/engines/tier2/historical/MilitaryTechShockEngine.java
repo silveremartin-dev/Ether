@@ -30,30 +30,20 @@ public class MilitaryTechShockEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(MilitaryTechShockEngine.class);
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0) return;
 
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double kPerCap = cell.getResourceCapitalOr(0.0) / pop;
-            // Continuous Gaussian envelope of revolutionary military mobilization (Parker 1996)
-            double shockIntensity = Math.exp(-Math.pow(kPerCap - 1500.0, 2.0) / (2.0 * 300.0 * 300.0));
-            if (shockIntensity > 0.005) {
-                if (cell.getResourceWork() != null) {
-                    cell.setResourceWork(cell.getResourceWork() * (1.0 + 0.15 * shockIntensity * deltaYears));
-                }
-                double currentCap = cell.getResourceCapitalOr(0.0);
-                cell.setResourceCapital(currentCap + pop * 5.0 * shockIntensity * deltaYears);
-            }
+        double kPerCap = buffer.getResourceCapital()[i] / pop;
+        double shockIntensity = Math.exp(-Math.pow(kPerCap - 1500.0, 2.0) / (2.0 * 300.0 * 300.0));
+        if (shockIntensity > 0.005) {
+            acc.dResourceCapital += (float) (pop * 5.0 * shockIntensity * dtYears);
         }
     }
 }

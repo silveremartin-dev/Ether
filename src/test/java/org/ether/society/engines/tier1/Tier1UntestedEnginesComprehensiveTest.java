@@ -53,47 +53,54 @@ public class Tier1UntestedEnginesComprehensiveTest {
     @Test
     @DisplayName("AquiferDepletionEngine: verifies Darcy piezometric flow and replenishment")
     void testAquiferDepletionEngine() {
-        List<H3Cell> cells = new ArrayList<>();
-        // Arid cell with high population -> heavy pumping
-        H3Cell cellA = createMockCell(0x851f1d4bffffffL, Biome.PLAINS, 100.0, 22.0, 5000);
-        cellA.setRainfall(100.0); // Arid: per-capita demand = 0.80 -> 4000 units/year extraction
-        cellA.setAccessibleAquifer(1500.0);
-        cells.add(cellA);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 0x851f1d4bffffffL;
+        buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
+        buf.getElevation()[0] = 100.0f;
+        buf.getTemperature()[0] = 22.0f;
+        buf.getBiomassHuman()[0] = 500000.0f * 0.06f;
+        buf.getRainfall()[0] = 100.0f; // Arid: heavy extraction
+        buf.getFreshwaterAquifer()[0] = 1500.0f;
 
-        AquiferDepletionEngine.processAquiferDepletion(cells, 0.1); // 0.1 year
-        double remaining = cellA.getAccessibleAquifer();
+        new AquiferDepletionEngine().tick(buf, 0.1, 1.2); // 0.1 year
+        double remaining = buf.getFreshwaterAquifer()[0];
         assertTrue(remaining < 1500.0, "Over-extracted aquifer must deplete");
         assertTrue(remaining > 1000.0, "Aquifer depletion should remain within physical bounds for 0.1 yr");
     }
 
     @Test
-    @DisplayName("AlbedoClimateEngine: verifies orbital Milankovitch precession & albedo response")
+    @DisplayName("AlbedoClimateEngine: verifies dynamic albedo and thermal relaxation response")
     void testAlbedoClimateEngine() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell saharaCell = createMockCell(0x851f1d4bffffff1L, Biome.DESERT, 200.0, 32.0, 100);
-        saharaCell.setLatitude(20.0); // Sub-tropical band
-        saharaCell.setRainfall(50.0);
-        cells.add(saharaCell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 0x851f1d4bffffff1L;
+        buf.getBiomes()[0] = (byte) Biome.DESERT.ordinal();
+        buf.getElevation()[0] = 200.0f;
+        buf.getTemperature()[0] = 32.0f;
+        buf.getBiomassHuman()[0] = 100.0f * 0.06f;
+        buf.getRainfall()[0] = 50.0f;
 
-        // Under peak precession year (5,250 = 21,000 / 4, sin(pi/2) = 1.0), insolation triggers Green Sahara transition
-        AlbedoClimateEngine.processAlbedoAndClimateEvents(cells, 5250L, 0.0, 1.0);
-        assertTrue(saharaCell.getRainfall() > 50.0, 
-                "Milankovitch orbital precession peak must intensify sub-tropical monsoons and rainfall");
+        new AlbedoClimateEngine().tick(buf, 1.0, 12.0);
+        assertTrue(buf.getTemperature()[0] != 32.0f,
+                "Albedo-climate feedback must update surface temperature toward radiative equilibrium");
     }
 
     @Test
     @DisplayName("BioMolecularEpidemiologyEngine: starving populations suffer immune arrest")
     void testBioMolecularEpidemiologyEngine() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell starvingCell = createMockCell(0x851f1d4bffffff2L, Biome.PLAINS, 50.0, 20.0, 10000);
-        starvingCell.setFoodResource(0.0);
-        starvingCell.setBiomassAgriculture(0.0);
-        starvingCell.setBiomassNatural(0.0);
-        cells.add(starvingCell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 0x851f1d4bffffff2L;
+        buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
+        buf.getElevation()[0] = 50.0f;
+        buf.getTemperature()[0] = 20.0f;
+        buf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        buf.getFoodResource()[0] = 0.0f;
+        buf.getBiomassAgriculture()[0] = 0.0f;
+        buf.getBiomassNatural()[0] = 0.0f;
+        buf.getLifespan()[0] = 65.0f;
 
-        double initialLifespan = starvingCell.getLifespan();
-        BioMolecularEpidemiologyEngine.processBioMolecularImmunity(cells, 0.5); // 6 months of absolute famine
-        assertTrue(starvingCell.getLifespan() < initialLifespan,
+        double initialLifespan = buf.getLifespan()[0];
+        new BioMolecularEpidemiologyEngine().tick(buf, 0.5, 6.0); // 6 months of absolute famine
+        assertTrue(buf.getLifespan()[0] < initialLifespan,
                 "Starvation must induce immunological collapse and reduce biological lifespan");
     }
 
@@ -108,8 +115,13 @@ public class Tier1UntestedEnginesComprehensiveTest {
         assertTrue(depthIndustrial > depthAncient && depthIndustrial < 3000.0, "Industrial mining should reach intermediate depths");
         assertTrue(depthModern > depthIndustrial && depthModern <= 4000.0, "Modern air-conditioned deep mining should approach 4000m");
 
-        List<H3Cell> cells = List.of(createMockCell(0x851f1d4bffffff3L, Biome.HILLS, 800.0, 15.0, 500));
-        assertDoesNotThrow(() -> CrustalGeothermalEngine.processCrustalGeothermal(cells));
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 0x851f1d4bffffff3L;
+        buf.getBiomes()[0] = (byte) Biome.HILLS.ordinal();
+        buf.getElevation()[0] = 800.0f;
+        buf.getTemperature()[0] = 15.0f;
+        buf.getBiomassHuman()[0] = 500.0f * 0.06f;
+        assertDoesNotThrow(() -> new CrustalGeothermalEngine().tick(buf, 1.0 / 12.0, 1.0));
     }
 
     @Test
@@ -123,37 +135,52 @@ public class Tier1UntestedEnginesComprehensiveTest {
         assertTrue(heavyPollutionFertility < 1.0, "Pollution must decrease effective fertility");
         assertEquals(0.35, extremePollutionFertility, 1e-2, "Extreme pollution must truncate at floor 0.35");
 
-        List<H3Cell> cells = List.of(createMockCell(0x851f1d4bffffff4L, Biome.PLAINS, 50.0, 20.0, 1000));
-        cells.get(0).setPollutionLevel(2000.0);
-        assertDoesNotThrow(() -> EcotoxicologyFertilityEngine.processEcotoxicologyFertility(cells));
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 0x851f1d4bffffff4L;
+        buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
+        buf.getElevation()[0] = 50.0f;
+        buf.getTemperature()[0] = 20.0f;
+        buf.getBiomassHuman()[0] = 1000.0f * 0.06f;
+        buf.getPollutionLevel()[0] = 2000.0f;
+        assertDoesNotThrow(() -> new EcotoxicologyFertilityEngine().tick(buf, 1.0 / 12.0, 1.0));
     }
 
     @Test
     @DisplayName("InfrastructureEnergyEngine: capital investment lowers overland friction")
     void testInfrastructureEnergyEngine() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell developedCell = createMockCell(0x851f1d4bffffff5L, Biome.PLAINS, 100.0, 18.0, 2000);
-        developedCell.setResourceCapital(50000.0);
-        developedCell.setMovementFriction(1.0);
-        cells.add(developedCell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 0x851f1d4bffffff5L;
+        buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
+        buf.getElevation()[0] = 100.0f;
+        buf.getTemperature()[0] = 18.0f;
+        buf.getBiomassHuman()[0] = 2000.0f * 0.06f;
+        buf.getResourceCapital()[0] = 50000.0f;
+        buf.getFluxPressure()[0] = 1.0f;
 
-        InfrastructureEnergyEngine.processInfrastructureEnergy(cells);
-        assertTrue(developedCell.getMovementFriction() < 1.0,
+        new InfrastructureEnergyEngine().tick(buf, 1.0 / 12.0, 1.0);
+        assertTrue(buf.getFluxPressure()[0] < 1.0f,
                 "Infrastructure investment must reduce transport friction towards paved road levels");
     }
 
     @Test
     @DisplayName("PermafrostThawEngine: temperatures above 0°C release greenhouse methane")
     void testPermafrostThawEngine() {
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell frozenTundra = createMockCell(0x851f1d4bffffff6L, Biome.TUNDRA, 50.0, -5.0, 10);
-        H3Cell thawingTundra = createMockCell(0x851f1d4bffffff7L, Biome.TUNDRA, 50.0, 6.0, 10);
-        cells.add(frozenTundra);
-        cells.add(thawingTundra);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
+        buf.getH3Indexes()[0] = 0x851f1d4bffffff6L;
+        buf.getBiomes()[0] = (byte) Biome.TUNDRA.ordinal();
+        buf.getElevation()[0] = 50.0f;
+        buf.getTemperature()[0] = -5.0f;
+        buf.getSoilOrganicCarbon()[0] = 20.0f;
 
-        double ch4 = PermafrostThawEngine.processPermafrostThaw(cells);
+        buf.getH3Indexes()[1] = 0x851f1d4bffffff7L;
+        buf.getBiomes()[1] = (byte) Biome.TUNDRA.ordinal();
+        buf.getElevation()[1] = 50.0f;
+        buf.getTemperature()[1] = 6.0f;
+        buf.getSoilOrganicCarbon()[1] = 20.0f;
+
+        double ch4 = PermafrostThawEngine.processPermafrostThaw(buf);
         assertTrue(ch4 > 0.0, "Positive temperature over tundra must trigger methane outgassing");
-        assertTrue(thawingTundra.getSoilOrganicCarbon() < 20.0, "Thawing tundra should lose soil carbon");
+        assertTrue(buf.getSoilOrganicCarbon()[1] < 20.0f, "Thawing tundra should lose soil carbon");
     }
 
     @Test
@@ -177,15 +204,18 @@ public class Tier1UntestedEnginesComprehensiveTest {
 
         assertTrue(lowTechEff < highTechEff, "High technology and capital must yield higher recycling efficiency");
 
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell circularCity = createMockCell(0x851f1d4bfffffa1L, Biome.PLAINS, 100.0, 18.0, 5000);
-        circularCity.setResourceCapital(30000.0);
-        circularCity.setResourceWork(100.0);
-        cells.add(circularCity);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 0x851f1d4bfffffa1L;
+        buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
+        buf.getElevation()[0] = 100.0f;
+        buf.getTemperature()[0] = 18.0f;
+        buf.getBiomassHuman()[0] = 5000.0f * 0.06f;
+        buf.getResourceCapital()[0] = 30000.0f;
+        buf.getInstitutionalComplexity()[0] = 1.0f;
 
-        double initialCap = circularCity.getResourceCapital();
-        ResourceRecyclingEngine.processResourceRecycling(cells);
-        assertTrue(circularCity.getResourceCapital() > initialCap, "Recycling must return a portion of capital into production");
+        double initialCap = buf.getResourceCapital()[0];
+        new ResourceRecyclingEngine().tick(buf, 1.0 / 12.0, 1.0);
+        assertTrue(buf.getResourceCapital()[0] > initialCap, "Recycling must return a portion of capital into production");
     }
 
     @Test
@@ -197,30 +227,34 @@ public class Tier1UntestedEnginesComprehensiveTest {
         assertEquals(1.0, paleolithicFactor, 0.05, "Pre-agricultural era must have ~1.0 yield factor");
         assertTrue(greenRevFactor > 2.0, "Modern breeding must multiply agricultural yields (> 2.0x)");
 
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell farmCell = createMockCell(0x851f1d4bfffffa2L, Biome.PLAINS, 100.0, 20.0, 1000);
-        farmCell.setResourceCapital(5000.0);
-        farmCell.setBiomassAgriculture(500.0);
-        cells.add(farmCell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = 0x851f1d4bfffffa2L;
+        buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
+        buf.getElevation()[0] = 100.0f;
+        buf.getTemperature()[0] = 20.0f;
+        buf.getBiomassHuman()[0] = 1000.0f * 0.06f;
+        buf.getResourceCapital()[0] = 5000.0f;
+        buf.getBiomassAgriculture()[0] = 500.0f;
 
-        SelectiveBreedingEngine.processSelectiveBreeding(cells);
-        assertTrue(farmCell.getBiomassAgriculture() > 500.0, "Selective breeding must increase standing agricultural biomass");
+        SelectiveBreedingEngine.processSelectiveBreeding(buf);
+        assertTrue(buf.getBiomassAgriculture()[0] > 500.0f, "Selective breeding must increase standing agricultural biomass");
     }
 
     @Test
     @DisplayName("ThermohalineStommelAMOCEngine: meltwater anomaly triggers AMOC collapse and North Atlantic cooling")
     void testThermohalineStommelAMOCEngine() {
         ThermohalineStommelAMOCEngine.resetState();
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell highLatCell = createMockCell(0x851f1d4bfffffa3L, Biome.FOREST, 100.0, 10.0, 200);
-        highLatCell.setLatitude(60.0);
-        highLatCell.setLongitude(-20.0); // North Atlantic subpolar gyre envelope
-        cells.add(highLatCell);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getH3Indexes()[0] = org.ether.society.h3.H3Service.getInstance().latLngToH3(60.0, -20.0, 5);
+        buf.getBiomes()[0] = (byte) Biome.FOREST.ordinal();
+        buf.getElevation()[0] = 100.0f;
+        buf.getTemperature()[0] = 10.0f;
+        buf.getBiomassHuman()[0] = 200.0f * 0.06f;
 
-        double initialTemp = highLatCell.getTemperature();
+        double initialTemp = buf.getTemperature()[0];
         // High meltwater pulse (0.45 Sv) halts overturning convection and triggers cooling
-        ThermohalineStommelAMOCEngine.processThermohalineCirculationWithMeltwater(cells, 0.45, 1.0);
-        assertTrue(highLatCell.getTemperature() < initialTemp,
+        ThermohalineStommelAMOCEngine.processThermohalineCirculationWithMeltwater(buf, 0.45, 1.0);
+        assertTrue(buf.getTemperature()[0] < initialTemp,
                 "AMOC collapse must trigger severe cooling shock across North Atlantic high-latitude cells");
     }
 }

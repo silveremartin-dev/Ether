@@ -19,9 +19,13 @@ import java.util.function.Consumer;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class DomainEventBus {
+public final class DomainEventBus {
     private static final Logger logger = LoggerFactory.getLogger(DomainEventBus.class);
     private static final DomainEventBus INSTANCE = new DomainEventBus();
+
+    private DomainEventBus() {
+        // Enforce singleton instantiation
+    }
 
     /**
      * Get instance.

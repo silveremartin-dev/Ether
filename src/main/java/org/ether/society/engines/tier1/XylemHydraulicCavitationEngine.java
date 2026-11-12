@@ -6,14 +6,13 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Plant Xylem Hydraulic Cavitation & Runaway Embolism Engine.
@@ -164,65 +163,96 @@ public class XylemHydraulicCavitationEngine extends AbstractSimulationEngine {
         return getBiomePsi50MPa(biome);
     }
 
-    /**
-     * Executes one time-stepped xylem hydraulic cavitation update across terrestrial cells.
-     * <p>
-     * Throttles agricultural crop yield and induces catastrophic canopy dieback during megadroughts
-     * when soil water potential drops below hydraulic safety margins.
-     * </p>
-     *
-     * @param cells   terrestrial cell domain
-     * @param dtYears elapsed simulation step in years
-     */
-    public static void processXylemCavitation(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty() || dtYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null || dtYears <= 0.0) return;
 
         double dtSafe = Math.max(1e-4, dtYears);
+        double rainfall = buffer.getRainfall()[i];
+        double tempC = buffer.getTemperature()[i];
+        double petDemand = Math.max(100.0, (tempC + 10.0) * 25.0);
+        double moistureSaturation = Math.clamp((rainfall / petDemand) * 0.75, 0.02, 1.0);
+        double psiSoil = estimateSoilWaterPotentialMPa(moistureSaturation);
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
+        double agriBiomass = buffer.getBiomassAgriculture()[i];
+        if (agriBiomass > 0.0) {
+            double plcCrop = calculatePLC(psiSoil, PSI_50_CROPS_MPA, VULNERABILITY_SHAPE_EXPONENT);
+            if (plcCrop > 60.0) {
+                double cropLossFactor = Math.pow((plcCrop - 60.0) / 40.0, 1.5) * 0.85 * dtSafe;
+                double survivingAgri = Math.max(0.0, agriBiomass * (1.0 - cropLossFactor));
+                acc.dBiomassAgriculture += (float) (survivingAgri - agriBiomass);
+                double currentFood = buffer.getFoodResource()[i];
+                double survivingFood = Math.max(0.0, currentFood * (1.0 - cropLossFactor * 0.5));
+                acc.dFoodResource += (float) (survivingFood - currentFood);
+            }
+        }
 
-            double rainfall = cell.getRainfallOr(500.0);
-            double tempC = cell.getTemperatureOr(15.0);
+        double naturalBiomass = buffer.getBiomassNatural()[i];
+        if (naturalBiomass > 1.0) {
+            byte biomeOrd = buffer.getBiomes()[i];
+            Biome biome = (biomeOrd >= 0 && biomeOrd < Biome.values().length) ? Biome.values()[biomeOrd] : Biome.PLAINS;
+            double psi50 = getBiomePsi50MPa(biome);
+            double plcForest = calculatePLC(psiSoil, psi50, VULNERABILITY_SHAPE_EXPONENT);
+            if (plcForest > 50.0) {
+                double normalizedStress = (plcForest - 50.0) / 50.0;
+                double diebackRate = MAX_CANOPY_DIEBACK_RATE * (normalizedStress * normalizedStress);
+                double survivingBiomass = Math.max(0.5, naturalBiomass * Math.exp(-diebackRate * dtSafe));
+                acc.dBiomassNatural += (float) (survivingBiomass - naturalBiomass);
+            }
+        }
+    }
 
-            // 1. Soil Moisture Saturation Approximation from Water Balance
-            // Mean evapotranspiration demand ~ 600 mm/yr at 15A°C
+    /**
+     * Executes one time-stepped xylem hydraulic cavitation update across terrestrial DoD cells.
+     *
+     * @param buffer  WorldBuffer DoD state
+     * @param dtYears elapsed simulation step in years
+     */
+    public static void processXylemCavitation(WorldBuffer buffer, double dtYears) {
+        if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0) return;
+
+        double dtSafe = Math.max(1e-4, dtYears);
+        float[] rainArr = buffer.getRainfall();
+        float[] tempArr = buffer.getTemperature();
+        float[] agriArr = buffer.getBiomassAgriculture();
+        float[] foodArr = buffer.getFoodResource();
+        float[] natArr = buffer.getBiomassNatural();
+        byte[] biomes = buffer.getBiomes();
+        Biome[] biomeValues = Biome.values();
+        int n = buffer.getCapacity();
+
+        for (int i = 0; i < n; i++) {
+            double rainfall = rainArr[i];
+            double tempC = tempArr[i];
             double petDemand = Math.max(100.0, (tempC + 10.0) * 25.0);
-            double aridityIndex = rainfall / petDemand;
-            double moistureSaturation = Math.clamp(aridityIndex * 0.75, 0.02, 1.0);
-
+            double moistureSaturation = Math.clamp((rainfall / petDemand) * 0.75, 0.02, 1.0);
             double psiSoil = estimateSoilWaterPotentialMPa(moistureSaturation);
 
-            // 2. Crop Hydraulic Failure & Food Supply Impact
-            double agriBiomass = cell.getBiomassAgricultureOr(0.0);
+            double agriBiomass = agriArr[i];
             if (agriBiomass > 0.0) {
                 double plcCrop = calculatePLC(psiSoil, PSI_50_CROPS_MPA, VULNERABILITY_SHAPE_EXPONENT);
-                double retention = calculateHydraulicRetention(plcCrop);
-
-                // Runaway cavitation threshold (PLC > 60% causes non-linear vascular collapse)
                 if (plcCrop > 60.0) {
                     double cropLossFactor = Math.pow((plcCrop - 60.0) / 40.0, 1.5) * 0.85 * dtSafe;
-                    double survivingAgri = Math.max(0.0, agriBiomass * (1.0 - cropLossFactor));
-                    cell.setBiomassAgriculture(survivingAgri);
-
-                    // Throttles available food resources proportionately to agricultural collapse
-                    double currentFood = cell.getFoodResourceOr(0.0);
-                    cell.setFoodResource(Math.max(0.0, currentFood * (1.0 - cropLossFactor * 0.5)));
+                    agriArr[i] = (float) Math.max(0.0, agriBiomass * (1.0 - cropLossFactor));
+                    foodArr[i] = (float) Math.max(0.0, foodArr[i] * (1.0 - cropLossFactor * 0.5));
                 }
             }
 
-            // 3. Natural Forest & Vegetation Cavitation Dieback
-            double naturalBiomass = cell.getBiomassNaturalOr(0.0);
+            double naturalBiomass = natArr[i];
             if (naturalBiomass > 1.0) {
-                Biome biome = cell.getBiome();
+                byte biomeOrd = biomes[i];
+                Biome biome = (biomeOrd >= 0 && biomeOrd < biomeValues.length) ? biomeValues[biomeOrd] : Biome.PLAINS;
                 double psi50 = getBiomePsi50MPa(biome);
                 double plcForest = calculatePLC(psiSoil, psi50, VULNERABILITY_SHAPE_EXPONENT);
-
                 if (plcForest > 50.0) {
                     double normalizedStress = (plcForest - 50.0) / 50.0;
                     double diebackRate = MAX_CANOPY_DIEBACK_RATE * (normalizedStress * normalizedStress);
-                    double survivingBiomass = naturalBiomass * Math.exp(-diebackRate * dtSafe);
-                    cell.setBiomassNatural(Math.max(0.5, survivingBiomass));
+                    natArr[i] = (float) Math.max(0.5, naturalBiomass * Math.exp(-diebackRate * dtSafe));
                 }
             }
         }

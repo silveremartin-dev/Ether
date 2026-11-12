@@ -96,42 +96,45 @@ public class BergmannAllenMorphologyEngineTest {
         }
 
         // Simulate multi-generational morphological adaptation over 10 years
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, buf, false);
+        BergmannAllenMorphologyEngine engine = new BergmannAllenMorphologyEngine();
         for (int yr = 0; yr < 10; yr++) {
-            BergmannAllenMorphologyEngine.processMorphologicalAdaptation(cells, 1.0);
+            engine.tick(buf, 1.0, 12.0);
         }
 
         // Cold polar cells must experience higher thermoregulatory food consumption than warm cells
-        assertTrue(cells.get(0).getFoodResource() < cells.get(499).getFoodResource(),
+        assertTrue(buf.getFoodResource()[0] < buf.getFoodResource()[499],
                 "Cold polar cells must dissipate more thermoregulatory energy than warm equatorial cells.");
     }
 
     @Test
     @DisplayName("2.4 Bitwise Determinism Verification")
     public void testBitwiseDeterminism() {
-        List<H3Cell> run1 = createDomain(100);
-        List<H3Cell> run2 = createDomain(100);
+        org.ether.society.core.dod.WorldBuffer run1 = createDomain(100);
+        org.ether.society.core.dod.WorldBuffer run2 = createDomain(100);
 
+        BergmannAllenMorphologyEngine engine1 = new BergmannAllenMorphologyEngine();
+        BergmannAllenMorphologyEngine engine2 = new BergmannAllenMorphologyEngine();
         for (int yr = 0; yr < 5; yr++) {
-            BergmannAllenMorphologyEngine.processMorphologicalAdaptation(run1, 1.0);
-            BergmannAllenMorphologyEngine.processMorphologicalAdaptation(run2, 1.0);
+            engine1.tick(run1, 1.0, 12.0);
+            engine2.tick(run2, 1.0, 12.0);
         }
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(run1.get(i).getFoodResource(), run2.get(i).getFoodResource(), 0.0,
+            assertEquals(run1.getFoodResource()[i], run2.getFoodResource()[i], 0.0f,
                     "Morphological adaptation trajectories must be bitwise identical.");
         }
     }
 
-    private List<H3Cell> createDomain(int count) {
-        List<H3Cell> cells = new ArrayList<>(count);
+    private org.ether.society.core.dod.WorldBuffer createDomain(int count) {
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(count);
         for (int i = 0; i < count; i++) {
-            H3Cell cell = new H3Cell();
-            cell.setH3Index((long) (60000 + i));
-            cell.setPopulation(500);
-            cell.setFoodResource(1500.0);
-            cell.setTemperature(i % 2 == 0 ? -5.0 : 28.0);
-            cells.add(cell);
+            buf.getH3Indexes()[i] = 60000L + i;
+            buf.getBiomassHuman()[i] = 500.0f * 0.06f;
+            buf.getFoodResource()[i] = 1500.0f;
+            buf.getTemperature()[i] = (i % 2 == 0) ? -5.0f : 28.0f;
         }
-        return cells;
+        return buf;
     }
 }

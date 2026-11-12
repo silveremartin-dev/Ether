@@ -6,13 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Physical Laws & Constants Customization Engine.
@@ -38,33 +37,51 @@ public class PhysicalLawEngine extends AbstractSimulationEngine {
     private static boolean roomTemperatureSuperconductivity = false; // Zero Joule heat loss (I^2 * R = 0)
     private static double entropyGenerationScale = 1.0; // Scale factor for waste heat generation
 
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || acc == null) return;
+        if (photosyntheticEfficiencyMultiplier == 1.0 && !roomTemperatureSuperconductivity && entropyGenerationScale == 1.0) {
+            return;
+        }
+        double dtSafe = Math.max(0.0001, dtYears);
+        if (photosyntheticEfficiencyMultiplier != 1.0) {
+            double naturalBiomass = buffer.getBiomassNatural()[i];
+            acc.dBiomassNatural += (float) (naturalBiomass * (photosyntheticEfficiencyMultiplier - 1.0) * 0.02 * dtSafe);
+        }
+        if (roomTemperatureSuperconductivity) {
+            double fireEnergy = buffer.getEnergyFire()[i];
+            acc.dEnergyFire += (float) (fireEnergy * 0.05 * dtSafe);
+        }
+    }
+
     /**
-     * Apply physical laws.
+     * Apply physical laws across DoD WorldBuffer.
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * @param buffer WorldBuffer DoD state
+     * @param deltaYears time step in years
      */
-    public static void applyPhysicalLaws(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void applyPhysicalLaws(WorldBuffer buffer, double deltaYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
         if (photosyntheticEfficiencyMultiplier == 1.0 && !roomTemperatureSuperconductivity && entropyGenerationScale == 1.0) {
             return;
         }
 
         double dtSafe = Math.max(0.0001, deltaYears);
+        float[] bioNat = buffer.getBiomassNatural();
+        float[] energyFire = buffer.getEnergyFire();
+        int n = buffer.getCapacity();
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            // Photosynthetic efficiency boost to natural biomass
+        for (int i = 0; i < n; i++) {
             if (photosyntheticEfficiencyMultiplier != 1.0) {
-                double naturalBiomass = cell.getBiomassNaturalOr(0.0);
-                cell.setBiomassNatural(naturalBiomass * (1.0 + (photosyntheticEfficiencyMultiplier - 1.0) * 0.02 * dtSafe));
+                bioNat[i] = (float) (bioNat[i] * (1.0 + (photosyntheticEfficiencyMultiplier - 1.0) * 0.02 * dtSafe));
             }
-
-            // Room-temperature superconductivity eliminates energy transmission loss and boosts work output
-            if (roomTemperatureSuperconductivity && cell.getResourceWork() != null) {
-                cell.setResourceWork(cell.getResourceWork() * (1.0 + 0.05 * dtSafe));
+            if (roomTemperatureSuperconductivity) {
+                energyFire[i] = (float) (energyFire[i] * (1.0 + 0.05 * dtSafe));
             }
         }
     }

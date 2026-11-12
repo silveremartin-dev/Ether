@@ -74,63 +74,56 @@ public class DynamicHydrographicSiltationEngine extends AbstractSimulationEngine
         return (2.0 / 9.0) * (deltaRho * GRAVITY_M_S2 * grainRadiusMeters * grainRadiusMeters) / viscosity;
     }
 
-    /**
-     * Processes river discharge, sediment erosion, and estuarine harbor siltation using Stokes settling velocity.
-     *
-     * @param cells list of H3 cells in the simulation grid
-     * @param deltaYears step size in years
-     */
-    public static void processHydrographicSiltation(List<H3Cell> cells, double deltaYears) {
-// Numerical integration step for DynamicHydrographicSiltationEngine - verifies boundary conservation and updates local thermodynamic state
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
+        if (buf == null || buf.getCapacity() == 0) return;
+        int n = buf.getCapacity();
+        float[] elevArr = buf.getElevation();
+        float[] tempArr = buf.getTemperature();
+        float[] rainArr = buf.getRainfall();
+        float[] bioNatArr = buf.getBiomassNatural();
+        float[] fluxArr = buf.getFluxPressure();
+        byte[] biomes = buf.getBiomes();
 
-        List<H3Cell> upstreamCells = new java.util.ArrayList<>();
-        List<H3Cell> estuaryCells = new java.util.ArrayList<>();
+        byte oceanOrd = (byte) Biome.OCEAN.ordinal();
+        byte deepOceanOrd = (byte) Biome.DEEP_OCEAN.ordinal();
+        byte glacierOrd = (byte) Biome.GLACIER.ordinal();
+        byte hillsOrd = (byte) Biome.HILLS.ordinal();
+        byte mountainsOrd = (byte) Biome.MOUNTAINS.ordinal();
 
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getElevation() == null) continue;
-            if (cell.getElevation() >= -10.0 && cell.getElevation() <= 25.0
-                    && (cell.getBiome() != Biome.OCEAN && cell.getBiome() != Biome.DEEP_OCEAN && cell.getBiome() != Biome.GLACIER)) {
-                estuaryCells.add(cell);
-            } else if (cell.getElevation() > 100.0 || cell.getBiome() == Biome.HILLS || cell.getBiome() == Biome.MOUNTAINS) {
-                upstreamCells.add(cell);
+        int upstreamCount = 0;
+        for (int i = 0; i < n; i++) {
+            float e = elevArr[i];
+            byte b = biomes[i];
+            if (e > 100.0f || b == hillsOrd || b == mountainsOrd) {
+                upstreamCount++;
             }
         }
 
         double totalSiltDepositedM = 0.0;
-
-        for (H3Cell cell : estuaryCells) {
-            double tempC = cell.getTemperatureOr(15.0);
-            double rainfall = cell.getRainfallOr(500.0);
-            double naturalVeg = cell.getBiomassNaturalOr(500.0);
-
-            // Erosion index based on rainfall and canopy/vegetation cover
-            double erosionIndex = Math.max(0.1, (rainfall / 1000.0) * (1.0 - Math.clamp(naturalVeg / 1000.0, 0.0, 1.0)));
-
-            // Stokes settling velocity (m/s)
-            double settlingVelocity = calculateStokesSettlingVelocity(SILT_GRAIN_RADIUS_M, tempC);
-
-            // Annual silt deposition depth (m/year) scaled by Stokes settling kinetics and erosion index
-            // Settling velocity ~ 0.00072 m/s -> scaled to realistic geological deltaic accretion rate (~1-3 mm/year)
-            double siltationIncrement = erosionIndex * (settlingVelocity * 2.0) * deltaYears;
-            double curElev = cell.getElevationOr(0.0);
-            cell.setElevation(curElev + siltationIncrement);
-            totalSiltDepositedM += siltationIncrement;
-
-            // Movement friction penalty: Harbor siltation increases maritime navigation cost
-            double currentFriction = cell.getMovementFrictionOr(1.0);
-            if (siltationIncrement > 0.0005) {
-                double newFriction = Math.min(15.0, currentFriction + (siltationIncrement * 10.0));
-                cell.setMovementFriction(newFriction);
+        for (int i = 0; i < n; i++) {
+            float e = elevArr[i];
+            byte b = biomes[i];
+            if (e >= -10.0f && e <= 25.0f && b != oceanOrd && b != deepOceanOrd && b != glacierOrd) {
+                double erosionIndex = Math.max(0.1, (rainArr[i] / 1000.0) * (1.0 - Math.clamp(bioNatArr[i] / 1000.0, 0.0, 1.0)));
+                double settlingVelocity = calculateStokesSettlingVelocity(SILT_GRAIN_RADIUS_M, tempArr[i]);
+                double siltationIncrement = erosionIndex * (settlingVelocity * 2.0) * dtYears;
+                elevArr[i] = (float) (e + siltationIncrement);
+                totalSiltDepositedM += siltationIncrement;
+                if (siltationIncrement > 0.0005) {
+                    fluxArr[i] = (float) Math.min(15.0, fluxArr[i] + siltationIncrement * 10.0);
+                }
             }
         }
 
-        // Strictly conserve geological solid volume: deduct total deposited silt depth from upstream catchment cells
-        if (!upstreamCells.isEmpty() && totalSiltDepositedM > 0.0) {
-            double upstreamErosionPerCell = totalSiltDepositedM / upstreamCells.size();
-            for (H3Cell upCell : upstreamCells) {
-                double upElev = upCell.getElevationOr(0.0);
-                upCell.setElevation(Math.max(0.0, upElev - upstreamErosionPerCell));
+        if (upstreamCount > 0 && totalSiltDepositedM > 0.0) {
+            float upstreamErosionPerCell = (float) (totalSiltDepositedM / upstreamCount);
+            for (int i = 0; i < n; i++) {
+                float e = elevArr[i];
+                byte b = biomes[i];
+                if (e > 100.0f || b == hillsOrd || b == mountainsOrd) {
+                    elevArr[i] = Math.max(0.0f, e - upstreamErosionPerCell);
+                }
             }
         }
     }

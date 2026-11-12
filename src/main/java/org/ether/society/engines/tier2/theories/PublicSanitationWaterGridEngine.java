@@ -130,49 +130,4 @@ public class PublicSanitationWaterGridEngine extends AbstractSimulationEngine {
             }
         }
     }
-
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processSanitationGrids(cells, deltaYears);
-    }
-
-    /**
-     * Executes one tick of sanitation coverage and pathogen mortality attenuation.
-     *
-     * @param cells      inhabited cells
-     * @param deltaYears time step fraction in years
-     */
-    public static void processSanitationGrids(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double capital = cell.getResourceCapitalOr(0.0);
-            double capitalPerCapita = capital / pop;
-            double waterAvailability = cell.getWaterResourceOr(1.0);
-
-            // Urban crowding fecal pathogen pressure
-            double cellAreaKm2 = 36.13; // default res 8 cell area or average
-            double densityPerKm2 = pop / cellAreaKm2;
-            double crowdingPathogenPressure = Math.min(1.0, densityPerKm2 / 200.0);
-
-            // Municipal sanitation infrastructure requires masonry/iron piping capital (k_pc >= 200 kg/cap)
-            double sanitationCoverage = 0.0;
-            if (capitalPerCapita > 200.0) {
-                sanitationCoverage = Math.min(0.98, (capitalPerCapita - 200.0) / 2000.0);
-            }
-
-            // Net waterborne pathogen mortality risk
-            double waterborneMortalityRisk = 0.025 * crowdingPathogenPressure * (1.0 - sanitationCoverage);
-
-            // Adjust cell lifespan accordingly (lifespan ranges from ~28 in unhygienic dense cities to ~78 in clean grids)
-            double currentLifespan = cell.getLifespanOr(35.0);
-            double targetLifespan = 30.0 + 48.0 * sanitationCoverage * Math.min(1.0, waterAvailability);
-            double updatedLifespan = currentLifespan + (targetLifespan - currentLifespan) * Math.min(1.0, deltaYears * 0.1);
-            cell.setLifespan(Math.clamp(updatedLifespan, 22.0, 85.0));
-        }
-    }
 }

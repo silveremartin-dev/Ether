@@ -41,130 +41,47 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(AlbedoClimateEngine.class);
 
-    /**
-     * Convenience method for updating albedo feedback with baseline parameters.
-     */
-    public static void processAlbedoFeedback(List<H3Cell> cells) {
-        processAlbedoFeedback(cells, 1.0 / 12.0);
-    }
-
-    /**
-     * Updates albedo feedback scaled by time step in years.
-     *
-     * @param cells List of H3 simulation cells
-     * @param dtYears Time step in years
-     */
-    public static void processAlbedoFeedback(List<H3Cell> cells, double dtYears) {
-        processAlbedoAndClimateEvents(cells, 0L, 0.0, dtYears);
-    }
-
-    /**
-     * Updates dynamic albedo, orbital precession (Green Sahara), and climate disaster events.
-     *
-     * @param cells                 List of H3 simulation cells
-     * @param simulationYear        Current simulation year (for Milankovitch orbital cycle calculation)
-     * @param volcanicCoolingOffset Active volcanic aerosol cooling in Â°C (0.0 if normal, -2.0 to -6.0 during volcanic winters)
-     */
-    public static void processAlbedoAndClimateEvents(List<H3Cell> cells, long simulationYear, double volcanicCoolingOffset) {
-        processAlbedoAndClimateEvents(cells, simulationYear, volcanicCoolingOffset, 1.0 / 12.0);
-    }
-
-    /**
-     * Updates dynamic albedo, orbital precession (Green Sahara), and climate disaster events with time-step invariance.
-     *
-     * @param cells                 List of H3 simulation cells
-     * @param simulationYear        Current simulation year (for Milankovitch orbital cycle calculation)
-     * @param volcanicCoolingOffset Active volcanic aerosol cooling in Â°C (0.0 if normal, -2.0 to -6.0 during volcanic winters)
-     * @param dtYears               Time step in years
-     */
-    public static void processAlbedoAndClimateEvents(List<H3Cell> cells, long simulationYear, double volcanicCoolingOffset, double dtYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        // 1. Calculate Orbital Precession Phase (21,000-year Milankovitch cycle)
-        double precessionPhase = Math.sin((simulationYear % 21000L) / 21000.0 * 2.0 * Math.PI);
-
-        int size = cells.size();
-        java.util.concurrent.atomic.AtomicInteger greenSaharaCounter = new java.util.concurrent.atomic.AtomicInteger(0);
-        java.util.concurrent.atomic.AtomicInteger floodDisasterCounter = new java.util.concurrent.atomic.AtomicInteger(0);
-
-        // Thermal inertia: mixed-layer ocean/land relaxation time constant tau ~ 2.0 years
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
+        if (buf == null || buf.getCapacity() == 0) return;
+        int n = buf.getCapacity();
         double dtSafe = Math.max(0.0001, dtYears);
         double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 2.0);
 
-        java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
-            if (cell == null) return;
-            double lat = cell.getLatitudeOr(0.0);
-            double elev = cell.getElevationOr(0.0);
+        float[] elevArr = buf.getElevation();
+        byte[] biomes = buf.getBiomes();
+        float[] rainArr = buf.getRainfall();
+        float[] tempArr = buf.getTemperature();
+        float[] capArr = buf.getResourceCapital();
+        float[] waterArr = buf.getWaterResource();
+        float[] bioNatArr = buf.getBiomassNatural();
 
-            if (elev <= 0 || cell.getBiome() == Biome.OCEAN || cell.getBiome() == Biome.DEEP_OCEAN) {
-                cell.setDynamicAlbedo(0.06);
-                return;
-            }
+        byte oceanOrd = (byte) Biome.OCEAN.ordinal();
+        byte deepOceanOrd = (byte) Biome.DEEP_OCEAN.ordinal();
+        byte beachOrd = (byte) Biome.BEACH.ordinal();
 
-            // a”€a”€ 1. Orbital Precession / Continuous Subtropical Monsoon Forcing a”€
-            double latitudinalMonsoonWeight = (lat >= 5.0 && lat <= 35.0) 
-                    ? Math.sin(Math.toRadians((lat - 5.0) / 30.0 * 180.0)) 
-                    : 0.0;
-            double continuousMonsoonForcing = latitudinalMonsoonWeight * Math.max(0.0, precessionPhase);
+        double capRetention = Math.exp(-4.2801 * dtSafe);
+        double waterRetention = Math.exp(-8.3178 * dtSafe);
 
-            if (continuousMonsoonForcing > 0.05 && cell.getBiome() == Biome.DESERT) {
-                greenSaharaCounter.incrementAndGet();
-                double curRain = cell.getRainfallOr(0.0);
-                double curAquifer = cell.getAccessibleAquiferOr(0.0);
-                double curWater = cell.getWaterResourceOr(0.0);
-                double curSoc = cell.getSoilOrganicCarbonOr(0.0);
-                double curBioNat = cell.getBiomassNaturalOr(0.0);
+        for (int i = 0; i < n; i++) {
+            float elev = elevArr[i];
+            byte biome = biomes[i];
+            if (elev <= 0.0f || biome == oceanOrd || biome == deepOceanOrd) continue;
 
-                cell.setRainfall(Math.min(1200.0, curRain + 500.0 * continuousMonsoonForcing * dtSafe));
-                cell.setAccessibleAquifer(Math.min(15000.0, curAquifer + 2000.0 * continuousMonsoonForcing * dtSafe));
-                cell.setWaterResource(Math.min(1000.0, curWater + 400.0 * continuousMonsoonForcing * dtSafe));
-
-                if (continuousMonsoonForcing > 0.3) {
-                    cell.setBiome(Biome.PLAINS);
-                }
-                cell.setSoilOrganicCarbon(Math.min(60.0, curSoc + 15.0 * continuousMonsoonForcing * dtSafe));
-                cell.setBiomassNatural(Math.min(800.0, curBioNat + 300.0 * continuousMonsoonForcing * dtSafe));
-            }
-
-            // a”€a”€ 2. Budyko-Sellers 1-D Energy Balance Radiative Equilibrium a”€a”€a”€a”€a”€a”€
-            double albedo = cell.calculateDynamicAlbedo();
-            double currentTemp = cell.getTemperatureOr(15.0);
-
-            double equilibriumTempAnomaly = (0.30 - albedo) * 6.0 + volcanicCoolingOffset;
-            double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
+            double bioNat = bioNatArr[i];
+            double albedo = (biome == (byte) Biome.DESERT.ordinal()) ? 0.35 : Math.max(0.12, 0.25 - 0.10 * Math.tanh(bioNat / 500.0));
+            double currentTemp = tempArr[i];
+            double equilibriumTempAnomaly = (0.30 - albedo) * 6.0;
+            double baselineTemp = 22.0 - 0.0065 * Math.max(0.0, elev);
             double targetTemp = baselineTemp + equilibriumTempAnomaly;
-
             double updatedTemp = currentTemp + (targetTemp - currentTemp) * thermalRelaxationFactor;
-            cell.setTemperature(Math.max(-250.0, Math.min(600.0, updatedTemp)));
+            tempArr[i] = (float) Math.clamp(updatedTemp, -250.0, 600.0);
 
-            // a”€a”€ 3. Megastorm / Flood Disaster Impact a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
-            double rain = cell.getRainfallOr(500.0);
-            if (rain > 900.0 && elev < 30.0 && (Boolean.TRUE.equals(cell.getIsCoastal()) || cell.getBiome() == Biome.BEACH || elev < 10.0)) {
-                floodDisasterCounter.incrementAndGet();
-                double curCap = cell.getResourceCapitalOr(0.0);
-                // Continuous exponential storm damage: retention = exp(-lambda * dt)
-                double capRetention = Math.exp(-4.2801 * dtSafe);
-                cell.setResourceCapital(curCap * capRetention);
-                double curWater = cell.getWaterResourceOr(100.0);
-                double waterRetention = Math.exp(-8.3178 * dtSafe);
-                cell.setWaterResource(Math.max(50.0, curWater * waterRetention));
+            double rain = rainArr[i];
+            if (rain > 900.0 && elev < 30.0 && (biome == beachOrd || elev < 10.0)) {
+                capArr[i] = (float) (capArr[i] * capRetention);
+                waterArr[i] = (float) Math.max(50.0, waterArr[i] * waterRetention);
             }
-        };
-
-        if (size >= 10000) {
-            cells.parallelStream().forEach(cellProcessor);
-        } else {
-            for (int i = 0; i < size; i++) {
-                cellProcessor.accept(cells.get(i));
-            }
-        }
-
-        int greenSaharaCells = greenSaharaCounter.get();
-        int floodDisasterCells = floodDisasterCounter.get();
-
-        if (greenSaharaCells > 0 || floodDisasterCells > 0 || volcanicCoolingOffset < -0.5) {
-            logger.debug("Climate Engine: Green Sahara active across {} cells, {} flood disaster cells, Volcanic cooling offset: {}Â°C",
-                    greenSaharaCells, floodDisasterCells, String.format("%.2f", volcanicCoolingOffset));
         }
     }
 }

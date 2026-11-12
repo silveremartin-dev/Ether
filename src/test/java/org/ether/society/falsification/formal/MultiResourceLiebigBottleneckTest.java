@@ -73,15 +73,18 @@ public class MultiResourceLiebigBottleneckTest {
         cellWaterStarved.setResourceMetal(2000.0);
 
         // Execute SoilNutrientNPKEngine and arability evaluation over multiple seasonal ticks
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(List.of(cellOptimal, cellWaterStarved), buf, false);
+        SoilNutrientNPKEngine npkEngine = new SoilNutrientNPKEngine();
         for (int month = 0; month < 12; month++) {
-            SoilNutrientNPKEngine.processSoilNutrients(List.of(cellOptimal, cellWaterStarved), 1.0 / 12.0);
+            npkEngine.tick(buf, 1.0 / 12.0, 1.0);
         }
 
         double arableSuitabilityOptimal = SoilNutrientNPKEngine.calculateContinuousArableSuitability(cellOptimal);
         double arableSuitabilityStarved = SoilNutrientNPKEngine.calculateContinuousArableSuitability(cellWaterStarved);
 
-        double agriBiomassOptimal = cellOptimal.getBiomassAgricultureOr(0.0);
-        double agriBiomassStarved = cellWaterStarved.getBiomassAgricultureOr(0.0);
+        double agriBiomassOptimal = buf.getBiomassAgriculture()[0];
+        double agriBiomassStarved = buf.getBiomassAgriculture()[1];
 
         System.out.printf("[Liebig Nexus] Optimal Water Arability: %.4f | Biomass: %.2f%n",
                 arableSuitabilityOptimal, agriBiomassOptimal);

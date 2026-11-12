@@ -158,7 +158,7 @@ public class ScenarioFalsificationReportTest {
                 try {
                     var node = EtherJsonHelper.getMapper().readTree(metaPath.toFile());
                     if (node.has("scenarioName")) scName = node.get("scenarioName").asText();
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) { /* harmless test cleanup */ }
             }
             ComparativeTelemetryDataLoader.ensureHistoryLoadedForSave(dirName, scName, repo);
             SimulationRunRecord run = repo.getRun(dirName);

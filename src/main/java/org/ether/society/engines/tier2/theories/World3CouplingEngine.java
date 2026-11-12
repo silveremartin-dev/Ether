@@ -64,48 +64,6 @@ public class World3CouplingEngine extends AbstractSimulationEngine {
         }
     }
 
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processWorld3System(cells, deltaYears);
-    }
-
-    public static void processWorld3Coupling(List<H3Cell> cells, double deltaYears) {
-        processWorld3System(cells, deltaYears);
-    }
-
-    public static void processWorld3System(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-
-            double pop = cell.getPopulation();
-            double capital = cell.getResourceCapitalOr(0.0);
-            double resource = cell.getResourceMetalOr(0.0);
-            double pollution = cell.getPollutionLevelOr(0.0);
-            double areaKm2 = Math.max(10.0, cell.getEffectiveSurfaceAreaKm2());
-
-            double resourceRatio = Math.max(0.01, Math.min(1.0, resource / initialGlobalResourceStock));
-            double fcaor = 0.05 + 0.90 * Math.pow(1.0 - resourceRatio, 2.0);
-            double industrialOutput = capital * (1.0 - fcaor);
-
-            double mFood = Math.min(1.5, Math.max(0.2, (cell.getFoodResourceOr(100.0)) / (pop * 0.1)));
-            double mHeal = Math.min(1.4, Math.max(0.5, 1.0 + Math.log10(1.0 + capital / 100.0)));
-            double mPoll = Math.min(1.0, Math.max(0.1, 1.0 - (pollution / 1000.0)));
-            double mCrowd = Math.min(1.0, Math.max(0.5, 1.0 - (pop / 200000.0)));
-
-            double lifeExpectancy = 40.0 * Math.min(mFood, Math.min(mHeal, Math.min(mPoll, mCrowd)));
-            cell.setLifespan(Math.max(15.0, Math.min(120.0, lifeExpectancy)));
-
-            double ppg = (industrialOutput / areaKm2) * 0.01 * deltaYears;
-            double ppaFactor = Math.exp(-0.05 * Math.max(0.001, deltaYears));
-            cell.setPollutionLevel(Math.max(0.0, pollution * ppaFactor + ppg));
-
-            double nrur = industrialOutput * 0.005 * deltaYears;
-            cell.setResourceMetal(Math.max(0.0, resource - nrur));
-        }
-    }
-
     public static double getInitialGlobalResourceStock() {
         return initialGlobalResourceStock;
     }

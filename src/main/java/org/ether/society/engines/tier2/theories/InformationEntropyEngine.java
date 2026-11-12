@@ -57,37 +57,28 @@ public class InformationEntropyEngine extends AbstractSimulationEngine {
         return bandwidthHz * (Math.log(1.0 + signalToNoiseRatio) / Math.log(2.0));
     }
 
-    /**
-     * Executes one information channel capacity update across cells using physical power and capital observables.
-     *
-     * @param cells list of spatial cells
-     */
-    public static void processInformationEntropy(List<H3Cell> cells) {
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = Math.max(1, cell.getPopulationOr(1));
-            double kPerCapita = cell.getResourceCapitalOr(0.0) / pop;
-            double powerWattsPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double friction = Math.max(0.1, cell.getMovementFrictionOr(1.0));
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double pop = Math.max(1.0, buffer.getBiomassHuman()[i]);
+        double kPerCapita = buffer.getResourceCapital()[i] / pop;
+        double totalWatts = buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i] + buffer.getEnergySolar()[i]
+                + (buffer.getResourceCoal()[i] * 24.0) + (buffer.getResourceOil()[i] * 42.0);
+        double powerWattsPerCapita = (totalWatts > 0.0) ? (totalWatts / pop) : SOMATIC_POWER_FLOOR_WATTS;
+        double friction = 1.0;
 
-            // Physical carrier bandwidth B (Hz) scales continuously with non-somatic exergy flux and built relay capital
-            // (Brillouin 1956, "Science and Information Theory"):
-            // B_carrier(k_pc, p) = B_0 + alpha_k * k_pc + alpha_p * (p_exo)^2
-            double surplusPower = org.ether.society.core.math.SmoothMath.softplus(
-                    powerWattsPerCapita, SOMATIC_POWER_FLOOR_WATTS, 0.5);
-            double bandwidthHz = 1.0 + 0.05 * kPerCapita + 0.002 * surplusPower * surplusPower;
-            double snr = 10.0 / org.ether.society.core.math.SmoothMath.softplus(friction, 0.0, 10.0);
+        double surplusPower = org.ether.society.core.math.SmoothMath.softplus(
+                powerWattsPerCapita, SOMATIC_POWER_FLOOR_WATTS, 0.5);
+        double bandwidthHz = 1.0 + 0.05 * kPerCapita + 0.002 * surplusPower * surplusPower;
+        double snr = 10.0 / org.ether.society.core.math.SmoothMath.softplus(friction, 0.0, 10.0);
 
-            double channelCapacityBitsPerSec = calculateShannonCapacityBitsPerSec(bandwidthHz, snr);
-
-            // Continuous Michaelis-Menten linguistic homogenization driven by Shannon channel capacity C (bits/s):
-            // Zero if-then-else threshold; dialectal drift is smoothly damped as C approaches C_1/2 = 100 bits/s.
-            double drift = cell.getLinguisticDriftOr(0.0);
-            double homogenizationRate = 0.015 * (channelCapacityBitsPerSec / (channelCapacityBitsPerSec + 100.0));
-            cell.setLinguisticDrift(org.ether.society.core.math.SmoothMath.softplus(drift - homogenizationRate, 0.0, 200.0));
-        }
+        double channelCapacityBitsPerSec = calculateShannonCapacityBitsPerSec(bandwidthHz, snr);
+        double homogenizationRate = 0.015 * (channelCapacityBitsPerSec / (channelCapacityBitsPerSec + 100.0));
+        acc.dInstitutionalComplexity += (float) (homogenizationRate * dtYears);
     }
 }
 

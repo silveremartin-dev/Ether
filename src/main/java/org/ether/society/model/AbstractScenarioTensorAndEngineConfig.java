@@ -285,7 +285,8 @@ public abstract class AbstractScenarioTensorAndEngineConfig implements Serializa
                 culturalAffinityMatrix.putAll(init);
             }
         } catch (Exception ignored) {
-            // Non-blocking fallback
+            org.slf4j.LoggerFactory.getLogger(AbstractScenarioTensorAndEngineConfig.class)
+                    .debug("Default cultural affinity matrix initialization skipped: {}", ignored.getMessage());
         }
     }
 

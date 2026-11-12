@@ -100,16 +100,19 @@ public class MethaneClathrateStabilityEngineTest {
             cells.add(cell);
         }
 
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, buf, false);
+
         // Scenario 1: Pre-industrial baseline conditions (anomaly = 0.0°C) -> No dissociation
-        double outgassingBaseline = MethaneClathrateStabilityEngine.processClathrateDissociation(cells, 1.0, 0.0);
+        double outgassingBaseline = MethaneClathrateStabilityEngine.processClathrateDissociation(buf, 1.0, 0.0);
         assertEquals(0.0, outgassingBaseline, 1e-6, "Under baseline thermal equilibrium, no clathrate outgassing occurs.");
 
         // Scenario 2: Moderate ocean warming anomaly (+2.5°C benthic warming)
-        double outgassingModerate = MethaneClathrateStabilityEngine.processClathrateDissociation(cells, 1.0, 2.5);
+        double outgassingModerate = MethaneClathrateStabilityEngine.processClathrateDissociation(buf, 1.0, 2.5);
         assertTrue(outgassingModerate > 0.5, "Moderate benthic warming must trigger clathrate dissociation.");
 
         // Scenario 3: Severe hyperthermal pulse (PETM analogue, +6.0°C deep ocean warming)
-        double outgassingExtreme = MethaneClathrateStabilityEngine.processClathrateDissociation(cells, 1.0, 6.0);
+        double outgassingExtreme = MethaneClathrateStabilityEngine.processClathrateDissociation(buf, 1.0, 6.0);
         assertTrue(outgassingExtreme > outgassingModerate * 2.0,
                 "Hyperthermal pulse must release substantially greater methane than moderate warming.");
     }
@@ -119,9 +122,13 @@ public class MethaneClathrateStabilityEngineTest {
     public void testBitwiseDeterminism() {
         List<H3Cell> run1 = createMarineDomain(100);
         List<H3Cell> run2 = createMarineDomain(100);
+        org.ether.society.core.dod.WorldBuffer buf1 = new org.ether.society.core.dod.WorldBuffer(run1.size());
+        org.ether.society.core.dod.WorldBuffer buf2 = new org.ether.society.core.dod.WorldBuffer(run2.size());
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(run1, buf1, false);
+        org.ether.society.data.DODDataGenerator.populateWorldBuffer(run2, buf2, false);
 
-        double out1 = MethaneClathrateStabilityEngine.processClathrateDissociation(run1, 10.0, 3.5);
-        double out2 = MethaneClathrateStabilityEngine.processClathrateDissociation(run2, 10.0, 3.5);
+        double out1 = MethaneClathrateStabilityEngine.processClathrateDissociation(buf1, 10.0, 3.5);
+        double out2 = MethaneClathrateStabilityEngine.processClathrateDissociation(buf2, 10.0, 3.5);
 
         assertEquals(out1, out2, 0.0, "Clathrate outgassing outputs must be bitwise identical.");
     }

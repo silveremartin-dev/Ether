@@ -6,13 +6,12 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Soil N-P-K Stoichiometry & Geological Mineral Mining Engine.
@@ -69,20 +68,46 @@ public class SoilNutrientNPKEngine extends AbstractSimulationEngine {
         return Math.clamp(sRelief * sThermal * sMoisture * sEdaphic, 0.05, 1.0);
     }
 
-    public static void processSoilNutrients(List<H3Cell> cells) {
-        processSoilNutrients(cells, 1.0 / 12.0);
+    /**
+     * Calculates continuous agro-ecological arability suitability $S_{\text{arable}} \in [0.05, 1.0]$
+     * from DoD WorldBuffer arrays at cell index {@code i}.
+     */
+    public static double calculateContinuousArableSuitability(WorldBuffer buffer, int i) {
+        if (buffer == null || i < 0 || i >= buffer.getCapacity()) return 0.50;
+        double elev = buffer.getElevation()[i];
+        if (elev < 0.0) return 0.0;
+
+        double tempC = buffer.getTemperature()[i];
+        double rainMm = buffer.getRainfall()[i];
+        double soc = buffer.getSoilOrganicCarbon()[i];
+
+        double sRelief = 1.0 / (1.0 + Math.exp(0.0018 * (elev - 1400.0)));
+        double sThermal = 1.0 / (1.0 + Math.exp(-0.35 * (tempC - 7.5)));
+        double sMoisture = (rainMm / (rainMm + 250.0)) * (1.0 - (0.40 / (1.0 + Math.exp(-0.003 * (rainMm - 2800.0)))));
+        double sEdaphic = Math.clamp(soc / 35.0, 0.20, 1.0);
+
+        return Math.clamp(sRelief * sThermal * sMoisture * sEdaphic, 0.05, 1.0);
+    }
+
+    @Override
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processSoilNutrients(buf, dtYears);
+    }
+
+    public static void processSoilNutrients(WorldBuffer buffer) {
+        processSoilNutrients(buffer, 1.0 / 12.0);
     }
 
     /**
-     * Executes N-P-K stoichiometry, mineral mining extraction, and Haber-Bosch synthesis tick.
+     * Executes N-P-K stoichiometry, mineral mining extraction, and Haber-Bosch synthesis tick on DoD buffer.
      */
-    public static void processSoilNutrients(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public static void processSoilNutrients(WorldBuffer buffer, double dtYears) {
+        if (buffer == null || buffer.getCapacity() == 0) return;
 
-        int size = cells.size();
-        H3Cell sample = cells.get(0);
-        int h3Res = (sample != null && sample.getH3Index() != null && sample.getH3Index() != 0L)
-                ? (int) ((sample.getH3Index() >>> 52) & 0xFL)
+        int size = buffer.getCapacity();
+        long[] h3Arr = buffer.getH3Indexes();
+        int h3Res = (h3Arr != null && h3Arr[0] != 0L)
+                ? (int) ((h3Arr[0] >>> 52) & 0xFL)
                 : 3;
         double planarCellAreaKm2 = H3Cell.getAvgHexagonAreaKm2((h3Res >= 0 && h3Res <= 15) ? h3Res : 3);
         double areaScale = Math.max(0.05, planarCellAreaKm2 / 1770.49);
@@ -100,81 +125,66 @@ public class SoilNutrientNPKEngine extends AbstractSimulationEngine {
         double relaxationRate = 1.0 - Math.exp(-3.0 * safeDt);
         double terraceMaintenanceDecay = Math.min(1.0, 0.004 * safeDt);
 
-        java.util.concurrent.atomic.AtomicInteger haberBoschCounter = new java.util.concurrent.atomic.AtomicInteger(0);
+        float[] bioHuman = buffer.getBiomassHuman();
+        float[] agriArr = buffer.getBiomassAgriculture();
+        float[] capArr = buffer.getResourceCapital();
+        float[] metalArr = buffer.getMetalResource();
 
-        java.util.function.Consumer<H3Cell> cellProcessor = cell -> {
-            if (cell == null) return;
-            int pop = cell.getPopulationOr(0);
-            double baseBiomass = cell.getBiomassAgricultureOr(0.0);
-            if (baseBiomass <= 0.0 || pop <= 0) return;
+        int haberBoschActive = 0;
 
-            double capital = cell.getResourceCapitalOr(0.0);
+        for (int i = 0; i < size; i++) {
+            double pop = bioHuman[i] / 0.06;
+            double baseBiomass = agriArr[i];
+            if (baseBiomass <= 0.0 || pop <= 0.0) continue;
+
+            double capital = capArr[i];
             double capPerCap = capital / Math.max(1.0, pop);
             double cultivationFactor = Math.tanh(capPerCap / 5.0);
-            if (cultivationFactor <= 0.001) return;
+            if (cultivationFactor <= 0.001) continue;
 
-            double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-double metalOre = cell.getResourceMetalOr(100.0);
+            double powerPerCapita = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(buffer, i);
+            double metalOre = metalArr[i];
 
-// 1. Rock Phosphate (P) & Potash (K) Geological Mining Extraction
-double extractedMiningP = Math.min(metalOre * 0.05, minMinedOreScaled);
-double extractedMiningK = Math.min(metalOre * 0.05, minMinedOreScaled);
+            double extractedMiningP = Math.min(metalOre * 0.05, minMinedOreScaled);
+            double extractedMiningK = Math.min(metalOre * 0.05, minMinedOreScaled);
+            double totalMinedOre = (extractedMiningP + extractedMiningK) * dtFactor;
+            metalArr[i] = (float) Math.max(0.0, metalOre - totalMinedOre);
 
-// Enforce conservation of mass: deduct mined fertilizer ore from the geological mineral stock
-double totalMinedOre = (extractedMiningP + extractedMiningK) * dtFactor;
-cell.setResourceMetal(Math.max(0.0, metalOre - totalMinedOre));
-
-// 2. Biological & Haber-Bosch Industrial Nitrogen Fixation (Smil 2001, Enriching the Earth)
-// Pre-industrial biological fixation (rhizobia legumes / crop rotations) smoothly transitions to
-// catalytic high-pressure Haber-Bosch synthesis (N2 + 3H2 <=> 2NH3 at 20 MPa, 450 C, Fritz Haber 1909)
-// governed by physical electrical/mechanical power capacity.
-double haberBoschShare = 1.0 / (1.0 + Math.exp(-0.01 * (powerPerCapita - HABER_BOSCH_POWER_WATTS)));
-double bioFixationN = Math.max(0.0, nNorm - soilNBase) * (1.0 - haberBoschShare);
+            double haberBoschShare = 1.0 / (1.0 + Math.exp(-0.01 * (powerPerCapita - HABER_BOSCH_POWER_WATTS)));
+            double bioFixationN = Math.max(0.0, nNorm - soilNBase) * (1.0 - haberBoschShare);
             if (haberBoschShare > 0.5) {
-                haberBoschCounter.incrementAndGet();
+                haberBoschActive++;
             }
             double synthesizedN = baselineN + bioFixationN + (industrialBonusN * haberBoschShare);
 
-            // 3. Liebig's Law of the Minimum Yield Bound
             double effectiveSoilN = soilNBase + synthesizedN;
             double effectiveSoilP = Math.min(pNorm * 1.5, soilPBase + extractedMiningP);
             double effectiveSoilK = Math.min(kNorm * 1.5, soilKBase + extractedMiningK);
 
             double liebigFactor = Math.min(effectiveSoilN / nNorm, Math.min(effectiveSoilP / pNorm, effectiveSoilK / kNorm));
 
-            // Continuous arability suitability replaces discrete switch(biome)
-            double arableBiomeFactor = calculateContinuousArableSuitability(cell);
-            capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
+            double arableBiomeFactor = calculateContinuousArableSuitability(buffer, i);
             double laborCultivatedBiomass = pop * (580.0 + 150.0 * Math.min(4.0, Math.log1p(capPerCap / 50.0)));
-double landCeiling = (planarCellAreaKm2 < 5.0)
-        ? (25.0 * areaScale * arableBiomeFactor)
-        : Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.min(5.0, 1.0 + capPerCap / 100.0)) * areaScale * arableBiomeFactor);
-double maxCellBiomass = landCeiling;
-double potentialBiomass = (planarCellAreaKm2 < 5.0)
-        ? (25.0 * areaScale * arableBiomeFactor)
-        : Math.max(25.0 * areaScale * arableBiomeFactor, laborCultivatedBiomass);
-double targetYield = potentialBiomass * liebigFactor;
+            double landCeiling = (planarCellAreaKm2 < 5.0)
+                    ? (25.0 * areaScale * arableBiomeFactor)
+                    : Math.max(laborCultivatedBiomass * 1.5, (360000.0 + 550000.0 * Math.min(5.0, 1.0 + capPerCap / 100.0)) * areaScale * arableBiomeFactor);
+            double maxCellBiomass = landCeiling;
+            double potentialBiomass = (planarCellAreaKm2 < 5.0)
+                    ? (25.0 * areaScale * arableBiomeFactor)
+                    : Math.max(25.0 * areaScale * arableBiomeFactor, laborCultivatedBiomass);
+            double targetYield = potentialBiomass * liebigFactor;
 
-double updatedBiomass;
-if (baseBiomass <= 0.0) {
-    updatedBiomass = 0.0;
-} else if (baseBiomass <= targetYield) {
-    updatedBiomass = baseBiomass + relaxationRate * (targetYield - baseBiomass);
-} else {
-    updatedBiomass = baseBiomass - terraceMaintenanceDecay * (baseBiomass - targetYield);
-}
-cell.setBiomassAgriculture(Math.clamp(updatedBiomass, 0.0, maxCellBiomass * 1.25));
-        };
-
-        if (size >= 10000) {
-            cells.parallelStream().forEach(cellProcessor);
-        } else {
-            for (int i = 0; i < size; i++) {
-                cellProcessor.accept(cells.get(i));
+            double updatedBiomass;
+            if (baseBiomass <= 0.0) {
+                updatedBiomass = 0.0;
+            } else if (baseBiomass <= targetYield) {
+                updatedBiomass = baseBiomass + relaxationRate * (targetYield - baseBiomass);
+            } else {
+                updatedBiomass = baseBiomass - terraceMaintenanceDecay * (baseBiomass - targetYield);
             }
+            agriArr[i] = (float) Math.clamp(updatedBiomass, 0.0, maxCellBiomass * 1.25);
         }
 
-        int haberBoschActive = haberBoschCounter.get();
         if (haberBoschActive > 0) {
             logger.debug("NPK Engine: Haber-Bosch industrial nitrogen synthesis active across {} power grid cells.", haberBoschActive);
         }

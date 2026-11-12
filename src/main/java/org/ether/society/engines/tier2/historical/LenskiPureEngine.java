@@ -30,8 +30,8 @@ public class LenskiPureEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
+    public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
+        processLenskiPikettyInequality(buf, dtYears);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(LenskiPureEngine.class);
@@ -89,27 +89,6 @@ public class LenskiPureEngine extends AbstractSimulationEngine {
         return Math.clamp(gForager + agrarianSurge + industrialShift, 0.18, 0.70);
     }
 
-    /**
-     * Process hybrid over cell list.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-            double kpc = cell.getResourceCapitalOr(0.0) / pop;
-            double theoreticalGini = calculateLenskiGini(kpc);
-            cell.setGiniIndex(theoreticalGini);
-            if (cell.getResourceCapital() != null) {
-                cell.setResourceCapital(cell.getResourceCapital() * (1.0 - theoreticalGini * 0.05 * deltaYears));
-            }
-        }
-    }
 }
 
 

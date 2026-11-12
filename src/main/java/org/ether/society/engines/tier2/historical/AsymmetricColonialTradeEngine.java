@@ -49,42 +49,6 @@ public class AsymmetricColonialTradeEngine extends AbstractSimulationEngine {
             acc.dResourceCapital += capitalGain;
         }
     }
-
-    @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
-
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getResourceMetal() == null) continue;
-
-            double metal = cell.getResourceMetal(); // Bullion stock
-            double capital = cell.getResourceCapitalOr(0.0);
-
-            // Asymmetric trade bullion drain: silver exchanged for perishable spices (Flynn & GirÃƒA¡ldez 1995)
-            // Continuous Michaelis-Menten / Hill extraction envelope replacing discrete jump at metal > 10.0
-            if (metal > 0.0) {
-                double drainFactor = metal / (metal + 15.0);
-                double bullionOutflow = 0.5 * drainFactor * deltaYears;
-                double capitalGain = 0.2 * drainFactor * deltaYears;
-                cell.setResourceMetal(Math.max(0.0, metal - bullionOutflow));
-                cell.setResourceCapital(capital + capitalGain);
-            }
-        }
-    }
 }
 
 

@@ -62,11 +62,6 @@ public class EdoJapanIsolationEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
-    }
-
-    @Override
     public void reset() {
         resetState();
     }
@@ -91,72 +86,6 @@ public class EdoJapanIsolationEngine extends AbstractSimulationEngine {
         sakokuIsolationActive = false;
         sustainableEquilibriumCap = 30.0;
         initialWoodStock.clear();
-    }
-
-    /**
-     * Applies the Sakoku / Tokugawa institutional package to Japanese cells through physical drivers only.
-     * <p>
-     * Population is left to the Tier 1 demographic kernels; this engine modifies the ecological and
-     * fertility drivers documented by Totman (1989) and Hanley &amp; Yamamura (1977):
-     * </p>
-     * <ol>
-     *   <li><b>Tomeyama silviculture</b>: logging bans and sugi/hinoki plantations regrow standing wood
-     *       logistically, \(\dot W = r_{\text{plant}} W (1 - W / W_0)\), with \(r_{\text{plant}} = 0.025\,\text{yr}^{-1}\)
-     *       and \(W_0\) the cell's first-observed (pre-intervention) standing stock.</li>
-     *   <li><b>Night-soil recycling</b>: human excreta returned to paddies add soil organic carbon in
-     *       proportion to population density, \(\dot{SOC} = k_{\text{ns}} \rho\,(1 - SOC/SOC_{\text{sat}})\),
-     *       with \(k_{\text{ns}} = 0.002\,\text{(g/kg)}\,\text{km}^2\,\text{hab}^{-1}\,\text{yr}^{-1}\), \(SOC_{\text{sat}} = 40\).</li>
-     *   <li><b>Stationary-state fertility regulation</b>: late marriage and cultural reproductive restraint
-     *       dampen fertility toward replacement level when density exceeds sustainable equilibrium.</li>
-     *   <li><b>Organic waste recycling</b>: pollution decays at 1 unit/yr.</li>
-     * </ol>
-     *
-     * @param cells      populated H3 cells
-     * @param deltaYears time step in years
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
-        double dt = Math.max(0.0, deltaYears);
-
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-            if (!sakokuIsolationActive) continue;
-
-            // Universal Type-B Institutional Policy (Stationary-State Autarky / Sakoku & Tomeyama Silviculture):
-            // Applies to any circumscribed agrarian/early-modern society when this institutional policy is enabled,
-            // without any hardcoded geographic GPS bounding box.
-
-            // 1. Tomeyama silviculture: logistic plantation regrowth toward the pre-intervention stock W0
-            double wood = cell.getWoodResourceOr(0.0);
-            Long key = cell.getH3Index();
-            double w0 = (key != null) ? initialWoodStock.computeIfAbsent(key, k -> wood) : wood;
-            if (w0 > 0.0) {
-                double seedStock = Math.max(wood, 0.02 * w0); // replanting seedlings when nearly cleared
-                double regrowth = PLANTATION_REGROWTH_RATE * seedStock * Math.max(0.0, 1.0 - wood / w0) * dt;
-                cell.setWoodResource(wood + regrowth);
-            }
-
-            // 2. Night-soil recycling: density-proportional organic carbon return with saturation
-            double soc = cell.getSoilOrganicCarbonOr(15.0);
-            double areaKm2 = Math.max(1.0, cell.getEffectiveSurfaceAreaKm2());
-            int pop = cell.getPopulation();
-            double density = pop / areaKm2;
-            double socGain = NIGHT_SOIL_SOC_COEFF * density * Math.max(0.0, 1.0 - soc / SOC_SATURATION) * dt;
-            cell.setSoilOrganicCarbon(soc + socGain);
-
-            // 3. Preventive stationary-state demographic homeostasis (late marriage, monastic/institutional checks
-            // when population exceeds local stationary carrying capacity cap, Hanley & Yamamura 1977)
-            // Enforces demographic conservation by moderating fertility rather than artificial mass deletion
-            double cellEquilibriumCap = sustainableEquilibriumCap * 1000.0;
-            if (pop > cellEquilibriumCap) {
-                double popExcess = (pop - cellEquilibriumCap) / cellEquilibriumCap;
-                double fertilityDamping = 0.3 * (popExcess / (1.0 + popExcess)) * dt;
-                cell.setFertility(Math.max(1.2, (cell.getFertilityOr(2.1)) - fertilityDamping));
-            }
-
-            // 4. Zero pollution accumulation due to closed-loop organic waste recycling
-            cell.setPollutionLevel(Math.max(0.0, (cell.getPollutionLevelOr(0.0)) - 1.0 * dt));
-        }
     }
 
     /**

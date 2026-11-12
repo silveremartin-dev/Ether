@@ -28,44 +28,25 @@ public class ScottAgainstTheGrainPureEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(ScottAgainstTheGrainPureEngine.class);
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i];
+        if (pop <= 0.0) return;
 
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+        double kPerCapita = buffer.getResourceCapital()[i] / pop;
+        double scottVulnerability = Math.exp(-Math.pow(kPerCapita - 150.0, 2.0) / (2.0 * 35.0 * 35.0));
 
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        // grounded strictly in conserved physical observables (AGENTS.md A§10.1, A§10.2).
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double kPerCapita = cell.getResourceCapitalOr(0.0) / pop;
-            // Continuous Gaussian early-agrarian health & epidemic vulnerability envelope (Scott 2017 "Against the Grain")
-            // Peak vulnerability centered at K/N = 150 kg/capita (early sedentary grain state) with standard deviation 35.0
-            double scottVulnerability = Math.exp(-Math.pow(kPerCapita - 150.0, 2.0) / (2.0 * 35.0 * 35.0));
-
-            if (scottVulnerability > 0.01) {
-                // Scott penalty: initial health drop from grain monoculture and crowd disease
-                if (cell.getLifespan() != null) {
-                    cell.setLifespan(Math.max(22.0, cell.getLifespan() - 0.5 * scottVulnerability * deltaYears));
-                }
-                // Epidemic vulnerability increases in early grain towns
-                if (cell.getPollutionLevel() != null) {
-                    cell.setPollutionLevel(cell.getPollutionLevel() + 0.2 * scottVulnerability * deltaYears);
-                }
+        if (scottVulnerability > 0.01) {
+            float lifespan = buffer.getLifespan()[i];
+            if (lifespan > 22.0f) {
+                acc.dLifespan -= (float) Math.min(lifespan - 22.0, 0.5 * scottVulnerability * dtYears);
             }
+            acc.dPollutionLevel += (float) (0.2 * scottVulnerability * dtYears);
         }
     }
 }

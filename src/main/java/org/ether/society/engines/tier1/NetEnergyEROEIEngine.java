@@ -58,44 +58,6 @@ double eroei = 2.5 * resourceAvailability * extractionEquipmentEfficiency;
         return Math.max(0.4, eroei);
     }
 
-    /**
-     * Executes one master EROEI cliodynamic tick across cells using default monthly step.
-     */
-    public static void processNetEnergyEROEI(List<H3Cell> cells) {
-        processNetEnergyEROEI(cells, 1.0 / 12.0);
-    }
-
-    /**
-     * Executes one master EROEI cliodynamic tick across cells scaled by dtYears.
-     */
-    public static void processNetEnergyEROEI(List<H3Cell> cells, double dtYears) {
-        if (cells == null || cells.isEmpty()) return;
-        double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
-
-        int collapseCells = 0;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double eroei = calculateEROEI(cell);
-            int pop = cell.getPopulationOr(0);
-
-            // EROEI < 1.0 triggers societal energy deficit and demographic crisis
-            if (eroei < 1.0 && pop > 50) {
-                collapseCells++;
-                int famineDeaths = (int) Math.clamp(pop * 0.05 * dtMonthlyRatio, 1, pop / 3);
-                int targetPop = Math.max(0, pop - famineDeaths);
-                H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, targetPop);
-                cell.setBiomassHuman((double) targetPop);
-                double curLife = cell.getLifespanOr(40.0);
-                cell.setLifespan(Math.max(15.0, curLife - 1.0 * dtMonthlyRatio));
-            }
-        }
-
-        if (collapseCells > 0) {
-            logger.warn("EROEI Engine: Civilizational energy deficit collapse active across {} cells.", collapseCells);
-        }
-    }
-
     @Override
     public boolean supportsCellularDerivatives() {
         return true;

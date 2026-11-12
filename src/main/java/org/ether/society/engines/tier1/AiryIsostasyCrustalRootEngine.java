@@ -72,29 +72,21 @@ public class AiryIsostasyCrustalRootEngine extends AbstractSimulationEngine {
         return (BASELINE_CRUST_THICKNESS_METERS + topoMeters + rootMeters) / 1000.0;
     }
 
-    /**
-     * Processes Airy crustal roots and updates geothermal heat flow and metal concentration across cells.
-     */
-    public static void processAiryIsostasy(List<H3Cell> cells) {
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double elevation = cell.getElevationOr(0.0);
-            if (elevation <= 0.0) continue;
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        double elevation = buffer.getElevation()[i];
+        if (elevation <= 0.0) return;
 
-            double crustThicknessKm = calculateTotalCrustThicknessKm(elevation);
-
-            // Geothermal heat flow: thicker orogenic crust modulates surface geothermal flux
-            // Baseline 65 mW/mA², thick mountain roots attenuate conductive gradient
-            double heatFlowMW_M2 = 65.0 * (35.0 / Math.max(20.0, crustThicknessKm));
-            cell.setMantleHeatFlow(heatFlowMW_M2);
-
-            // Porphyry hydrothermal metallogeny: high orogenic root concentration defines geological metal ore endowment ceiling
-            if (elevation > 1500.0) {
-                double currentMetal = cell.getResourceMetalOr(100.0);
-                double orogenicOreCap = 100.0 + (elevation / 1000.0) * 150.0;
-                cell.setResourceMetal(Math.max(currentMetal, Math.min(1000.0, orogenicOreCap)));
+        if (elevation > 1500.0) {
+            double currentMetal = buffer.getMetalResource()[i];
+            double orogenicOreCap = Math.min(1000.0, 100.0 + (elevation / 1000.0) * 150.0);
+            if (orogenicOreCap > currentMetal) {
+                acc.dMetalResource += (float) ((orogenicOreCap - currentMetal) * Math.min(1.0, dtYears * 0.01));
             }
         }
     }
