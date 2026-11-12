@@ -82,7 +82,7 @@ public final class HeadlessCliOptions {
     public boolean saveEnabled = true;
     public String customSaveName = null;
     public boolean generateReport = false;
-    public boolean computeEngineContributions = true;
+    public boolean computeEngineContributions = false;
 
     /**
      * Parses CLI arguments into a structured {@link HeadlessCliOptions} instance.
@@ -276,7 +276,9 @@ public final class HeadlessCliOptions {
                 o.saveEnabled = false;
             } else if (a.equals("--report")) {
                 o.generateReport = true;
-            } else if (a.equals("--skip-engine-contributions")) {
+            } else if (a.equals("--compute-engine-contributions") || a.equals("--engine-contributions")) {
+                o.computeEngineContributions = true;
+            } else if (a.equals("--skip-engine-contributions") || a.equals("--no-engine-contributions")) {
                 o.computeEngineContributions = false;
             } else if (a.equals("--profile") || a.equals("-p")) {
                 o.showProfile = true;
