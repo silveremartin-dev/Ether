@@ -358,7 +358,7 @@ public final class CellularMapComparisonMetrics {
             double lat = c.getLatitude();
             double lng = c.getLongitude();
             if (windowed && (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng)) continue;
-            double v = extractCulturalCellValue(c, chLower);
+            double v = CellularSoftSpatialProximityEvaluator.extractCulturalCellValue(c, chLower);
             if (v > maxSim) maxSim = v;
         }
 
@@ -382,7 +382,7 @@ public final class CellularMapComparisonMetrics {
             double lng = c.getLongitude();
             if (windowed && (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng)) continue;
 
-            double simVal = extractCulturalCellValue(c, chLower);
+            double simVal = CellularSoftSpatialProximityEvaluator.extractCulturalCellValue(c, chLower);
             double simNorm = Math.clamp(simVal / maxSim * 255.0, 0.0, 255.0);
 
             double obsVal = obsMeans[idx];
@@ -421,7 +421,7 @@ public final class CellularMapComparisonMetrics {
         if (CellularSoftSpatialProximityEvaluator.isSporadicChannel(chLower)) {
             double[] softOverlap = CellularSoftSpatialProximityEvaluator.computeSoftSpatialProximityOverlap(
                     cells, windowed, minLat, maxLat, minLng, maxLng, chLower, groundTruthRaster,
-                    CellularMapComparisonMetrics::extractCulturalCellValue);
+                    CellularSoftSpatialProximityEvaluator::extractCulturalCellValue);
             jaccardIndex = Math.max(jaccardIndex, softOverlap[0]);
             diceCoeff = Math.max(diceCoeff, softOverlap[1]);
         }
@@ -475,45 +475,6 @@ public final class CellularMapComparisonMetrics {
         }
 
         return new MapComparisonMetrics.MapComparisonResult(rmse, pearsonR, ssim, jaccardIndex, diceCoeff, klDiv, maxDelta, maxDeltaLng, maxDeltaLat, summary);
-    }
-
-    private static double extractCulturalCellValue(H3Cell c, String channelKey) {
-        long pop = c.getPopulationOr(0);
-        if (channelKey == null) {
-            double area = Math.max(1.0, c.getCellAreaKm2());
-            return Math.log10(1.0 + ((double) pop / area));
-        }
-        return switch (channelKey.trim().toLowerCase(Locale.ROOT)) {
-            case "technology", "material", "tech" -> H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
-            case "institutions", "admin", "institutional" -> {
-                double kpc = (c.getResourceCapital() != null && pop > 0) ? (c.getResourceCapital() / pop) : 0.0;
-                yield (Math.log10(Math.max(1.0, pop)) / 6.0) * 0.6 + (Math.min(1.0, kpc / 1500.0) * 0.4);
-            }
-            case "ecology", "anthrome", "footprint", "carrying_capacity" -> {
-                double bioAgr = c.getBiomassAgricultureOr(0.0);
-                double bioLiv = c.getBiomassLivestock() != null ? c.getBiomassLivestock() : 0.0;
-                double bioNat = c.getBiomassNaturalOr(0.0);
-                double clearanceRatio = (bioAgr + bioLiv) / (bioAgr + bioLiv + bioNat + 100.0);
-                double area = Math.max(1.0, c.getCellAreaKm2());
-                double densityStrain = pop > 0 ? Math.min(1.0, Math.log1p((double) pop / area) / 6.0) : 0.0;
-                yield Math.clamp(0.75 * clearanceRatio + 0.25 * densityStrain, 0.0, 1.0);
-            }
-            case "pathogens", "sanitary", "epidemic" -> {
-                double area = Math.max(1.0, c.getCellAreaKm2());
-                double endemicUrbanLoad = pop > 0 ? Math.log10(1.0 + ((double) pop / area)) * 0.35 : 0.0;
-                yield (double) c.getEpidemicRecoveredOr(0) + (double) c.getEpidemicInfectedOr(0) + endemicUrbanLoad;
-            }
-            case "trade", "market", "trade_network" -> {
-                double area = Math.max(1.0, c.getCellAreaKm2());
-                double explicitTrade = c.getTradeNetworkOr(0.0) + c.getChokePointScoreOr(0.0);
-                double settlementMarket = pop > 0 ? Math.log10(1.0 + ((double) pop / area)) * 0.45 : 0.0;
-                yield explicitTrade + settlementMarket;
-            }
-            default -> {
-                double area = Math.max(1.0, c.getCellAreaKm2());
-                yield Math.log10(1.0 + ((double) pop / area));
-            }
-        };
     }
 
     private static double calculateMean(double[] arr, int len) {

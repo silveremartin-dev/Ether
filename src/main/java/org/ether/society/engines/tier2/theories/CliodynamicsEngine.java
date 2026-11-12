@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
 import org.ether.society.engines.tier1.ThermodynamicMigrationEngine;
@@ -28,7 +30,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class CliodynamicsEngine {
+public class CliodynamicsEngine extends AbstractSimulationEngine {
+    public CliodynamicsEngine() {
+        super("CliodynamicsEngine", "CliodynamicsEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(CliodynamicsEngine.class);
 
     /**

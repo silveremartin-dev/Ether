@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
@@ -26,7 +28,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class EcologicalDegradationEngine {
+public class EcologicalDegradationEngine extends AbstractSimulationEngine {
+    public EcologicalDegradationEngine() {
+        super("EcologicalDegradationEngine", "EcologicalDegradationEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(EcologicalDegradationEngine.class);
 
     /** Standard human annual metabolic energy consumption ($3.362\,\text{GJ/capita/year}$). */

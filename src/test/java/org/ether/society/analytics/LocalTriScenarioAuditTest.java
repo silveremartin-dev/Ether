@@ -8,6 +8,7 @@ package org.ether.society.analytics;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -36,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0
  */
+@Tag("benchmark")
 public class LocalTriScenarioAuditTest {
 
     public record CulturalMatrixAudit(
@@ -82,32 +84,39 @@ public class LocalTriScenarioAuditTest {
                 resolution = Integer.parseInt(resProp.trim());
             } catch (NumberFormatException ignored) {}
         }
-        System.out.println("Configured Local Spatial Resolution: H3 Res " + resolution);
+        int targetSpanYears = 1;
+        String spanProp = System.getProperty("audit.years");
+        if (spanProp != null && !spanProp.isBlank()) {
+            try {
+                targetSpanYears = Math.max(1, Integer.parseInt(spanProp.trim()));
+            } catch (NumberFormatException ignored) {}
+        }
+        System.out.println("Configured Local Spatial Resolution: H3 Res " + resolution + " | Span: " + targetSpanYears + " year(s)");
 
         List<ScenarioAuditResult> results = new ArrayList<>();
 
-        // 1. Classical Imperial Crisis: Antonine Plague (165 - 185 CE, 20 years)
+        // 1. Classical Imperial Crisis: Antonine Plague (165 CE)
         results.add(executeScenarioRun(
                 "antonine_plague_165",
-                165, 185,
+                165, 165 + targetSpanYears,
                 1000,
                 resolution,
                 "data/maps/ether/earth/180/earth_180_density.png"
         ));
 
-        // 2. Medieval Hydraulic Pre-Industrialization: Song Dynasty (1000 - 1020 CE, 20 years)
+        // 2. Medieval Hydraulic Pre-Industrialization: Song Dynasty (1000 CE)
         results.add(executeScenarioRun(
                 "song_dynasty",
-                1000, 1020,
+                1000, 1000 + targetSpanYears,
                 2000,
                 resolution,
                 "data/maps/ether/earth/1020/earth_1020_density.png"
         ));
 
-        // 3. Post-Feudal Pandemic & Wage Inversion: Black Death (1347 - 1367 CE, 20 years)
+        // 3. Post-Feudal Pandemic & Wage Inversion: Black Death (1347 CE)
         results.add(executeScenarioRun(
                 "black_death_1347",
-                1347, 1367,
+                1347, 1347 + targetSpanYears,
                 1500,
                 resolution,
                 "data/maps/ether/earth/1360/earth_1360_density.png"
@@ -142,32 +151,39 @@ public class LocalTriScenarioAuditTest {
                 resolution = Integer.parseInt(resProp.trim());
             } catch (NumberFormatException ignored) {}
         }
-        System.out.println("Configured Local Spatial Resolution: H3 Res " + resolution);
+        int targetSpanYears = 1;
+        String spanProp = System.getProperty("audit.years");
+        if (spanProp != null && !spanProp.isBlank()) {
+            try {
+                targetSpanYears = Math.max(1, Integer.parseInt(spanProp.trim()));
+            } catch (NumberFormatException ignored) {}
+        }
+        System.out.println("Configured Local Spatial Resolution: H3 Res " + resolution + " | Span: " + targetSpanYears + " year(s)");
 
         List<ScenarioAuditResult> results = new ArrayList<>();
 
-        // 1. Classical Imperial Crisis: Antonine Plague (165 - 185 CE, 20 years)
+        // 1. Classical Imperial Crisis: Antonine Plague (165 CE)
         results.add(executeScenarioRun(
                 "antonine_plague_165",
-                165, 185,
+                165, 165 + targetSpanYears,
                 1000,
                 resolution,
                 "data/maps/ether/earth/180/earth_180_density.png"
         ));
 
-        // 2. Medieval Hydraulic Pre-Industrialization: Song Dynasty (1000 - 1020 CE, 20 years)
+        // 2. Medieval Hydraulic Pre-Industrialization: Song Dynasty (1000 CE)
         results.add(executeScenarioRun(
                 "song_dynasty",
-                1000, 1020,
+                1000, 1000 + targetSpanYears,
                 2000,
                 resolution,
                 "data/maps/ether/earth/1020/earth_1020_density.png"
         ));
 
-        // 3. Post-Feudal Pandemic & Wage Inversion: Black Death (1347 - 1367 CE, 20 years)
+        // 3. Post-Feudal Pandemic & Wage Inversion: Black Death (1347 CE)
         results.add(executeScenarioRun(
                 "black_death_1347",
-                1347, 1367,
+                1347, 1347 + targetSpanYears,
                 1500,
                 resolution,
                 "data/maps/ether/earth/1360/earth_1360_density.png"

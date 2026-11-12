@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier2.historical;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +24,22 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class AmerindianEcosystemEngine {
+public class AmerindianEcosystemEngine extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(AmerindianEcosystemEngine.class);
+
+    public AmerindianEcosystemEngine() {
+        super("AmerindianEcosystemEngine", "Pre-Columbian Amerindian Ecosystem", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public void process(List<H3Cell> cells, double deltaYears) {
+        processHybrid(cells, deltaYears);
+    }
+
+    @Override
+    public void reset() {
+        resetState();
+    }
 
     /** Internal state: old world contact triggered (boolean). */
     private static boolean oldWorldContactTriggered = false;

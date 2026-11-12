@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +48,11 @@ import java.util.List;
  * @see <a href="https://doi.org/10.1002/ajpa.1330370606">Ruff (1994), Morphological adaptation in hominids</a>
  * @see <a href="https://doi.org/10.1038/202234a0">Foster (1964), Nature 202</a>
  */
-public class BergmannAllenMorphologyEngine {
+public class BergmannAllenMorphologyEngine extends AbstractSimulationEngine {
+    public BergmannAllenMorphologyEngine() {
+        super("BergmannAllenMorphologyEngine", "BergmannAllenMorphologyEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(BergmannAllenMorphologyEngine.class);
 
     // --- Fundamental Anthropometric & Biophysical Constants ---

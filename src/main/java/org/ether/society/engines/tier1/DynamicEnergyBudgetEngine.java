@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.H3CellPhysicsAndStateHelper;
@@ -40,7 +42,11 @@ import java.util.List;
  * @version 1.0.0-beta.2
  * @see <a href="https://doi.org/10.1017/CBO9780511805400">Kooijman (2010), Dynamic Energy Budget theory</a>
  */
-public class DynamicEnergyBudgetEngine {
+public class DynamicEnergyBudgetEngine extends AbstractSimulationEngine {
+    public DynamicEnergyBudgetEngine() {
+        super("DynamicEnergyBudgetEngine", "DynamicEnergyBudgetEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(DynamicEnergyBudgetEngine.class);
 
     // --- Universal Thermodynamic & Biological Constants ---

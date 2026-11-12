@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
@@ -23,7 +25,16 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class BifurcationChaosEngine {
+public class BifurcationChaosEngine extends AbstractSimulationEngine {
+    public BifurcationChaosEngine() {
+        super("BifurcationChaosEngine", "BifurcationChaosEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public void reset() {
+        resetState();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(BifurcationChaosEngine.class);
 
     /** Internal state: global lyapunov exponent (double). */

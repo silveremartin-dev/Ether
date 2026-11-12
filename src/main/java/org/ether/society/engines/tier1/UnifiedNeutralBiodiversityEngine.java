@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +51,16 @@ import java.util.List;
  * @version 1.0.0-beta.2
  * @see <a href="https://press.princeton.edu/books/hardcover/9780691021287/the-unified-neutral-theory-of-biodiversity-and-biogeography">Hubbell (2001)</a>
  */
-public class UnifiedNeutralBiodiversityEngine {
+public class UnifiedNeutralBiodiversityEngine extends AbstractSimulationEngine {
+    public UnifiedNeutralBiodiversityEngine() {
+        super("UnifiedNeutralBiodiversityEngine", "UnifiedNeutralBiodiversityEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
+    @Override
+    public void reset() {
+        resetState();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(UnifiedNeutralBiodiversityEngine.class);
 
     /** Global planetary mean biodiversity retention index, continuously aggregated from cell states. */

@@ -350,12 +350,13 @@ public class CulturalMatrixComparisonPane extends VBox {
         matrixLabelB.setText(I18n.getOrDefault("analytics.cultural.matrix_b", "Scenario B: ") + (itemB != null ? itemB.getName() : scB.getName()));
         matrixLabelDelta.setText(I18n.getOrDefault("analytics.cultural.delta_matrix", "Discrepancy Matrix Δ(B - A)"));
 
-        populateAffinityGrid(gridA, scA, entitiesA, false, null, itemA.getName());
-        populateAffinityGrid(gridB, scB, entitiesB, false, null, itemB != null ? itemB.getName() : scB.getName());
+        CulturalMatrixGridRenderer.populateAffinityGrid(gridA, scA, entitiesA, itemA.getName(), cellDetailLabel::setText);
+        CulturalMatrixGridRenderer.populateAffinityGrid(gridB, scB, entitiesB, itemB != null ? itemB.getName() : scB.getName(), cellDetailLabel::setText);
 
         // Delta Grid: compares entities present in both
         List<CulturalEntity> commonEntities = CulturalMatrixComparisonHelper.alignEntities(entitiesA, entitiesB);
-        CulturalMatrixComparisonHelper.MatrixStats stats = populateDeltaGrid(gridDelta, scA, scB, commonEntities, itemA.getName(), itemB != null ? itemB.getName() : scB.getName());
+        CulturalMatrixComparisonHelper.MatrixStats stats = CulturalMatrixGridRenderer.populateDeltaGrid(
+                gridDelta, scA, scB, commonEntities, itemA.getName(), itemB != null ? itemB.getName() : scB.getName(), cellDetailLabel::setText);
 
         lblMeanA.setText(String.format(I18n.getOrDefault("analytics.cultural.mean_affinity_a", "Mean Affinity A: %.1f%%"), stats.meanA() * 100.0));
         lblMeanB.setText(String.format(I18n.getOrDefault("analytics.cultural.mean_affinity_b", "Mean Affinity B: %.1f%%"), stats.meanB() * 100.0));
@@ -377,8 +378,8 @@ public class CulturalMatrixComparisonPane extends VBox {
         baseCard.setStyle("-fx-background-color: rgba(30, 41, 59, 0.7); -fx-background-radius: 8; -fx-border-color: #38bdf8; -fx-border-radius: 8;");
         Label baseTitle = new Label("👑 " + I18n.getOrDefault("analytics.cultural.baseline", "Baseline: ") + baselineItem.getName());
         baseTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #38bdf8;");
-        GridPane baseGrid = createMatrixGrid();
-        populateAffinityGrid(baseGrid, baseSc, baseEntities, false, null, baselineItem.getName());
+        GridPane baseGrid = CulturalMatrixGridRenderer.createMatrixGrid();
+        CulturalMatrixGridRenderer.populateAffinityGrid(baseGrid, baseSc, baseEntities, baselineItem.getName(), cellDetailLabel::setText);
         baseCard.getChildren().addAll(baseTitle, baseGrid);
         multiScenarioContainer.getChildren().add(baseCard);
 
@@ -402,8 +403,9 @@ public class CulturalMatrixComparisonPane extends VBox {
             Label compTitle = new Label("📊 " + compItem.getName() + " [Δ vs Baseline]");
             compTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #f59e0b;");
 
-            GridPane deltaGrid = createMatrixGrid();
-            CulturalMatrixComparisonHelper.MatrixStats st = populateDeltaGrid(deltaGrid, baseSc, compSc, common, baselineItem.getName(), compItem.getName());
+            GridPane deltaGrid = CulturalMatrixGridRenderer.createMatrixGrid();
+            CulturalMatrixComparisonHelper.MatrixStats st = CulturalMatrixGridRenderer.populateDeltaGrid(
+                    deltaGrid, baseSc, compSc, common, baselineItem.getName(), compItem.getName(), cellDetailLabel::setText);
 
             Label stLabel = new Label(String.format("||Δ||_F = %.3f | MAD = %.1f%% | Max: %+.1f%%", st.frobeniusNorm(), st.mad() * 100.0, st.maxDelta() * 100.0));
             stLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
@@ -420,140 +422,6 @@ public class CulturalMatrixComparisonPane extends VBox {
         lblFrobenius.setText(String.format("Average MAD vs Baseline: %.2f%%", compCount > 0 ? (totalMadSum / compCount) * 100.0 : 0.0));
         lblMad.setText("");
         lblMaxShift.setText("");
-    }
-
-    private void populateAffinityGrid(GridPane grid, Scenario s, List<CulturalEntity> entities,
-                                      boolean isDelta, Scenario baseScenario, String scenarioName) {
-        grid.getChildren().clear();
-        int n = entities.size();
-        if (n == 0) return;
-
-        addHeaders(grid, entities);
-
-        for (int i = 0; i < n; i++) {
-            CulturalEntity eOrig = entities.get(i);
-            for (int j = 0; j < n; j++) {
-                CulturalEntity eTarg = entities.get(j);
-                double val = CulturalMatrixComparisonHelper.getAffinity(s, eOrig, eTarg);
-
-                StackPane cell = new StackPane();
-                cell.setPrefSize(72, 28);
-                cell.setMinSize(64, 24);
-
-                Color bg = CulturalMatrixComparisonHelper.computeAffinityColor(val);
-                cell.setStyle(String.format(Locale.ROOT, "-fx-background-color: rgba(%d, %d, %d, 0.85); -fx-background-radius: 4;",
-                        (int) (bg.getRed() * 255), (int) (bg.getGreen() * 255), (int) (bg.getBlue() * 255)));
-
-                Label lbl = new Label(String.format(Locale.ROOT, "%.0f%%", val * 100.0));
-                lbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: white;");
-                cell.getChildren().add(lbl);
-
-                String ttText = String.format("%s\n%s → %s\nAffinity: %.1f%%\nKinship: %s\nTechno: %s",
-                        scenarioName, eOrig.getLocalizedName(), eTarg.getLocalizedName(), val * 100.0, eOrig.kinshipType(), eOrig.lithicTechnocomplex());
-                Tooltip.install(cell, new Tooltip(ttText));
-
-                cell.setCursor(Cursor.HAND);
-                cell.setOnMouseClicked(e -> cellDetailLabel.setText(ttText.replace("\n", " | ")));
-
-                grid.add(cell, j + 1, i + 1);
-            }
-        }
-    }
-
-    private CulturalMatrixComparisonHelper.MatrixStats populateDeltaGrid(GridPane grid, Scenario sA, Scenario sB,
-                                                                         List<CulturalEntity> entities, String nameA, String nameB) {
-        grid.getChildren().clear();
-        int n = entities.size();
-        if (n == 0) return new CulturalMatrixComparisonHelper.MatrixStats(0, 0, 0, 0, 0, "", "");
-
-        addHeaders(grid, entities);
-
-        double sumA = 0, sumB = 0, sumSqDelta = 0, sumAbsDelta = 0;
-        double maxDelta = 0.0;
-        String maxOrig = "", maxTarg = "";
-        int count = n * n;
-
-        for (int i = 0; i < n; i++) {
-            CulturalEntity eOrig = entities.get(i);
-            for (int j = 0; j < n; j++) {
-                CulturalEntity eTarg = entities.get(j);
-                double aA = CulturalMatrixComparisonHelper.getAffinity(sA, eOrig, eTarg);
-                double aB = CulturalMatrixComparisonHelper.getAffinity(sB, eOrig, eTarg);
-                double delta = aB - aA;
-
-                sumA += aA;
-                sumB += aB;
-                sumSqDelta += delta * delta;
-                sumAbsDelta += Math.abs(delta);
-
-                if (Math.abs(delta) > Math.abs(maxDelta)) {
-                    maxDelta = delta;
-                    maxOrig = eOrig.getLocalizedName();
-                    maxTarg = eTarg.getLocalizedName();
-                }
-
-                StackPane cell = new StackPane();
-                cell.setPrefSize(72, 28);
-                cell.setMinSize(64, 24);
-
-                String cellStyle = CulturalMatrixComparisonHelper.computeDeltaCellStyle(delta);
-                cell.setStyle(cellStyle);
-
-                Label lbl = new Label(String.format(Locale.ROOT, "%+.0f%%", delta * 100.0));
-                lbl.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: white;");
-                cell.getChildren().add(lbl);
-
-                String tooltip = String.format(I18n.getOrDefault("analytics.cultural.cell_tooltip_fmt",
-                                "Origin: %s\nTarget: %s\nBaseline (A): %.1f%%\nTarget (B): %.1f%%\nDelta Δ: %+.1f%%"),
-                        eOrig.getLocalizedName(), eTarg.getLocalizedName(), aA * 100.0, aB * 100.0, delta * 100.0);
-                Tooltip.install(cell, new Tooltip(tooltip));
-
-                cell.setCursor(Cursor.HAND);
-                final double finalDelta = delta;
-                cell.setOnMouseClicked(e -> cellDetailLabel.setText(String.format("Δ = %+.1f%% | %s → %s | %s: %.1f%% vs %s: %.1f%%",
-                        finalDelta * 100.0, eOrig.getLocalizedName(), eTarg.getLocalizedName(), nameA, aA * 100.0, nameB, aB * 100.0)));
-
-                grid.add(cell, j + 1, i + 1);
-            }
-        }
-
-        double meanA = sumA / count;
-        double meanB = sumB / count;
-        double frob = Math.sqrt(sumSqDelta);
-        double mad = sumAbsDelta / count;
-
-        return new CulturalMatrixComparisonHelper.MatrixStats(meanA, meanB, frob, mad, maxDelta, maxOrig, maxTarg);
-    }
-
-    private void addHeaders(GridPane grid, List<CulturalEntity> entities) {
-        int n = entities.size();
-        Label corner = new Label("Orig \\ Targ");
-        corner.setStyle("-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #94a3b8; -fx-padding: 2;");
-        grid.add(corner, 0, 0);
-
-        for (int j = 0; j < n; j++) {
-            CulturalEntity e = entities.get(j);
-            VBox colBox = new VBox(2);
-            colBox.setAlignment(Pos.CENTER);
-            Rectangle badge = CulturalMatrixComparisonHelper.createBadge(e.colorHex(), 8);
-            Label lbl = new Label(CulturalMatrixComparisonHelper.truncateName(e.getLocalizedName(), 8));
-            lbl.setStyle("-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #cbd5e1;");
-            Tooltip.install(lbl, new Tooltip(e.getLocalizedName()));
-            colBox.getChildren().addAll(badge, lbl);
-            grid.add(colBox, j + 1, 0);
-        }
-
-        for (int i = 0; i < n; i++) {
-            CulturalEntity e = entities.get(i);
-            HBox rowBox = new HBox(4);
-            rowBox.setAlignment(Pos.CENTER_LEFT);
-            Rectangle badge = CulturalMatrixComparisonHelper.createBadge(e.colorHex(), 8);
-            Label lbl = new Label(CulturalMatrixComparisonHelper.truncateName(e.getLocalizedName(), 8));
-            lbl.setStyle("-fx-font-size: 9px; -fx-font-weight: bold; -fx-text-fill: #cbd5e1;");
-            Tooltip.install(lbl, new Tooltip(e.getLocalizedName()));
-            rowBox.getChildren().addAll(badge, lbl);
-            grid.add(rowBox, 0, i + 1);
-        }
     }
 
     private void exportCsv() {

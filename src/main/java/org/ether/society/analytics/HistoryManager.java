@@ -197,39 +197,21 @@ public class HistoryManager {
         int year = engine.getTimeManager().getCurrentYear();
         int month = engine.getTimeManager().getCurrentMonth();
 
-        long totalPop = engine.getTotalPopulation();
-        double totalFood = engine.getTotalFood();
-        double totalWealth = engine.getBuiltCapitalTotal();
-        double avgLifespan = engine.getCurrentLifeExpectancy();
-        double globalGini = engine.getCurrentGini();
-        double avgTech = engine.getAverageTechnology();
+        long totalPop = engine.getTotalPopulation(); double totalFood = engine.getTotalFood(); double totalWealth = engine.getBuiltCapitalTotal();
+        double avgLifespan = engine.getCurrentLifeExpectancy(); double globalGini = engine.getCurrentGini(); double avgTech = engine.getAverageTechnology();
+        double energyCaptured = engine.getEnergyCaptured(); double kardashevScale = engine.getKardashevScale(); double happinessIndex = engine.getHappinessIndex();
+        double conflictLevel = engine.getConflictLevel(); double gdpTotal = engine.getCurrentGDP(); double divisionLabor = engine.getDivisionOfLaborIndex();
+        double systemComplexity = engine.getSystemComplexityIndex(); double collectiveMemory = engine.getCollectiveMemoryStock(); double carbonFootprint = engine.getCarbonFootprint();
+        double collapseVulnerability = engine.getCollapseVulnerability(); double tps = engine.getCurrentTPS(); double resourceDepletion = engine.getResourceDepletionRate();
+        double naturalBiomass = engine.getTotalBiomassNatural(); double potableWater = engine.getPotableWaterTotal(); double fertilityRate = engine.getCurrentFertility();
+        int cityStates = engine.getCityStatesCount(); double eliteOverproduction = engine.getEliteOverproductionIndex();
 
-        double energyCaptured = engine.getEnergyCaptured();
-        double kardashevScale = engine.getKardashevScale();
-        double happinessIndex = engine.getHappinessIndex();
-        double conflictLevel = engine.getConflictLevel();
-        double gdpTotal = engine.getCurrentGDP();
-        double divisionLabor = engine.getDivisionOfLaborIndex();
-        double systemComplexity = engine.getSystemComplexityIndex();
-        double collectiveMemory = engine.getCollectiveMemoryStock();
-        double carbonFootprint = engine.getCarbonFootprint();
-        double collapseVulnerability = engine.getCollapseVulnerability();
-        double tps = engine.getCurrentTPS();
-        double resourceDepletion = engine.getResourceDepletionRate();
-        double naturalBiomass = engine.getTotalBiomassNatural();
-        double potableWater = engine.getPotableWaterTotal();
-        double fertilityRate = engine.getCurrentFertility();
-        int cityStates = engine.getCityStatesCount();
-        double eliteOverproduction = engine.getEliteOverproductionIndex();
-
-        HistorySnapshot snapshot = new HistorySnapshot(
+        history.addSnapshot(new HistorySnapshot(
                 year, month, totalPop, totalFood, totalWealth, avgLifespan, globalGini, avgTech,
                 energyCaptured, kardashevScale, happinessIndex, conflictLevel, gdpTotal, divisionLabor,
                 systemComplexity, collectiveMemory, carbonFootprint, collapseVulnerability, tps,
                 resourceDepletion, naturalBiomass, potableWater, fertilityRate, cityStates, eliteOverproduction
-        );
-
-        history.addSnapshot(snapshot);
+        ));
     }
 
     /**
@@ -269,14 +251,12 @@ public class HistoryManager {
         int cityStates = m.containsKey("cityStates") ? (int) Math.round(m.get("cityStates")) : 0;
         double eliteOverproduction = m.getOrDefault("eliteOverproduction", 0.0);
 
-        HistorySnapshot snapshot = new HistorySnapshot(
+        history.addSnapshot(new HistorySnapshot(
                 year, month, totalPop, totalFood, totalWealth, avgLifespan, globalGini, avgTech,
                 energyCaptured, kardashevScale, happinessIndex, conflictLevel, gdpTotal, divisionLabor,
                 systemComplexity, collectiveMemory, carbonFootprint, collapseVulnerability, tps,
                 resourceDepletion, naturalBiomass, potableWater, fertilityRate, cityStates, eliteOverproduction
-        );
-
-        history.addSnapshot(snapshot);
+        ));
     }
 
     /**
@@ -387,7 +367,9 @@ public class HistoryManager {
         if (p != null) {
             try {
                 Files.deleteIfExists(p);
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                logger.debug("Failed deleting snapshot file {}", p, e);
+            }
         }
     }
 
@@ -450,78 +432,46 @@ public class HistoryManager {
     }
 
     /** @return earliest recorded tick index or {@code null} */
-    public synchronized Long getMinTick() {
-        return diskSnapshotIndex.isEmpty() ? null : diskSnapshotIndex.firstKey();
-    }
+    public synchronized Long getMinTick() { return diskSnapshotIndex.isEmpty() ? null : diskSnapshotIndex.firstKey(); }
 
     /** @return latest recorded tick index or {@code null} */
-    public synchronized Long getMaxTick() {
-        return diskSnapshotIndex.isEmpty() ? null : diskSnapshotIndex.lastKey();
-    }
+    public synchronized Long getMaxTick() { return diskSnapshotIndex.isEmpty() ? null : diskSnapshotIndex.lastKey(); }
 
-    /**
-     * Resolves the simulation tick at the given ordinal snapshot index.
-     *
-     * @param index zero-based snapshot ordinal
-     * @return simulation tick or {@code null}
-     */
     public synchronized Long getTickByIndex(int index) {
         if (diskSnapshotIndex.isEmpty() || index < 0 || index >= diskSnapshotIndex.size()) return null;
         return new ArrayList<>(diskSnapshotIndex.keySet()).get(index);
     }
 
-    /**
-     * Restores the world snapshot at the given ordinal snapshot index.
-     *
-     * @param index zero-based snapshot ordinal
-     * @return restored cell list or {@code null}
-     */
     public synchronized List<H3Cell> getSnapshotByIndex(int index) {
         Long tick = getTickByIndex(index);
         return tick != null ? getWorldSnapshot(tick) : null;
     }
 
-    /**
-     * Gets the nearest snapshot for fast-forward / rewind / scrubber seeking.
-     *
-     * @param targetTick target simulation tick
-     * @return nearest H3Cell snapshot restored from RAM or disk
-     */
     public synchronized List<H3Cell> getNearestSnapshot(long targetTick) {
         if (diskSnapshotIndex.isEmpty()) return null;
         Long floor = diskSnapshotIndex.floorKey(targetTick);
         Long ceiling = diskSnapshotIndex.ceilingKey(targetTick);
         if (floor == null) return getWorldSnapshot(ceiling);
         if (ceiling == null) return getWorldSnapshot(floor);
-        Long chosen = (targetTick - floor <= ceiling - targetTick) ? floor : ceiling;
-        return getWorldSnapshot(chosen);
+        return getWorldSnapshot((targetTick - floor <= ceiling - targetTick) ? floor : ceiling);
     }
 
-    /**
-     * Truncates all scalar telemetry and world snapshots strictly after the specified time point.
-     *
-     * @param year  calendar year cutoff
-     * @param month calendar month cutoff
-     * @param tick  simulation tick cutoff
-     */
     public synchronized void truncateAfter(int year, int month, long tick) {
         history.truncateAfter(year, month);
-        List<Long> toRemove = new ArrayList<>(diskSnapshotIndex.tailMap(tick, false).keySet());
-        for (Long t : toRemove) {
+        for (Long t : new ArrayList<>(diskSnapshotIndex.tailMap(tick, false).keySet())) {
             deleteSnapshot(t);
         }
     }
 
-    /**
-     * Clears all scalar telemetry, RAM cache entries, and persisted snapshot files on disk.
-     */
     public synchronized void reset() {
         history.clear();
         ramSnapshotCache.clear();
         for (Path p : diskSnapshotIndex.values()) {
             try {
                 Files.deleteIfExists(p);
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                logger.debug("Failed deleting snapshot file {}", p, e);
+            }
         }
         diskSnapshotIndex.clear();
     }

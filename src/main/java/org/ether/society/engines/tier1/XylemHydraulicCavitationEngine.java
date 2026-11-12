@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
@@ -47,7 +49,11 @@ import java.util.List;
  * @see <a href="https://doi.org/10.1038/nature11688">Choat et al. (2012), Nature 491</a>
  * @see <a href="https://doi.org/10.1146/annurev.pp.40.060189.000315">Tyree &amp; Sperry (1989)</a>
  */
-public class XylemHydraulicCavitationEngine {
+public class XylemHydraulicCavitationEngine extends AbstractSimulationEngine {
+    public XylemHydraulicCavitationEngine() {
+        super("XylemHydraulicCavitationEngine", "XylemHydraulicCavitationEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(XylemHydraulicCavitationEngine.class);
 
     // --- Universal Biophysical Constants & Xylem Safety Margins ---

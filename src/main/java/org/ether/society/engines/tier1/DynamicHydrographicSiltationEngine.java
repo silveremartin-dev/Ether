@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
@@ -33,7 +35,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class DynamicHydrographicSiltationEngine {
+public class DynamicHydrographicSiltationEngine extends AbstractSimulationEngine {
+    public DynamicHydrographicSiltationEngine() {
+        super("DynamicHydrographicSiltationEngine", "DynamicHydrographicSiltationEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(DynamicHydrographicSiltationEngine.class);
 
     /** Quartz sediment particle density in kg/m³ */

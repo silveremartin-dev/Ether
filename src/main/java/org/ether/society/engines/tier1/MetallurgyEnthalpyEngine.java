@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
@@ -25,7 +27,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class MetallurgyEnthalpyEngine {
+public class MetallurgyEnthalpyEngine extends AbstractSimulationEngine {
+    public MetallurgyEnthalpyEngine() {
+        super("MetallurgyEnthalpyEngine", "MetallurgyEnthalpyEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(MetallurgyEnthalpyEngine.class);
 
     public static final double COPPER_SMELTING_ENTHALPY_MJ_PER_KG = 5.2;

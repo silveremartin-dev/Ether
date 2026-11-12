@@ -5,7 +5,11 @@
 package org.ether.society.core.engine;
 
 import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.database.H3Cell;
+import org.ether.society.engines.ProceduralEnginePlugin;
 import org.ether.society.model.Scenario;
+
+import java.util.List;
 
 /**
  * Skeletal base implementation for {@link SimulationEngineModule} reducing boilerplate across
@@ -14,7 +18,7 @@ import org.ether.society.model.Scenario;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public abstract class AbstractSimulationEngine implements SimulationEngineModule {
+public abstract class AbstractSimulationEngine implements SimulationEngineModule, ProceduralEnginePlugin {
 
     private final String id;
     private final String name;
@@ -24,6 +28,26 @@ public abstract class AbstractSimulationEngine implements SimulationEngineModule
         this.id = id;
         this.name = name;
         this.tier = tier;
+    }
+
+    @Override
+    public String getName() {
+        return name();
+    }
+
+    @Override
+    public String getDescription() {
+        return name() + " simulation engine module.";
+    }
+
+    @Override
+    public void process(List<H3Cell> cells, double deltaYears) {
+        // Default no-op for purely DoD-based engines; overridden by cellular engines
+    }
+
+    @Override
+    public void processBuffer(WorldBuffer buffer, double deltaYears) {
+        tick(buffer, deltaYears, deltaYears * 12.0);
     }
 
     @Override

@@ -4,6 +4,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.generation.PlanetPreset;
@@ -25,7 +27,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class PressurizedHabitatEngine {
+public class PressurizedHabitatEngine extends AbstractSimulationEngine {
+    public PressurizedHabitatEngine() {
+        super("PressurizedHabitatEngine", "PressurizedHabitatEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(PressurizedHabitatEngine.class);
 
     /**

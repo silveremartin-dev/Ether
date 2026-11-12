@@ -1,5 +1,7 @@
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
 import org.ether.society.h3.H3Service;
@@ -19,7 +21,11 @@ import java.util.*;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class WarDiplomacyEngine {
+public class WarDiplomacyEngine extends AbstractSimulationEngine {
+    public WarDiplomacyEngine() {
+        super("WarDiplomacyEngine", "WarDiplomacyEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(WarDiplomacyEngine.class);
 
     /**

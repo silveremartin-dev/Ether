@@ -1,5 +1,7 @@
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.PhysicalConstants;
@@ -19,7 +21,7 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class GreenhouseRadiativeEngine {
+public class GreenhouseRadiativeEngine extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(GreenhouseRadiativeEngine.class);
 
     private static final double BASELINE_CO2_PPM = 280.0;
@@ -51,6 +53,7 @@ public class GreenhouseRadiativeEngine {
      * @param initialCh4Ppb initial $\text{CH}_4$ concentration in ppb
      */
     public GreenhouseRadiativeEngine(double initialCo2Ppm, double initialCh4Ppb) {
+        super("GreenhouseRadiativeEngine", "GreenhouseRadiativeEngine", EngineTier.TIER_1_BIOPHYSICAL);
         this.currentCo2Ppm = initialCo2Ppm;
         this.currentCh4Ppb = initialCh4Ppb;
     }

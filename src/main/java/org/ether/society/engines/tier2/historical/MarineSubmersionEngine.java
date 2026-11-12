@@ -5,6 +5,8 @@
  */
 package org.ether.society.engines.tier2.historical;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.model.Biome;
@@ -31,7 +33,16 @@ import java.util.HashMap;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class MarineSubmersionEngine {
+public class MarineSubmersionEngine extends AbstractSimulationEngine {
+    public MarineSubmersionEngine() {
+        super("MarineSubmersionEngine", "MarineSubmersionEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
+        processHybrid(cells, deltaYears);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(MarineSubmersionEngine.class);
 
     /** Internal state: default dike maintenance base capital (double). */

@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +58,11 @@ import java.util.List;
  * @see <a href="https://doi.org/10.1093/oso/9780198540724.001.0001">Charnov (1993), Life History Invariants</a>
  * @see <a href="https://doi.org/10.1111/j.1469-7998.1990.tb04316.x">Promislow &amp; Harvey (1990), J. Zool. 220</a>
  */
-public class LifeHistoryInvariantsEngine {
+public class LifeHistoryInvariantsEngine extends AbstractSimulationEngine {
+    public LifeHistoryInvariantsEngine() {
+        super("LifeHistoryInvariantsEngine", "LifeHistoryInvariantsEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(LifeHistoryInvariantsEngine.class);
 
     // --- Fundamental Evolutionary & Demographic Invariants ---

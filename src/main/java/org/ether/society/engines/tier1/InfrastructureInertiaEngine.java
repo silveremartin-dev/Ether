@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,16 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class InfrastructureInertiaEngine {
+public class InfrastructureInertiaEngine extends AbstractSimulationEngine {
+    public InfrastructureInertiaEngine() {
+        super("InfrastructureInertiaEngine", "InfrastructureInertiaEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
+    @Override
+    public void reset() {
+        resetState();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(InfrastructureInertiaEngine.class);
 
     private static double baseCapitalTurnoverHalfLifeYears = 35.0; // Base 35-year physical turnover benchmark

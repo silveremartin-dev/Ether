@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class SoilNutrientNPKEngine {
+public class SoilNutrientNPKEngine extends AbstractSimulationEngine {
+    public SoilNutrientNPKEngine() {
+        super("SoilNutrientNPKEngine", "SoilNutrientNPKEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(SoilNutrientNPKEngine.class);
 
     /** Haber-Bosch power requirement in Watts per capita */

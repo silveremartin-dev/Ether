@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.PhysicalConstants;
@@ -23,7 +25,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class BiologicalDemographicsEngine {
+public class BiologicalDemographicsEngine extends AbstractSimulationEngine {
+    public BiologicalDemographicsEngine() {
+        super("BiologicalDemographicsEngine", "BiologicalDemographicsEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
 
     /** Baseline actuarial aging constant $\alpha$. */
     public static final double GOMPERTZ_ALPHA = 0.0001;

@@ -7,6 +7,8 @@
 
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.core.dod.AgentBuffer;
 import org.ether.society.core.dod.WorldBuffer;
@@ -61,7 +63,11 @@ import java.util.Map;
  * @version 1.0.0-beta.2
  * @see DeterministicSpatialAdjacencyTable
  */
-public class ThermodynamicMigrationEngine {
+public class ThermodynamicMigrationEngine extends AbstractSimulationEngine {
+    public ThermodynamicMigrationEngine() {
+        super("ThermodynamicMigrationEngine", "ThermodynamicMigrationEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
 
     private static final Logger logger = LoggerFactory.getLogger(ThermodynamicMigrationEngine.class);
 

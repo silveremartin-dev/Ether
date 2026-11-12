@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
@@ -43,7 +45,16 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class ThermohalineStommelAMOCEngine {
+public class ThermohalineStommelAMOCEngine extends AbstractSimulationEngine {
+    public ThermohalineStommelAMOCEngine() {
+        super("ThermohalineStommelAMOCEngine", "ThermohalineStommelAMOCEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
+    @Override
+    public void reset() {
+        resetState();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(ThermohalineStommelAMOCEngine.class);
 
     public static final double SEAWATER_REF_DENSITY_KG_M3 = 1025.0;

@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 
@@ -22,7 +24,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class SelectiveBreedingEngine {
+public class SelectiveBreedingEngine extends AbstractSimulationEngine {
+    public SelectiveBreedingEngine() {
+        super("SelectiveBreedingEngine", "SelectiveBreedingEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
 
     /**
      * Calculates smooth ($C^\infty$) cultivar harvest-index selection multiplier from cultivated

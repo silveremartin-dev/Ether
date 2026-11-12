@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.tier1.ThermodynamicMigrationEngine;
 import org.slf4j.Logger;
@@ -23,7 +25,16 @@ import java.util.*;
  * @version 1.0.0-beta.2
  * @see TradeCorridorArbitrageHelper
  */
-public class TradeNetworkEngine {
+public class TradeNetworkEngine extends AbstractSimulationEngine {
+    public TradeNetworkEngine() {
+        super("TradeNetworkEngine", "TradeNetworkEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public void reset() {
+        resetState();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(TradeNetworkEngine.class);
 
     /**

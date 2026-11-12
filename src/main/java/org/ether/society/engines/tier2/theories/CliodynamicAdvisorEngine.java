@@ -11,8 +11,8 @@
 
 package org.ether.society.engines.tier2.theories;
 
-
-
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.engines.tier1.*;
 
 
@@ -47,7 +47,11 @@ import java.util.List;
 
  */
 
-public class CliodynamicAdvisorEngine {
+public class CliodynamicAdvisorEngine extends AbstractSimulationEngine {
+    public CliodynamicAdvisorEngine() {
+        super("CliodynamicAdvisorEngine", "CliodynamicAdvisorEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
 
     private static final Logger logger = LoggerFactory.getLogger(CliodynamicAdvisorEngine.class);
 

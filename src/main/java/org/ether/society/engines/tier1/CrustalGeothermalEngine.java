@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 
@@ -27,7 +29,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class CrustalGeothermalEngine {
+public class CrustalGeothermalEngine extends AbstractSimulationEngine {
+    public CrustalGeothermalEngine() {
+        super("CrustalGeothermalEngine", "CrustalGeothermalEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
 
     /** Standard continental crustal geothermal heat flux in $\text{mW/m}^2$. */
     public static final double CONTINENTAL_HEAT_FLUX_MW_PER_M2 = 65.0;

@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,16 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class PhysicalLawEngine {
+public class PhysicalLawEngine extends AbstractSimulationEngine {
+    public PhysicalLawEngine() {
+        super("PhysicalLawEngine", "PhysicalLawEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
+    @Override
+    public void reset() {
+        resetState();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(PhysicalLawEngine.class);
 
     private static double photosyntheticEfficiencyMultiplier = 1.0; // 1.0 = standard, 2.0 = double biomass yield

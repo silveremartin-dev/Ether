@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.ether.society.model.PhysicalConstants;
@@ -31,7 +33,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class OceanAcidificationEngine {
+public class OceanAcidificationEngine extends AbstractSimulationEngine {
+    public OceanAcidificationEngine() {
+        super("OceanAcidificationEngine", "OceanAcidificationEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(OceanAcidificationEngine.class);
 
     /** Reference Henry's constant for CO2 in seawater at 298.15 K (mol/(LÂ·atm)) */

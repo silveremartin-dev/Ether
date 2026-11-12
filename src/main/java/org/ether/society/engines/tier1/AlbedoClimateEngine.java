@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
@@ -32,7 +34,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class AlbedoClimateEngine {
+public class AlbedoClimateEngine extends AbstractSimulationEngine {
+    public AlbedoClimateEngine() {
+        super("AlbedoClimateEngine", "AlbedoClimateEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(AlbedoClimateEngine.class);
 
     /**

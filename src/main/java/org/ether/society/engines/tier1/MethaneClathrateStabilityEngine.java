@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
@@ -51,7 +53,11 @@ import java.util.List;
  * @see <a href="https://doi.org/10.1029/2003GB002131">Buffett &amp; Archer (2004), Global inventory of methane clathrate</a>
  * @see <a href="https://doi.org/10.1073/pnas.0800885105">Archer et al. (2009), Ocean methane hydrates as a slow tipping point</a>
  */
-public class MethaneClathrateStabilityEngine {
+public class MethaneClathrateStabilityEngine extends AbstractSimulationEngine {
+    public MethaneClathrateStabilityEngine() {
+        super("MethaneClathrateStabilityEngine", "MethaneClathrateStabilityEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(MethaneClathrateStabilityEngine.class);
 
     // --- Fundamental Thermodynamic & Oceanographic Constants ---

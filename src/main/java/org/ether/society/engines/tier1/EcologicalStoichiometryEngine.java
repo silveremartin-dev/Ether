@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
@@ -37,7 +39,11 @@ import java.util.List;
  * @version 1.0.0-beta.2
  * @see <a href="https://press.princeton.edu/books/hardcover/9780691074917/ecological-stoichiometry">Sterner &amp; Elser (2002)</a>
  */
-public class EcologicalStoichiometryEngine {
+public class EcologicalStoichiometryEngine extends AbstractSimulationEngine {
+    public EcologicalStoichiometryEngine() {
+        super("EcologicalStoichiometryEngine", "EcologicalStoichiometryEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(EcologicalStoichiometryEngine.class);
 
     // --- Universal Stoichiometric Constants ---

@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
@@ -23,7 +25,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class ManningStricklerHydrodynamicsEngine {
+public class ManningStricklerHydrodynamicsEngine extends AbstractSimulationEngine {
+    public ManningStricklerHydrodynamicsEngine() {
+        super("ManningStricklerHydrodynamicsEngine", "ManningStricklerHydrodynamicsEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
 
     /** Standard natural river channel Manning roughness coefficient ($\text{s}\cdot\text{m}^{-1/3}$). */
     public static final double MANNING_ROUGHNESS_N = 0.035;

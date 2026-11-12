@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
 import org.slf4j.Logger;
@@ -30,7 +32,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class InformationEntropyEngine {
+public class InformationEntropyEngine extends AbstractSimulationEngine {
+    public InformationEntropyEngine() {
+        super("InformationEntropyEngine", "InformationEntropyEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(InformationEntropyEngine.class);
 
     /**

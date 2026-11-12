@@ -5,6 +5,8 @@
  */
 package org.ether.society.engines.tier2.historical;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.slf4j.Logger;
@@ -27,7 +29,16 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class HydrologicalEngineeringEngine {
+public class HydrologicalEngineeringEngine extends AbstractSimulationEngine {
+    public HydrologicalEngineeringEngine() {
+        super("HydrologicalEngineeringEngine", "HydrologicalEngineeringEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public void process(java.util.List<org.ether.society.database.H3Cell> cells, double deltaYears) {
+        processHybrid(cells, deltaYears);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(HydrologicalEngineeringEngine.class);
 
     /** Internal state: default tenochtitlan tech threshold (double). */

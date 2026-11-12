@@ -91,7 +91,7 @@ final class GroundTruthTrajectoryHelper {
         double v = GroundTruthAuditGenerator.extractValue(snap, varKey, year);
         if (Double.isNaN(v) || Double.isInfinite(v)) return Double.NaN;
         if ("milankovitchInsolation".equals(varKey) && v <= 0.0) return Double.NaN;
-        return GroundTruthAuditGenerator.normalizeSimulatedUnits(varKey, v);
+        return GroundTruthStatisticsKernel.normalizeSimulatedUnits(varKey, v);
     }
 
     static SimulationRunRecord.MetricSnapshot interpolateOrFloorSnapshot(SimulationRunRecord run, int year) {

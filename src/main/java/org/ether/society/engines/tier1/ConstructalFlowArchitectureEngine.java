@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +46,11 @@ import java.util.List;
  * @version 1.0.0-beta.2
  * @see <a href="https://doi.org/10.1242/jeb.01974">Bejan &amp; Marden (2006), J. Exp. Biol. 209</a>
  */
-public class ConstructalFlowArchitectureEngine {
+public class ConstructalFlowArchitectureEngine extends AbstractSimulationEngine {
+    public ConstructalFlowArchitectureEngine() {
+        super("ConstructalFlowArchitectureEngine", "ConstructalFlowArchitectureEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(ConstructalFlowArchitectureEngine.class);
 
     // --- Universal Constructal Locomotion Constants (Bejan & Marden 2006) ---

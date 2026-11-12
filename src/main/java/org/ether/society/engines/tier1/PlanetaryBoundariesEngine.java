@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import java.util.List;
 
@@ -16,7 +18,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class PlanetaryBoundariesEngine {
+public class PlanetaryBoundariesEngine extends AbstractSimulationEngine {
+    public PlanetaryBoundariesEngine() {
+        super("PlanetaryBoundariesEngine", "PlanetaryBoundariesEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
 
     public record BoundaryStatus(
         double climateChangeRisk,

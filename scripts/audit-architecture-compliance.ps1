@@ -15,7 +15,7 @@ $violationsCount = 0
 Write-Host "`n--- [Rule 1: Class Size <= 500 Lines] ---" -ForegroundColor White
 $longFiles = @()
 foreach ($f in $allJavaFiles) {
-    $lines = (Get-Content $f.FullName | Measure-Object -Line).Lines
+    $lines = (Get-Content $f.FullName).Count
     if ($lines -gt 500) {
         $relPath = $f.FullName.Replace((Get-Location).Path + "\", "")
         $longFiles += [PSCustomObject]@{ Lines = $lines; File = $relPath }

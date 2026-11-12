@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier2.historical;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,11 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class World3PureEngine {
+public class World3PureEngine extends AbstractSimulationEngine {
+    public World3PureEngine() {
+        super("World3PureEngine", "World3PureEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(World3PureEngine.class);
 
     private double population = 1.6e9; // 1.6 Billion baseline (1900)

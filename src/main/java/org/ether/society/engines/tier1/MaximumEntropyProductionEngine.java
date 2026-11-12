@@ -6,6 +6,8 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +47,11 @@ import java.util.List;
  * @version 1.0.0-beta.2
  * @see <a href="https://doi.org/10.1017/CBO9781139343366">Kleidon (2016), Thermodynamic Foundations of the Earth System</a>
  */
-public class MaximumEntropyProductionEngine {
+public class MaximumEntropyProductionEngine extends AbstractSimulationEngine {
+    public MaximumEntropyProductionEngine() {
+        super("MaximumEntropyProductionEngine", "MaximumEntropyProductionEngine", EngineTier.TIER_1_BIOPHYSICAL);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(MaximumEntropyProductionEngine.class);
 
     // --- Universal Planetary Thermodynamic Constants (Kleidon 2010, 2016) ---

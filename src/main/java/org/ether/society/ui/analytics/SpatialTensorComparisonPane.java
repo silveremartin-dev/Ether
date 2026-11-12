@@ -253,27 +253,18 @@ public class SpatialTensorComparisonPane extends VBox {
     }
 
     private static ImageView createMapView() {
-        ImageView iv = new ImageView();
-        iv.setFitWidth(360);
-        iv.setFitHeight(180);
-        iv.setPreserveRatio(true);
-        iv.getStyleClass().add("card-section");
-        return iv;
+        ImageView iv = new ImageView(); iv.setFitWidth(360); iv.setFitHeight(180); iv.setPreserveRatio(true);
+        iv.getStyleClass().add("card-section"); return iv;
     }
 
     private static VBox createMapBox(Label label, ImageView view) {
         label.getStyleClass().add("label-section-header");
-        VBox box = new VBox(4, label, view);
-        box.setAlignment(Pos.CENTER);
-        return box;
+        VBox box = new VBox(4, label, view); box.setAlignment(Pos.CENTER); return box;
     }
 
     private HBox buildLegendBar() {
-        HBox discrepancyLegendBox = new HBox(16);
-        discrepancyLegendBox.setAlignment(Pos.CENTER);
-        discrepancyLegendBox.setPadding(new Insets(4, 12, 4, 12));
-        discrepancyLegendBox.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 6;");
-
+        HBox box = new HBox(16); box.setAlignment(Pos.CENTER); box.setPadding(new Insets(4, 12, 4, 12));
+        box.setStyle("-fx-background-color: rgba(15, 23, 42, 0.6); -fx-background-radius: 6;");
         legendBlue = new Label("🟦 " + I18n.getOrDefault("analytics.legend.under", "A < B (Underestimation)"));
         legendBlue.setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px;");
         legendSlate = new Label("⬛ " + I18n.getOrDefault("analytics.legend.zero", "Δ = 0 (Identical / Zero divergence)"));
@@ -282,9 +273,8 @@ public class SpatialTensorComparisonPane extends VBox {
         legendGreen.setStyle("-fx-text-fill: #10b981; -fx-font-size: 11px;");
         legendRed = new Label("🟥 " + I18n.getOrDefault("analytics.legend.over", "A > B (Overestimation)"));
         legendRed.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 11px;");
-
-        discrepancyLegendBox.getChildren().addAll(legendBlue, legendSlate, legendGreen, legendRed);
-        return discrepancyLegendBox;
+        box.getChildren().addAll(legendBlue, legendSlate, legendGreen, legendRed);
+        return box;
     }
 
     /**
@@ -307,12 +297,8 @@ public class SpatialTensorComparisonPane extends VBox {
         comboScenarioA.getItems().setAll(pool);
         comboScenarioB.getItems().setAll(pool);
 
-        if (prevA != null && pool.contains(prevA)) comboScenarioA.setValue(prevA);
-        else if (!pool.isEmpty()) comboScenarioA.setValue(pool.get(0));
-
-        if (prevB != null && pool.contains(prevB)) comboScenarioB.setValue(prevB);
-        else if (pool.size() > 1) comboScenarioB.setValue(pool.get(1));
-        else if (!pool.isEmpty()) comboScenarioB.setValue(pool.get(0));
+        comboScenarioA.setValue(prevA != null && pool.contains(prevA) ? prevA : (!pool.isEmpty() ? pool.get(0) : null));
+        comboScenarioB.setValue(prevB != null && pool.contains(prevB) ? prevB : (pool.size() > 1 ? pool.get(1) : (!pool.isEmpty() ? pool.get(0) : null)));
 
         if (activeSelectedScenarios.size() >= 3) {
             rbMultiMode.setDisable(false);
@@ -487,39 +473,26 @@ public class SpatialTensorComparisonPane extends VBox {
         if (itemB == null && comboScenarioB != null && comboScenarioB.getItems().size() > 1) itemB = comboScenarioB.getItems().get(1);
         if (itemB == null) itemB = itemA;
         if (itemA == null) return;
-
         ComparativeAnalyticsExporter.export2DCartographyZip(
-                export2DZipBtn, itemA, itemB,
-                dateSlider != null ? (int) dateSlider.getValue() : 0,
+                export2DZipBtn, itemA, itemB, dateSlider != null ? (int) dateSlider.getValue() : 0,
                 resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null),
                 spatialMetricsReportArea != null ? spatialMetricsReportArea.getText() : "",
                 mapImageViewA != null ? mapImageViewA.getImage() : null,
                 mapImageViewB != null ? mapImageViewB.getImage() : null,
-                mapImageViewDiff != null ? mapImageViewDiff.getImage() : null,
-                RASTER_IMAGE_CACHE);
+                mapImageViewDiff != null ? mapImageViewDiff.getImage() : null, RASTER_IMAGE_CACHE);
     }
 
     public void updateTexts(List<ScenarioSelectableItem> scenarioList) {
         isUpdatingTexts = true;
-        try {
-            SpatialTensorUIHelper.updateLocalizedControls(this, scenarioList);
-        } finally {
-            isUpdatingTexts = false;
-        }
+        try { SpatialTensorUIHelper.updateLocalizedControls(this, scenarioList); }
+        finally { isUpdatingTexts = false; }
         update2DSpatialComparison();
     }
 
-    public ComboBox<ScenarioSelectableItem> getComboScenarioA() { return comboScenarioA; }
-    public ComboBox<ScenarioSelectableItem> getComboScenarioB() { return comboScenarioB; }
-    public ComboBox<String> getSpatialChannelCombo() { return spatialChannelCombo; }
-    public Slider getDateSlider() { return dateSlider; }
-    public ImageView getMapImageViewA() { return mapImageViewA; }
-    public ImageView getMapImageViewB() { return mapImageViewB; }
-    public ImageView getMapImageViewDiff() { return mapImageViewDiff; }
-    public TextArea getSpatialMetricsReportArea() { return spatialMetricsReportArea; }
+    public ComboBox<ScenarioSelectableItem> getComboScenarioA() { return comboScenarioA; } public ComboBox<ScenarioSelectableItem> getComboScenarioB() { return comboScenarioB; }
+    public ComboBox<String> getSpatialChannelCombo() { return spatialChannelCombo; } public Slider getDateSlider() { return dateSlider; }
+    public ImageView getMapImageViewA() { return mapImageViewA; } public ImageView getMapImageViewB() { return mapImageViewB; }
+    public ImageView getMapImageViewDiff() { return mapImageViewDiff; } public TextArea getSpatialMetricsReportArea() { return spatialMetricsReportArea; }
     public Button getExport2DZipBtn() { return export2DZipBtn; }
-
-    public static void clearRasterCache() {
-        SpatialTensorDiskCatalog.clearRasterCache();
-    }
+    public static void clearRasterCache() { SpatialTensorDiskCatalog.clearRasterCache(); }
 }
