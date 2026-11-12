@@ -213,7 +213,9 @@ final class PreComputeClimateAndResourceHelper {
         org.ether.society.h3.H3Service h3Service = null;
         try {
             h3Service = org.ether.society.h3.H3Service.getInstance();
-        } catch (Exception ignored) {}
+        } catch (Exception ex) {
+            logger.debug("H3Service instance unavailable during coastal cell identification: {}", ex.getMessage());
+        }
 
         for (H3Cell cell : cells) {
             if (cell == null) continue;
@@ -228,7 +230,9 @@ final class PreComputeClimateAndResourceHelper {
                             break;
                         }
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ex) {
+                    logger.debug("Failed neighbor inspection for H3 index {}: {}", cell.getH3Index(), ex.getMessage());
+                }
             }
             if (!coastal && (cell.getElevation() != null && cell.getElevation() > 0 && cell.getElevation() < 50.0 && cell.getCoastalMarineResourceOr(0.0) > 0.0)) {
                 coastal = true;

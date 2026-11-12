@@ -265,22 +265,47 @@ public class WarDiplomacyEngine {
      * Resolves military engagement over a contested border cell using the 15-24 age military cohort,
      * physical armament capital ($K$), cavalry/motorized logistics, and sovereign bullion war chests.
      */
+    private record ForceProfile(long force, double capital, double mobility, double capitalPerCapita) {}
+
+    private static ForceProfile computeForceProfile(Polity polity) {
+        if (polity == null || polity.getTerritory() == null || polity.getTerritory().isEmpty()) {
+            return new ForceProfile(0L, 0.0, 0.0, 20.0);
+        }
+        long force = 0L;
+        double capital = 0.0;
+        double mobility = 0.0;
+        double capitalPerCapitaSum = 0.0;
+        int count = 0;
+        for (H3Cell c : polity.getTerritory()) {
+            if (c == null) continue;
+            force += c.getPop15to24Or(0);
+            double cap = c.getResourceCapitalOr(0.0);
+            capital += cap;
+            mobility += c.getBiomassLivestockOr(0.0) * 0.2 + c.getResourceOilOr(0.0) * 0.5;
+            capitalPerCapitaSum += cap / Math.max(1.0, (double) c.getPopulationOr(1));
+            count++;
+        }
+        double avgKpc = count > 0 ? capitalPerCapitaSum / count : 20.0;
+        return new ForceProfile(force, capital, mobility, avgKpc);
+    }
+
     private static void resolveBorderBattle(Polity aggressor, Polity defender, BorderContact contact) {
         if (contact == null) return;
         double borderFriction = contact.avgFriction();
 
-        long aggressorForce = aggressor.getTerritory().stream().filter(Objects::nonNull).mapToLong(c -> c.getPop15to24Or(0)).sum();
-        long defenderForce = defender.getTerritory().stream().filter(Objects::nonNull).mapToLong(c -> c.getPop15to24Or(0)).sum();
+        ForceProfile aggProfile = computeForceProfile(aggressor);
+        ForceProfile defProfile = computeForceProfile(defender);
+
+        long aggressorForce = aggProfile.force();
+        long defenderForce = defProfile.force();
 
         if (aggressorForce <= 0 || defenderForce <= 0) return;
 
-        double aggCapital = aggressor.getTerritory().stream().filter(Objects::nonNull).mapToDouble(c -> c.getResourceCapitalOr(0.0)).sum();
-        double defCapital = defender.getTerritory().stream().filter(Objects::nonNull).mapToDouble(c -> c.getResourceCapitalOr(0.0)).sum();
+        double aggCapital = aggProfile.capital();
+        double defCapital = defProfile.capital();
 
-        double aggMobility = aggressor.getTerritory().stream().filter(Objects::nonNull).mapToDouble(c ->
-                (c.getBiomassLivestockOr(0.0)) * 0.2 + (c.getResourceOilOr(0.0)) * 0.5).sum();
-        double defMobility = defender.getTerritory().stream().filter(Objects::nonNull).mapToDouble(c ->
-                (c.getBiomassLivestockOr(0.0)) * 0.2 + (c.getResourceOilOr(0.0)) * 0.5).sum();
+        double aggMobility = aggProfile.mobility();
+        double defMobility = defProfile.mobility();
 
         double aggArmamentFactor = 1.0 + Math.min(2.5, Math.log1p(aggCapital / Math.max(1.0, aggressorForce)));
         double defArmamentFactor = 1.0 + Math.min(2.5, Math.log1p(defCapital / Math.max(1.0, defenderForce)));
@@ -326,9 +351,13 @@ public class WarDiplomacyEngine {
             // Aggressor conquers the contested border frontline cell
             H3Cell conqueredCell = contact.contestedCell();
             if (conqueredCell == null || conqueredCell == defender.getCapital()) {
-                conqueredCell = defender.getTerritory().stream()
-                        .filter(c -> c != defender.getCapital())
-                        .findAny().orElse(null);
+                H3Cell cap = defender.getCapital();
+                for (H3Cell c : defender.getTerritory()) {
+                    if (c != null && c != cap) {
+                        conqueredCell = c;
+                        break;
+                    }
+                }
             }
 
             if (conqueredCell != null) {
@@ -364,12 +393,8 @@ public class WarDiplomacyEngine {
                 // - Early gunpowder & mercenary siege logistics peak around k_pc ~ 550 kg/cap (Thirty Years' War chevauchÃƒÂ©es)
                 // - 18th-century linear magazine supply lull around k_pc ~ 950 kg/cap (Cabinet wars)
                 // - Industrial high-explosive artillery & aerial bombardment surge for k_pc >= 2800 kg/cap (Total War)
-                double aggCapitalPerCapita = aggressor.getTerritory().stream().filter(Objects::nonNull)
-                        .mapToDouble(c -> c.getResourceCapitalOr(0.0) / Math.max(1.0, (double) c.getPopulationOr(1)))
-                        .average().orElse(20.0);
-                double defCapitalPerCapita = defender.getTerritory().stream().filter(Objects::nonNull)
-                        .mapToDouble(c -> c.getResourceCapitalOr(0.0) / Math.max(1.0, (double) c.getPopulationOr(1)))
-                        .average().orElse(20.0);
+                double aggCapitalPerCapita = aggProfile.capitalPerCapita();
+                double defCapitalPerCapita = defProfile.capitalPerCapita();
                 double meanOrdnanceCapital = Math.max(1.0, (aggCapitalPerCapita + defCapitalPerCapita) * 0.5);
                 double logOrdnance = Math.log1p(meanOrdnanceCapital / 25.0);
 

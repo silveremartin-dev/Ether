@@ -66,23 +66,35 @@ public final class EventCellularShockHelper {
      * @param durationDays event duration in days
      */
     public static void applyAtmosphericGlobalForcing(String type, double mag, int durationDays) {
-        switch (type) {
-            case "VOLCANO" -> {
+        applyAtmosphericGlobalForcing(org.ether.society.model.PhysicalShockType.fromString(type), mag, durationDays);
+    }
+
+    /**
+     * Applies atmospheric aerosol injection, volcanic sulfur loading, and nuclear winter optical depth forcing.
+     *
+     * @param shockType event shock type
+     * @param mag event magnitude
+     * @param durationDays event duration in days
+     */
+    public static void applyAtmosphericGlobalForcing(org.ether.society.model.PhysicalShockType shockType, double mag, int durationDays) {
+        if (shockType == null) return;
+        switch (shockType) {
+            case VOLCANO -> {
                 double addedTau = 0.05 * mag;
                 NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(
                         NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() + addedTau);
             }
-            case "NUCLEAR_STRIKE", "NUCLEAR_WINTER" -> {
+            case NUCLEAR_STRIKE, NUCLEAR_WINTER -> {
                 double addedSoot = 0.20 * mag;
                 NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(
                         NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() + addedSoot);
             }
-            case "METEOR" -> {
+            case METEOR -> {
                 double addedEjecta = 0.35 * mag;
                 NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(
                         NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() + addedEjecta);
             }
-            case "GEOENGINEERING" -> {
+            case GEOENGINEERING -> {
                 NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(
                         Math.max(0.0, NuclearWarfareClimateEngine.getGlobalSootOpticalDepth() - 0.10 * mag));
             }

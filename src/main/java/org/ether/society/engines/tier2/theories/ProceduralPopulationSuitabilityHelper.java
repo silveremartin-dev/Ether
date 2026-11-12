@@ -352,7 +352,20 @@ final class ProceduralPopulationSuitabilityHelper {
      * @return pattern multiplier
      */
     static double calculatePatternMultiplier(H3Cell cell, String pattern) {
-        if (pattern == null) return 1.0;
+        return calculatePatternMultiplier(cell, org.ether.society.model.PopulationDistributionPattern.fromString(pattern));
+    }
+
+    /**
+     * Calculates spatial pattern suitability multiplier using strongly-typed {@link org.ether.society.model.PopulationDistributionPattern}.
+     *
+     * @param cell    target H3 cell
+     * @param pattern strongly-typed population distribution pattern
+     * @return pattern multiplier
+     */
+    static double calculatePatternMultiplier(H3Cell cell, org.ether.society.model.PopulationDistributionPattern pattern) {
+        if (pattern == null || pattern == org.ether.society.model.PopulationDistributionPattern.UNBIASED_NATURAL) {
+            return 1.0;
+        }
         double elev = cell.getElevationOr(0.0);
         double lat = cell.getLatitudeOr(0.0);
         double lng = cell.getLongitudeOr(0.0);
@@ -360,27 +373,26 @@ final class ProceduralPopulationSuitabilityHelper {
         double aquifer = cell.getAccessibleAquiferOr(0.0);
 
         return switch (pattern) {
-            case "UNBIASED_NATURAL", "UNBIASED", "NONE", "NATURAL_EQUILIBRIUM" -> 1.0;
-            case "COASTAL_MARITIME" -> 0.6 + 2.9 / (1.0 + Math.exp(0.05 * (elev - 40.0)));
-            case "RIVER_VALLEYS" -> 0.6 + 3.4 / (1.0 + Math.exp(-0.01 * (water - 300.0)));
-            case "HIGHLAND_MOUNTAIN" -> 0.6 + 2.9 / (1.0 + Math.exp(-0.005 * (elev - 700.0)));
-            case "INLAND_OASIS" -> 0.6 + 3.4 / (1.0 + Math.exp(-0.003 * (aquifer - 1500.0)));
-            case "EQUATORIAL_BELT" -> 0.6 + 2.4 * Math.exp(-Math.pow(lat / 18.0, 2.0));
-            case "EGYPT_NILE" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 27.0, 2.0) / 50.0 - Math.pow(lng - 31.0, 2.0) / 18.0);
-            case "GREEN_SAHARA" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 22.0, 2.0) / 72.0 - Math.pow(lng - 10.0, 2.0) / 200.0);
-            case "MESOAMERICA" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 18.0, 2.0) / 32.0 - Math.pow(lng + 95.0, 2.0) / 72.0);
-            case "ROMAN_EMPIRE" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 38.0, 2.0) / 72.0 - Math.pow(lng - 15.0, 2.0) / 200.0);
-            case "AUSTRALIA_SAHUL" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat + 25.0, 2.0) / 100.0 - Math.pow(lng - 135.0, 2.0) / 200.0);
-            case "INDIA_MAURYA" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 22.0, 2.0) / 50.0 - Math.pow(lng - 78.0, 2.0) / 72.0);
-            case "FERTILE_CRESCENT", "MESOPOTAMIA_ASSYRIA" -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 33.0, 2.0) / 32.0 - Math.pow(lng - 43.0, 2.0) / 50.0);
-            case "BERINGIA_AMERICAS", "LGM_REFUGIA", "YOUNGER_DRYAS" -> 1.0 + 2.5 / (1.0 + Math.exp(-0.2 * (lat - 35.0)));
-            case "WEST_AFRICA_MALI" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 14.0, 2.0) / 32.0 - Math.pow(lng + 4.0, 2.0) / 72.0);
-            case "JAPAN_SAKOKU" -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 36.0, 2.0) / 32.0 - Math.pow(lng - 138.0, 2.0) / 32.0);
-            case "AMERICAS_1491", "COLUMBIAN_CONTACT" -> 1.0 + 2.0 * Math.exp(-Math.pow(lng + 75.0, 2.0) / 450.0);
-            case "ONE_CONTINENT" -> 1.0 + 2.0 * Math.exp(-Math.pow(lat / 25.0, 2.0));
-            case "INDUSTRIAL_1800" -> 1.0 + 2.0 * Math.exp(-Math.pow(lat - 50.0, 2.0) / 72.0);
-            case "SPARSE_NOMADIC" -> 0.8;
-            default -> 1.0;
+            case UNBIASED_NATURAL -> 1.0;
+            case COASTAL_MARITIME -> 0.6 + 2.9 / (1.0 + Math.exp(0.05 * (elev - 40.0)));
+            case RIVER_VALLEYS -> 0.6 + 3.4 / (1.0 + Math.exp(-0.01 * (water - 300.0)));
+            case HIGHLAND_MOUNTAIN -> 0.6 + 2.9 / (1.0 + Math.exp(-0.005 * (elev - 700.0)));
+            case INLAND_OASIS -> 0.6 + 3.4 / (1.0 + Math.exp(-0.003 * (aquifer - 1500.0)));
+            case EQUATORIAL_BELT -> 0.6 + 2.4 * Math.exp(-Math.pow(lat / 18.0, 2.0));
+            case EGYPT_NILE -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 27.0, 2.0) / 50.0 - Math.pow(lng - 31.0, 2.0) / 18.0);
+            case GREEN_SAHARA -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 22.0, 2.0) / 72.0 - Math.pow(lng - 10.0, 2.0) / 200.0);
+            case MESOAMERICA -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 18.0, 2.0) / 32.0 - Math.pow(lng + 95.0, 2.0) / 72.0);
+            case ROMAN_EMPIRE -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 38.0, 2.0) / 72.0 - Math.pow(lng - 15.0, 2.0) / 200.0);
+            case AUSTRALIA_SAHUL -> 1.0 + 2.5 * Math.exp(-Math.pow(lat + 25.0, 2.0) / 100.0 - Math.pow(lng - 135.0, 2.0) / 200.0);
+            case INDIA_MAURYA -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 22.0, 2.0) / 50.0 - Math.pow(lng - 78.0, 2.0) / 72.0);
+            case FERTILE_CRESCENT -> 1.0 + 3.0 * Math.exp(-Math.pow(lat - 33.0, 2.0) / 32.0 - Math.pow(lng - 43.0, 2.0) / 50.0);
+            case BERINGIA_AMERICAS -> 1.0 + 2.5 / (1.0 + Math.exp(-0.2 * (lat - 35.0)));
+            case WEST_AFRICA_MALI -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 14.0, 2.0) / 32.0 - Math.pow(lng + 4.0, 2.0) / 72.0);
+            case JAPAN_SAKOKU -> 1.0 + 2.5 * Math.exp(-Math.pow(lat - 36.0, 2.0) / 32.0 - Math.pow(lng - 138.0, 2.0) / 32.0);
+            case AMERICAS_1491 -> 1.0 + 2.0 * Math.exp(-Math.pow(lng + 75.0, 2.0) / 450.0);
+            case ONE_CONTINENT -> 1.0 + 2.0 * Math.exp(-Math.pow(lat / 25.0, 2.0));
+            case INDUSTRIAL_1800 -> 1.0 + 2.0 * Math.exp(-Math.pow(lat - 50.0, 2.0) / 72.0);
+            case SPARSE_NOMADIC -> 0.8;
         };
     }
 }

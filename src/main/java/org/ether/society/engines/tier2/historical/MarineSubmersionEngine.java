@@ -97,7 +97,9 @@ public class MarineSubmersionEngine {
                 if (cell.getH3Index() != null && cell.getH3Index() != 0L) {
                     try {
                         neighborIndices = org.ether.society.h3.H3Service.getInstance().getNeighbors(cell.getH3Index());
-                    } catch (Exception ignored) {}
+                    } catch (Exception ex) {
+                        logger.debug("H3Service neighbors query failed for cell {}: {}", cell.getH3Index(), ex.getMessage());
+                    }
                 }
                 if (neighborIndices != null && !neighborIndices.isEmpty()) {
                     for (Long nIdx : neighborIndices) {

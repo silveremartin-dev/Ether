@@ -74,7 +74,7 @@ final class HistoricalScenarioMapOrchestrator {
                     f100k = new File("data/maps/ether/earth/-100000/earth_-100000_elevation.png");
                 }
                 if (f100k.exists()) {
-                    try { elev = ImageIO.read(f100k); } catch (Exception ignored) {}
+                    try { elev = ImageIO.read(f100k); } catch (Exception ex) { logger.debug("Failed reading elevation mask from {}: {}", f100k, ex.getMessage()); }
                 }
                 if (elev == null) {
                     File f2026 = org.ether.society.config.EtherPaths.getEarthDir().resolve("2026/earth_2026_elevation.png").toFile();
@@ -82,13 +82,13 @@ final class HistoricalScenarioMapOrchestrator {
                         f2026 = new File("data/maps/ether/earth/2026/earth_2026_elevation.png");
                     }
                     if (f2026.exists()) {
-                        try { elev = ImageIO.read(f2026); } catch (Exception ignored) {}
+                        try { elev = ImageIO.read(f2026); } catch (Exception ex) { logger.debug("Failed reading elevation mask from {}: {}", f2026, ex.getMessage()); }
                     }
                 }
                 if (elev == null) {
                     File fCache = new File("data/cache/earth_elevation.png");
                     if (fCache.exists()) {
-                        try { elev = ImageIO.read(fCache); } catch (Exception ignored) {}
+                        try { elev = ImageIO.read(fCache); } catch (Exception ex) { logger.debug("Failed reading elevation mask from {}: {}", fCache, ex.getMessage()); }
                     }
                 }
                 if (elev == null) {

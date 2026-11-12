@@ -9,6 +9,8 @@ package org.ether.society.analytics;
 import org.ether.society.analytics.GroundTruthAuditGenerator.AuditResult;
 import org.ether.society.analytics.GroundTruthAuditGenerator.VariableDriftAnalysis;
 import org.ether.society.i18n.I18n;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +35,8 @@ import java.util.function.Function;
  * @see ComparativeReportGenerator
  */
 final class GroundTruthAuditReportBuilder {
+
+    private static final Logger logger = LoggerFactory.getLogger(GroundTruthAuditReportBuilder.class);
 
     private GroundTruthAuditReportBuilder() {
         // Static report builder delegate
@@ -297,7 +301,9 @@ final class GroundTruthAuditReportBuilder {
                         try {
                             int yr = parseDisplayYear(drift.driftOnsetYear);
                             if (tgtDiv == -1 || yr < tgtDiv) tgtDiv = yr;
-                        } catch (Exception ignored) {}
+                        } catch (Exception ex) {
+                            logger.debug("Failed to parse drift onset year '{}': {}", drift.driftOnsetYear, ex.getMessage());
+                        }
                     }
                 }
             }

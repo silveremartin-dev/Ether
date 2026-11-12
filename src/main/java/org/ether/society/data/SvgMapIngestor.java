@@ -167,7 +167,9 @@ public class SvgMapIngestor {
         factory.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, true);
         try {
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        } catch (Exception ignored) {}
+        } catch (Exception ex) {
+            logger.debug("XML parser does not support disallow-doctype-decl feature: {}", ex.getMessage());
+        }
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         factory.setXIncludeAware(false);
@@ -287,7 +289,9 @@ public class SvgMapIngestor {
             if (elem.hasAttribute("data-density")) {
                 try {
                     feature.densityWeight = Double.parseDouble(elem.getAttribute("data-density"));
-                } catch (Exception ignored) {}
+                } catch (Exception ex) {
+                    logger.debug("Failed to parse data-density attribute on SVG element {}: {}", id, ex.getMessage());
+                }
             }
             features.add(feature);
         }
@@ -340,7 +344,9 @@ public class SvgMapIngestor {
                     return new Color(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3)));
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ex) {
+            logger.debug("Failed to parse color definition string '{}': {}", colorStr, ex.getMessage());
+        }
         return null;
     }
 

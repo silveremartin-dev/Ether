@@ -11,9 +11,8 @@ import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Spatial City Fractal Power Law Engine Variant B21.1 (Pure) & B21.2 (Hybrid).
@@ -36,13 +35,19 @@ public class SpatialCityFractalEngine {
     public static void processHybrid(List<H3Cell> cells, double deltaYears) {
         if (cells == null || cells.size() < 2) return;
 
-        // Sort cells by population descending to compute spatial power law hierarchy
-        List<H3Cell> sortedCells = cells.stream()
-                .filter(c -> c != null && c.getPopulation() != null && c.getPopulation() > 0)
-                .sorted(Comparator.comparingInt((H3Cell c) -> c.getPopulationOr(0)).reversed())
-                .collect(Collectors.toList());
+        // Collect populated cells without allocating Streams
+        List<H3Cell> sortedCells = new ArrayList<>();
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            if (c != null && c.getPopulationOr(0) > 0) {
+                sortedCells.add(c);
+            }
+        }
 
         if (sortedCells.isEmpty()) return;
+
+        // Sort descending by population
+        sortedCells.sort((a, b) -> Integer.compare(b.getPopulationOr(0), a.getPopulationOr(0)));
 
         double topCityPop = sortedCells.get(0).getPopulation();
         // Zipf-Mori spatial power law target shape: Pop_target(rank) proportional to 1 / rank^1.05,

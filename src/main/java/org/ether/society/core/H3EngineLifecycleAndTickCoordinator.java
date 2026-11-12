@@ -123,6 +123,9 @@ final class H3EngineLifecycleAndTickCoordinator {
             engine.simulationPipeline.configureScenario(scenario);
         }
 
+        // Deterministic scenario isolation: reset all static simulation accumulators and states
+        org.ether.society.engines.SimulationEngineStateCoordinator.resetAllEngineStates();
+
         setupBuffersAndInitialStatistics(engine, cohortSize);
 
         if (engine.clusterManager != null) {

@@ -86,24 +86,28 @@ public final class EventPhysicalImpactExecutor {
      * Checks if the event type is strictly terrestrial (cannot originate in open ocean).
      */
     public static boolean isTerrestrialEventType(String type) {
-        if (type == null) return false;
-        return switch (type.toUpperCase(Locale.ROOT)) {
-            case "FLOOD", "DROUGHT", "FAMINE", "VOLCANO", "EARTHQUAKE", "PANDEMIC",
-                 "RENAISSANCE_BOOM", "TECH_SINGULARITY", "CYBER_ATTACK", "ECONOMIC_CRASH",
-                 "BIODIVERSITY_COLLAPSE" -> true;
-            default -> false;
-        };
+        return isTerrestrialEventType(org.ether.society.model.PhysicalShockType.fromString(type));
+    }
+
+    /**
+     * Checks if the event type is strictly terrestrial (cannot originate in open ocean).
+     */
+    public static boolean isTerrestrialEventType(org.ether.society.model.PhysicalShockType shockType) {
+        return shockType != null && shockType.isTerrestrialOnly();
     }
 
     /**
      * Checks if the event type requires oceanic or coastal coordinates.
      */
     public static boolean isOceanicEventType(String type) {
-        if (type == null) return false;
-        return switch (type.toUpperCase(Locale.ROOT)) {
-            case "TSUNAMI" -> true;
-            default -> false;
-        };
+        return isOceanicEventType(org.ether.society.model.PhysicalShockType.fromString(type));
+    }
+
+    /**
+     * Checks if the event type requires oceanic or coastal coordinates.
+     */
+    public static boolean isOceanicEventType(org.ether.society.model.PhysicalShockType shockType) {
+        return shockType != null && shockType.isOceanicOnly();
     }
 
     /**

@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -45,16 +46,36 @@ public class ProceduralPopulationEngine {
     public record EarthHistoricalPivot(long year, String eraName, long defaultPopulation, double techLevel, String description) {}
 
     /** Canonical Earth historical demographic pivot epochs. */
-    public static final List<EarthHistoricalPivot> EARTH_PIVOTS = List.of(
-            new EarthHistoricalPivot(-100000, "Out of Africa (-100,000 BP)", 15000L, 0.2, "Pre-Neolithic Sapiens: East African Rift & early coastal migration routes."),
-            new EarthHistoricalPivot(-40000, "Upper Paleolithic (-40,000 BP)", 500000L, 0.6, "Paleolithic Hunter-Gatherers: Spread across Africa, Europe, Asia, and Australia."),
-            new EarthHistoricalPivot(-10000, "Neolithic Revolution (-10,000 BP)", 5000000L, 1.2, "Agricultural Emergence: Fertile Crescent, Nile, Yangtze/Yellow, Indus, Mesoamerica."),
-            new EarthHistoricalPivot(-3000, "First Empires / Bronze Age (-3,000 BCE)", 50000000L, 2.5, "River Civilizations: Mesopotamia, Egypt, Indus Valley, Shang China."),
-            new EarthHistoricalPivot(-500, "Classical Era (-500 BCE)", 200000000L, 3.8, "Classical Antiquity: Mediterranean/Rome, Han Dynasty, Maurya India, Achaemenid Empire."),
-            new EarthHistoricalPivot(1000, "High Middle Ages (1000 CE)", 300000000L, 4.5, "Feudal & Imperial Networks: Song China, Chola India, Europe, Abbasid Caliphate, Maya."),
-            new EarthHistoricalPivot(1500, "Early Modern / Exploration (1500 CE)", 500000000L, 5.2, "Age of Discovery: Ming China, Ottoman Empire, Renaissance Europe, Mughal Empire."),
-            new EarthHistoricalPivot(1800, "Industrial Revolution (1800 CE)", 1000000000L, 6.5, "Pre-Industrial Peak & Early Steam: High density in Europe, East Asia, and Eastern Americas.")
-    );
+    public static final List<EarthHistoricalPivot> EARTH_PIVOTS = loadEarthPivots();
+
+    private static List<EarthHistoricalPivot> loadEarthPivots() {
+        String path = "data/history/ether/earth/demographics/earth_historical_pivots.json";
+        try {
+            java.io.File file = new java.io.File(path);
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            if (file.exists()) {
+                return Collections.unmodifiableList(mapper.readValue(file, new com.fasterxml.jackson.core.type.TypeReference<List<EarthHistoricalPivot>>() {}));
+            }
+            java.io.InputStream is = ProceduralPopulationEngine.class.getResourceAsStream("/" + path);
+            if (is != null) {
+                try (is) {
+                    return Collections.unmodifiableList(mapper.readValue(is, new com.fasterxml.jackson.core.type.TypeReference<List<EarthHistoricalPivot>>() {}));
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to load earth historical pivots from JSON, falling back to canonical defaults", e);
+        }
+        return List.of(
+                new EarthHistoricalPivot(-100000, "Out of Africa (-100,000 BP)", 15000L, 0.2, "Pre-Neolithic Sapiens: East African Rift & early coastal migration routes."),
+                new EarthHistoricalPivot(-40000, "Upper Paleolithic (-40,000 BP)", 500000L, 0.6, "Paleolithic Hunter-Gatherers: Spread across Africa, Europe, Asia, and Australia."),
+                new EarthHistoricalPivot(-10000, "Neolithic Revolution (-10,000 BP)", 5000000L, 1.2, "Agricultural Emergence: Fertile Crescent, Nile, Yangtze/Yellow, Indus, Mesoamerica."),
+                new EarthHistoricalPivot(-3000, "First Empires / Bronze Age (-3,000 BCE)", 50000000L, 2.5, "River Civilizations: Mesopotamia, Egypt, Indus Valley, Shang China."),
+                new EarthHistoricalPivot(-500, "Classical Era (-500 BCE)", 200000000L, 3.8, "Classical Antiquity: Mediterranean/Rome, Han Dynasty, Maurya India, Achaemenid Empire."),
+                new EarthHistoricalPivot(1000, "High Middle Ages (1000 CE)", 300000000L, 4.5, "Feudal & Imperial Networks: Song China, Chola India, Europe, Abbasid Caliphate, Maya."),
+                new EarthHistoricalPivot(1500, "Early Modern / Exploration (1500 CE)", 500000000L, 5.2, "Age of Discovery: Ming China, Ottoman Empire, Renaissance Europe, Mughal Empire."),
+                new EarthHistoricalPivot(1800, "Industrial Revolution (1800 CE)", 1000000000L, 6.5, "Pre-Industrial Peak & Early Steam: High density in Europe, East Asia, and Eastern Americas.")
+        );
+    }
 
     /**
      * Distributes total human population across cells according to hostile outpost constraints or procedural tech suitability.
@@ -68,26 +89,41 @@ public class ProceduralPopulationEngine {
      * @param startYear       starting chronological year
      */
     public static void distributePopulation(List<H3Cell> cells, Scenario scenario, long totalPopulation,
+                                            double techLevel, org.ether.society.model.PopulationDistributionPattern pattern, boolean isEarthPreset, long startYear) {
+        distributePopulation(cells, scenario, totalPopulation, techLevel, pattern != null ? pattern.name() : "UNBIASED_NATURAL", isEarthPreset, startYear);
+    }
+
+    public static void distributePopulation(List<H3Cell> cells, Scenario scenario, long totalPopulation,
                                             double techLevel, String pattern, boolean isEarthPreset, long startYear) {
         if (cells == null || cells.isEmpty()) return;
 
-        for (H3Cell c : cells) {
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
             if (c == null) continue;
             c.setPopulation(0);
             c.setBiomassHuman(0.0);
         }
 
-        List<H3Cell> landCells = cells.stream()
-                .filter(java.util.Objects::nonNull)
-                .filter(c -> (c.getBiome() != null && c.getBiome() != Biome.DEEP_OCEAN)
-                        || (c.getElevation() != null && c.getElevation() > -200.0)
-                        || Boolean.TRUE.equals(c.getIsCoastal())
-                        || Boolean.TRUE.equals(c.getIsPolder())
-                        || Boolean.TRUE.equals(c.getHasFloatingInfrastructure())
-                        || techLevel >= 8.5)
-                .toList();
+        List<H3Cell> landCells = new ArrayList<>(cells.size());
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            if (c == null) continue;
+            if ((c.getBiome() != null && c.getBiome() != Biome.DEEP_OCEAN)
+                    || (c.getElevation() != null && c.getElevation() > -200.0)
+                    || Boolean.TRUE.equals(c.getIsCoastal())
+                    || Boolean.TRUE.equals(c.getIsPolder())
+                    || Boolean.TRUE.equals(c.getHasFloatingInfrastructure())
+                    || techLevel >= 8.5) {
+                landCells.add(c);
+            }
+        }
 
-        if (landCells.isEmpty()) landCells = cells.stream().filter(java.util.Objects::nonNull).toList();
+        if (landCells.isEmpty()) {
+            for (int i = 0; i < cells.size(); i++) {
+                H3Cell c = cells.get(i);
+                if (c != null) landCells.add(c);
+            }
+        }
 
         double capitalPerCapita = scenario != null ? scenario.getInitialCapitalPerCapita() : Math.pow(10, (techLevel - 0.2) / 2.2);
         long seedVal = scenario != null ? scenario.getSeed() : 12345L;

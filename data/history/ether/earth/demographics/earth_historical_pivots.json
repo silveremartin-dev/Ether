@@ -1,0 +1,58 @@
+[
+  {
+    "year": -100000,
+    "eraName": "Out of Africa (-100,000 BP)",
+    "defaultPopulation": 15000,
+    "techLevel": 0.2,
+    "description": "Pre-Neolithic Sapiens: East African Rift & early coastal migration routes."
+  },
+  {
+    "year": -40000,
+    "eraName": "Upper Paleolithic (-40,000 BP)",
+    "defaultPopulation": 500000,
+    "techLevel": 0.6,
+    "description": "Paleolithic Hunter-Gatherers: Spread across Africa, Europe, Asia, and Australia."
+  },
+  {
+    "year": -10000,
+    "eraName": "Neolithic Revolution (-10,000 BP)",
+    "defaultPopulation": 5000000,
+    "techLevel": 1.2,
+    "description": "Agricultural Emergence: Fertile Crescent, Nile, Yangtze/Yellow, Indus, Mesoamerica."
+  },
+  {
+    "year": -3000,
+    "eraName": "First Empires / Bronze Age (-3,000 BCE)",
+    "defaultPopulation": 50000000,
+    "techLevel": 2.5,
+    "description": "River Civilizations: Mesopotamia, Egypt, Indus Valley, Shang China."
+  },
+  {
+    "year": -500,
+    "eraName": "Classical Era (-500 BCE)",
+    "defaultPopulation": 200000000,
+    "techLevel": 3.8,
+    "description": "Classical Antiquity: Mediterranean/Rome, Han Dynasty, Maurya India, Achaemenid Empire."
+  },
+  {
+    "year": 1000,
+    "eraName": "High Middle Ages (1000 CE)",
+    "defaultPopulation": 300000000,
+    "techLevel": 4.5,
+    "description": "Feudal & Imperial Networks: Song China, Chola India, Europe, Abbasid Caliphate, Maya."
+  },
+  {
+    "year": 1500,
+    "eraName": "Early Modern / Exploration (1500 CE)",
+    "defaultPopulation": 500000000,
+    "techLevel": 5.2,
+    "description": "Age of Discovery: Ming China, Ottoman Empire, Renaissance Europe, Mughal Empire."
+  },
+  {
+    "year": 1800,
+    "eraName": "Industrial Revolution (1800 CE)",
+    "defaultPopulation": 1000000000,
+    "techLevel": 6.5,
+    "description": "Pre-Industrial Peak & Early Steam: High density in Europe, East Asia, and Eastern Americas."
+  }
+]

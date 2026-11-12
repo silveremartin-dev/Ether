@@ -54,6 +54,13 @@ public class TradeNetworkEngine {
     /**
      * Resets cumulative trade statistics and active route cache for scenario isolation.
      */
+    public static void resetState() {
+        resetCumulativeStats();
+    }
+
+    /**
+     * Resets cumulative trade statistics and active route cache for scenario isolation.
+     */
     public static void resetCumulativeStats() {
         cumulativeTradedFood = 0.0;
         cumulativeTradedCapital = 0.0;
@@ -251,7 +258,9 @@ public class TradeNetworkEngine {
                             }
                         }
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ex) {
+                    logger.debug("H3Service failed to fetch neighbors for cell {}: {}", current.getH3Index(), ex.getMessage());
+                }
             }
 
             if (candidates.isEmpty()) {

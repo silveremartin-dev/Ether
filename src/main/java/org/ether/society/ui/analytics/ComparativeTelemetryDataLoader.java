@@ -113,7 +113,9 @@ public final class ComparativeTelemetryDataLoader {
                         return run;
                     }
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ex) {
+                logger.debug("Failed to inspect save directory candidate for history ingestion: {}", ex.getMessage());
+            }
         }
 
         return null;
@@ -154,14 +156,18 @@ public final class ComparativeTelemetryDataLoader {
                             JsonNode node = EtherJsonUtil.getMapper().readTree(m.toFile());
                             if (node.has("id") && saveId.equalsIgnoreCase(node.get("id").asText())) return true;
                             if (scenarioName != null && node.has("scenarioName") && scenarioName.equalsIgnoreCase(node.get("scenarioName").asText())) return true;
-                        } catch (Exception ignored) {}
+                        } catch (Exception ex) {
+                            logger.debug("Failed to parse metadata in save candidate: {}", ex.getMessage());
+                        }
                     }
                     return false;
                 }).findFirst();
                 if (found.isPresent()) {
                     histPath = found.get().resolve("history.json");
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ex) {
+                logger.debug("Failed to inspect save directory candidate for history ingestion: {}", ex.getMessage());
+            }
         }
         if (!Files.exists(histPath)) return;
 
@@ -195,7 +201,9 @@ public final class ComparativeTelemetryDataLoader {
                                     }
                                 }
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ex) {
+                            logger.debug("Failed to parse metadata in save candidate: {}", ex.getMessage());
+                        }
                     }
                 }
                 SimulationRunRecord rec = new SimulationRunRecord(saveId, scenarioName, "GCP/Offline Full True Simulation", paramMatrix);
