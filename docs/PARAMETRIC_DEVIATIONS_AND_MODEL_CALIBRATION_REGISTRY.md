@@ -553,6 +553,30 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
+### Entry 25: Omran & Cutler-Miller Municipal Sanitation & Infant Survival Formulation
+* **Subsystem**: `DemographicKernel.java` & `PublicSanitationWaterGridEngine.java`
+* **Canonical Literature**:
+  * Omran, A. R. (1971). *The epidemiological transition: a theory of the epidemiology of population change*. Milbank Memorial Fund Quarterly, 49(4), 509–538.
+  * Cutler, D., & Miller, G. (2005). *The role of public health improvements in health advances: The twentieth-century United States*. Demography, 42(1), 1–22.
+  * Preston, S. H. (1975). *The Changing Relation between Mortality and Level of Economic Development*. Population Studies, 29(2), 231–248.
+* **Canonical Literature Baseline (Eq. 99 in Encyclopedia)**:
+  $$f_{\text{clean}} = \frac{k_{\text{pc}}}{k_{\text{pc}} + 1200.0} \cdot \min\left(1.0, \frac{W_{\text{fresh}}}{W_{\text{req}} \cdot N_i}\right)$$
+  $$f_{\text{sewer}} = \frac{k_{\text{pc}}^2}{k_{\text{pc}}^2 + 2500.0^2}$$
+  $$q_{\text{infant}} = 0.015 + 0.305 \cdot (1.0 - f_{\text{clean}})^{1.5} \cdot (1.0 - 0.5 f_{\text{sewer}}) \cdot \text{nutritionalStress} \cdot \text{waterStress}$$
+* **Parameters, Material Properties & Physical Units**:
+  * $f_{\text{clean}}$: Clean filtered water distribution fraction [$0.0 - 1.0$].
+  * $f_{\text{sewer}}$: Subterranean sewer drainage infrastructure fraction [$0.0 - 1.0$].
+  * $k_{\text{water}, 0} = 1200.0\text{ kg/cap}$: Capital threshold for sand filtration and piped water grids.
+  * $k_{\text{sewer}, 0} = 2500.0\text{ kg/cap}$: Capital threshold for heavy subterranean municipal sewage networks.
+  * $q_{\text{infant}}$: Infant/childhood mortality rate [$0.015 - 0.55$] ($32\%$ pre-industrial baseline, $1.5\%$ modern sanitised floor).
+* **Epistemic Justification & Elimination of Non-Documented Sigmoid**:
+  * Eliminates an undocumented closed-form sigmoid `sigmoid(capPerCap, 320, 110)` that erroneously simulated modern chlorination and water sanitation at early mechanization capital depths ($K/N \sim 320$), collapsing pre-industrial infant mortality prematurely and inducing an unphysical demographic explosion (+43% in 1800).
+  * Enforces exact Eq. 99 Hill/Michaelis-Menten kinetics driven by physical water supply and municipal infrastructure capital.
+* **Empirical Validation**:
+  * Wrigley & Schofield (1981), *The Population History of England 1541-1871*; Preston (1975); Cutler & Miller (2005).
+
+---
+
 ## 📊 4. Central Summary Matrix of All Calibrated Subsystems (Entries 1 to 24)
 
 | # | Category | Subsystem | Canonical Literature | Calibrated Ether Formulation | Specific Adaptation / Material Calibration |
@@ -581,3 +605,4 @@ The foundational purpose of this registry is **epistemic transparency and algori
 | **22** | Tier 2 | Lewis Dual-Sector Model | Lewis (1954), Ranis & Fei (1961) | $\text{TurningPoint} = \sigma(k_{\text{pc}}, 250, 40) \cdot \sigma(\text{Trade}, 20, 5)$ | Continuous transition from surplus labor phase to induced capital-deepening mechanization |
 | **23** | Tier 2 | Kondratiev Long Wave | Kondratiev (1925), Schumpeter (1939) | $\phi(t) = \sin(2\pi(t-1780)/52)$, creative destruction trough | Infrastructure cycle coupled to physical capital scrapping and scrap metal recovery |
 | **24** | Tier 2 | Pomeranz Great Divergence | Pomeranz (2000), Allen (2009), Wrigley | $\mathcal{P}_{\text{div}} = \text{CoalProx} \cdot (1 + 0.8 \cdot \text{GhostAcreage})$ | Energy transport proximity & transoceanic land relief driving takeoff vs organic involution |
+| **25** | Tier 1/2 | Municipal Sanitation & Infant Survival | Omran (1971), Cutler & Miller (2005) | Hill kinetics $f_{\text{clean}} = \frac{k}{k + 1200}$, $f_{\text{sewer}} = \frac{k^2}{k^2 + 2500^2}$ | Canonical Eq. 99 restoring physical water/sewage infrastructure, eradicating premature ad-hoc sigmoids |

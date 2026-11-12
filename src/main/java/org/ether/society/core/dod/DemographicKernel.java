@@ -284,16 +284,20 @@ public class DemographicKernel {
             food[hIdx] -= reproductionFoodTaken;
             foodConsumedArr[hIdx] += reproductionFoodTaken;
 
-            // 6. Omran (1971) / Preston (1975) Sanitary & Potable Water Infant Mortality (Zero technology scalar)
+            // 6. Omran (1971) / Cutler & Miller (2005) Sanitary & Potable Water Infant Mortality (Canonical Eq. 99)
+            // Evaluates clean water and sewer penetration fractions via Hill/Michaelis-Menten kinetics over physical capital
             float cellWater = (waterArr != null && hIdx < waterArr.length) ? waterArr[hIdx] : 10.0f;
             double waterSecurity = 0.30 + 0.70 * (cellWater / (10.0 + Math.max(0.0, cellWater)));
-            // Pre-sanitary infectious load falls smoothly with municipal water & sanitary capital K/N
-            // Historic municipal sanitation (Preston 1975, Bazalgette sewer networks, sand filtration) scales at K/N ~ 3200 kg/cap
-            double unsanitaryExposure = 1.0 - SmoothMath.sigmoid(capPerCap, 3200.0, 1000.0);
-            double baselineInfantMortality = 0.020 + 0.220 * unsanitaryExposure;
+            double fClean = (capPerCap / (capPerCap + 1200.0)) * Math.min(1.0, waterSecurity);
+            double kCapSq = capPerCap * capPerCap;
+            double fSewer = kCapSq / (kCapSq + (2500.0 * 2500.0));
+            double unsanitaryExposure = Math.pow(Math.max(0.0, 1.0 - fClean), 1.5) * (1.0 - 0.5 * fSewer);
             double nutritionalStress = 1.5 - 0.5 * foodSatisfaction;
             double waterStress = 1.5 - 0.5 * waterSecurity;
-            float infantMortalityRate = (float) Math.clamp(baselineInfantMortality * nutritionalStress * waterStress, 0.015, 0.55);
+            float infantMortalityRate = (float) Math.clamp(
+                    (0.015 + 0.305 * unsanitaryExposure) * nutritionalStress * waterStress,
+                    0.015, 0.55
+            );
 
             float lifespanRatio = 1.0f;
             if (lifespanArr != null && hIdx < lifespanArr.length && lifespanArr[hIdx] > (float) (5.0 * lifespanScale)) {
@@ -304,7 +308,7 @@ public class DemographicKernel {
             float survivingNewborns = newBirths * (1.0f - infantMortalityRate);
             float nonSurvivingInfants = newBirths - survivingNewborns;
 
-            // 7. Gompertz-Makeham Adult & Senescent Hazard Law
+            // 7. Gompertz-Makeham Adult & Senescent Hazard Law (Canonical Eq. 25)
             double scaledAge = ageYears / lifespanScale;
             float gompertzSenescence = (float) ((0.0001 / lifespanScale) * Math.exp(0.08 * scaledAge));
             double acuteDeficit = SmoothMath.softplus(1.0 - foodSatisfaction, 20.0);
