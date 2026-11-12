@@ -50,12 +50,12 @@ Ether organizes its classes into 6 well-defined structural archetypes. Every cla
 ```
 
 ### Archetype 1: Engines (`*Engine`) — Pluggable Strategy Pattern
-* **Pattern**: Strategy (`SimulationEngineModule` / `ProceduralEnginePlugin`).
+* **Pattern**: Strategy (`SimulationEngineModule`).
 * **Role**: Computes physical, demographic, thermodynamic, or cliodynamic state transitions per simulation tick.
 * **Rules**:
-  - Must implement `SimulationEngineModule` (or `ProceduralEnginePlugin`).
+  - Must extend `AbstractSimulationEngine` and implement `SimulationEngineModule` (DoD `tick(WorldBuffer, ...)` or `accumulateCellularDerivatives(WorldBuffer, ...)`).
   - No public mutable static state. If internal state is required, provide instance state or an explicit `resetState()`.
-  - Zero allocation in `tick(WorldBuffer, ...)` or `process(List<H3Cell>, ...)`: pre-allocate memory and iterate with primitive counters.
+  - Zero allocation in `tick(WorldBuffer, ...)` or `accumulateCellularDerivatives(...)`: pre-allocate memory and iterate with primitive counters over `WorldBuffer`.
 
 ### Archetype 2: Coordinators (`*Coordinator`) — Facade & Mediator Pattern
 * **Pattern**: Mediator / Facade.
@@ -104,7 +104,7 @@ Ether organizes its classes into 6 well-defined structural archetypes. Every cla
 | **Stringly-Typed Identifiers** (`String pattern = "EGYPT_NILE"`) | 🟠 HIGH | Use strongly-typed `Enum` or `sealed interface` with `fromString(...)`. |
 | **Per-Tick Stream/Object Churn** in hot simulation loops | 🟠 HIGH | Use primitive loops (`for (int i = 0; i < N; i++)`), DoD `WorldBuffer`, or pre-allocated collections. |
 | **Direct Uncoordinated Static State** in engines | 🟠 HIGH | Centralize engine reset via `SimulationEngineStateCoordinator` or instance lifecycle. |
-| **Inconsistent Engine API** (some with `run()`, some `tick()`, some `process()`) | 🟡 MEDIUM | Unify all engines under `SimulationEngineModule` / `ProceduralEnginePlugin`. |
+| **Inconsistent Engine API** (some with `run()`, some `tick()`, some `process()`) | 🟡 MEDIUM | Unify all engines under `SimulationEngineModule` (`WorldBuffer` DoD). |
 
 ---
 
@@ -139,5 +139,5 @@ The following classes currently exceed the 500-line ceiling and must be refactor
 A PowerShell audit script (`scripts/audit-architecture-compliance.ps1`) allows validating all rules:
 1. Detects files exceeding 500 lines.
 2. Flags `catch (Exception ignored) {}`.
-3. Verifies that all `*Engine` classes implement `SimulationEngineModule` or `ProceduralEnginePlugin`.
+3. Verifies that all `*Engine` classes implement `SimulationEngineModule`.
 4. Checks that all `*Helper` classes have private constructors.

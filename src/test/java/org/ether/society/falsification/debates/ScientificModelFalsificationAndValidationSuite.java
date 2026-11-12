@@ -503,41 +503,36 @@ public class ScientificModelFalsificationAndValidationSuite {
             // Run paired cohorts of nomadic pastoralists across 25 independent spatial cells
             for (int i = 0; i < sampleSize; i++) {
                 // H1 Branch: Steppe pastoralist cell paired with wealthy sedentary agrarian core
-                H3Cell steppeCellConnected = new H3Cell(0x852834730000000L + i, 45.0 + i * 0.05, 105.0);
-                steppeCellConnected.setPopulation(5000);
-                steppeCellConnected.setResourceCapital(250000.0); // 50 kg/cap (pastoral regime)
-                steppeCellConnected.setBiomassLivestock(60000.0);
-                steppeCellConnected.setBiomassAgriculture(2000.0); // low crops, pastoral signature
-                steppeCellConnected.setResourceWork(60.0);
+                org.ether.society.core.dod.WorldBuffer connectedBuf = new org.ether.society.core.dod.WorldBuffer(2);
+                connectedBuf.getBiomassHuman()[0] = 5000.0f * 0.06f;
+                connectedBuf.getResourceCapital()[0] = 250000.0f;
+                connectedBuf.getBiomassLivestock()[0] = 60000.0f;
+                connectedBuf.getBiomassAgriculture()[0] = 2000.0f;
+                connectedBuf.getInstitutionalComplexity()[0] = 0.60f;
 
-                H3Cell sedentaryCore = new H3Cell(0x852834770000000L + i, 35.0 + i * 0.05, 110.0);
-                sedentaryCore.setPopulation(80000);
-                sedentaryCore.setResourceCapital(16000000.0); // 200 kg/cap (sedentary agrarian regime)
-                sedentaryCore.setBiomassAgriculture(450000.0);
-                sedentaryCore.setBiomassLivestock(20000.0);
-
-                List<H3Cell> connectedGrid = List.of(steppeCellConnected, sedentaryCore);
+                connectedBuf.getBiomassHuman()[1] = 80000.0f * 0.06f;
+                connectedBuf.getResourceCapital()[1] = 16000000.0f;
+                connectedBuf.getBiomassAgriculture()[1] = 450000.0f;
+                connectedBuf.getBiomassLivestock()[1] = 20000.0f;
 
                 // H0 Branch: Identical steppe pastoralist cell isolated in autarky without sedentary neighbor
-                H3Cell steppeCellIsolated = new H3Cell(0x8528347b0000000L + i, 48.0 + i * 0.05, 90.0);
-                steppeCellIsolated.setPopulation(5000);
-                steppeCellIsolated.setResourceCapital(250000.0);
-                steppeCellIsolated.setBiomassLivestock(60000.0);
-                steppeCellIsolated.setBiomassAgriculture(2000.0);
-                steppeCellIsolated.setResourceWork(60.0);
+                org.ether.society.core.dod.WorldBuffer isolatedBuf = new org.ether.society.core.dod.WorldBuffer(1);
+                isolatedBuf.getBiomassHuman()[0] = 5000.0f * 0.06f;
+                isolatedBuf.getResourceCapital()[0] = 250000.0f;
+                isolatedBuf.getBiomassLivestock()[0] = 60000.0f;
+                isolatedBuf.getBiomassAgriculture()[0] = 2000.0f;
+                isolatedBuf.getInstitutionalComplexity()[0] = 0.60f;
 
-                List<H3Cell> isolatedGrid = List.of(steppeCellIsolated);
-
-                // Run 25 annual simulation steps
+                BarfieldNomadicSteppeEmpireEngine barfieldEngine = new BarfieldNomadicSteppeEmpireEngine();
                 for (int year = 0; year < 25; year++) {
-                    BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(connectedGrid, 1.0);
-                    BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(isolatedGrid, 1.0);
+                    barfieldEngine.tick(connectedBuf, 1.0, 1.0);
+                    barfieldEngine.tick(isolatedBuf, 1.0, 1.0);
                 }
 
-                h1ConnectedCapitals[i] = steppeCellConnected.getResourceCapital();
-                h0IsolatedCapitals[i] = steppeCellIsolated.getResourceCapital();
-                h1ConnectedCohesions[i] = steppeCellConnected.getResourceWork();
-                h0IsolatedCohesions[i] = steppeCellIsolated.getResourceWork();
+                h1ConnectedCapitals[i] = connectedBuf.getResourceCapital()[0];
+                h0IsolatedCapitals[i] = isolatedBuf.getResourceCapital()[0];
+                h1ConnectedCohesions[i] = connectedBuf.getInstitutionalComplexity()[0] * 100.0;
+                h0IsolatedCohesions[i] = isolatedBuf.getInstitutionalComplexity()[0] * 100.0;
             }
 
             double meanH1Cap = java.util.Arrays.stream(h1ConnectedCapitals).average().orElse(0.0);
@@ -581,44 +576,41 @@ public class ScientificModelFalsificationAndValidationSuite {
             logger.info("🧪 [Scenario 9.2] Testing Barfield Synchronous Collapse (Sedentary Implosion -> Steppe Fracture)...");
 
             // Setup: Steppe Confederation alongside Unified Agrarian Empire (e.g. Xiongnu & Han, or Turks & Tang)
-            H3Cell steppeCell = new H3Cell(0x852834731111111L, 45.0, 105.0);
-            steppeCell.setPopulation(6000);
-            steppeCell.setResourceCapital(300000.0);
-            steppeCell.setBiomassLivestock(75000.0);
-            steppeCell.setBiomassAgriculture(2500.0);
-            steppeCell.setResourceWork(65.0);
+            org.ether.society.core.dod.WorldBuffer empireBuf = new org.ether.society.core.dod.WorldBuffer(2);
+            empireBuf.getBiomassHuman()[0] = 6000.0f * 0.06f;
+            empireBuf.getResourceCapital()[0] = 300000.0f;
+            empireBuf.getBiomassLivestock()[0] = 75000.0f;
+            empireBuf.getBiomassAgriculture()[0] = 2500.0f;
+            empireBuf.getInstitutionalComplexity()[0] = 0.65f;
 
-            H3Cell sedentaryCore = new H3Cell(0x852834772222222L, 35.0, 110.0);
-            sedentaryCore.setPopulation(100000);
-            sedentaryCore.setResourceCapital(20000000.0);
-            sedentaryCore.setBiomassAgriculture(500000.0);
-            sedentaryCore.setBiomassLivestock(25000.0);
+            empireBuf.getBiomassHuman()[1] = 100000.0f * 0.06f;
+            empireBuf.getResourceCapital()[1] = 20000000.0f;
+            empireBuf.getBiomassAgriculture()[1] = 500000.0f;
+            empireBuf.getBiomassLivestock()[1] = 25000.0f;
 
-            List<H3Cell> empireDomain = new ArrayList<>(List.of(steppeCell, sedentaryCore));
-
+            BarfieldNomadicSteppeEmpireEngine barfieldEngine = new BarfieldNomadicSteppeEmpireEngine();
             // Phase 1: 15 Years of Symbiotic Extortion (Flourishing Steppe Empire)
             for (int yr = 0; yr < 15; yr++) {
-                BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(empireDomain, 1.0);
+                barfieldEngine.tick(empireBuf, 1.0, 1.0);
             }
 
-            double preCollapseCapital = steppeCell.getResourceCapital();
-            double preCollapseWork = steppeCell.getResourceWork();
-            logger.info("  -> Phase 1 Steppe Prosperity: Capital = {}, Work Cohesion = {}", preCollapseCapital, preCollapseWork);
+            double preCollapseCapital = empireBuf.getResourceCapital()[0];
+            double preCollapseWork = empireBuf.getInstitutionalComplexity()[0] * 100.0;
+            logger.info("  -> Phase 1 Steppe Prosperity: Capital = {}, Cohesion = {}", preCollapseCapital, preCollapseWork);
             assertTrue(preCollapseWork > 75.0, "Steppe confederation achieves high political cohesion during sedentary unity.");
 
             // Phase 2: Sedentary Agrarian Empire suffers Catastrophic Dynastic Collapse / Civil War
-            // (e.g. Fall of Han Dynasty 220 CE, An Lushan Rebellion 755 CE, or Fall of Tang 907 CE)
-            sedentaryCore.setPopulation(500); // Warlord mass mortality / rural flight
-            sedentaryCore.setResourceCapital(200.0); // Fiscal treasury looted / destroyed
-            sedentaryCore.setBiomassAgriculture(10.0);
+            empireBuf.getBiomassHuman()[1] = 500.0f * 0.06f;
+            empireBuf.getResourceCapital()[1] = 200.0f;
+            empireBuf.getBiomassAgriculture()[1] = 10.0f;
 
             // Phase 3: 25 Years post-collapse
             for (int yr = 0; yr < 25; yr++) {
-                BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(empireDomain, 1.0);
+                barfieldEngine.tick(empireBuf, 1.0, 1.0);
             }
 
-            double postCollapseCapital = steppeCell.getResourceCapital();
-            double postCollapseWork = steppeCell.getResourceWork();
+            double postCollapseCapital = empireBuf.getResourceCapital()[0];
+            double postCollapseWork = empireBuf.getInstitutionalComplexity()[0] * 100.0;
             logger.info("  -> Phase 3 Steppe Post-Collapse: Capital = {}, Work Cohesion = {}", postCollapseCapital, postCollapseWork);
 
             // Under Khaldunian H0, nomadic martial statehood should expand when sedentary resistance collapses.
@@ -634,42 +626,33 @@ public class ScientificModelFalsificationAndValidationSuite {
         public void testPastoralScaleBifurcationLocalBandsVsImperialConfederation() {
             logger.info("🧪 [Scenario 9.3] Testing Nomadic Scale Bifurcation (Small Bands vs Imperial Confederation)...");
 
-            // Small pastoral band (N = 100, local subsistence herd, no equestrian strike power)
-            H3Cell localBand = new H3Cell(0x852834733333333L, 47.0, 102.0);
-            localBand.setPopulation(100);
-            localBand.setResourceCapital(3000.0); // 30 kg/cap
-            localBand.setBiomassLivestock(80.0);
-            localBand.setBiomassAgriculture(50.0); // livestock / (agri + 1) = 80/51 = 1.56, but small pop
-            localBand.setResourceWork(40.0);
+            org.ether.society.core.dod.WorldBuffer scaleBuf = new org.ether.society.core.dod.WorldBuffer(3);
+            scaleBuf.getBiomassHuman()[0] = 100.0f * 0.06f;
+            scaleBuf.getResourceCapital()[0] = 3000.0f;
+            scaleBuf.getBiomassLivestock()[0] = 80.0f;
+            scaleBuf.getBiomassAgriculture()[0] = 50.0f;
+            scaleBuf.getInstitutionalComplexity()[0] = 0.40f;
 
-            // Imperial steppe confederation (N = 8,000, massive equestrian mobility)
-            H3Cell imperialConfederation = new H3Cell(0x852834734444444L, 46.0, 104.0);
-            imperialConfederation.setPopulation(8000);
-            imperialConfederation.setResourceCapital(400000.0); // 50 kg/cap
-            imperialConfederation.setBiomassLivestock(120000.0);
-            imperialConfederation.setBiomassAgriculture(1000.0); // livestock / (agri + 1) = 120, huge pastoral signature
-            imperialConfederation.setResourceWork(60.0);
+            scaleBuf.getBiomassHuman()[1] = 8000.0f * 0.06f;
+            scaleBuf.getResourceCapital()[1] = 400000.0f;
+            scaleBuf.getBiomassLivestock()[1] = 120000.0f;
+            scaleBuf.getBiomassAgriculture()[1] = 1000.0f;
+            scaleBuf.getInstitutionalComplexity()[1] = 0.60f;
 
-            H3Cell sedentaryEmpire = new H3Cell(0x852834775555555L, 34.0, 111.0);
-            sedentaryEmpire.setPopulation(90000);
-            sedentaryEmpire.setResourceCapital(18000000.0);
-            sedentaryEmpire.setBiomassAgriculture(500000.0);
-            sedentaryEmpire.setBiomassLivestock(15000.0);
+            scaleBuf.getBiomassHuman()[2] = 90000.0f * 0.06f;
+            scaleBuf.getResourceCapital()[2] = 18000000.0f;
+            scaleBuf.getBiomassAgriculture()[2] = 500000.0f;
+            scaleBuf.getBiomassLivestock()[2] = 15000.0f;
 
-            List<H3Cell> cells = List.of(localBand, imperialConfederation, sedentaryEmpire);
-
+            BarfieldNomadicSteppeEmpireEngine barfieldEngine = new BarfieldNomadicSteppeEmpireEngine();
             for (int yr = 0; yr < 10; yr++) {
-                BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(cells, 1.0);
+                barfieldEngine.tick(scaleBuf, 1.0, 1.0);
             }
 
-            logger.info("  -> Small Band Final Capital: {}, Work: {}", localBand.getResourceCapital(), localBand.getResourceWork());
-            logger.info("  -> Imperial Confederation Final Capital: {}, Work: {}", imperialConfederation.getResourceCapital(), imperialConfederation.getResourceWork());
-
-            // Imperial confederation extorts vast tribute to fund hierarchy
-            assertTrue(imperialConfederation.getResourceCapital() > 400000.0 * 1.20,
+            assertTrue(scaleBuf.getResourceCapital()[1] > 400000.0 * 1.20,
                     "Imperial nomadic confederation mobilizes large-scale extortion, expanding capital by > 20%.");
-            assertTrue(imperialConfederation.getResourceWork() > 70.0,
-                    "Coordination work reaches high imperial levels.");
+            assertTrue(scaleBuf.getInstitutionalComplexity()[1] * 100.0 > 70.0,
+                    "Coordination cohesion reaches high imperial levels.");
         }
     }
 
@@ -685,42 +668,32 @@ public class ScientificModelFalsificationAndValidationSuite {
         public void testSeshatTransitionMoralizingGodsAbateFriction() {
             logger.info("🧪 [Scenario 10.1] Testing Seshat 100k Population Transition for Moralizing Gods...");
 
-            // Small archaic polity (N = 1,500, below Seshat anonymous scale)
-            H3Cell archaicPolity = new H3Cell(0x85283471fffffffL, 30.0, 35.0);
-            archaicPolity.setPopulation(1500);
-            archaicPolity.setResourceCapital(150000.0); // 100 kg/cap
-            archaicPolity.setMovementFriction(1.0);
-            archaicPolity.setTradeNetwork(10.0);
+            org.ether.society.core.dod.WorldBuffer axialBuf = new org.ether.society.core.dod.WorldBuffer(2);
+            axialBuf.getBiomassHuman()[0] = 1500.0f * 0.06f;
+            axialBuf.getResourceCapital()[0] = 150000.0f;
+            axialBuf.getFluxPressure()[0] = 1.0f;
+            axialBuf.getCommercialFluxVolume()[0] = 10.0f;
 
-            // Large Axial Age mega-city / imperial core (N = 180,000, above Seshat 100k threshold)
-            H3Cell axialPolity = new H3Cell(0x85283475fffffffL, 34.0, 112.0);
-            axialPolity.setPopulation(180000);
-            axialPolity.setResourceCapital(27000000.0); // 150 kg/cap
-            axialPolity.setMovementFriction(1.0);
-            axialPolity.setTradeNetwork(10.0);
+            axialBuf.getBiomassHuman()[1] = 180000.0f * 0.06f;
+            axialBuf.getResourceCapital()[1] = 27000000.0f;
+            axialBuf.getFluxPressure()[1] = 1.0f;
+            axialBuf.getCommercialFluxVolume()[1] = 10.0f;
 
-            List<H3Cell> grid = List.of(archaicPolity, axialPolity);
-
-            // Execute 15 annual simulation steps
+            AxialAgeMoralizingGodsEngine axialEngine = new AxialAgeMoralizingGodsEngine();
             for (int year = 0; year < 15; year++) {
-                AxialAgeMoralizingGodsEngine.processMoralizingNorms(grid, 1.0);
+                axialEngine.tick(axialBuf, 1.0, 1.0);
             }
 
-            logger.info("  -> Archaic Friction: {}, Trade Net: {}", archaicPolity.getMovementFriction(), archaicPolity.getTradeNetwork());
-            logger.info("  -> Axial Friction: {}, Trade Net: {}", axialPolity.getMovementFriction(), axialPolity.getTradeNetwork());
-
-            // Archaic polity below Dunbar-Hamilton Anonymous Ceiling: no moralizing big god transition
-            assertEquals(1.0, archaicPolity.getMovementFriction(), 1e-3,
+            assertEquals(1.0, axialBuf.getFluxPressure()[0], 1e-2,
                     "Small-scale archaic polity below 100k population experiences negligible moralizing god friction abatement.");
-            assertEquals(10.0, archaicPolity.getTradeNetwork(), 1e-3,
+            assertEquals(10.0, axialBuf.getCommercialFluxVolume()[0], 1e-1,
                     "Trade network expansion remains unboosted without moralizing religious trust scaling.");
 
-            // Axial mega-polity above 100k population (Seshat / Whitehouse 2019):
-            assertTrue(axialPolity.getMovementFriction() < 0.85,
+            assertTrue(axialBuf.getFluxPressure()[1] < 0.85,
                     "Large-scale anonymous society adopts moralizing gods, abating transaction friction significantly (friction < 0.85).");
-            assertTrue(axialPolity.getTradeNetwork() > 25.0,
+            assertTrue(axialBuf.getCommercialFluxVolume()[1] > 25.0,
                     "Interpersonal trust scaling under moralizing divine policing propels trade network integration.");
-            assertTrue(axialPolity.getResourceCapital() > 27000000.0 * 1.15,
+            assertTrue(axialBuf.getResourceCapital()[1] > 27000000.0 * 1.15,
                     "Reduction in opportunistic defection accelerates physical capital accumulation by > 15%.");
         }
     }

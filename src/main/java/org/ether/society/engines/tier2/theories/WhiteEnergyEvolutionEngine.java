@@ -6,16 +6,17 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.ether.society.engines.tier2.historical.LeslieWhitePureEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Leslie White Energy and Cultural Evolution Engine.
@@ -62,7 +63,27 @@ public class WhiteEnergyEvolutionEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        LeslieWhitePureEngine.processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
+
+        double foodEnergy = Math.max(3.5 * pop, buffer.getEnergyFoodConsumed()[i]);
+        double exosomaticEnergy = buffer.getEnergyFire()[i]
+                + buffer.getEnergyWind()[i]
+                + buffer.getEnergySolar()[i]
+                + (buffer.getBiomassLivestock()[i] * 15.0)
+                + (buffer.getResourceCoal()[i] * 24.0)
+                + (buffer.getResourceOil()[i] * 42.0);
+        double totalEnergy = foodEnergy + exosomaticEnergy;
+        double energyPerCapita = totalEnergy / pop;
+
+        acc.dResourceCapital += pop * (energyPerCapita / 50.0) * 0.005 * dtYears;
     }
 }

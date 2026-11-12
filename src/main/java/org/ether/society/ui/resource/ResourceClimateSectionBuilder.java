@@ -24,7 +24,7 @@ import org.ether.society.data.OnlineMapService;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.EcologyPreset;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.ui.WindowHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,7 +181,7 @@ public class ResourceClimateSectionBuilder {
             alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Delete Confirmation"));
             alert.setHeaderText(null);
             alert.setContentText(I18n.getOrDefault("resource.confirm.clear_climate", "Do you really want to clear the imported climate map?"));
-            WindowUtils.applyWindowIcon(alert);
+            WindowHelper.applyWindowIcon(alert);
             alert.initOwner(host.getWindow());
             alert.showAndWait().ifPresent(res -> {
                 if (res == ButtonType.OK) {
@@ -207,7 +207,7 @@ public class ResourceClimateSectionBuilder {
             alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Delete Confirmation"));
             alert.setHeaderText(null);
             alert.setContentText(I18n.getOrDefault("resource.confirm.clear_rainfall", "Do you really want to clear the imported precipitation map?"));
-            WindowUtils.applyWindowIcon(alert);
+            WindowHelper.applyWindowIcon(alert);
             alert.initOwner(host.getWindow());
             alert.showAndWait().ifPresent(res -> {
                 if (res == ButtonType.OK) {
@@ -233,7 +233,7 @@ public class ResourceClimateSectionBuilder {
             alert.setTitle(I18n.getOrDefault("dialog.confirm.title", "Delete Confirmation"));
             alert.setHeaderText(null);
             alert.setContentText(I18n.getOrDefault("resource.confirm.clear_seasonality", "Do you really want to clear the imported seasonality map?"));
-            WindowUtils.applyWindowIcon(alert);
+            WindowHelper.applyWindowIcon(alert);
             alert.initOwner(host.getWindow());
             alert.showAndWait().ifPresent(res -> {
                 if (res == ButtonType.OK) {

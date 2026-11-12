@@ -249,16 +249,16 @@ public class Tier2CliodynamicPluginsTestSuite {
      *
      */
     public void testSoilSalinization() {
-        H3Cell mesopotamianCell = new H3Cell();
-        mesopotamianCell.setPopulation(5000);
-        mesopotamianCell.setRainfall(180.0);
-        mesopotamianCell.setTemperature(26.0);
-        mesopotamianCell.setElevation(50.0);
-        mesopotamianCell.setFoodResource(5000.0);
-        mesopotamianCell.setResourceCapital(250000.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        buf.getBiomassHuman()[0] = 5000.0f * 0.06f;
+        buf.getRainfall()[0] = 180.0f;
+        buf.getTemperature()[0] = 26.0f;
+        buf.getElevation()[0] = 50.0f;
+        buf.getFoodResource()[0] = 5000.0f;
+        buf.getResourceCapital()[0] = 250000.0f;
 
-        org.ether.society.engines.tier2.theories.SoilSalinizationHydrologyEngine.processSoilSalinization(List.of(mesopotamianCell), 10.0);
-        assertTrue(mesopotamianCell.getFoodResource() < 5000.0, "Intensive irrigation in arid lowland must trigger salinization yield penalty");
+        new SoilSalinizationHydrologyEngine().tick(buf, 10.0, 10.0);
+        assertTrue(buf.getFoodResource()[0] < 5000.0, "Intensive irrigation in arid lowland must trigger salinization yield penalty");
     }
 
     @Test
@@ -298,9 +298,9 @@ public class Tier2CliodynamicPluginsTestSuite {
      */
     public void testSpiDiscovery() {
         SimulationEngineRegistry.getInstance().resetAll();
-        int loaded = ProceduralEngineSpiLoader.loadClasspathPlugins();
-        assertTrue(loaded >= 15, "SPI loader should discover all 16 registered SimulationEngineModule implementations");
-        assertTrue(ProceduralEngineRegistry.getPluginCount() >= 15);
+        int loaded = SimulationEngineRegistry.getInstance().getAllEngines().size();
+        assertTrue(loaded >= 15, "Engine registry should discover all registered SimulationEngineModule implementations");
+        assertTrue(SimulationEngineRegistry.getInstance().getAllEngines().size() >= 15);
         SimulationEngineRegistry.getInstance().resetAll();
     }
 

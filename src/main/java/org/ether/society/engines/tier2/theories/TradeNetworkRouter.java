@@ -6,8 +6,6 @@
  */
 package org.ether.society.engines.tier2.theories;
 
-import org.ether.society.core.engine.AbstractSimulationEngine;
-import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.tier1.ThermodynamicMigrationEngine;
 import org.slf4j.Logger;
@@ -16,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
- * Trade &amp; Infrastructure Network Engine.
+ * Trade &amp; Infrastructure Network Router.
  * Models historical trade routes (e.g. Silk Road, Trans-Saharan, Maritime Corridors)
  * based on H3 terrain movement friction and population hubs using continuous economic
  * gravity models (Anderson 1979; Head &amp; Mayer 2014).
@@ -25,17 +23,12 @@ import java.util.*;
  * @version 1.0.0-beta.2
  * @see TradeCorridorArbitrageHelper
  */
-public class TradeNetworkEngine extends AbstractSimulationEngine {
-    public TradeNetworkEngine() {
-        super("TradeNetworkEngine", "TradeNetworkEngine", EngineTier.TIER_2_CLIODYNAMIC);
+public final class TradeNetworkRouter {
+    private TradeNetworkRouter() {
+        // Pure static spatial router
     }
 
-    @Override
-    public void reset() {
-        resetState();
-    }
-
-    private static final Logger logger = LoggerFactory.getLogger(TradeNetworkEngine.class);
+    private static final Logger logger = LoggerFactory.getLogger(TradeNetworkRouter.class);
 
     /**
      * Immutable representation of an active trade corridor between two H3 population hubs.

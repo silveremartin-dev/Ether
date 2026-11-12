@@ -6,15 +6,16 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Institutional Complexity &amp; Declining Marginal Returns Engine (Joseph Tainter, 1988).
@@ -91,32 +92,29 @@ public class TainterComplexityCollapseEngine extends AbstractSimulationEngine {
      * @param deltaYears the delta years parameter (double)
      */
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double capital = cell.getResourceCapitalOr(0.0);
-            if (capital < 50.0) continue;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
 
-            int pop = cell.getPopulationOr(0);
-            double kPerCap = (pop > 0) ? (capital / pop) : capital;
-            // Consistent intensive dimension: annual metabolic & capital surplus flow scaled by deltaYears
-            double surplusFlow = (pop * (0.05 + 0.020 * kPerCap)) * deltaYears;
+        double capital = buffer.getResourceCapital()[i];
+        if (capital < 50.0) return;
 
-            // Intensive complexity index derived from per-capita institutional capital depth
-            double complexity = Math.log(1.0 + 0.02 * kPerCap);
-            // Institutional & infrastructural maintenance overhead scales with capital stock and nonlinear bureaucratic depth
-            double maintenanceCost = (0.015 * capital + Math.max(1, pop) * Math.pow(complexity, 2.2) * 0.08) * deltaYears;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double kPerCap = (pop > 0.0) ? (capital / pop) : capital;
+        double surplusFlow = (pop * (0.05 + 0.020 * kPerCap)) * dtYears;
 
-            if (maintenanceCost > surplusFlow) {
-                // Diminishing returns trap (Tainter 1988): complexity maintenance exceeds surplus -> capital collapse
-                double erosion = (maintenanceCost - surplusFlow) * 0.8;
-                cell.setResourceCapital(Math.max(10.0, capital - erosion));
-            }
+        double complexity = Math.log(1.0 + 0.02 * kPerCap);
+        double maintenanceCost = (0.015 * capital + Math.max(1.0, pop) * Math.pow(complexity, 2.2) * 0.08) * dtYears;
+
+        if (maintenanceCost > surplusFlow) {
+            double erosion = (maintenanceCost - surplusFlow) * 0.8;
+            double newCap = Math.max(10.0, capital - erosion);
+            acc.dResourceCapital += (newCap - capital);
+            acc.dInstitutionalComplexity -= 0.01 * Math.min(0.5, erosion / Math.max(1.0, capital));
         }
     }
 }

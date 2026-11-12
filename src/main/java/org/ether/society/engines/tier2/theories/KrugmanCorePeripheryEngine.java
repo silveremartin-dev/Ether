@@ -6,15 +6,16 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Krugman Core-Periphery &amp; New Economic Geography Engine (Paul Krugman, Nobel 1991).
@@ -88,47 +89,42 @@ public class KrugmanCorePeripheryEngine extends AbstractSimulationEngine {
         return "Tier 2: Spatial Economics";
     }
 
-    /**
-     * Process.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
+    private transient double meanCapital = 10.0;
+
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        double meanCapital = cells.stream()
-                .filter(java.util.Objects::nonNull)
-                .mapToDouble(c -> c.getResourceCapitalOr(0.0))
-                .average().orElse(10.0);
+    @Override
+    public void prepareTick(WorldBuffer buffer, double dtYears) {
+        meanCapital = 10.0;
+        if (buffer == null || buffer.getResourceCapital() == null) return;
+        float[] capArr = buffer.getResourceCapital();
+        double sum = 0.0;
+        int n = buffer.getCapacity();
+        for (int i = 0; i < n; i++) sum += capArr[i];
+        meanCapital = n > 0 ? Math.max(1.0, sum / n) : 10.0;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 1.0) return;
 
-            double capital = cell.getResourceCapitalOr(10.0);
-            double friction = cell.getMovementFrictionOr(1.0);
+        double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0;
+        double friction = buffer.getFluxPressure() != null ? Math.max(0.2, 1.0 + buffer.getFluxPressure()[i]) : 1.0;
 
-            // Core hub advantage: high local market access + low transport friction -> capital inflow
-            double accessibilityIndex = (pop * 0.001) / Math.max(0.2, friction);
+        double accessibilityIndex = (pop * 0.001) / friction;
+        double relCapital = capital / meanCapital;
+        double capitalAdvantage = 1.0 / (1.0 + Math.exp(-2.0 * (relCapital - 1.0)));
+        double accessAdvantage = accessibilityIndex / (1.0 + accessibilityIndex);
+        double centripetalFactor = 2.0 * capitalAdvantage * accessAdvantage;
 
-            // Continuous centripetal agglomeration potential (Krugman 1991, Fujita et al. 1999)
-            double relCapital = capital / Math.max(1.0, meanCapital);
-            double capitalAdvantage = 1.0 / (1.0 + Math.exp(-2.0 * (relCapital - 1.0)));
-            double accessAdvantage = accessibilityIndex / (1.0 + accessibilityIndex);
-            double centripetalFactor = 2.0 * capitalAdvantage * accessAdvantage;
-
-            // Agglomeration feedback (centripetal force): enhances local market potential, reduces transport friction,
-            // and shifts capital from high-friction periphery toward low-friction core hubs (Krugman 1991, eq. dK_i/dt)
-            cell.setMovementFriction(Math.max(0.1, friction * (1.0 - 0.02 * centripetalFactor * deltaYears)));
-            double centrifugalCongestion = 0.01 * (relCapital / Math.max(1.0, accessibilityIndex));
-            double netAgglomerationRate = (0.015 * centripetalFactor - centrifugalCongestion) * deltaYears;
-            cell.setResourceCapital(Math.max(1.0, capital * (1.0 + Math.clamp(netAgglomerationRate, -0.05, 0.08))));
-        }
+        acc.dFluxPressure -= (float) (0.02 * centripetalFactor * dtYears);
+        double centrifugalCongestion = 0.01 * (relCapital / Math.max(1.0, accessibilityIndex));
+        double netAgglomerationRate = Math.clamp((0.015 * centripetalFactor - centrifugalCongestion) * dtYears, -0.05, 0.08);
+        acc.dResourceCapital += (float) (capital * netAgglomerationRate);
     }
 }

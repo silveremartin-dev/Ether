@@ -139,18 +139,21 @@ public class HistoricalBehaviorsTestSuite {
      */
     public void testAmerindianEpidemicsAndDraftConstraint() {
         H3Cell cell = testCells.get(0);
-        cell.setLatitude(19.4);
-        cell.setLongitude(-99.1);
-        double initialPop = cell.getPopulation();
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        double initialBiomass = cell.getPopulation() * 0.06;
+        double initialCapital = Math.max(100.0, cell.getResourceCapitalOr(100.0));
+        buf.getBiomassHuman()[0] = (float) initialBiomass;
+        buf.getBiomassLivestock()[0] = 0.0f;
+        buf.getResourceCapital()[0] = (float) initialCapital;
 
         // Trigger European/Old World contact epidemic shock
         AmerindianEcosystemEngine.setOldWorldContactTriggered(true);
-        AmerindianEcosystemEngine.processHybrid(testCells, 1.0);
+        new AmerindianEcosystemEngine().tick(buf, 1.0, 1.0);
 
-        assertTrue(cell.getPopulation() < initialPop * 0.95,
+        assertTrue(buf.getBiomassHuman()[0] < initialBiomass * 0.95,
             "Amerindian engine: Virgin-soil epidemic shock should cause severe demographic crash upon contact.");
-        assertTrue(cell.getResourceWork() <= 40.0,
-            "Amerindian engine: Lack of draft animals should cap mechanical work output.");
+        assertTrue(buf.getResourceCapital()[0] < initialCapital,
+            "Amerindian engine: Lack of draft animals should constrain capital accumulation.");
 
         AmerindianEcosystemEngine.setOldWorldContactTriggered(false); // Reset
     }
@@ -166,11 +169,18 @@ public class HistoricalBehaviorsTestSuite {
      */
     public void testFertileCrescentSalinization() {
         H3Cell cell = testCells.get(0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         double initialFood = cell.getFoodResource();
+        buf.getBiomassHuman()[0] = (float) (cell.getPopulation() * 0.06);
+        buf.getRainfall()[0] = 200.0f;
+        buf.getTemperature()[0] = 25.0f;
+        buf.getElevation()[0] = 50.0f;
+        buf.getFoodResource()[0] = (float) initialFood;
+        buf.getResourceCapital()[0] = (float) cell.getResourceCapitalOr(10000.0);
 
-        org.ether.society.engines.tier2.theories.SoilSalinizationHydrologyEngine.processSoilSalinization(testCells, 100.0); // 1 century of irrigation
+        new org.ether.society.engines.tier2.theories.SoilSalinizationHydrologyEngine().tick(buf, 100.0, 100.0); // 1 century of irrigation
 
-        assertTrue(cell.getFoodResource() < initialFood,
+        assertTrue(buf.getFoodResource()[0] < initialFood,
             "Fertile Crescent engine: Canal irrigation topsoil salinization should degrade food yields over time.");
     }
 

@@ -12,7 +12,7 @@ import org.ether.society.database.H3Cell;
 import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.ether.society.model.Biome;
 import org.ether.society.model.Scenario;
-import org.ether.society.engines.tier2.theories.TradeNetworkEngine;
+import org.ether.society.engines.tier2.theories.TradeNetworkRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +95,7 @@ public final class ArchipelagoValidationFixtures {
         archMesh.addAll(islandB);
         archMesh.addAll(islandC);
 
-        TradeNetworkEngine.resetCumulativeStats();
+        TradeNetworkRouter.resetCumulativeStats();
 
         H3SimulationEngine engine = new H3SimulationEngine(config);
         Scenario scenario = new Scenario();
@@ -113,9 +113,9 @@ public final class ArchipelagoValidationFixtures {
             engine.stepForward(1);
         }
 
-        double tradedFood = TradeNetworkEngine.getCumulativeTradedFood();
-        double tradedMetal = TradeNetworkEngine.getCumulativeTradedMetal();
-        double tradedCap = TradeNetworkEngine.getCumulativeTradedCapital();
+        double tradedFood = TradeNetworkRouter.getCumulativeTradedFood();
+        double tradedMetal = TradeNetworkRouter.getCumulativeTradedMetal();
+        double tradedCap = TradeNetworkRouter.getCumulativeTradedCapital();
 
         WorldBuffer buffer = engine.getWorldBuffer();
         double popA = 0.0, popB = 0.0, popC = 0.0;
@@ -237,7 +237,7 @@ public final class ArchipelagoValidationFixtures {
         britishIslesMesh.addAll(britain);
         britishIslesMesh.addAll(ireland);
 
-        TradeNetworkEngine.resetCumulativeStats();
+        TradeNetworkRouter.resetCumulativeStats();
 
         H3SimulationEngine engine = new H3SimulationEngine(config);
         Scenario scenario = new Scenario();
@@ -268,8 +268,8 @@ public final class ArchipelagoValidationFixtures {
         }
         irelandFinalTech /= ireland.size();
 
-        double tradedFood = TradeNetworkEngine.getCumulativeTradedFood();
-        double tradedMetal = TradeNetworkEngine.getCumulativeTradedMetal();
+        double tradedFood = TradeNetworkRouter.getCumulativeTradedFood();
+        double tradedMetal = TradeNetworkRouter.getCumulativeTradedMetal();
 
         return new BritishIslesWeeklyResult(tradedFood, tradedMetal, irelandFinalTech, irelandFinalCap, britainFinalFood);
     }

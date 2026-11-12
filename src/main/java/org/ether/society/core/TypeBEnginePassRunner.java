@@ -138,9 +138,8 @@ public final class TypeBEnginePassRunner {
             int capacity = worldBuffer.getCapacity();
             // Pre-tick preparation for global parameters / thresholds
             for (SimulationEngineModule e : cellularEngines) {
-                if (e instanceof TasmanianCulturalRegressionEngine t) {
-                    t.prepareTick(worldBuffer, dtYears);
-                } else if (e instanceof KurzweilAcceleratingReturnsEngine k) {
+                e.prepareTick(worldBuffer, dtYears);
+                if (e instanceof KurzweilAcceleratingReturnsEngine k) {
                     k.prepareTick(dtYears);
                 }
             }
@@ -162,6 +161,50 @@ public final class TypeBEnginePassRunner {
         // --- WHOLE BUFFER / STENCIL PASSES (DIFFUSION, WATER GRID, ETC.) ---
         for (SimulationEngineModule engine : bufferEngines) {
             engine.tick(worldBuffer, dtYears, dtMonthly);
+        }
+    }
+
+    /**
+     * Executes active Tier 1 biophysical engines (thermodynamics, ecological degradation, pollution,
+     * metallurgy) over the Data-Oriented {@link WorldBuffer} using Single-Pass Cellular Kernel Fusion.
+     *
+     * @param worldBuffer contiguous world memory buffer
+     * @param dtYears     time step in Julian years
+     * @param dtMonthly   monthly-scaled year fraction
+     * @param scenario    active scenario configuration (may be {@code null})
+     */
+    public void executeActiveTier1Engines(WorldBuffer worldBuffer,
+                                          double dtYears,
+                                          double dtMonthly,
+                                          Scenario scenario) {
+        if (worldBuffer == null) return;
+
+        List<SimulationEngineModule> tier1Engines = SimulationEngineRegistry.getInstance().getTier1Engines();
+        if (tier1Engines.isEmpty()) return;
+
+        List<SimulationEngineModule> cellularEngines = new java.util.ArrayList<>();
+        for (SimulationEngineModule engine : tier1Engines) {
+            if (engine.supportsCellularDerivatives() && engine.isEnabled(scenario)) {
+                cellularEngines.add(engine);
+            }
+        }
+        if (cellularEngines.isEmpty()) return;
+
+        int capacity = worldBuffer.getCapacity();
+        for (SimulationEngineModule e : cellularEngines) {
+            e.prepareTick(worldBuffer, dtYears);
+        }
+
+        DerivativeAccumulator acc = new DerivativeAccumulator();
+        int engineCount = cellularEngines.size();
+        for (int i = 0; i < capacity; i++) {
+            acc.clear();
+            for (int e = 0; e < engineCount; e++) {
+                cellularEngines.get(e).accumulateCellularDerivatives(worldBuffer, i, dtYears, dtMonthly, acc);
+            }
+            if (acc.hasNonZeroDerivatives()) {
+                org.ether.society.core.engine.AbstractSimulationEngine.applyAccumulatorToCell(worldBuffer, i, acc);
+            }
         }
     }
 }

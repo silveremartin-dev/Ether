@@ -6,16 +6,17 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Karl Polanyi Fictitious Commodities &amp; The Great Transformation Engine.
@@ -83,55 +84,32 @@ public class PolanyiFictitiousCommoditiesEngine extends AbstractSimulationEngine
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processPolanyiTransformation(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Evaluates market commodification and protective countermovement across cells.
-     *
-     * @param cells      simulation cells
-     * @param deltaYears time step duration in astronomical Julian years
-     */
-    public static void processPolanyiTransformation(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 10.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 10) continue;
+        double cap = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0;
+        double kpc = cap / pop;
+        double trade = buffer.getCommercialFluxVolume() != null ? buffer.getCommercialFluxVolume()[i] : 0.0;
 
-            double cap = cell.getResourceCapitalOr(0.0);
-            double kpc = cap / (double) pop;
-            double trade = cell.getTradeNetworkOr(0.0);
+        double marketCommodification = SmoothMath.sigmoid(kpc, COMMODIFICATION_KPC_THRESHOLD, 20.0)
+                * SmoothMath.sigmoid(trade, TRADE_INTEGRATION_THRESHOLD, 5.0);
 
-            // Commodification emerges continuously with capital density and commercial market access
-            double marketCommodification = SmoothMath.sigmoid(kpc, COMMODIFICATION_KPC_THRESHOLD, 20.0)
-                    * SmoothMath.sigmoid(trade, TRADE_INTEGRATION_THRESHOLD, 5.0);
+        if (marketCommodification > 0.02) {
+            double agri = buffer.getBiomassAgriculture() != null ? buffer.getBiomassAgriculture()[i] : 0.0;
+            acc.dBiomassAgriculture += (float) (agri * 0.08 * marketCommodification * dtYears);
 
-            if (marketCommodification > 0.02) {
-                // 1. Allocation efficiency gain: enclosure and market incentives boost agricultural yield
-                double agri = cell.getBiomassAgricultureOr(0.0);
-                double efficiencyBoost = 0.08 * marketCommodification * deltaYears;
-                cell.setBiomassAgriculture(agri * (1.0 + efficiencyBoost));
-
-                // 2. Vulnerability to subsistence stress without customary communal buffers
-                double food = cell.getFoodResourceOr(0.0);
-                double perCapitaFood = food / (double) pop;
-                double subsistenceStress = Math.max(0.0, 1.0 - (perCapitaFood / 1.20));
-
-                if (subsistenceStress > 0.10) {
-                    // Polanyi Double Movement: dislocated population pushes back against unbuffered market shocks
-                    // Friction increases as protective regulations and social resistance emerge
-                    double currentFriction = cell.getMovementFrictionOr(1.0);
-                    double resistanceFriction = 0.05 * marketCommodification * subsistenceStress * deltaYears;
-                    cell.setMovementFriction(Math.min(3.0, currentFriction + resistanceFriction));
-
-                    // Work capacity is partially diverted toward social unrest and collective protective action
-                    double currentWork = cell.getResourceWorkOr(50.0);
-                    double workDiversion = 0.04 * marketCommodification * subsistenceStress * deltaYears;
-                    cell.setResourceWork(Math.max(15.0, currentWork * (1.0 - workDiversion)));
-                }
+            double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 0.0;
+            double subsistenceStress = Math.max(0.0, 1.0 - ((food / pop) / 1.20));
+            if (subsistenceStress > 0.10) {
+                acc.dFluxPressure += (float) (0.05 * marketCommodification * subsistenceStress * dtYears);
+                acc.dInstitutionalComplexity -= (float) (0.03 * marketCommodification * subsistenceStress * dtYears);
             }
         }
     }

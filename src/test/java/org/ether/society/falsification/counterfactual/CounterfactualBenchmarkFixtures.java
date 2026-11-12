@@ -34,6 +34,52 @@ public final class CounterfactualBenchmarkFixtures {
         // Prevent instantiation
     }
 
+    private static void runDoD(org.ether.society.core.engine.SimulationEngineModule engine, List<H3Cell> cells, double dtYears) {
+        if (cells == null || cells.isEmpty()) return;
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            buf.getBiomassHuman()[i] = (float) (c.getPopulationOr(0) * 0.06);
+            buf.getResourceCapital()[i] = (float) c.getResourceCapitalOr(0.0);
+            buf.getFoodResource()[i] = (float) c.getFoodResourceOr(0.0);
+            buf.getWaterResource()[i] = (float) c.getWaterResourceOr(0.0);
+            buf.getWoodResource()[i] = (float) c.getWoodResourceOr(0.0);
+            buf.getResourceCoal()[i] = (float) c.getResourceCoalOr(0.0);
+            buf.getResourceOil()[i] = (float) c.getResourceOilOr(0.0);
+            buf.getBiomassAgriculture()[i] = (float) c.getBiomassAgricultureOr(0.0);
+            buf.getBiomassLivestock()[i] = (float) c.getBiomassLivestockOr(0.0);
+            buf.getBiomassNatural()[i] = (float) c.getBiomassNaturalOr(0.0);
+            buf.getEnergyFire()[i] = (float) c.getEnergyFireOr(0.0);
+            buf.getEnergyWind()[i] = (float) c.getEnergyWindOr(0.0);
+            buf.getEnergySolar()[i] = (float) c.getEnergySolarOr(0.0);
+            buf.getEnergyFoodConsumed()[i] = (float) c.getEnergyFoodConsumedOr(0.0);
+            buf.getGiniIndex()[i] = (float) c.getGiniIndexOr(0.35);
+            buf.getInstitutionalComplexity()[i] = (float) (c.getResourceWorkOr(50.0) / 100.0);
+            buf.getFluxPressure()[i] = (float) c.getMovementFrictionOr(1.0);
+            buf.getCommercialFluxVolume()[i] = (float) c.getTradeNetworkOr(0.0);
+            buf.getElevation()[i] = (float) c.getElevationOr(0.0);
+            buf.getTemperature()[i] = (float) c.getTemperatureOr(15.0);
+            buf.getRainfall()[i] = (float) c.getRainfallOr(500.0);
+            if (c.getBiome() != null) buf.getBiomes()[i] = (byte) c.getBiome().ordinal();
+        }
+        engine.tick(buf, dtYears, dtYears);
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            c.setPopulation((int) Math.max(0, Math.round(buf.getBiomassHuman()[i] / 0.06)));
+            c.setResourceCapital((double) buf.getResourceCapital()[i]);
+            c.setFoodResource((double) buf.getFoodResource()[i]);
+            c.setWaterResource((double) buf.getWaterResource()[i]);
+            c.setWoodResource((double) buf.getWoodResource()[i]);
+            c.setBiomassAgriculture((double) buf.getBiomassAgriculture()[i]);
+            c.setBiomassLivestock((double) buf.getBiomassLivestock()[i]);
+            c.setBiomassNatural((double) buf.getBiomassNatural()[i]);
+            c.setGiniIndex((double) buf.getGiniIndex()[i]);
+            c.setResourceWork((double) buf.getInstitutionalComplexity()[i] * 100.0);
+            c.setMovementFriction((double) buf.getFluxPressure()[i]);
+            c.setTradeNetwork((double) buf.getCommercialFluxVolume()[i]);
+        }
+    }
+
     /**
      * Composite benchmark outcome containing paired control/treatment series and effect size statistics.
      *
@@ -192,7 +238,7 @@ public final class CounterfactualBenchmarkFixtures {
                         c.setResourceCapital(cap * (1.0 + 0.015 * deltaYears));
                     }
                 }
-                engine.process(treatmentGrid, deltaYears);
+                runDoD(engine, treatmentGrid, deltaYears);
             }
 
             controlGrid.sort((a, b) -> Integer.compare(b.getPopulation() != null ? b.getPopulation() : 0, a.getPopulation() != null ? a.getPopulation() : 0));
@@ -234,7 +280,7 @@ public final class CounterfactualBenchmarkFixtures {
                     double cap = c.getResourceCapital() != null ? c.getResourceCapital() : 0.0;
                     c.setResourceCapital(Math.max(10.0, cap - 2.0 * deltaYears));
                 }
-                engine.process(treatmentGrid, deltaYears);
+                runDoD(engine, treatmentGrid, deltaYears);
             }
 
             controlCapitalTerminal[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
@@ -276,7 +322,7 @@ public final class CounterfactualBenchmarkFixtures {
                         c.setResourceCapital(cap + 0.08 * pop * deltaYears);
                     }
                 }
-                engine.process(treatmentGrid, deltaYears);
+                runDoD(engine, treatmentGrid, deltaYears);
             }
 
             controlTechTerminal[s] = controlGrid.stream().filter(c -> c.getPopulation() != null && c.getPopulation() >= 100)
@@ -313,7 +359,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 150;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                engine.process(treatmentGrid, deltaYears);
+                runDoD(engine, treatmentGrid, deltaYears);
             }
 
             giniControl[s] = calculateGini(controlGrid);
@@ -353,7 +399,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 50;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                engine.process(treatmentGrid, deltaYears);
+                runDoD(engine, treatmentGrid, deltaYears);
             }
 
             controlMortality[s] = controlGrid.stream().mapToLong(c -> c.getPopulation() != null ? c.getPopulation() : 0).sum();
@@ -389,7 +435,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 150;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                SoilSalinizationHydrologyEngine.processSoilSalinization(treatmentGrid, deltaYears);
+                runDoD(new SoilSalinizationHydrologyEngine(), treatmentGrid, deltaYears);
             }
 
             controlFoodTerminal[s] = controlGrid.stream().mapToDouble(c -> c.getFoodResource() != null ? c.getFoodResource() : 0.0).average().orElse(0.0);
@@ -423,7 +469,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 100;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                engine.process(treatmentGrid, deltaYears);
+                runDoD(engine, treatmentGrid, deltaYears);
             }
 
             capitalControl[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
@@ -457,7 +503,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 100;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                engine.process(treatmentGrid, deltaYears);
+                runDoD(engine, treatmentGrid, deltaYears);
             }
 
             controlMetalTerminal[s] = controlGrid.stream().mapToDouble(c -> c.getResourceMetal() != null ? c.getResourceMetal() : 0.0).average().orElse(0.0);
@@ -492,7 +538,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 30;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                PolanyiFictitiousCommoditiesEngine.processPolanyiTransformation(treatmentGrid, deltaYears);
+                runDoD(new PolanyiFictitiousCommoditiesEngine(), treatmentGrid, deltaYears);
             }
 
             controlAgri[s] = controlGrid.stream().mapToDouble(c -> c.getBiomassAgriculture() != null ? c.getBiomassAgriculture() : 0.0).average().orElse(0.0);
@@ -527,7 +573,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 15;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                BagehotFractionalReserveEngine.processBagehotBankingLiquidity(treatmentGrid, deltaYears);
+                runDoD(new BagehotFractionalReserveEngine(), treatmentGrid, deltaYears);
             }
 
             controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
@@ -561,7 +607,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 25;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                CordenNearyDutchDiseaseEngine.processDutchDiseaseDynamics(treatmentGrid, deltaYears);
+                runDoD(new CordenNearyDutchDiseaseEngine(), treatmentGrid, deltaYears);
             }
 
             controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
@@ -595,7 +641,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 30;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                InnisStaplesThesisEngine.processStaplesDynamics(treatmentGrid, deltaYears);
+                runDoD(new InnisStaplesThesisEngine(), treatmentGrid, deltaYears);
             }
 
             controlTrade[s] = controlGrid.stream().mapToDouble(c -> c.getTradeNetwork() != null ? c.getTradeNetwork() : 0.0).average().orElse(0.0);
@@ -640,7 +686,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 20;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                BarfieldNomadicSteppeEmpireEngine.processSteppeExtortionDynamics(treatmentGrid, deltaYears);
+                runDoD(new BarfieldNomadicSteppeEmpireEngine(), treatmentGrid, deltaYears);
             }
 
             controlNomadCap[s] = controlGrid.subList(half, controlGrid.size()).stream()
@@ -676,7 +722,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 15;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                WienerCyberneticHomeostasisEngine.processCyberneticHomeostasis(treatmentGrid, deltaYears);
+                runDoD(new WienerCyberneticHomeostasisEngine(), treatmentGrid, deltaYears);
             }
 
             controlWork[s] = controlGrid.stream().mapToDouble(c -> c.getResourceWork() != null ? c.getResourceWork() : 0.0).average().orElse(0.0);
@@ -709,7 +755,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 25;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                RicardoDifferentialLandRentEngine.processDifferentialRentDynamics(treatmentGrid, deltaYears);
+                runDoD(new RicardoDifferentialLandRentEngine(), treatmentGrid, deltaYears);
             }
 
             controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
@@ -743,7 +789,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 20;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                LewisDualSectorTurningPointEngine.processDualSectorDynamics(treatmentGrid, deltaYears);
+                runDoD(new LewisDualSectorTurningPointEngine(), treatmentGrid, deltaYears);
             }
 
             controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);
@@ -775,7 +821,7 @@ public final class CounterfactualBenchmarkFixtures {
             int simYears = 25;
             double deltaYears = 1.0;
             for (int year = 0; year < simYears; year++) {
-                KondratievSchumpeterLongWaveEngine.processLongWaveDynamics(treatmentGrid, 1850.0 + year, deltaYears);
+                runDoD(new KondratievSchumpeterLongWaveEngine(), treatmentGrid, deltaYears);
             }
 
             controlCap[s] = controlGrid.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0);

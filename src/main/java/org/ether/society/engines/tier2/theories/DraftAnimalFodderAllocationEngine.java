@@ -6,15 +6,16 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Draft Animal Traction & Fodder Allocation Tradeoff Engine (Vaclav Smil, 2017; Wrigley, 2010).
@@ -68,43 +69,40 @@ public class DraftAnimalFodderAllocationEngine extends AbstractSimulationEngine 
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop < 50) continue;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop < 50.0) return;
 
-            double capital = cell.getResourceCapitalOr(10.0);
-            double kpc = capital / pop;
-            double powerW = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double food = cell.getFoodResourceOr(1000.0);
+        double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0;
+        double kpc = capital / pop;
+        double fire = buffer.getEnergyFire() != null ? buffer.getEnergyFire()[i] : 0.0;
+        double wind = buffer.getEnergyWind() != null ? buffer.getEnergyWind()[i] : 0.0;
+        double solar = buffer.getEnergySolar() != null ? buffer.getEnergySolar()[i] : 0.0;
+        double foodE = buffer.getEnergyFoodConsumed() != null ? buffer.getEnergyFoodConsumed()[i] : 0.0;
+        double powerW = Math.max(85.0, ((fire + wind + solar + foodE) * 31.688) / pop);
+        double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 1000.0;
 
-            // Continuous draft animal presence index phi_draft in [0, 1] (Smil 2017; Wrigley 2010):
-            // Rises with agrarian harness/plow capital (kpc >= 40 kg/cap) and phases out with internal combustion tractor power (p >= 1400 W/cap)
-            double draftPresence = (1.0 / (1.0 + Math.exp(-(kpc - 40.0) / 15.0)))
-                    * (1.0 / (1.0 + Math.exp((powerW - 1400.0) / 300.0)));
+        double draftPresence = (1.0 / (1.0 + Math.exp(-(kpc - 40.0) / 15.0)))
+                * (1.0 / (1.0 + Math.exp((powerW - 1400.0) / 300.0)));
 
-            if (draftPresence > 0.02) {
-                // Draft animal adoption scales with capital per capita
-                double animalRatio = Math.min(0.35, (capital / (pop * 20.0)));
-                // Fodder consumption reduces net food available for humans by up to 20%
-                double fodderCostFraction = 0.20 * animalRatio * draftPresence;
-                // Mechanical labor boosts capital creation
-                double productivityBoost = 0.02 * animalRatio * draftPresence * deltaYears;
-
-                cell.setFoodResource(Math.max(0.0, food * Math.exp(-fodderCostFraction * deltaYears * 0.1)));
-                cell.setResourceCapital(capital + (capital * productivityBoost));
-            } else if (powerW >= 1400.0 || kpc >= 2800.0) {
-                // Mechanization transition (Wrigley 2010; Smil 2017): internal combustion tractors replace horses,
-                // reclaiming fodder acreage smoothly as mechanical power p >= 1400 W/cap or k_pc >= 2800 kg/cap
-                double agriBiomass = cell.getBiomassAgricultureOr(0.0);
-                if (agriBiomass > 0.0) {
-                    double tractorSubstitution = 1.0 / (1.0 + Math.exp(-(kpc - 2800.0) / 700.0));
-                    double reclamationBoost = Math.min(0.02 * agriBiomass, 0.015 * agriBiomass * tractorSubstitution * deltaYears);
-                    cell.setBiomassAgriculture(agriBiomass + reclamationBoost);
-                }
+        if (draftPresence > 0.02) {
+            double animalRatio = Math.min(0.35, (capital / (pop * 20.0)));
+            double fodderCostFraction = 0.20 * animalRatio * draftPresence;
+            double productivityBoost = 0.02 * animalRatio * draftPresence * dtYears;
+            acc.dFoodResource -= (float) (food * (1.0 - Math.exp(-fodderCostFraction * dtYears * 0.1)));
+            acc.dResourceCapital += (float) (capital * productivityBoost);
+        } else if (powerW >= 1400.0 || kpc >= 2800.0) {
+            double agriBiomass = buffer.getBiomassAgriculture() != null ? buffer.getBiomassAgriculture()[i] : 0.0;
+            if (agriBiomass > 0.0) {
+                double tractorSubstitution = 1.0 / (1.0 + Math.exp(-(kpc - 2800.0) / 700.0));
+                double reclamationBoost = Math.min(0.02 * agriBiomass, 0.015 * agriBiomass * tractorSubstitution * dtYears);
+                acc.dBiomassAgriculture += (float) reclamationBoost;
             }
         }
     }

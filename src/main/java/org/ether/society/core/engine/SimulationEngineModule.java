@@ -77,6 +77,16 @@ public interface SimulationEngineModule {
     }
 
     /**
+     * Optional pre-tick preparation hook for computing global aggregates before fused cellular passes.
+     *
+     * @param buffer  contiguous world buffer
+     * @param dtYears time step duration in Julian years
+     */
+    default void prepareTick(WorldBuffer buffer, double dtYears) {
+        // Default no-op
+    }
+
+    /**
      * Executes one temporal simulation step over the data-oriented planetary buffers.
      *
      * @param buffer    data-oriented world memory buffer

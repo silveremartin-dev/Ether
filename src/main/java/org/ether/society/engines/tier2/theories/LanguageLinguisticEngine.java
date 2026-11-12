@@ -68,7 +68,7 @@ public class LanguageLinguisticEngine extends AbstractSimulationEngine {
     /**
      * Executes one linguistic drift and cultural isolation cycle across cells and trade routes.
      */
-    public static void processLinguisticDrift(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes) {
+    public static void processLinguisticDrift(List<H3Cell> cells, List<TradeNetworkRouter.TradeRoute> activeRoutes) {
         // Step 1: Read institutional, demographic, and economic state tensors
         // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
         // Step 3: Apply state transitions and update local cell attributes
@@ -128,7 +128,7 @@ public class LanguageLinguisticEngine extends AbstractSimulationEngine {
 
         // 3. Trade Route Convergence (Lingua Franca Diffusion)
         if (activeRoutes != null) {
-            for (TradeNetworkEngine.TradeRoute route : activeRoutes) {
+            for (TradeNetworkRouter.TradeRoute route : activeRoutes) {
                 if (route == null || route.origin() == null) continue;
                 String hubLang = route.origin().getLanguageGroup();
                 if (hubLang == null || route.pathCells() == null) continue;

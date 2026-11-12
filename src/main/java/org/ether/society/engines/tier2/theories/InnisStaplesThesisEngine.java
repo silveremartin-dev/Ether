@@ -6,16 +6,17 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Harold Innis Staples Thesis &amp; Export-Led Frontier Dependency Engine.
@@ -73,46 +74,28 @@ public class InnisStaplesThesisEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processStaplesDynamics(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Evaluates staples extraction and export-led lock-in across cells.
-     *
-     * @param cells      simulation cells
-     * @param deltaYears time step duration in astronomical Julian years
-     */
-    public static void processStaplesDynamics(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 10.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 10) continue;
+        double naturalBiomass = buffer.getBiomassNatural() != null ? buffer.getBiomassNatural()[i] : 0.0;
+        double metal = buffer.getMetalResource() != null ? buffer.getMetalResource()[i] : 0.0;
+        double timberAndFish = naturalBiomass * 0.40;
 
-            double naturalBiomass = cell.getBiomassNaturalOr(0.0);
-            double metal = cell.getResourceMetalOr(0.0);
-            double timberAndFish = naturalBiomass * 0.40;
+        double stapleAbundance = (timberAndFish + metal) / pop;
+        double stapleIntensity = SmoothMath.sigmoid(stapleAbundance, 25.0, 8.0);
 
-            // Per-capita raw staple abundance
-            double stapleAbundance = (timberAndFish + metal) / (double) pop;
-            double stapleIntensity = SmoothMath.sigmoid(stapleAbundance, 25.0, 8.0);
-
-            if (stapleIntensity > 0.05) {
-                // Directional export trade integration increases
-                double trade = cell.getTradeNetworkOr(0.0);
-                double exportGrowth = 0.04 * stapleIntensity * deltaYears;
-                cell.setTradeNetwork(Math.min(100.0, trade + exportGrowth));
-
-                // Natural staple stock is slowly harvested for export
-                double harvestExtraction = 0.01 * stapleIntensity * naturalBiomass * deltaYears;
-                cell.setBiomassNatural(Math.max(10.0, naturalBiomass - harvestExtraction));
-
-                // Revenue fuels frontier capital accumulation
-                double cap = cell.getResourceCapitalOr(0.0);
-                cell.setResourceCapital(cap + (harvestExtraction * 1.5));
-            }
+        if (stapleIntensity > 0.05) {
+            acc.dCommercialFluxVolume += (float) (0.04 * stapleIntensity * dtYears);
+            double harvestExtraction = 0.01 * stapleIntensity * naturalBiomass * dtYears;
+            acc.dBiomassNatural -= (float) harvestExtraction;
+            acc.dResourceCapital += (float) (harvestExtraction * 1.5);
         }
     }
 }

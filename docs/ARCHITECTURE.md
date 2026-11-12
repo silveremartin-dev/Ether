@@ -27,7 +27,9 @@ Ether is engineered as a physicalist, data-oriented planetary simulation engine.
 │  │  │   ├─ Tier 2: Monthly Sub-step Physics (Δt = 30d — Climate, NPK, Demographics)      │  │
 │  │  │   └─ Tier 3: Annual Macro Physics (Δt = 365d — Smil Inertia, Ore Depletion, GIA)  │  │
 │  │  ├─ Core Physicalist DOD Kernels (WorldBuffer, DemographicKernel, EnvironmentalKernel)│  │
-│  │  ├─ ProceduralEngineRegistry (Core Tier 1 + 30 Type B Pluggable Engines)              │  │
+│  │  ├─ SimulationEngineRegistry (Unified SimulationEngineModule SPI: Tier 1 & Tier 2)  │  │
+│  │  ├─ SimulationPipeline (Phases: 3_DemographicsAndCulture -> 3b_Tier1Biophysical        │  │
+│  │  │   -> 4_ProceduralEngines via Single-Pass Kernel Fusion + Polity Macro-Cycles)     │  │
 │  │  └─ SovereignAIGovernanceEngine (Closed-Loop MPC Regulation / Archon Engine)          │  │
 │  └───────────────────────────────────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────┬──────────────────────────────────────────────┘

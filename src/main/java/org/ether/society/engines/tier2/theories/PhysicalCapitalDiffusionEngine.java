@@ -141,14 +141,14 @@ public class PhysicalCapitalDiffusionEngine implements SimulationEngineModule {
     /**
      * Executes physical era progression and spatial power diffusion with default monthly step.
      */
-    public static void processCapitalDiffusion(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes) {
+    public static void processCapitalDiffusion(List<H3Cell> cells, List<TradeNetworkRouter.TradeRoute> activeRoutes) {
         processCapitalDiffusion(cells, activeRoutes, 1.0 / 12.0);
     }
 
     /**
      * Executes spatial capital equalization along active trade routes and bottleneck-induced capital deepening.
      */
-    public static void processCapitalDiffusion(List<H3Cell> cells, List<TradeNetworkEngine.TradeRoute> activeRoutes, double dtYears) {
+    public static void processCapitalDiffusion(List<H3Cell> cells, List<TradeNetworkRouter.TradeRoute> activeRoutes, double dtYears) {
         if (cells == null || cells.isEmpty()) return;
         double dt = Math.max(0.0001, dtYears);
 
@@ -167,7 +167,7 @@ public class PhysicalCapitalDiffusionEngine implements SimulationEngineModule {
 
         // 2. Spatial capital diffusion along trade routes
         if (activeRoutes != null && !activeRoutes.isEmpty()) {
-            for (TradeNetworkEngine.TradeRoute route : activeRoutes) {
+            for (TradeNetworkRouter.TradeRoute route : activeRoutes) {
                 if (route == null || route.origin() == null || route.destination() == null) continue;
                 H3Cell orig = route.origin();
                 H3Cell dest = route.destination();

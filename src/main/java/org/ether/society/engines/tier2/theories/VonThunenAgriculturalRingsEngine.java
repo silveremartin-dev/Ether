@@ -5,15 +5,16 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * <h1>Von ThÃƒÂ¼nen Agricultural Rings &amp; Overland Transport Friction Engine</h1>
@@ -56,54 +57,37 @@ public class VonThunenAgriculturalRingsEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processAgriculturalRings(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Evaluates agricultural hinterland radius and caps inland urban agglomeration size
-     * based on overland transport infrastructure capital.
-     *
-     * @param cells      inhabited cells
-     * @param deltaYears time step fraction in years
-     */
-    public static void processAgriculturalRings(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
 
-            double capital = cell.getResourceCapitalOr(0.0);
-            double capitalPerCapita = capital / pop;
-            boolean isCoastal = cell.getBiome() == org.ether.society.model.Biome.OCEAN
-                    || (cell.getElevation() != null && cell.getElevation() < 0.0);
+        double capital = buffer.getResourceCapital()[i];
+        double capitalPerCapita = capital / pop;
+        boolean isCoastal = buffer.getBiomes()[i] == (byte) org.ether.society.model.Biome.OCEAN.ordinal()
+                || buffer.getElevation()[i] < 0.0f;
 
-            // Overland transport radius expansion:
-            // Ancient walking/cart: r ~ 30-50 km
-            // Paved road / canal (k_pc >= 200): r ~ 150 km
-            // Railroad / truck (k_pc >= 1500): r ~ 2000 km
-            double maxSustainableAgglomeration;
-            if (isCoastal) {
-                // Coastal cities access low-friction maritime grain fleets (Rome, Alexandria, Song Hangzhou)
-                maxSustainableAgglomeration = 500_000.0 + capitalPerCapita * 2500.0;
-            } else {
-                // Inland cities strictly bounded by Von ThÃƒA¼nen terrestrial friction
-                // Continuous C^1 transport radius expansion eliminating piecewise threshold cliffs (Von ThÃ¼nen 1826)
-                double ancientInlandBase = 25_000.0;
-                double earlyModernExpansion = 55_000.0 * org.ether.society.core.math.SmoothMath.sigmoid(capitalPerCapita, 250.0, 75.0);
-                double industrialRailExpansion = 5000.0 * org.ether.society.core.math.SmoothMath.softplus(capitalPerCapita - 800.0, 0.0, 100.0);
-                maxSustainableAgglomeration = ancientInlandBase + earlyModernExpansion + industrialRailExpansion;
-            }
+        double maxSustainableAgglomeration;
+        if (isCoastal) {
+            maxSustainableAgglomeration = 500_000.0 + capitalPerCapita * 2500.0;
+        } else {
+            double ancientInlandBase = 25_000.0;
+            double earlyModernExpansion = 55_000.0 * org.ether.society.core.math.SmoothMath.sigmoid(capitalPerCapita, 250.0, 75.0);
+            double industrialRailExpansion = 5000.0 * org.ether.society.core.math.SmoothMath.softplus(capitalPerCapita - 800.0, 0.0, 100.0);
+            maxSustainableAgglomeration = ancientInlandBase + earlyModernExpansion + industrialRailExpansion;
+        }
 
-            // If inland population exceeds sustainable hinterland grain supply, food friction spikes
-            if (pop > maxSustainableAgglomeration) {
-                double excessRatio = (pop - maxSustainableAgglomeration) / maxSustainableAgglomeration;
-                double currentFood = cell.getFoodResourceOr(pop * 1.0);
-                // Transport friction penalizes excess food deliverability
-                cell.setFoodResource(Math.max(0.1, currentFood * (1.0 - Math.min(0.5, excessRatio * 0.2))));
-            }
+        if (pop > maxSustainableAgglomeration) {
+            double excessRatio = (pop - maxSustainableAgglomeration) / maxSustainableAgglomeration;
+            double currentFood = buffer.getFoodResource()[i];
+            double newFood = Math.max(0.1, currentFood * (1.0 - Math.min(0.5, excessRatio * 0.2)));
+            acc.dFoodResource += (newFood - currentFood);
         }
     }
 }

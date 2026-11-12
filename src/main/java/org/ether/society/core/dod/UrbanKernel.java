@@ -74,7 +74,7 @@ public class UrbanKernel {
             double complexityOverhead = 0.001 * Math.pow(Math.max(0.0, cappedComp), 1.5);
             double depreciationRate = SmoothMath.softmin(0.08, baselineDepreciation + complexityOverhead, 40.0);
 
-            // 3. Physical Capital Steady-State Convergence (Solow-Swan mechanical power constraint, Solow 1956, Garrett 2011, Krausmann et al. 2017):
+            // 3. Physical Capital Steady-State Convergence & Accumulation (Solow 1956, Swan 1956, Garrett 2011, Krausmann et al. 2017):
             // Steady-state material capital stock per capita k* scales thermodynamically with available power above somatic hearth baseline (~348 W):
             double powerPerCapitaW = world.computeCellPowerWattsPerCapita(i);
             double kStar = 5.0
@@ -94,9 +94,16 @@ public class UrbanKernel {
             double sedentaryCapability = Math.max(agriActivation, industrialActivation);
             kStar = 5.0 + (kStar - 5.0) * sedentaryCapability;
 
+            // Physical capital dynamics: Solow-Swan accumulation with thermodynamic exergy feedback:
+            // \dot{k} = \delta \cdot (k^* - k) + s \cdot y_{\text{pc}}
+            // Net gross capital investment from active surplus power above subsistence (Krausmann 2017; Ayres 2009):
+            // s = 0.20 (global gross fixed capital formation share), productive power converted at ~0.08 kg material capital per Watt-year:
+            double netProductiveSurplusW = Math.max(0.0, powerPerCapitaW - 380.0);
+            double grossAnnualInvestmentPerCapita = 0.08 * 0.20 * netProductiveSurplusW * sedentaryCapability;
+
             // Physical capital depreciation rate delta = 4.0% per year (entropy of physical structures/tools)
             double deltaAnnual = 0.04;
-            double dCapitalPerCapita = deltaAnnual * (kStar - capitalPerCapita) * dtInYears;
+            double dCapitalPerCapita = (deltaAnnual * (kStar - capitalPerCapita) + grossAnnualInvestmentPerCapita) * dtInYears;
             double targetCapital = Math.max(0.0, (capitalPerCapita + dCapitalPerCapita) * p);
             double decayedCap = capital[i] * decayCapital;
             capital[i] = (float) (activeSettlement * targetCapital + (1.0 - activeSettlement) * decayedCap);

@@ -315,7 +315,7 @@ public class WhitePaperCompiler {
         pw.println(String.format(Locale.US, "| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 1.8%% (%d) | ðŸ“‰ Convergent | `EcologyEngine` |", isAlien ? 0.0 : 0.72, d.startYear()));
         pw.println(String.format(Locale.US, "| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 8.0%% (%d) | ã€°ï¸ Oscillating | `H3SimulationEngine` |", isAlien ? 0.0 : 6.43, d.endYear()));
         pw.println(String.format(Locale.US, "| ðŸ‘¥ Population (worldPopulation) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 8.5%% (%d) | ã€°ï¸ Normalized Scale | `DemographicEngine` |", isAlien ? 5.2 : 7.4, d.startYear()));
-        pw.println(String.format(Locale.US, "| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | %.2f%% | %s | %d | 12.5%% (%d) | ã€°ï¸ Shifted Offset | `ProceduralPopulationEngine` |", isDeep ? 9.4 : 6.2, "ðŸŸ¢ Calibrated", d.startYear(), d.startYear()));
+        pw.println(String.format(Locale.US, "| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | %.2f%% | %s | %d | 12.5%% (%d) | ã€°ï¸ Shifted Offset | `ProceduralPopulationGenerator` |", isDeep ? 9.4 : 6.2, "ðŸŸ¢ Calibrated", d.startYear(), d.startYear()));
         pw.println(String.format(Locale.US, "| ðŸ’° Gross World Product (grossWorldProduct) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 11.8%% (%d) | ã€°ï¸ Normalized Scale | `SociologyEngine (Capital)` |", isAlien ? 8.0 : 9.5, d.startYear()));
         pw.println(String.format(Locale.US, "| âš¡ Primary Energy (primaryEnergy) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 10.2%% (%d) | ðŸ“ˆ Non-linear Impulse | `EcologyEngine (Biomass)` |", isFuture ? 5.5 : 8.4, d.startYear()));
         pw.println(String.format(Locale.US, "| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | %.2f%% | %s | â€” | 7.5%% (%d) | ã€°ï¸ Settling Drift | `SettlementEngine` |", isDeep ? 0.0 : 8.5, isDeep ? "âšª N/A" : "ðŸŸ¢ Calibrated", d.startYear()));
@@ -407,7 +407,7 @@ public class WhitePaperCompiler {
         pw.println("| **`HistorySnapshot`** | Division-by-zero in per-capita exergy | Epsilon smoothing on population denominator: $E_{\\text{cap}} = \\frac{E_{\\text{tot}}}{\\max(100, N)}$ | 8,884% âž” < 10% |");
         pw.println("| **`GroundTruthAuditGenerator`** | Zero-containment score scale mismatch | Rescale score to $[0.0, 1.0]$: `if (val > 1.0) val /= 100.0` | 12,071% âž” < 5% |");
         pw.println("| **`ScenarioCulturalSectionBuilder`** | Uninitialized cultural/institutional tensors | Inject deterministic baseline tensors for urbanization, literacy, and PSI at tick 0 | NaN âž” Real |");
-        pw.println("| **`ProceduralPopulationEngine`** | Rigid Malthusian ceiling ($N/K$) | Couple Boserupian innovation feedback: $K(t) = K_0 (1 + \\beta \\cdot \\text{Tech})$ | Sub-10% Error |");
+        pw.println("| **`ProceduralPopulationGenerator`** | Rigid Malthusian ceiling ($N/K$) | Couple Boserupian innovation feedback: $K(t) = K_0 (1 + \\beta \\cdot \\text{Tech})$ | Sub-10% Error |");
         pw.println();
         pw.println("### 4.3 Conclusion & Scientific Readiness");
         pw.println("With the implementation of these five architectural fixes, the Ether simulation engine achieves full epistemic calibration across all 45 historical and planetary scenarios, ");

@@ -24,7 +24,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ProceduralPopulationEngineTest {
+public class ProceduralPopulationGeneratorTest {
 
     private List<H3Cell> mockCells;
 
@@ -90,7 +90,7 @@ public class ProceduralPopulationEngineTest {
         long totalPop = 10000;
         double techLevel = 1.0; // Neolithic / stone age
 
-        ProceduralPopulationEngine.distributePopulation(mockCells, s, totalPop, techLevel, "FERTILE_CRESCENT", false, -10000);
+        ProceduralPopulationGenerator.distributePopulation(mockCells, s, totalPop, techLevel, "FERTILE_CRESCENT", false, -10000);
 
         long sumPop = mockCells.stream().mapToLong(H3Cell::getPopulation).sum();
         assertEquals(totalPop, sumPop, "Total population must sum to target population");
@@ -114,7 +114,7 @@ public class ProceduralPopulationEngineTest {
         long totalPop = 100000;
         double highTech = 6.0; // 18th century / Industrial
 
-        ProceduralPopulationEngine.distributePopulation(mockCells, s, totalPop, highTech, "URBAN_CLUSTERS", false, 1800);
+        ProceduralPopulationGenerator.distributePopulation(mockCells, s, totalPop, highTech, "URBAN_CLUSTERS", false, 1800);
 
         long sumPop = mockCells.stream().mapToLong(H3Cell::getPopulation).sum();
         assertEquals(totalPop, sumPop, "Total population must match target population");
@@ -138,7 +138,7 @@ public class ProceduralPopulationEngineTest {
         long totalPop = 50000000;
 
         // Test Bronze Age Earth preset (-3000)
-        ProceduralPopulationEngine.distributePopulation(mockCells, s, totalPop, 2.5, "FERTILE_CRESCENT", true, -3000);
+        ProceduralPopulationGenerator.distributePopulation(mockCells, s, totalPop, 2.5, "FERTILE_CRESCENT", true, -3000);
 
         long sumPop = mockCells.stream().mapToLong(H3Cell::getPopulation).sum();
         assertEquals(totalPop, sumPop, "Earth preset population distribution must sum to total population");
@@ -150,7 +150,7 @@ public class ProceduralPopulationEngineTest {
 
         // Null cells list
         assertDoesNotThrow(() -> {
-            ProceduralPopulationEngine.distributePopulation(null, s, 1000L, 1.0, "POLYCENTRIC", false, 0);
+            ProceduralPopulationGenerator.distributePopulation(null, s, 1000L, 1.0, "POLYCENTRIC", false, 0);
         });
 
         // Cell with null biome and null elevation
@@ -164,7 +164,7 @@ public class ProceduralPopulationEngineTest {
         List<H3Cell> list = new ArrayList<>(List.of(weirdCell));
 
         assertDoesNotThrow(() -> {
-            ProceduralPopulationEngine.distributePopulation(list, s, 0L, 1.0, "POLYCENTRIC", false, 0);
+            ProceduralPopulationGenerator.distributePopulation(list, s, 0L, 1.0, "POLYCENTRIC", false, 0);
         }, "Distribution with zero population and null fields must not throw an exception");
 
         // Cell with polder and floating infrastructure
@@ -175,7 +175,7 @@ public class ProceduralPopulationEngineTest {
 
         List<H3Cell> list2 = new ArrayList<>(List.of(polderCell));
         assertDoesNotThrow(() -> {
-            ProceduralPopulationEngine.distributePopulation(list2, s, 5000L, 1.0, "POLYCENTRIC", false, 0);
+            ProceduralPopulationGenerator.distributePopulation(list2, s, 5000L, 1.0, "POLYCENTRIC", false, 0);
         });
         assertEquals(5000L, polderCell.getPopulation().longValue());
     }

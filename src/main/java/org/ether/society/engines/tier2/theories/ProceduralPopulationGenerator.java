@@ -5,8 +5,6 @@
  */
 package org.ether.society.engines.tier2.theories;
 
-import org.ether.society.core.engine.AbstractSimulationEngine;
-import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.ether.society.model.Scenario;
@@ -33,12 +31,12 @@ import java.util.List;
  * @version 1.0.0-beta.2
  * @see ProceduralPopulationSuitabilityHelper
  */
-public class ProceduralPopulationEngine extends AbstractSimulationEngine {
-    public ProceduralPopulationEngine() {
-        super("ProceduralPopulationEngine", "ProceduralPopulationEngine", EngineTier.TIER_2_CLIODYNAMIC);
+public final class ProceduralPopulationGenerator {
+    private ProceduralPopulationGenerator() {
+        // Pure static procedural generator
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(ProceduralPopulationEngine.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProceduralPopulationGenerator.class);
 
     /**
      * Historical pivot dates with estimated global population and tech levels for Earth preset.
@@ -62,7 +60,7 @@ public class ProceduralPopulationEngine extends AbstractSimulationEngine {
             if (file.exists()) {
                 return Collections.unmodifiableList(mapper.readValue(file, new com.fasterxml.jackson.core.type.TypeReference<List<EarthHistoricalPivot>>() {}));
             }
-            java.io.InputStream is = ProceduralPopulationEngine.class.getResourceAsStream("/" + path);
+            java.io.InputStream is = ProceduralPopulationGenerator.class.getResourceAsStream("/" + path);
             if (is != null) {
                 try (is) {
                     return Collections.unmodifiableList(mapper.readValue(is, new com.fasterxml.jackson.core.type.TypeReference<List<EarthHistoricalPivot>>() {}));

@@ -49,7 +49,7 @@ public class Polity {
 
     // Cliodynamics & Institutional Indicators (Turchin Secular Cycles)
     private double asabiyyah = 0.8;             // Social cohesion & solidarity (0.0 to 1.0)
-    private double eliteOverproduction = 0.15;  // Intra-elite competition & inequality pressure (0.0 to 1.0)
+    private double eliteOverproduction = 1.0;   // Intra-elite competition & inequality pressure (Turchin EOI: 1.0 = equilibrium, [0.2, 4.5])
     private double stateCapacity = 0.50;        // Institutional extraction & governance efficiency (0.0 to 1.0)
     private double politicalInstability = 0.10; // Instability & civil rebellion risk index (0.0 to 1.0)
     private double treasuryBullion = 0.0;       // Sovereign precious metal bullion treasury (kg of Au/Ag specie)
@@ -208,7 +208,7 @@ public class Polity {
     }
 
     public void setEliteOverproduction(double eliteOverproduction) {
-        this.eliteOverproduction = Math.clamp(eliteOverproduction, 0.0, 1.0);
+        this.eliteOverproduction = Math.clamp(eliteOverproduction, 0.2, 4.5);
     }
 
     public double getStateCapacity() {
@@ -280,12 +280,13 @@ public class Polity {
         double netAsabiyyahDerivative = (0.008 - sizePenalty - inequalityPenalty);
         this.asabiyyah = Math.clamp(this.asabiyyah + netAsabiyyahDerivative * dtYears, 0.05, 1.0);
 
-        // 2. Elite Overproduction: smooth secular relaxation towards structural demographic target (Turchin 2016)
-        double targetEliteOverproduction = Math.clamp(avgGini * 1.2 + (totalPop > 1_000_000 ? 0.2 : 0.0) + monetaryInflation * 0.25, 0.0, 1.0);
-        this.eliteOverproduction = Math.clamp(this.eliteOverproduction + (targetEliteOverproduction - this.eliteOverproduction) * Math.min(1.0, 0.20 * dtYears), 0.0, 1.0);
+        // 2. Elite Overproduction: smooth secular relaxation towards structural demographic target (Turchin 2016, normalized around 1.0)
+        double targetEliteOverproduction = Math.clamp(0.4 + avgGini * 2.5 + (totalPop > 1_000_000 ? 0.5 : 0.0) + monetaryInflation * 0.8, 0.2, 4.5);
+        this.eliteOverproduction = Math.clamp(this.eliteOverproduction + (targetEliteOverproduction - this.eliteOverproduction) * Math.min(1.0, 0.20 * dtYears), 0.2, 4.5);
 
         // 3. State Capacity scales with administrative stability, Asabiyyah, and monetized tax collection (minus inflation erosion)
-        this.stateCapacity = Math.clamp((0.4 * asabiyyah) + (0.6 * (1.0 - eliteOverproduction)) + fiscalMonetizationBonus - (monetaryInflation * 0.20), 0.1, 1.0);
+        double normalizedElitePressure = Math.clamp((eliteOverproduction - 0.2) / 4.3, 0.0, 1.0);
+        this.stateCapacity = Math.clamp((0.4 * asabiyyah) + (0.6 * (1.0 - normalizedElitePressure)) + fiscalMonetizationBonus - (monetaryInflation * 0.20), 0.1, 1.0);
 
         // 4. Political Instability Index (PSI) formulation: PSI = (1 - Asabiyyah) * EliteOverproduction * (1 + Gini)
         this.politicalInstability = Math.clamp((1.0 - asabiyyah) * (0.5 + eliteOverproduction) * (1.0 + avgGini + monetaryInflation * 0.5), 0.0, 1.0);

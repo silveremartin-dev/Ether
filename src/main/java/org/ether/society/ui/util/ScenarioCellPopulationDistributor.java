@@ -3,7 +3,7 @@ package org.ether.society.ui.util;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.ether.society.database.H3Cell;
-import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
+import org.ether.society.engines.tier2.theories.ProceduralPopulationGenerator;
 import org.ether.society.model.Biome;
 import org.ether.society.model.Scenario;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * <p>
  * Handles the spatial initialization and hypsometric visualization of human demographics across planetary hexagonal cells:
  * <ul>
- *   <li><b>Demographic Sampling</b>: Samples imported density rasters or executes analytical procedural distribution via {@link ProceduralPopulationEngine}.</li>
+ *   <li><b>Demographic Sampling</b>: Samples imported density rasters or executes analytical procedural distribution via {@link ProceduralPopulationGenerator}.</li>
  *   <li><b>Hypsometric Relief & Heat Tinting</b>: Maps cell elevation, biome classification, and demographic density onto standardized cartographic color ramps.</li>
  *   <li><b>Carrying Capacity Estimation</b>: Calculates localized cellular carrying capacity ($K_{\text{cell}}$) modulated by freshwater aquifers and historical physical capital ($K_0$).</li>
  * </ul>
@@ -23,7 +23,7 @@ import java.util.List;
  * @author Ether Architectural Refactoring Engine
  * @since 1.0.0
  * @see org.ether.society.ui.ScenarioSetupPanel
- * @see org.ether.society.generation.ProceduralPopulationEngine
+ * @see org.ether.society.generation.ProceduralPopulationGenerator
  */
 public final class ScenarioCellPopulationDistributor {
 
@@ -71,7 +71,7 @@ public final class ScenarioCellPopulationDistributor {
             }
         } else {
             double techLevel = Math.clamp(Math.log10(Math.max(1.0, capitalK0)) * 2.2 + 0.2, 0.2, 10.0);
-            ProceduralPopulationEngine.distributePopulation(cells, scenario, totalPop, techLevel, pattern, isEarthPreset, startYear);
+            ProceduralPopulationGenerator.distributePopulation(cells, scenario, totalPop, techLevel, pattern, isEarthPreset, startYear);
         }
     }
 

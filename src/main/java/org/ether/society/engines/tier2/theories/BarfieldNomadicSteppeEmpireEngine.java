@@ -10,12 +10,12 @@ import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Barfield Nomadic Steppe Shadow Empire &amp; Extortion Symbiosis Engine.
@@ -87,77 +87,62 @@ public class BarfieldNomadicSteppeEmpireEngine extends AbstractSimulationEngine 
         return "Tier 2: Geopolitical Cliodynamics";
     }
 
+    private transient double totalSedentarySurplusCapital = 0.0;
+    private transient double sedentaryVulnerability = 0.0;
+
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processSteppeExtortionDynamics(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Evaluates continuous symbiotic extortion and centrifugal fracture across the spatial grid.
-     *
-     * @param cells      simulation cell domain
-     * @param deltaYears time step duration in astronomical Julian years
-     */
-    public static void processSteppeExtortionDynamics(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
-
-        // Step 1: Aggregate available sedentary agrarian surplus across reachable domain
-        double totalSedentarySurplusCapital = 0.0;
-        int sedentaryPopulation = 0;
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
-
-            double cap = cell.getResourceCapitalOr(0.0);
-            double kpc = cap / (double) pop;
-            double agri = cell.getBiomassAgricultureOr(0.0);
-
-            // Sedentary agrarian core signature: high agricultural biomass and moderate-to-high capital density
+    @Override
+    public void prepareTick(WorldBuffer buffer, double dtYears) {
+        totalSedentarySurplusCapital = 0.0;
+        if (buffer == null || buffer.getBiomassHuman() == null) {
+            sedentaryVulnerability = 0.0;
+            return;
+        }
+        int n = buffer.getCapacity();
+        float[] popArr = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        float[] agriArr = buffer.getBiomassAgriculture();
+        for (int i = 0; i < n; i++) {
+            double pop = popArr[i] / 0.06;
+            if (pop <= 1.0) continue;
+            double cap = capArr != null ? capArr[i] : 0.0;
+            double kpc = cap / pop;
+            double agri = agriArr != null ? agriArr[i] : 0.0;
             if (kpc >= SEDENTARY_AGRARIAN_KPC_FLOOR && agri > 50.0) {
                 totalSedentarySurplusCapital += cap;
-                sedentaryPopulation += pop;
             }
         }
+        sedentaryVulnerability = SmoothMath.sigmoid(totalSedentarySurplusCapital, 50000.0, 15000.0);
+    }
 
-        // Sedentary vulnerability index: large sedentary pools without overwhelming military dispersion
-        double sedentaryVulnerability = SmoothMath.sigmoid(totalSedentarySurplusCapital, 50000.0, 15000.0);
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop < 20.0) return;
 
-        // Step 2: Evaluate nomadic pastoralist cells and tribute flow
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop < 20) continue;
+        double cap = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0;
+        double kpc = cap / pop;
+        double livestock = buffer.getBiomassLivestock() != null ? buffer.getBiomassLivestock()[i] : 0.0;
+        double agri = buffer.getBiomassAgriculture() != null ? buffer.getBiomassAgriculture()[i] : 0.0;
 
-            double cap = cell.getResourceCapitalOr(10.0);
-            double kpc = cap / (double) pop;
-            double livestock = cell.getBiomassLivestockOr(0.0);
-            double agri = cell.getBiomassAgricultureOr(0.0);
+        double livestockRatio = livestock / Math.max(1.0, agri + 1.0);
+        double isPastoral = SmoothMath.sigmoid(livestockRatio, 1.2, 0.4)
+                * (1.0 - SmoothMath.sigmoid(kpc, NOMADIC_PASTORAL_KPC_CEILING, 20.0));
 
-            // Pastoralist signature: high livestock-to-crop ratio, low sedentary capital
-            double livestockRatio = livestock / Math.max(1.0, agri + 1.0);
-            double isPastoral = SmoothMath.sigmoid(livestockRatio, 1.2, 0.4)
-                    * (1.0 - SmoothMath.sigmoid(kpc, NOMADIC_PASTORAL_KPC_CEILING, 20.0));
-
-            if (isPastoral > 0.05) {
-                double work = cell.getResourceWorkOr(50.0);
-
-                if (sedentaryVulnerability > 0.1 && totalSedentarySurplusCapital > 1000.0) {
-                    // Barfield Extortion Phase: Sedentary tribute flows into steppe chieftain hierarchy
-                    double perCapitaTribute = BASE_EXTORTION_RATE * 35.0 * sedentaryVulnerability * isPastoral;
-                    double extortedTribute = Math.min(pop * perCapitaTribute * deltaYears, totalSedentarySurplusCapital * 0.02);
-
-                    // Khagan redistributes subsidies to maintain political cohesion and equestrian armament
-                    cell.setResourceCapital(cap + extortedTribute);
-                    cell.setResourceWork(Math.min(100.0, work * (1.0 + (0.025 * isPastoral * deltaYears))));
-                } else {
-                    // Barfield Fracture Phase: Sedentary empire absent or collapsed -> Loss of external subsidies
-                    // leads to centrifugal tribal fragmentation and civil war among clans
-                    double centrifugalDecay = 0.05 * isPastoral * deltaYears;
-                    cell.setResourceWork(Math.max(10.0, work * (1.0 - centrifugalDecay)));
-                    cell.setResourceCapital(Math.max(5.0, cap * (1.0 - (0.02 * isPastoral * deltaYears))));
-                }
+        if (isPastoral > 0.05) {
+            if (sedentaryVulnerability > 0.1 && totalSedentarySurplusCapital > 1000.0) {
+                double perCapitaTribute = BASE_EXTORTION_RATE * 35.0 * sedentaryVulnerability * isPastoral;
+                double extortedTribute = Math.min(pop * perCapitaTribute * dtYears, totalSedentarySurplusCapital * 0.02);
+                acc.dResourceCapital += (float) extortedTribute;
+                acc.dInstitutionalComplexity += (float) (0.015 * isPastoral * dtYears);
+            } else {
+                acc.dResourceCapital -= (float) (cap * 0.02 * isPastoral * dtYears);
+                acc.dInstitutionalComplexity -= (float) (0.03 * isPastoral * dtYears);
             }
         }
     }

@@ -179,6 +179,39 @@ public class AquiferDepletionEngine extends AbstractSimulationEngine {
             logger.info("Aquifer Engine: Critical groundwater table depletion affecting {} agricultural cells.", depletedAquifers);
         }
     }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double rawAquifer = buffer.getFreshwaterAquifer()[i];
+        double aquifer = (rawAquifer <= 2.0) ? (400.0 + Math.max(0.0, rawAquifer) * 1000.0) : rawAquifer;
+        double rain = buffer.getRainfall()[i];
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double humanDensity = pop / 1770.49;
+
+        double naturalRecharge = (rain * 0.15) * dtYears;
+        double groundwaterFraction = 0.05 + 0.75 / (1.0 + Math.exp((rain - 550.0) / 120.0));
+        double irrigationExtraction = (humanDensity * 0.80 * groundwaterFraction) * dtYears;
+
+        double newAquifer = Math.clamp(aquifer + naturalRecharge - irrigationExtraction, 0.0, 2000.0);
+        acc.dFreshwaterAquifer += (float) (newAquifer - rawAquifer);
+
+        double aquiferStress = 1.0 / (1.0 + Math.exp((newAquifer - 80.0) / 25.0));
+        double aridityStress = 1.0 / (1.0 + Math.exp((rain - 400.0) / 60.0));
+        double irrigationStress = aquiferStress * aridityStress;
+        if (irrigationStress > 0.05 && pop > 0.0) {
+            double currentAgri = buffer.getBiomassAgriculture()[i];
+            if (currentAgri > 0.0) {
+                double newAgri = Math.max(0.0, currentAgri * Math.exp(-0.15 * irrigationStress * dtYears));
+                acc.dBiomassAgriculture += (float) (newAgri - currentAgri);
+            }
+        }
+    }
 }
 
 

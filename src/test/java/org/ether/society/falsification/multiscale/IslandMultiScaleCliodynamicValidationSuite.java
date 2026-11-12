@@ -17,7 +17,7 @@ import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.ether.society.model.ClimateEvent;
 import org.ether.society.model.Scenario;
-import org.ether.society.engines.tier2.theories.TradeNetworkEngine;
+import org.ether.society.engines.tier2.theories.TradeNetworkRouter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

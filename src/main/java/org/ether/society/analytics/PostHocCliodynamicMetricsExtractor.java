@@ -6,7 +6,7 @@
 package org.ether.society.analytics;
 
 import org.ether.society.analytics.SimulationRunRecord.MetricSnapshot;
-import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
+import org.ether.society.engines.tier2.theories.ProceduralPopulationGenerator;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

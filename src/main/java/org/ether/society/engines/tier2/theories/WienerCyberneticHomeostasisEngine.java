@@ -6,16 +6,17 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Norbert Wiener Cybernetic Negative-Feedback Homeostasis Engine.
@@ -77,36 +78,27 @@ public class WienerCyberneticHomeostasisEngine extends AbstractSimulationEngine 
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processCyberneticHomeostasis(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Executes cybernetic homeostatic damping across the cell domain.
-     *
-     * @param cells      spatial cells
-     * @param deltaYears time step duration in astronomical Julian years
-     */
-    public static void processCyberneticHomeostasis(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
 
-            double food = cell.getFoodResourceOr(0.0);
-            double foodPerCapita = food / (double) pop;
-            double error = (foodPerCapita - TARGET_FOOD_PER_CAPITA) / TARGET_FOOD_PER_CAPITA;
+        double food = buffer.getFoodResource()[i];
+        double foodPerCapita = food / pop;
+        double error = (foodPerCapita - TARGET_FOOD_PER_CAPITA) / TARGET_FOOD_PER_CAPITA;
 
-            double currentWork = cell.getResourceWorkOr(50.0);
-
-            // Negative feedback damping: when surplus is high, reallocate labor away from emergency subsistence;
-            // when deficit occurs, increase emergency subsistence effort smoothly
-            double dampingAdjustment = -DAMPING_FEEDBACK_GAIN * error * deltaYears * 10.0;
-            double clampedDamping = Math.clamp(dampingAdjustment, -5.0, 5.0);
-
-            cell.setResourceWork(Math.clamp(currentWork + clampedDamping, 10.0, 100.0));
+        // Negative feedback damping: when food deficit occurs, mobilize emergency subsistence effort;
+        // when surplus is high, stabilize institutional/work pressure
+        double dampingAdjustment = -DAMPING_FEEDBACK_GAIN * error * dtYears;
+        if (error < 0.0) {
+            acc.dFoodResource += Math.min(pop * 0.1, -error * pop * 0.02 * dtYears);
         }
+        acc.dFluxPressure += Math.clamp(dampingAdjustment, -0.05, 0.05);
     }
 }

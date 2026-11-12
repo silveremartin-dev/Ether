@@ -6,16 +6,17 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Irrigated Basin Soil Salinization & Hydrological Mass-Balance Engine.
@@ -86,89 +87,53 @@ public class SoilSalinizationHydrologyEngine extends AbstractSimulationEngine {
         return "Tier 2: Agro-Hydrological Degradation";
     }
 
-    /**
-     * Static utility entry point for fused pipeline execution.
-     *
-     * @param cells the spatial grid cells to process
-     * @param deltaYears elapsed time step in fractional solar years
-     */
-    public static void processSoilSalinization(List<H3Cell> cells, double deltaYears) {
-        new SoilSalinizationHydrologyEngine().process(cells, deltaYears);
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
 
-        int salinizedCells = 0;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop < 50.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop < 50) continue;
+        double rainfall = buffer.getRainfall()[i];
+        double temp = buffer.getTemperature()[i];
+        double elevation = buffer.getElevation()[i];
 
-            double rainfall = cell.getRainfallOr(500.0);
-            double temp = cell.getTemperatureOr(15.0);
-            double elevation = cell.getElevationOr(0.0);
+        if (rainfall < 450.0 && temp > 18.0 && elevation < 800.0) {
+            double kPerCapita = buffer.getResourceCapital()[i] / Math.max(1.0, pop);
+            double food = buffer.getFoodResource()[i];
 
-            // Salinization is acute in arid/semi-arid plains and lowlands (Rain < 450mm, Temp > 18A°C)
-            if (rainfall < 450.0 && temp > 18.0 && elevation < 800.0) {
-                double currentSalinity = cell.getSoilSalinityOr(0.0);
-                double kPerCapita = cell.getResourceCapitalOr(0.0) / Math.max(1.0, (double) pop);
-                double food = cell.getFoodResourceOr(1000.0);
+            double modernDrainageActivation = 1.0 / (1.0 + Math.exp(-(kPerCapita - 1200.0) / 350.0));
+            double irrigationEfficiencyFactor = 1.2 * (1.0 - modernDrainageActivation) + 0.4 * modernDrainageActivation;
+            double irrigationIntensity = Math.min(3.0, (pop / 200.0)) * irrigationEfficiencyFactor;
 
-                // Smooth C^1 transition to pressurized subsurface tile drainage (Jacobsen & Adams 1958; FAO 1985):
-                // Below k_pc = 1200 kg/cap (gravity-fed flood canals), drainage leaching is minimal and irrigation water
-                // load per unit crop is high; above k_pc = 1200 kg/cap (modern subsurface tile drainage & drip pumps),
-                // solute leaching increases and flood application decreases.
-                double modernDrainageActivation = 1.0 / (1.0 + Math.exp(-(kPerCapita - 1200.0) / 350.0));
+            double accessibleAquifer = buffer.getFreshwaterAquifer()[i];
+            double capillaryFlux = (accessibleAquifer > 10.0)
+                    ? Math.max(0.0, (temp - 15.0) * 0.04 * (1.0 - Math.min(1.0, rainfall / 450.0)))
+                    : 0.0;
 
-                // 1. Irrigation intensity scales with population density and gravity-canal vs drip efficiency
-                double irrigationEfficiencyFactor = 1.2 * (1.0 - modernDrainageActivation) + 0.4 * modernDrainageActivation;
-                double irrigationIntensity = Math.min(3.0, (pop / 200.0)) * irrigationEfficiencyFactor;
+            double saltInputRate = (irrigationIntensity * 0.15) + (capillaryFlux * 0.08);
+            double drainageLeaching = (0.005 + 0.075 * modernDrainageActivation)
+                    + (rainfall > 400.0 ? (rainfall - 400.0) * 0.002 : 0.0);
 
-                // 2. Capillary groundwater upward flux driven by potential evapotranspiration (PET >> Precipitation)
-                double accessibleAquifer = cell.getAccessibleAquiferOr(0.0);
-                double capillaryFlux = (accessibleAquifer > 10.0)
-                        ? Math.max(0.0, (temp - 15.0) * 0.04 * (1.0 - Math.min(1.0, rainfall / 450.0)))
-                        : 0.0;
+            // Quasi-steady salinity concentration (dS/m) clamped to [0, 30]
+            double eqSalinity = Math.clamp(saltInputRate / Math.max(0.005, drainageLeaching), 0.0, 30.0);
+            double excessSalinity = Math.max(0.0, eqSalinity - 2.0);
+            double yieldFactor = Math.clamp(1.0 - (0.06 * excessSalinity), 0.10, 1.0);
+            double annualDegradation = Math.pow(yieldFactor, Math.min(5.0, dtYears));
 
-                // 3. Salt deposition rate (irrigation canal solute load + upward capillary rise)
-                double saltInputRate = (irrigationIntensity * 0.15) + (capillaryFlux * 0.08);
+            double newFood = Math.max(5.0, food * annualDegradation);
+            acc.dFoodResource += (newFood - food);
 
-                // 4. Subsurface drainage leaching (smoothly scales from 0.005/yr gravity seepage to 0.08/yr tile drainage)
-                double drainageLeaching = (0.005 + 0.075 * modernDrainageActivation)
-                        + (rainfall > 400.0 ? (rainfall - 400.0) * 0.002 : 0.0);
-                double saltLeachedRate = drainageLeaching * currentSalinity;
-
-                // 5. Dynamic mass balance integration: d[Salts]/dt
-                double deltaSalt = (saltInputRate - saltLeachedRate) * deltaYears;
-                double newSalinity = Math.clamp(currentSalinity + deltaSalt, 0.0, 30.0);
-                cell.setSoilSalinity(newSalinity);
-
-                if (newSalinity > 2.0) {
-                    salinizedCells++;
-                }
-
-                // 6. Maas-Hoffman / Jacobsen-Adams Crop Yield Attenuation
-                // Below 2.0 dS/m: no degradation. Above 2.0: linear yield penalty up to 90% collapse
-                double excessSalinity = Math.max(0.0, newSalinity - 2.0);
-                double yieldFactor = Math.clamp(1.0 - (0.06 * excessSalinity), 0.10, 1.0);
-
-                double annualDegradation = Math.pow(yieldFactor, Math.min(5.0, deltaYears));
-                cell.setFoodResource(Math.max(5.0, food * annualDegradation));
-
-                if (cell.getBiomassAgriculture() != null && cell.getBiomassAgriculture() > 0.0) {
-                    cell.setBiomassAgriculture(Math.max(1.0, cell.getBiomassAgriculture() * annualDegradation));
-                }
+            double agri = buffer.getBiomassAgriculture()[i];
+            if (agri > 0.0) {
+                double newAgri = Math.max(1.0, agri * annualDegradation);
+                acc.dBiomassAgriculture += (newAgri - agri);
             }
-        }
-
-        if (salinizedCells > 0) {
-            logger.debug("Soil Salinization Engine: Evaluated {} salinized agrarian cells.", salinizedCells);
         }
     }
 }

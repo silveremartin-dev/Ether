@@ -108,7 +108,7 @@ public class WarDiplomacyEngineTest {
         dest.setPopulation(3000);
         dest.setResourceCapital(100.0);
 
-        TradeNetworkEngine.TradeRoute route = new TradeNetworkEngine.TradeRoute(hub, dest, List.of(hub, dest), 1.0);
+        TradeNetworkRouter.TradeRoute route = new TradeNetworkRouter.TradeRoute(hub, dest, List.of(hub, dest), 1.0);
 
         PhysicalCapitalDiffusionEngine.processCapitalDiffusion(List.of(hub, dest), List.of(route), 1.0);
 

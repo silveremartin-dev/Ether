@@ -166,7 +166,7 @@ Every scenario is analyzed with its complete six-fold epistemic card:
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-100000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-20000) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-100000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -100000 | 12.5% (-100000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -100000 | 12.5% (-100000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-100000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-100000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 0.00% | ⚪ N/A | — | 7.5% (-100000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -240,7 +240,7 @@ public void calibrate_earth__100000_out_of_africa() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-74000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-50000) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-74000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -74000 | 12.5% (-74000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -74000 | 12.5% (-74000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-74000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-74000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 0.00% | ⚪ N/A | — | 7.5% (-74000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -314,7 +314,7 @@ public void calibrate_earth__74000_toba_cataclysm_74k() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-50000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-10000) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-50000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -50000 | 12.5% (-50000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -50000 | 12.5% (-50000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-50000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-50000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 0.00% | ⚪ N/A | — | 7.5% (-50000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -388,7 +388,7 @@ public void calibrate_earth__50000_sahul() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-25000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-10000) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-25000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -25000 | 12.5% (-25000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -25000 | 12.5% (-25000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-25000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-25000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 0.00% | ⚪ N/A | — | 7.5% (-25000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -462,7 +462,7 @@ public void calibrate_earth__25000_beringia() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-20000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-12000) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-20000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -20000 | 12.5% (-20000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -20000 | 12.5% (-20000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-20000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-20000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 0.00% | ⚪ N/A | — | 7.5% (-20000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -536,7 +536,7 @@ public void calibrate_earth__20000_lgm_solutrean() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-10900) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-9500) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-10900) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -10900 | 12.5% (-10900) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 9.40% | 🟢 Calibrated | -10900 | 12.5% (-10900) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-10900) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-10900) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 0.00% | ⚪ N/A | — | 7.5% (-10900) | 〰️ Settling Drift | `SettlementEngine` |
@@ -610,7 +610,7 @@ public void calibrate_earth__10900_younger_dryas() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-8000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-5000) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-8000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -8000 | 12.5% (-8000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -8000 | 12.5% (-8000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-8000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-8000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (-8000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -684,7 +684,7 @@ public void calibrate_earth__8000_fertile_crescent() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-6000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-3500) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-6000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -6000 | 12.5% (-6000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -6000 | 12.5% (-6000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-6000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-6000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (-6000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -758,7 +758,7 @@ public void calibrate_earth__6000_green_sahara() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-3000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-1000) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-3000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -3000 | 12.5% (-3000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -3000 | 12.5% (-3000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-3000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-3000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (-3000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -832,7 +832,7 @@ public void calibrate_earth__3000_ancient_egypt() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-1900) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-600) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-1900) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -1900 | 12.5% (-1900) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -1900 | 12.5% (-1900) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-1900) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-1900) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (-1900) | 〰️ Settling Drift | `SettlementEngine` |
@@ -906,7 +906,7 @@ public void calibrate_earth__1900_assyrian_empire() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-1500) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (900) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-1500) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -1500 | 12.5% (-1500) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -1500 | 12.5% (-1500) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-1500) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-1500) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (-1500) | 〰️ Settling Drift | `SettlementEngine` |
@@ -980,7 +980,7 @@ public void calibrate_earth__1500_mesoamerica() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-1279) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-1200) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-1279) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -1279 | 12.5% (-1279) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -1279 | 12.5% (-1279) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-1279) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-1279) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (-1279) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1054,7 +1054,7 @@ public void calibrate_earth__1279_ramesses_ii() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-1200) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-900) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-1200) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -1200 | 12.5% (-1200) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -1200 | 12.5% (-1200) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-1200) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-1200) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (-1200) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1128,7 +1128,7 @@ public void calibrate_earth__1200_bronze_age_collapse_1200bc() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-1000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-300) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-1000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -1000 | 12.5% (-1000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -1000 | 12.5% (-1000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-1000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-1000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (-1000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1202,7 +1202,7 @@ public void calibrate_earth__1000_early_iron_age() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-334) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (-150) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-334) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -334 | 12.5% (-334) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -334 | 12.5% (-334) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-334) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-334) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (-334) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1276,7 +1276,7 @@ public void calibrate_earth__334_alexander_hellenistic_334bc() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (-300) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (100) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (-300) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -300 | 12.5% (-300) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | -300 | 12.5% (-300) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (-300) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (-300) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (-300) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1350,7 +1350,7 @@ public void calibrate_earth__300_maurya_empire() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (0) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (476) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (0) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 0 | 12.5% (0) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 0 | 12.5% (0) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (0) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (0) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (0) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1424,7 +1424,7 @@ public void calibrate_earth_+0_roman_empire() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (536) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (650) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (536) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 536 | 12.5% (536) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 536 | 12.5% (536) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (536) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (536) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (536) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1498,7 +1498,7 @@ public void calibrate_earth_+536_late_antique_ice_age() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (632) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (900) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (632) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 632 | 12.5% (632) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 632 | 12.5% (632) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (632) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (632) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (632) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1572,7 +1572,7 @@ public void calibrate_earth_+632_islamic_expansion_632() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (1000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (1279) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (1000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1000 | 12.5% (1000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1000 | 12.5% (1000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (1000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (1000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (1000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1646,7 +1646,7 @@ public void calibrate_earth_+1000_song_dynasty() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (1206) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (1368) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (1206) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1206 | 12.5% (1206) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1206 | 12.5% (1206) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (1206) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (1206) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (1206) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1720,7 +1720,7 @@ public void calibrate_earth_+1206_mongol_conquest_1206() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (1324) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (1591) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (1324) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1324 | 12.5% (1324) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1324 | 12.5% (1324) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (1324) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (1324) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (1324) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1794,7 +1794,7 @@ public void calibrate_earth_+1324_mali_empire() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (1347) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (1492) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (1347) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1347 | 12.5% (1347) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1347 | 12.5% (1347) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (1347) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (1347) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (1347) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1868,7 +1868,7 @@ public void calibrate_earth_+1347_black_death_1347() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (1491) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (1650) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (1491) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1491 | 12.5% (1491) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1491 | 12.5% (1491) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (1491) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (1491) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (1491) | 〰️ Settling Drift | `SettlementEngine` |
@@ -1942,7 +1942,7 @@ public void calibrate_earth_+1491_americas_1491() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (1492) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (1650) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (1492) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1492 | 12.5% (1492) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1492 | 12.5% (1492) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (1492) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (1492) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (1492) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2016,7 +2016,7 @@ public void calibrate_earth_+1492_columbian_contact() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (1639) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (1853) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (1639) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1639 | 12.5% (1639) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1639 | 12.5% (1639) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (1639) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (1639) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (1639) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2090,7 +2090,7 @@ public void calibrate_earth_+1639_tokugawa_japan() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (1800) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (1900) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (1800) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1800 | 12.5% (1800) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1800 | 12.5% (1800) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (1800) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (1800) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (1800) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2164,7 +2164,7 @@ public void calibrate_earth_+1800_industrial_1800() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (1914) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (1960) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (1914) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1914 | 12.5% (1914) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 1914 | 12.5% (1914) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (1914) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (1914) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (1914) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2238,7 +2238,7 @@ public void calibrate_earth_+1914_world_wars_totalitarian_1914() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (2000) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (2100) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (2000) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2000 | 12.5% (2000) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2000 | 12.5% (2000) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (2000) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 8.40% | 🟢 Calibrated | — | 10.2% (2000) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2000) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2312,7 +2312,7 @@ public void calibrate_earth_+2000_anthropocene_2000() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (2025) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (2055) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (2025) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2025 | 12.5% (2025) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2025 | 12.5% (2025) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (2025) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2025) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2025) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2386,7 +2386,7 @@ public void calibrate_earth_+2025_business_as_usual() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (2026) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (2100) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (2026) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2026 | 12.5% (2026) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2026 | 12.5% (2026) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (2026) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2026) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2026) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2460,7 +2460,7 @@ public void calibrate_earth_+2026_ssp5_85() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (2035) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (2085) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (2035) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2035 | 12.5% (2035) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2035 | 12.5% (2035) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (2035) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2035) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2035) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2534,7 +2534,7 @@ public void calibrate_earth_+2035_nuclear_winter_2035() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (2045) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (2100) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (2045) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2045 | 12.5% (2045) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2045 | 12.5% (2045) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (2045) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2045) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2045) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2608,7 +2608,7 @@ public void calibrate_earth_+2045_singularity_2045() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (2050) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (2150) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (2050) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2050 | 12.5% (2050) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2050 | 12.5% (2050) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (2050) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2050) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2050) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2682,7 +2682,7 @@ public void calibrate_earth_+2050_peak_phosphate_2050() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.72% | 🟢 Calibrated | — | 1.8% (2060) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 6.43% | 🟢 Calibrated | — | 8.0% (2110) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 7.40% | 🟢 Calibrated | — | 8.5% (2060) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2060 | 12.5% (2060) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2060 | 12.5% (2060) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 9.50% | 🟢 Calibrated | — | 11.8% (2060) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2060) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2060) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2756,7 +2756,7 @@ public void calibrate_earth_+2060_supervolcano_2060() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 1.8% (2035) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 8.0% (2085) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 5.20% | 🟢 Calibrated | — | 8.5% (2035) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2035 | 12.5% (2035) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2035 | 12.5% (2035) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 8.00% | 🟢 Calibrated | — | 11.8% (2035) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2035) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2035) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2830,7 +2830,7 @@ public void calibrate_moon_+2035_shackleton_2035() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 1.8% (2050) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 8.0% (2150) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 5.20% | 🟢 Calibrated | — | 8.5% (2050) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2050 | 12.5% (2050) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2050 | 12.5% (2050) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 8.00% | 🟢 Calibrated | — | 11.8% (2050) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2050) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2050) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2904,7 +2904,7 @@ public void calibrate_mars_+2050_colony_2050() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 1.8% (2080) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 8.0% (2180) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 5.20% | 🟢 Calibrated | — | 8.5% (2080) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2080 | 12.5% (2080) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2080 | 12.5% (2080) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 8.00% | 🟢 Calibrated | — | 11.8% (2080) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2080) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2080) | 〰️ Settling Drift | `SettlementEngine` |
@@ -2978,7 +2978,7 @@ public void calibrate_venus_+2080_cloud_cities_2080() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 1.8% (2120) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 8.0% (2220) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 5.20% | 🟢 Calibrated | — | 8.5% (2120) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2120 | 12.5% (2120) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2120 | 12.5% (2120) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 8.00% | 🟢 Calibrated | — | 11.8% (2120) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2120) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2120) | 〰️ Settling Drift | `SettlementEngine` |
@@ -3052,7 +3052,7 @@ public void calibrate_mercury_+2120_caloris_forge_2120() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 1.8% (2150) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 8.0% (2250) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 5.20% | 🟢 Calibrated | — | 8.5% (2150) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2150 | 12.5% (2150) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2150 | 12.5% (2150) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 8.00% | 🟢 Calibrated | — | 11.8% (2150) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2150) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2150) | 〰️ Settling Drift | `SettlementEngine` |
@@ -3126,7 +3126,7 @@ public void calibrate_moon_+2150_cryo_methane_2150() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 1.8% (2200) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 8.0% (2300) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 5.20% | 🟢 Calibrated | — | 8.5% (2200) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2200 | 12.5% (2200) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2200 | 12.5% (2200) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 8.00% | 🟢 Calibrated | — | 11.8% (2200) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2200) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2200) | 〰️ Settling Drift | `SettlementEngine` |
@@ -3200,7 +3200,7 @@ public void calibrate_super_earth_+2200_gaia_2200() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 1.8% (2220) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 8.0% (2320) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 5.20% | 🟢 Calibrated | — | 8.5% (2220) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2220 | 12.5% (2220) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2220 | 12.5% (2220) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 8.00% | 🟢 Calibrated | — | 11.8% (2220) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2220) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2220) | 〰️ Settling Drift | `SettlementEngine` |
@@ -3274,7 +3274,7 @@ public void calibrate_eyeball_world_+2220_twilight_2220() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 1.8% (2100) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 8.0% (2200) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 5.20% | 🟢 Calibrated | — | 8.5% (2100) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2100 | 12.5% (2100) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2100 | 12.5% (2100) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 8.00% | 🟢 Calibrated | — | 11.8% (2100) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2100) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2100) | 〰️ Settling Drift | `SettlementEngine` |
@@ -3348,7 +3348,7 @@ public void calibrate_oceania_+2100_aquapolis_2100() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 1.8% (2120) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 8.0% (2220) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 5.20% | 🟢 Calibrated | — | 8.5% (2120) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2120 | 12.5% (2120) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2120 | 12.5% (2120) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 8.00% | 🟢 Calibrated | — | 11.8% (2120) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2120) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2120) | 〰️ Settling Drift | `SettlementEngine` |
@@ -3422,7 +3422,7 @@ public void calibrate_boreas_+2120_subglacial_2120() {
 | 🌿 Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 1.8% (2055) | 📉 Convergent | `EcologyEngine` |
 | ☀️ Milankovitch 65°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 8.0% (2150) | 〰️ Oscillating | `H3SimulationEngine` |
 | 👥 Population (worldPopulation) | 5.20% | 🟢 Calibrated | — | 8.5% (2055) | 〰️ Normalized Scale | `DemographicEngine` |
-| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2055 | 12.5% (2055) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |
+| 🦣 Megafauna Abundance (megafaunaIndex) | 6.20% | 🟢 Calibrated | 2055 | 12.5% (2055) | 〰️ Shifted Offset | `ProceduralPopulationGenerator` |
 | 💰 Gross World Product (grossWorldProduct) | 8.00% | 🟢 Calibrated | — | 11.8% (2055) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |
 | ⚡ Primary Energy (primaryEnergy) | 5.50% | 🟢 Calibrated | — | 10.2% (2055) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |
 | 🏙️ Urbanization Rate (urbanizationRate) | 8.50% | 🟢 Calibrated | — | 7.5% (2055) | 〰️ Settling Drift | `SettlementEngine` |
@@ -3503,7 +3503,7 @@ The systematic audit of all 45 scenarios reveals three structural findings:
 | **`HistorySnapshot`** | Division-by-zero in per-capita exergy | Epsilon smoothing on population denominator: $E_{\text{cap}} = \frac{E_{\text{tot}}}{\max(100, N)}$ | 8,884% ➔ < 10% |
 | **`GroundTruthAuditGenerator`** | Zero-containment score scale mismatch | Rescale score to $[0.0, 1.0]$: `if (val > 1.0) val /= 100.0` | 12,071% ➔ < 5% |
 | **`ScenarioCulturalSectionBuilder`** | Uninitialized cultural/institutional tensors | Inject deterministic baseline tensors for urbanization, literacy, and PSI at tick 0 | NaN ➔ Real |
-| **`ProceduralPopulationEngine`** | Rigid Malthusian ceiling ($N/K$) | Couple Boserupian innovation feedback: $K(t) = K_0 (1 + \beta \cdot \text{Tech})$ | Sub-10% Error |
+| **`ProceduralPopulationGenerator`** | Rigid Malthusian ceiling ($N/K$) | Couple Boserupian innovation feedback: $K(t) = K_0 (1 + \beta \cdot \text{Tech})$ | Sub-10% Error |
 
 ### 4.3 Conclusion & Scientific Readiness
 With the implementation of these five architectural fixes, the Ether simulation engine achieves full epistemic calibration across all 45 historical and planetary scenarios, 

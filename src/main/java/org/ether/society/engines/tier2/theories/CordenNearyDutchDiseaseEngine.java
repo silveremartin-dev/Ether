@@ -10,12 +10,12 @@ import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Corden-Neary Dutch Disease &amp; Resource Curse Engine.
@@ -75,53 +75,32 @@ public class CordenNearyDutchDiseaseEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processDutchDiseaseDynamics(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Evaluates Dutch Disease factor crowding-out and lagging-sector de-industrialization across cells.
-     *
-     * @param cells      simulation cells
-     * @param deltaYears time step duration in astronomical Julian years
-     */
-    public static void processDutchDiseaseDynamics(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 20.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 20) continue;
+        double cap = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0;
+        double metal = buffer.getMetalResource() != null ? buffer.getMetalResource()[i] : 0.0;
+        double coal = buffer.getResourceCoal() != null ? buffer.getResourceCoal()[i] : 0.0;
+        double oil = buffer.getResourceOil() != null ? buffer.getResourceOil()[i] : 0.0;
 
-            double cap = cell.getResourceCapitalOr(0.0);
-            double metal = cell.getResourceMetalOr(0.0);
-            double coal = cell.getResourceCoalOr(0.0);
-            double oil = cell.getResourceOilOr(0.0);
+        double extractiveSurplus = metal + (coal * 0.5) + (oil * 0.8);
+        double rentRatio = extractiveSurplus / Math.max(100.0, cap + extractiveSurplus);
+        double dutchDiseaseIntensity = SmoothMath.sigmoid(rentRatio, EXTRACTIVE_RENT_THRESHOLD, 0.08);
 
-            // Total extractive resource wealth
-            double extractiveSurplus = metal + (coal * 0.5) + (oil * 0.8);
-            double rentRatio = extractiveSurplus / Math.max(100.0, cap + extractiveSurplus);
-
-            // Continuous crowding-out activation when extractive rents dominate the local economy
-            double dutchDiseaseIntensity = SmoothMath.sigmoid(rentRatio, EXTRACTIVE_RENT_THRESHOLD, 0.08);
-
-            if (dutchDiseaseIntensity > 0.05) {
-                // 1. Spending effect: windfall rents appreciate costs and crowd out domestic agricultural diversification
-                double agri = cell.getBiomassAgricultureOr(0.0);
-                if (agri > 50.0) {
-                    double agriculturalCrowdOut = 0.03 * dutchDiseaseIntensity * deltaYears;
-                    cell.setBiomassAgriculture(Math.max(20.0, agri * (1.0 - agriculturalCrowdOut)));
-                }
-
-                // 2. High transport friction on non-extractive goods due to port and infrastructure monopolization by raw ore
-                double currentFriction = cell.getMovementFrictionOr(1.0);
-                double factorAppreciation = 0.02 * dutchDiseaseIntensity * deltaYears;
-                cell.setMovementFriction(Math.min(3.0, currentFriction + factorAppreciation));
-
-                // 3. Extractive capital expands while diversified domestic capital suffers a technological stall
-                double windfallInvestment = extractiveSurplus * 0.015 * deltaYears;
-                cell.setResourceCapital(cap + windfallInvestment);
+        if (dutchDiseaseIntensity > 0.05) {
+            double agri = buffer.getBiomassAgriculture() != null ? buffer.getBiomassAgriculture()[i] : 0.0;
+            if (agri > 50.0) {
+                acc.dBiomassAgriculture -= (float) (agri * 0.03 * dutchDiseaseIntensity * dtYears);
             }
+            acc.dFluxPressure += (float) (0.02 * dutchDiseaseIntensity * dtYears);
+            acc.dResourceCapital += (float) (extractiveSurplus * 0.015 * dtYears);
         }
     }
 }

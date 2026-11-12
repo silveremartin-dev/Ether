@@ -6,16 +6,13 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-
-import org.ether.society.database.H3Cell;
 import org.ether.society.core.math.SmoothMath;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Acemoglu-Robinson Institutional Economics Engine.
@@ -39,32 +36,23 @@ public class AcemogluRobinsonInstitutionsEngine extends AbstractSimulationEngine
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processInstitutionalDynamics(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    public static void processInstitutionalDynamics(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 1.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+        double gini = buffer.getGiniIndex() != null ? buffer.getGiniIndex()[i] : 0.35;
+        double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0;
+        double kPerCapita = capital / pop;
 
-            double gini = cell.getGiniIndexOr(0.35);
-            double capital = cell.getResourceCapitalOr(10.0);
-            double kPerCapita = capital / pop;
-
-            // Inclusiveness score: low Gini + broad-based distribution of economic opportunities
-            double inclusiveness = SmoothMath.smoothClamp(1.0 - gini, 0.05, 0.95, 20.0);
-
-            // Sedentary property rights activation: dormant for nomadic / low-capital bands (AGENTS.md A§8)
-            double propertyRightsActivation = SmoothMath.sigmoid(kPerCapita, 100.0, 30.0);
-
-            // Inclusive institutions protect property rights and encourage capital reinvestment;
-            // extractive institutions impose expropriation risk and elite rent-seeking (Acemoglu & Robinson 2012).
-            double netInstitutionalGrowthRate = 0.02 * (inclusiveness - 0.35) * propertyRightsActivation * deltaYears;
-            cell.setResourceCapital(Math.max(0.0, capital * (1.0 + netInstitutionalGrowthRate)));
-        }
+        double inclusiveness = SmoothMath.smoothClamp(1.0 - gini, 0.05, 0.95, 20.0);
+        double propertyRightsActivation = SmoothMath.sigmoid(kPerCapita, 100.0, 30.0);
+        double netInstitutionalGrowthRate = 0.02 * (inclusiveness - 0.35) * propertyRightsActivation * dtYears;
+        acc.dResourceCapital += (float) (capital * netInstitutionalGrowthRate);
     }
 }

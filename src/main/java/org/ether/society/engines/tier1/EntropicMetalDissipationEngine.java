@@ -89,6 +89,25 @@ public class EntropicMetalDissipationEngine extends AbstractSimulationEngine {
     public static void resetState() {
         annualDissipationRate = 0.015;
     }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double metal = buffer.getMetalResource()[i];
+        if (metal <= 0.0) return;
+
+        double remainingMetal = Math.max(0.0, metal * Math.exp(-annualDissipationRate * dtYears));
+        double dissipated = metal - remainingMetal;
+        if (dissipated > 0.0) {
+            acc.dMetalResource -= (float) dissipated;
+            acc.dPollutionLevel += (float) ((dissipated / 1770.49) * 0.1);
+        }
+    }
 }
 
 

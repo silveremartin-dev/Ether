@@ -64,6 +64,48 @@ public class ThermodynamicPrimeMoversEngine extends AbstractSimulationEngine {
     }
 
     @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
+
+        double capital = buffer.getResourceCapital()[i];
+        double capitalPerCapita = capital / pop;
+        double metalStock = buffer.getMetalResource()[i];
+        double coalStock = buffer.getResourceCoal()[i];
+        double oilStock = buffer.getResourceOil()[i];
+
+        double somaticPower = 120.0;
+        double livestockPerCapita = buffer.getBiomassLivestock()[i] / pop;
+        double animalPower = Math.min(150.0, livestockPerCapita * 0.45);
+
+        double riverFlow = Math.max(0.0, buffer.getFreshwaterAquifer()[i] * 0.1);
+        double millPower = 0.0;
+        if (capitalPerCapita > 30.0) {
+            double millCapitalRatio = Math.min(1.0, (capitalPerCapita - 30.0) / 200.0);
+            millPower = 80.0 * millCapitalRatio * (1.0 + Math.tanh(riverFlow / 50.0));
+        }
+
+        double thermalEnginePower = 0.0;
+        if (capitalPerCapita > 200.0 && metalStock > 0.5) {
+            double precisionMetallurgy = Math.min(1.0, (capitalPerCapita - 200.0) / 3000.0);
+            double carnotEfficiency = 0.01 + 0.34 * precisionMetallurgy;
+            double availableFuelEnthalpy = Math.tanh(coalStock / 10.0) + Math.tanh(oilStock / 5.0);
+            thermalEnginePower = 2500.0 * carnotEfficiency * availableFuelEnthalpy;
+        }
+
+        double totalMechanicalWatts = somaticPower + animalPower + millPower + thermalEnginePower;
+        double curFire = buffer.getEnergyFire()[i];
+        acc.dEnergyFire += (float) ((totalMechanicalWatts - curFire) * Math.min(1.0, dtYears));
+    }
+
+    @Override
     public void process(List<H3Cell> cells, double deltaYears) {
         processPrimeMovers(cells, deltaYears);
     }

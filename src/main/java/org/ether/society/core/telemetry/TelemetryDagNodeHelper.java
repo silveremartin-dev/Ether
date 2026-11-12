@@ -54,7 +54,8 @@ final class TelemetryDagNodeHelper {
             case "energyPerCapita" -> c.powerWattsPerCapita();
             case "avgTechLevel" -> c.phiExergy();
             case "primaryEnergy" -> {
-                if (c.energyCapturedMw > 0.0) yield c.energyCapturedMw * 3.15576e-5; // MW -> EJ/yr
+                double eMw = m.getOrDefault("energyCaptured", c.energyCapturedMw);
+                if (eMw > 0.0) yield eMw * 3.15576e-5; // MW -> EJ/yr
                 yield CliodynamicFormulasRegistry.computePrimaryEnergyEJ(c.popLong, m.getOrDefault("avgTechLevel", c.phiExergy()));
             }
             case "kardashevScale" -> CliodynamicFormulasRegistry.computeKardashevScale(c.powerWattsPerCapita(), c.popLong);

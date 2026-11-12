@@ -64,6 +64,37 @@ pub unsafe fn process_tier2(world: &mut WorldBufferRaw, dt_years: f32) {
     } else {
         &[]
     };
+    let agri_slice = if !world.biomass_agriculture.is_null() {
+        std::slice::from_raw_parts(world.biomass_agriculture, n)
+    } else {
+        &[]
+    };
+    let livestock_slice = if !world.biomass_livestock.is_null() {
+        std::slice::from_raw_parts(world.biomass_livestock, n)
+    } else {
+        &[]
+    };
+    let fire_slice = if !world.energy_fire.is_null() {
+        std::slice::from_raw_parts(world.energy_fire, n)
+    } else {
+        &[]
+    };
+    let wind_slice = if !world.energy_wind.is_null() {
+        std::slice::from_raw_parts(world.energy_wind, n)
+    } else {
+        &[]
+    };
+    let solar_slice = if !world.energy_solar.is_null() {
+        std::slice::from_raw_parts(world.energy_solar, n)
+    } else {
+        &[]
+    };
+    let efood_slice = if !world.energy_food_consumed.is_null() {
+        std::slice::from_raw_parts(world.energy_food_consumed, n)
+    } else {
+        &[]
+    };
+    let flux_ptr = world.flux_pressure as usize;
 
     (0..n).into_par_iter().for_each(|i| {
         let p = pop_slice[i] as f64;
@@ -175,6 +206,57 @@ pub unsafe fn process_tier2(world: &mut WorldBufferRaw, dt_years: f32) {
         let reinvest = output * 0.05 * dt;
         let depr = capital * 0.04 * dt;
         capital = (capital + reinvest - depr).max(1.0);
+
+        // -----------------------------------------------------------------
+        // 6. Tainter (1988) Diminishing Marginal Returns on Complexity
+        // -----------------------------------------------------------------
+        let headcount = (p / 0.06).max(1.0);
+        if capital >= 50.0 {
+            let k_per_cap_t = capital / headcount;
+            let surplus_flow = headcount * (0.05 + 0.020 * k_per_cap_t) * dt;
+            let t_comp = (1.0 + 0.02 * k_per_cap_t).ln();
+            let maint_cost = (0.015 * capital + headcount * t_comp.powf(2.2) * 0.08) * dt;
+            if maint_cost > surplus_flow {
+                let erosion = (maint_cost - surplus_flow) * 0.8;
+                capital = (capital - erosion).max(10.0);
+                complexity = (complexity - 0.01 * (erosion / capital.max(1.0)).min(0.5)).max(0.0);
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 7. Ricardo (1817) Differential Land Rent & White (1949) Exosomatic Energy
+        // -----------------------------------------------------------------
+        if headcount > 20.0 && !agri_slice.is_empty() {
+            let agri = agri_slice[i] as f64;
+            if agri > 50.0 && k_pc >= 15.0 {
+                let margin_pressure = (headcount * 1.20) / (agri + 1.0);
+                let margin_factor = sigmoid(margin_pressure - 1.0, 0.0, 0.25);
+                if margin_factor > 0.05 {
+                    capital = (capital * (1.0 - 0.035 * margin_factor * dt)).max(10.0);
+                    gini = (gini + 0.02 * margin_factor * dt).min(0.85);
+                }
+            }
+        }
+        let e_fire = if !fire_slice.is_empty() { fire_slice[i] as f64 } else { 0.0 };
+        let e_wind = if !wind_slice.is_empty() { wind_slice[i] as f64 } else { 0.0 };
+        let e_solar = if !solar_slice.is_empty() { solar_slice[i] as f64 } else { 0.0 };
+        let e_food = if !efood_slice.is_empty() { (efood_slice[i] as f64).max(3.5 * headcount) } else { 3.5 * headcount };
+        let e_livestock = if !livestock_slice.is_empty() { livestock_slice[i] as f64 * 15.0 } else { 0.0 };
+        let e_total = e_food + e_fire + e_wind + e_solar + e_livestock + coal_val * 24.0 + hydro_val * 33.0;
+        let e_pc = e_total / headcount;
+        capital += headcount * (e_pc / 50.0) * 0.005 * dt;
+
+        // -----------------------------------------------------------------
+        // 8. Schelling-Axelrod (1971, 1997) Polarization Friction
+        // -----------------------------------------------------------------
+        if flux_ptr != 0 {
+            let pol_act = sigmoid(gini, 0.45, 1.0 / 12.0);
+            if pol_act > 0.02 {
+                let fp = *((flux_ptr as *mut f32).add(i)) as f64;
+                let df = 0.05 * pol_act * (gini - 0.35).max(0.0) * dt;
+                *((flux_ptr as *mut f32).add(i)) = (fp + df).min(10.0) as f32;
+            }
+        }
 
         // Write back mutated state observables
         *((cap_ptr as *mut f32).add(i)) = capital as f32;

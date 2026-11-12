@@ -17,7 +17,7 @@ import org.ether.society.analytics.SimulationRunRecord;
 import org.ether.society.analytics.SimulationRunRepository;
 import org.ether.society.analytics.Tier2EngineContributionAnalyzer;
 import org.ether.society.config.EtherPaths;
-import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
+import org.ether.society.engines.tier2.theories.ProceduralPopulationGenerator;
 import org.ether.society.model.Scenario;
 import org.ether.society.persistence.EtherJsonHelper;
 import org.slf4j.Logger;
@@ -227,10 +227,12 @@ public final class ComparativeTelemetryDataLoader {
                     double foodPerCap = snap.totalFood() > 0 ? (snap.totalFood() / pop) * 3.362 : 3.362;
                     metricsMap.put("foodPerCapita", foodPerCap);
                     metricsMap.put("totalFood", snap.totalFood() * scalingFactor);
-                    double regionalEnergyEJ = snap.energyCaptured() * 3.15576e-5;
+                    // In HistorySnapshot, energyCaptured is stored in MW when raw (> 1000) or directly in EJ when recorded from primaryEnergy
+                    double rawEnergy = snap.energyCaptured();
+                    double regionalEnergyEJ = rawEnergy > 1000.0 ? (rawEnergy * 3.15576e-5) : rawEnergy;
                     metricsMap.put("regionalEnergy", regionalEnergyEJ);
                     metricsMap.put("primaryEnergy", regionalEnergyEJ * scalingFactor);
-                    metricsMap.put("energyCaptured", snap.energyCaptured() * scalingFactor);
+                    metricsMap.put("energyCaptured", rawEnergy * scalingFactor);
 
                     // Epsilon smoothing on population denominator to prevent mortality singularity (Vaclav Smil 2017)
                     double safePop = Math.max(100.0, popDbl);
@@ -338,8 +340,8 @@ public final class ComparativeTelemetryDataLoader {
                     metricsMap.put("systemComplexity", snap.systemComplexity());
                     metricsMap.put("systemInterdependence", snap.systemComplexity());
                     metricsMap.put("carbonFootprint", snap.carbonFootprint());
-                    metricsMap.put("megafaunaIndex", ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(snap.year(), (popDbl * scalingFactor) / 1e6, 0.2));
-                    metricsMap.put("milankovitchInsolation", ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(snap.year()));
+                    metricsMap.put("megafaunaIndex", ProceduralPopulationGenerator.calculateMegafaunaAbundanceIndex(snap.year(), (popDbl * scalingFactor) / 1e6, 0.2));
+                    metricsMap.put("milankovitchInsolation", ProceduralPopulationGenerator.calculateMilankovitchSummerInsolation65N(snap.year()));
 
                     // Dynamic zero-containment score in [0.0, 1.0] (Crosby 1972, Seebens 2017)
                     double containment = 1.0;
@@ -352,7 +354,7 @@ public final class ComparativeTelemetryDataLoader {
                     }
                     metricsMap.put("zeroContainmentScore", containment);
 
-                    metricsMap.put("psiStressIndex", snap.eliteOverproduction() * (1.0 + snap.globalGini()) * Math.max(0.5, snap.conflictLevel() / 20.0));
+                    metricsMap.put("psiStressIndex", org.ether.society.analytics.CliodynamicFormulasRegistry.computePoliticalStressIndex(snap.avgTechnology(), 100.0 - snap.conflictLevel()));
                     metricsMap.put("lyapunovExponent", 0.01);
                     metricsMap.put("epistemicDiscrepancy", 0.05);
 

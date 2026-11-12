@@ -95,4 +95,31 @@ double eroei = 2.5 * resourceAvailability * extractionEquipmentEfficiency;
             logger.warn("EROEI Engine: Civilizational energy deficit collapse active across {} cells.", collapseCells);
         }
     }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+
+        double biomassHuman = buffer.getBiomassHuman()[i];
+        double pop = biomassHuman / 0.06;
+        if (pop <= 50.0) return;
+
+        double woodBiomass = Math.max(buffer.getBiomassNatural()[i], buffer.getWoodResource()[i]);
+        double resourceAvailability = Math.clamp(woodBiomass / 250.0, 0.20, 4.0);
+        double capPerWorker = buffer.getResourceCapital()[i] / Math.max(1.0, pop);
+        double extractionEquipmentEfficiency = 1.0 + 1.8 * Math.log1p(capPerWorker / 50.0);
+        double eroei = Math.max(0.4, 2.5 * resourceAvailability * extractionEquipmentEfficiency);
+
+        if (eroei < 1.0) {
+            double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
+            double famineFraction = Math.clamp(0.05 * dtMonthlyRatio, 0.0, 0.33);
+            acc.dBiomassHuman -= (float) (biomassHuman * famineFraction);
+            acc.dLifespan -= (float) (1.0 * dtMonthlyRatio);
+        }
+    }
 }

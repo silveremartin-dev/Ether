@@ -11,8 +11,6 @@
 
 package org.ether.society.engines.tier2.theories;
 
-import org.ether.society.core.engine.AbstractSimulationEngine;
-import org.ether.society.core.engine.EngineTier;
 import org.ether.society.engines.tier1.*;
 
 
@@ -47,13 +45,13 @@ import java.util.List;
 
  */
 
-public class CliodynamicAdvisorEngine extends AbstractSimulationEngine {
-    public CliodynamicAdvisorEngine() {
-        super("CliodynamicAdvisorEngine", "CliodynamicAdvisorEngine", EngineTier.TIER_2_CLIODYNAMIC);
+public final class CliodynamicAdvisor {
+    private CliodynamicAdvisor() {
+        // Pure static telemetry advisor
     }
 
 
-    private static final Logger logger = LoggerFactory.getLogger(CliodynamicAdvisorEngine.class);
+    private static final Logger logger = LoggerFactory.getLogger(CliodynamicAdvisor.class);
 
 
 
@@ -84,7 +82,7 @@ public class CliodynamicAdvisorEngine extends AbstractSimulationEngine {
 
 
 
-        PlanetaryBoundariesEngine.BoundaryStatus boundaries = PlanetaryBoundariesEngine.assessBoundaries(cells);
+        PlanetaryBoundariesEvaluator.BoundaryStatus boundaries = PlanetaryBoundariesEvaluator.assessBoundaries(cells);
 
 
 

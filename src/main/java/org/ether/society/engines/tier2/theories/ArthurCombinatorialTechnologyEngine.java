@@ -9,15 +9,13 @@ package org.ether.society.engines.tier2.theories;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
-import org.ether.society.database.H3CellPhysicsAndStateHelper;
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.math.SmoothMath;
 
-import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * W. Brian Arthur's Combinatorial Technology Evolution Engine.
@@ -81,32 +79,35 @@ public class ArthurCombinatorialTechnologyEngine extends AbstractSimulationEngin
     public static final double OBSOLESCENCE_DECAY_RATE = 0.008;
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0) return;
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 1.0) return;
 
-            double capital = SmoothMath.softplus(cell.getResourceCapitalOr(10.0), 0.0, 10.0);
-            double kPerCapita = capital / pop;
+        double capital = SmoothMath.softplus(buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0, 0.0, 10.0);
+        double kPerCapita = capital / pop;
 
-            // Single C^infinity combinatorial capital differential equation (W. Brian Arthur 2009; Kremer 1993; Garrett 2011):
-            // dK/dt = mu_comb * N * (1 + k_pc / k_ref)^alpha * ln(1 + N / N_0) / (1 + (k_pc / k_energized)^2) - delta_obs * K
-            double powerWatts = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double kEnergized = Math.min(THERMODYNAMIC_CAPITAL_SATURATION_KG_PC,
-                    Math.max(REFERENCE_TOOLSET_MASS_KG_PC,
-                            powerWatts / H3CellPhysicsAndStateHelper.GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT));
+        double fire = buffer.getEnergyFire() != null ? buffer.getEnergyFire()[i] : 0.0;
+        double wind = buffer.getEnergyWind() != null ? buffer.getEnergyWind()[i] : 0.0;
+        double solar = buffer.getEnergySolar() != null ? buffer.getEnergySolar()[i] : 0.0;
+        double foodE = buffer.getEnergyFoodConsumed() != null ? buffer.getEnergyFoodConsumed()[i] : 0.0;
+        double powerWatts = Math.max(85.0, ((fire + wind + solar + foodE) * 31.688) / pop);
 
-            double combinatorialDiversity = Math.pow(1.0 + kPerCapita / REFERENCE_TOOLSET_MASS_KG_PC, COMBINATORIAL_SYNERGY_EXPONENT);
-            double cooperativeNetwork = Math.log1p(pop / COOPERATIVE_NETWORK_SCALE_POP);
-            double ratioToCeiling = kPerCapita / kEnergized;
-            double saturationDamping = 1.0 / (1.0 + ratioToCeiling * ratioToCeiling);
+        double kEnergized = Math.min(THERMODYNAMIC_CAPITAL_SATURATION_KG_PC,
+                Math.max(REFERENCE_TOOLSET_MASS_KG_PC, powerWatts / 12.0));
 
-            double grossSynthesis = BASE_SYNTHESIS_RATE * pop * combinatorialDiversity * cooperativeNetwork * saturationDamping;
-            double netDeltaK = (grossSynthesis - OBSOLESCENCE_DECAY_RATE * capital) * deltaYears;
-            cell.setResourceCapital(SmoothMath.softplus(capital + netDeltaK, 0.0, 10.0));
-        }
+        double combinatorialDiversity = Math.pow(1.0 + kPerCapita / REFERENCE_TOOLSET_MASS_KG_PC, COMBINATORIAL_SYNERGY_EXPONENT);
+        double cooperativeNetwork = Math.log1p(pop / COOPERATIVE_NETWORK_SCALE_POP);
+        double ratioToCeiling = kPerCapita / kEnergized;
+        double saturationDamping = 1.0 / (1.0 + ratioToCeiling * ratioToCeiling);
+
+        double grossSynthesis = BASE_SYNTHESIS_RATE * pop * combinatorialDiversity * cooperativeNetwork * saturationDamping;
+        double netDeltaK = (grossSynthesis - OBSOLESCENCE_DECAY_RATE * capital) * dtYears;
+        acc.dResourceCapital += (float) netDeltaK;
     }
 }

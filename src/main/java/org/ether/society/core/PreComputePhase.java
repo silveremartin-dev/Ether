@@ -12,7 +12,7 @@ import org.ether.society.data.HistoricalMapGenerator;
 import org.ether.society.data.ResourceDepositMapReader;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.FutureScenarioRegistry;
-import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
+import org.ether.society.engines.tier2.theories.ProceduralPopulationGenerator;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.model.Biome;
@@ -165,8 +165,8 @@ public class PreComputePhase {
             return;
         }
 
-        logger.info("Distributing initial population via ProceduralPopulationEngine (non-Earth planet): {} humans", totalPop);
-        ProceduralPopulationEngine.distributePopulation(cells, scenario, totalPop, techLevel, pattern, false, startYear);
+        logger.info("Distributing initial population via ProceduralPopulationGenerator (non-Earth planet): {} humans", totalPop);
+        ProceduralPopulationGenerator.distributePopulation(cells, scenario, totalPop, techLevel, pattern, false, startYear);
     }
 
     private static final java.util.Map<String, Double> GLOBAL_RASTER_WEIGHT_CACHE = new java.util.concurrent.ConcurrentHashMap<>();

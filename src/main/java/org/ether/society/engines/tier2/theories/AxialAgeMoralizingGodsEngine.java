@@ -10,12 +10,12 @@ import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Axial Age Moralizing Gods &amp; Large-Scale Prosociality Engine.
@@ -90,46 +90,27 @@ public class AxialAgeMoralizingGodsEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processMoralizingNorms(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Executes the continuous prosocial policing evaluation across populated cells.
-     *
-     * @param cells      simulation cell domain
-     * @param deltaYears time step duration in astronomical Julian years
-     */
-    public static void processMoralizingNorms(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop < 200.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop < 200) continue;
+        double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0;
+        double kpc = capital / pop;
 
-            double capital = cell.getResourceCapitalOr(10.0);
-            double kpc = capital / (double) pop;
+        double scaleActivation = SmoothMath.sigmoid(pop, SESHAT_POPULATION_THRESHOLD, POPULATION_BANDWIDTH);
+        double capitalActivation = SmoothMath.sigmoid(kpc, CAPITAL_PER_CAPITA_THRESHOLD, 20.0);
+        double moralTrustIndex = scaleActivation * capitalActivation;
 
-            // Seshat empirical transition: Moralizing Big Gods emerge when social complexity
-            // and population scale cross the critical anonymous threshold (N >= 100,000, Whitehouse et al. 2019)
-            double scaleActivation = SmoothMath.sigmoid(pop, SESHAT_POPULATION_THRESHOLD, POPULATION_BANDWIDTH);
-            double capitalActivation = SmoothMath.sigmoid(kpc, CAPITAL_PER_CAPITA_THRESHOLD, 20.0);
-            double moralTrustIndex = scaleActivation * capitalActivation;
-
-            if (moralTrustIndex > 0.01) {
-                // 1. Friction abatement: Prosocial religious norms reduce transaction friction among strangers
-                double targetFriction = Math.max(0.2, 1.0 - (MAX_TRANSACTION_FRICTION_ABATEMENT * moralTrustIndex));
-                cell.setMovementFriction(targetFriction);
-
-                // 2. Capital accumulation boost from contract enforcement & reduced defection
-                double institutionalSynergy = 0.015 * moralTrustIndex * deltaYears;
-                cell.setResourceCapital(capital * (1.0 + institutionalSynergy));
-
-                // 3. Trade network integration boost: high trust accelerates inter-settlement exchange
-                double tradeNet = cell.getTradeNetwork() != null ? cell.getTradeNetwork() : 0.0;
-                cell.setTradeNetwork(Math.min(100.0, tradeNet + (2.5 * moralTrustIndex * deltaYears)));
-            }
+        if (moralTrustIndex > 0.01) {
+            acc.dResourceCapital += (float) (capital * 0.015 * moralTrustIndex * dtYears);
+            acc.dCommercialFluxVolume += (float) (2.5 * moralTrustIndex * dtYears);
+            acc.dFluxPressure -= (float) (MAX_TRANSACTION_FRICTION_ABATEMENT * 0.1 * moralTrustIndex * dtYears);
         }
     }
 }

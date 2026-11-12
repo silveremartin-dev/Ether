@@ -5,15 +5,16 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * <h1>Physical Media Printing &amp; Information Transmission Engine</h1>
@@ -56,54 +57,28 @@ public class PhysicalMediaPrintingEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processMediaProduction(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Evaluates physical book/media throughput per capita and drives endogenous educational capacity.
-     *
-     * @param cells      inhabited cells
-     * @param deltaYears time step fraction in years
-     */
-    public static void processMediaProduction(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 1.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+        double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0;
+        double capitalPerCapita = capital / pop;
+        double woodResource = buffer.getWoodResource() != null ? buffer.getWoodResource()[i] : 0.0;
+        double metalStock = buffer.getMetalResource() != null ? buffer.getMetalResource()[i] : 0.0;
 
-            double capital = cell.getResourceCapitalOr(0.0);
-            double capitalPerCapita = capital / pop;
-            double woodResource = cell.getWoodResourceOr(0.0);
-            double metalStock = cell.getResourceMetalOr(0.0);
+        double scribal = capitalPerCapita > 25.0 ? Math.min(1.0, (capitalPerCapita - 25.0) / 100.0) * 0.05 : 0.0;
+        double print = (capitalPerCapita > 350.0 && metalStock > 0.1) ? 0.25 * Math.min(1.0, (capitalPerCapita - 350.0) / 800.0) : 0.0;
+        double industrial = (capitalPerCapita > 1500.0 && woodResource > 0.5) ? 0.65 * Math.min(1.0, (capitalPerCapita - 1500.0) / 3000.0) : 0.0;
 
-            // 1. Scribal Baseline: parchment / manuscript production (requires basic settled capital k_pc >= 25 kg/cap)
-            double scribalMediaCapacity = 0.0;
-            if (capitalPerCapita > 25.0) {
-                scribalMediaCapacity = Math.min(1.0, (capitalPerCapita - 25.0) / 100.0) * 0.05; // ~5% literacy cap
-            }
-
-            // 2. Movable-Type Print Revolution: requires lead/tin metallurgy (metalStock > 0.1) and capital k_pc >= 350
-            double printMediaCapacity = 0.0;
-            if (capitalPerCapita > 350.0 && metalStock > 0.1) {
-                double pressAdoption = Math.min(1.0, (capitalPerCapita - 350.0) / 800.0);
-                printMediaCapacity = 0.25 * pressAdoption; // lifts literacy capacity to ~30%
-            }
-
-            // 3. Mass Industrial Paper & Steam Printing: requires wood pulp and industrial capital k_pc >= 1500
-            double massIndustrialMediaCapacity = 0.0;
-            if (capitalPerCapita > 1500.0 && woodResource > 0.5) {
-                double industrialAdoption = Math.min(1.0, (capitalPerCapita - 1500.0) / 3000.0);
-                massIndustrialMediaCapacity = 0.65 * industrialAdoption; // lifts literacy to ~95%
-            }
-
-            double totalMediaCapacity = scribalMediaCapacity + printMediaCapacity + massIndustrialMediaCapacity;
-            double targetLiteracyRate = Math.clamp(totalMediaCapacity * 100.0, 0.0, 99.0);
-
-            // Store emergent knowledge transmission capacity onto transit/toll revenue or trade buffer
-            cell.setTransitTollRevenue(Math.max(cell.getTransitTollRevenueOr(0.0), targetLiteracyRate));
+        double totalMediaCapacity = scribal + print + industrial;
+        if (totalMediaCapacity > 0.01) {
+            acc.dInstitutionalComplexity += (float) (0.01 * totalMediaCapacity * dtYears);
         }
     }
 }

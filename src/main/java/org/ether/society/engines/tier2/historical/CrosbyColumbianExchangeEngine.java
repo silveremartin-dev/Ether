@@ -6,15 +6,16 @@
  */
 package org.ether.society.engines.tier2.historical;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Alfred Crosby Columbian Exchange &amp; Virgin-Soil Epidemics Engine.
@@ -69,8 +70,30 @@ public class CrosbyColumbianExchangeEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        AmerindianEcosystemEngine.processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+
+        double biomassHuman = buffer.getBiomassHuman()[i];
+        double pop = biomassHuman / 0.06;
+        if (pop <= 0.0) return;
+
+        double livestock = buffer.getBiomassLivestock()[i];
+        double kpc = buffer.getResourceCapital()[i] / Math.max(1.0, pop);
+
+        if (livestock < 1.0 && kpc < 1500.0) {
+            acc.dResourceCapital -= 0.005 * buffer.getResourceCapital()[i] * dtYears;
+        }
+
+        if (AmerindianEcosystemEngine.isOldWorldContactTriggered() && livestock < 5.0) {
+            double survivalRate = Math.max(0.01, 1.0 - AmerindianEcosystemEngine.getEpidemicMortalityRate() * Math.min(1.0, 0.10 * dtYears));
+            double newBiomass = Math.max(0.60, biomassHuman * survivalRate);
+            acc.dBiomassHuman += (newBiomass - biomassHuman);
+        }
     }
 
     public static boolean isOldWorldContactTriggered() {

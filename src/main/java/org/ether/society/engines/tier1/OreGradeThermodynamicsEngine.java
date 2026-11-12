@@ -95,6 +95,23 @@ public class OreGradeThermodynamicsEngine extends AbstractSimulationEngine {
         referenceOreConcentration = 0.05;
         minOreConcentrationFloor = 0.001;
     }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
+
+        double currentMetalStock = buffer.getMetalResource()[i];
+        if (currentMetalStock > 0.0) {
+            double oreConcentration = Math.max(minOreConcentrationFloor, referenceOreConcentration * (currentMetalStock / 100.0));
+            double energyMultiplier = Math.pow(referenceOreConcentration / oreConcentration, 1.5);
+            acc.dResourceCapital -= (float) Math.min(buffer.getResourceCapital()[i] * 0.01, 0.01 * energyMultiplier * dtYears);
+        }
+    }
 }
-
-

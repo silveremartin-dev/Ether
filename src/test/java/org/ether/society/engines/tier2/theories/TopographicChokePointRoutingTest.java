@@ -28,7 +28,7 @@ public class TopographicChokePointRoutingTest {
      * Test strategic choke points receive funneling scores and accumulate transit toll revenue.
      */
     public void testChokePointsIdentifyAndCollectTolls() {
-        TradeNetworkEngine.resetCumulativeStats();
+        TradeNetworkRouter.resetCumulativeStats();
         List<H3Cell> cells = new ArrayList<>();
 
         // Hub 1: Western trading city
@@ -67,7 +67,7 @@ public class TopographicChokePointRoutingTest {
         cells.add(hubEast);
 
         // Generate trade network
-        List<TradeNetworkEngine.TradeRoute> routes = TradeNetworkEngine.generateTradeNetworks(cells, 3.5, 1.0);
+        List<TradeNetworkRouter.TradeRoute> routes = TradeNetworkRouter.generateTradeNetworks(cells, 3.5, 1.0);
         assertNotNull(routes);
         assertFalse(routes.isEmpty(), "Trade routes must be established between populated trade hubs.");
 

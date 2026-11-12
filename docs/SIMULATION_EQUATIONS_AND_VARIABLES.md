@@ -72,7 +72,7 @@ Ether decouples numerical integration across three discrete physical time scales
   - Resolves van Genuchten soil water retention, N-P-K soil nutrient depletion, and Stokes siltation kinetics.
   - Integrates Farquhar FvCB photosynthesis, Beer-Lambert light interception, and soil organic carbon decay.
   - Updates cohort demographic aging, Gompertz-Makeham senescence, and Kimura genetic drift.
-  - Evaluates registered Type B cliodynamic plugins (`TypeBEnginePassRunner`).
+  - Evaluates active Tier 1 biophysical modules (`TypeBEnginePassRunner.executeActiveTier1Engines` in phase `3b_Tier1Biophysical`: thermodynamics, ecological degradation, pollution, metallurgy) and active Tier 2 cliodynamic theories (`TypeBEnginePassRunner.executeActiveTypeBEngines` in phase `4_ProceduralEngines`) via Single-Pass Cellular Kernel Fusion over `WorldBuffer` and `DerivativeAccumulator`, followed by sovereign `Polity` macro-cycles (`CliodynamicsEngine`, `WarDiplomacyEngine`, `SovereignTreasuryBondEngine`).
 
 - **Tier 3  -  Annual Macro Physics Scale ($\Delta t_{\text{annual}} = 365 \text{ days} \approx 31.5576 \times 10^6 \text{ s}$)**:
   - Deep mineral ore grade degradation and Hotelling depletion dynamics (`OreGradeThermodynamicsEngine`).
@@ -893,7 +893,7 @@ with canonical parameters:
   * $\tau_{\text{ventilation}}$: Aerodynamic wind flushing time constant [$\text{seconds}$].
 * **Computational Complexity**: $O(1)$ per urban cell.
 
-#### 41. Planetary Boundaries Earth System Matrix (`PlanetaryBoundariesEngine`)
+#### 41. Planetary Boundaries Earth System Matrix (`PlanetaryBoundariesEvaluator`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Rockström, J., et al. (2009). *Planetary boundaries: exploring the safe operating space for humanity*. Ecology and Society, 14(2); Steffen, W., et al. (2015). *Planetary boundaries: Guiding human development on a changing planet*. Science, 347(6223), 1259855.
 * **Governing Equations**:
@@ -1399,7 +1399,7 @@ with canonical parameters:
   $$\mathbf{u}^*(t) = \arg\min_{\mathbf{u}} \int_t^{t+H} \left( \|\mathbf{x}(\tau) - \mathbf{x}_{\text{safe}}\|^2_Q + \|\mathbf{u}(\tau)\|^2_R \right) d\tau$$
 * **Computational Complexity**: $O(H \cdot \text{states})$.
 
-#### 85.1. Multi-Hazard Early Warning Predictive Advisor (`CliodynamicAdvisorEngine`)
+#### 85.1. Multi-Hazard Early Warning Predictive Advisor (`CliodynamicAdvisor`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
 * **Governing Equations**:
   $$\mathbf{\Omega}_{\text{risk}} = \left[ \mathbb{I}(T_w \ge 31), \mathbb{I}([\text{NPK}] \le 0.15), \mathbb{I}(h_{\text{piezo}} \le 5), \mathbb{I}(\Psi \ge 70), \mathbb{I}(D \ge 1.5 Y) \right]$$
@@ -1587,7 +1587,7 @@ with canonical parameters:
   * Diagnostic era classification: maps physical power flux $P_{\text{watts}}/N$ directly to archetypes (Paleolithic $\le 100\text{ W}$, Neolithic $\ge 250\text{ W}$, Antiquity $\ge 600\text{ W}$, Medieval $\ge 1500\text{ W}$, Industrial $\ge 8000\text{ W}$) without state-level technology fluid.
 * **Computational Complexity**: $O(R)$ along active trade corridors and $O(1)$ per populated cell; executed in Pass 3.2.
 
-#### 98. Spatial Trade Gravity Corridors (`TradeNetworkEngine`)
+#### 98. Spatial Trade Gravity Corridors (`TradeNetworkRouter`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
 * **Academic Literature Reference**: Tinbergen, J. (1962). *Shaping the World Economy*. Twentieth Century Fund.
 * **Governing Equations**:

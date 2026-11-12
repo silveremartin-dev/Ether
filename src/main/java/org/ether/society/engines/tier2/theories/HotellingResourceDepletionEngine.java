@@ -6,15 +6,16 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Hotelling Non-Renewable Resource Depletion & Scarcity Rent Engine (Hotelling, 1931).
@@ -87,38 +88,32 @@ public class HotellingResourceDepletionEngine extends AbstractSimulationEngine {
     public static final double FURNACE_CAPITAL_SCALE_KG_PC = 20.0;
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double metalDeposit = cell.getResourceMetalOr(0.0);
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0 || metalDeposit <= 0.0) continue;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double metalDeposit = buffer.getMetalResource() != null ? buffer.getMetalResource()[i] : 0.0;
+        if (pop <= 0.0 || metalDeposit <= 0.0) return;
 
-            double currentCapital = cell.getResourceCapitalOr(0.0);
-            double kPerCapita = currentCapital / (double) pop;
+        double currentCapital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0;
+        double kPerCapita = currentCapital / pop;
 
-            // Smooth C^infinity Hill pyrometallurgical kiln activation (n = 3, k_chalcolithic = 65 kg/cap):
-            // Identically 0 at k_pc = 0 (~1e-4 in Paleolithic foraging, ~0.5 at 65 kg/cap, -> 1.0 in industrial regimes)
-            // with zero if-then-else threshold cutoffs.
-            double kRatioCubed = Math.pow(kPerCapita / CHALCOLITHIC_FURNACE_CAPITAL_KG_PC, 3.0);
-            double smeltingActivation = kRatioCubed / (1.0 + kRatioCubed);
+        double kRatioCubed = Math.pow(kPerCapita / CHALCOLITHIC_FURNACE_CAPITAL_KG_PC, 3.0);
+        double smeltingActivation = kRatioCubed / (1.0 + kRatioCubed);
 
-            // Industrial ore demand scales smoothly with physical machinery per capita (Ashby 2012, Materials and the Environment)
-            double demandSaturation = 2.5 * Math.tanh(Math.log1p(kPerCapita / 50.0) / 3.5);
-            double oreAvailability = metalDeposit / (metalDeposit + 100.0);
-            double extraction = pop * 0.02 * smeltingActivation * demandSaturation * oreAvailability * deltaYears;
-            extraction = Math.min(metalDeposit, extraction);
+        double demandSaturation = 2.5 * Math.tanh(Math.log1p(kPerCapita / 50.0) / 3.5);
+        double oreAvailability = metalDeposit / (metalDeposit + 100.0);
+        double extraction = pop * 0.02 * smeltingActivation * demandSaturation * oreAvailability * dtYears;
+        extraction = Math.min(metalDeposit, extraction);
 
-            cell.setResourceMetal(Math.max(0.0, metalDeposit - extraction));
+        acc.dMetalResource -= (float) extraction;
 
-            // Scarcity rent escalates infrastructure/capital creation as remaining reserves dwindle (Hotelling 1931)
-            double remainingFraction = (metalDeposit - extraction + 1.0) / (metalDeposit + 101.0);
-            double costMultiplier = 1.0 + 4.0 * Math.tanh(Math.pow(1.0 / remainingFraction, 0.5) / 5.0);
-
-            // Resource scarcity rents flow into local extraction capital accumulation
-            cell.setResourceCapital(currentCapital + (extraction * 2.0 * costMultiplier));
-        }
+        double remainingFraction = (metalDeposit - extraction + 1.0) / (metalDeposit + 101.0);
+        double costMultiplier = 1.0 + 4.0 * Math.tanh(Math.pow(1.0 / remainingFraction, 0.5) / 5.0);
+        acc.dResourceCapital += (float) (extraction * 2.0 * costMultiplier);
     }
 }

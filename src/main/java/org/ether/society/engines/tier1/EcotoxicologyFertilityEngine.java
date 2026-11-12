@@ -88,4 +88,25 @@ public class EcotoxicologyFertilityEngine extends AbstractSimulationEngine {
             logger.info("Ecotoxicology Engine: Endocrine fertility suppression active across {} highly polluted cells.", toxicStressCells);
         }
     }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double pollution = buffer.getPollutionLevel()[i];
+        if (pollution > 100.0) {
+            double fertilityFactor = calculateEcotoxicFertilityFactor(pollution);
+            if (fertilityFactor < 0.999) {
+                double biomassHuman = buffer.getBiomassHuman()[i];
+                if (biomassHuman > 0.0) {
+                    acc.dBiomassHuman -= (float) (biomassHuman * BASELINE_CRUDE_BIRTH_RATE * (1.0 - fertilityFactor) * dtYears);
+                    acc.dFertility -= (float) (0.2 * (1.0 - fertilityFactor) * dtYears);
+                }
+            }
+        }
+    }
 }

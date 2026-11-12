@@ -101,6 +101,25 @@ public class DeforestationErosionEngine extends AbstractSimulationEngine {
             logger.debug("Deforestation Erosion Engine: Soil carbon runoff active across {} deforested sloped cells.", erodedCells);
         }
     }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
+        double effectiveCanopy = Math.max(buffer.getBiomassNatural()[i], buffer.getWoodResource()[i]);
+        double soc = buffer.getSoilOrganicCarbon()[i];
+        double rain = buffer.getRainfall()[i];
+        double elev = buffer.getElevation()[i];
+
+        if (effectiveCanopy < 100.0 && elev > 200.0 && rain > 400.0 && soc > 2.0) {
+            double socLoss = (rain / 1000.0) * 0.5 * dtMonthlyRatio;
+            double newSoc = Math.max(2.0, soc - socLoss);
+            acc.dSoilOrganicCarbon += (float) (newSoc - soc);
+        }
+    }
 }
-
-

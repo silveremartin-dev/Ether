@@ -6,13 +6,14 @@
  */
 package org.ether.society.engines.tier2.historical;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Pre-Columbian Amerindian Ecosystem & Virgin-Soil Epidemics Engine Variant B32.1 (Pure) & B32.2 (Hybrid).
@@ -32,8 +33,31 @@ public class AmerindianEcosystemEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+
+        double biomassHuman = buffer.getBiomassHuman()[i];
+        double pop = biomassHuman / 0.06;
+        if (pop <= 0.0) return;
+
+        double livestock = buffer.getBiomassLivestock()[i];
+        double kpc = buffer.getResourceCapital()[i] / Math.max(1.0, pop);
+
+        if (livestock < 1.0 && kpc < 1500.0) {
+            // Draft megafauna absence constraint: muscle-only ceiling dampens capital accumulation
+            acc.dResourceCapital -= 0.005 * buffer.getResourceCapital()[i] * dtYears;
+        }
+
+        if (oldWorldContactTriggered && livestock < 5.0) {
+            double survivalRate = Math.max(0.01, 1.0 - epidemicMortalityRate * Math.min(1.0, 0.10 * dtYears));
+            double newBiomass = Math.max(0.60, biomassHuman * survivalRate);
+            acc.dBiomassHuman += (newBiomass - biomassHuman);
+        }
     }
 
     @Override
@@ -51,45 +75,6 @@ public class AmerindianEcosystemEngine extends AbstractSimulationEngine {
     public static void resetState() {
         oldWorldContactTriggered = false;
         epidemicMortalityRate = 0.90;
-    }
-
-    /**
-     * Process hybrid.
-     *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
-     */
-    public static void processHybrid(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
-
-        // Iterate over spatial cell domains and apply localized cellular state transformations
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getPopulation() == null || cell.getPopulation() <= 0) continue;
-
-            // Universal Draft Megafauna Absence & Zoonotic Naivety Law (no hardcoded GPS longitude box):
-            // Applies to any society lacking domesticated draft livestock (biomassLivestock < 1.0)
-            // before industrial mechanical prime movers (kpc < 1500 kg/cap).
-            double livestock = cell.getBiomassLivestockOr(0.0);
-            double pop = cell.getPopulation();
-            double kpc = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
-
-            if (livestock < 1.0 && kpc < 1500.0) {
-                // Draft animal constraint: Mechanical work density capped when relying purely on human muscle
-                double work = cell.getResourceWorkOr(20.0);
-                cell.setResourceWork(Math.min(work, 40.0));
-            }
-
-            // Virgin-Soil Zoonotic Epidemic Shock upon contact with high-pathogen-load populations
-            // Preserves demographic mass conservation and fine-grained cohort consistency across age pyramid
-            if (oldWorldContactTriggered && livestock < 5.0) {
-                double survivalRate = Math.max(0.01, 1.0 - epidemicMortalityRate * Math.min(1.0, 0.10 * deltaYears));
-                int newPop = (int) Math.max(10, Math.round(pop * survivalRate));
-                org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, newPop);
-            }
-        }
     }
 
     /**

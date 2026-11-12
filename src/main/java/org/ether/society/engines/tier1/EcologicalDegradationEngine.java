@@ -435,4 +435,39 @@ public class EcologicalDegradationEngine extends AbstractSimulationEngine {
 
         return Math.max(2.0, baseCap * agMultiplier * marineMultiplier * pastoralMultiplier * capitalMultiplier);
     }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+
+        double currPollution = buffer.getPollutionLevel()[i];
+        double attenuatedPollution = Math.max(0.0, currPollution * Math.pow(0.92, dtMonthlyRatio) - 1.2 * dtMonthlyRatio);
+        double newPollution = attenuatedPollution;
+        if (pop > 0.0) {
+            double capPerCapita = buffer.getResourceCapital()[i] / Math.max(1.0, pop);
+            double popDensity = pop / 1770.49;
+            double industrialGate = SmoothMath.sigmoid(capPerCapita, 1500.0, 350.0);
+            double fossilCombustion = (buffer.getResourceCoal()[i] * 0.05 + buffer.getResourceOil()[i] * 0.08 + buffer.getResourceGas()[i] * 0.04) * industrialGate;
+            double miningGate = SmoothMath.sigmoid(capPerCapita, 1100.0, 250.0);
+            double rawMining = buffer.getMetalResource()[i] * 0.02 * SmoothMath.softmin(3.0, capPerCapita / 500.0, 4.0);
+            double miningActivity = miningGate * SmoothMath.softmin(25.0, rawMining, 0.5);
+            double industrialEmission = popDensity * 0.08 * industrialGate + miningActivity + SmoothMath.softmin(50.0, fossilCombustion, 0.2);
+            newPollution = Math.min(1000.0, attenuatedPollution + industrialEmission * dtMonthlyRatio);
+        }
+        acc.dPollutionLevel += (float) (newPollution - currPollution);
+
+        if (newPollution > 0.0) {
+            double pollutionToxicity = newPollution / (150.0 + newPollution);
+            acc.dLifespan -= (float) (1.2 * pollutionToxicity * dtMonthlyRatio);
+            acc.dFertility -= (float) (0.5 * pollutionToxicity * dtMonthlyRatio);
+            acc.dBiomassNatural -= (float) Math.min(buffer.getBiomassNatural()[i], 5.0 * pollutionToxicity * dtMonthlyRatio);
+        }
+    }
 }

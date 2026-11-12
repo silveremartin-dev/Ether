@@ -241,9 +241,6 @@ public class ScenarioAutomatedTestSuite {
             KurzweilAcceleratingReturnsEngine.processAcceleratingReturns(mockCells, 1.0);
             World3CouplingEngine.processWorld3System(mockCells, 1.0);
 
-            // Execute registered Type B plugins
-            ProceduralEngineRegistry.processPlugins(mockCells, 1.0);
-
             for (H3Cell cell : mockCells) {
                 double pop = cell.getPopulation();
                 double capital = cell.getResourceCapital();

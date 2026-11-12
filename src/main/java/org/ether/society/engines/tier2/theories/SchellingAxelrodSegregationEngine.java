@@ -6,15 +6,16 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Cultural Homophily & Spatial Segregation Engine (Schelling, 1971 / Axelrod, 1997).
@@ -64,23 +65,23 @@ public class SchellingAxelrodSegregationEngine extends AbstractSimulationEngine 
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
 
-            double gini = cell.getGiniIndexOr(0.35);
-            // Continuous polarization friction: smooth logistic activation around Gini=0.45
-            // High internal inequality and social segregation induce micro-motives for enclave territorialization
-            double polarizationActivation = 1.0 / (1.0 + Math.exp(-12.0 * (gini - 0.45)));
-            if (polarizationActivation > 0.02) {
-                double friction = cell.getMovementFrictionOr(1.0);
-                double frictionIncrement = 0.05 * polarizationActivation * Math.max(0.0, gini - 0.35) * deltaYears;
-                cell.setMovementFriction(Math.min(10.0, friction + frictionIncrement));
-            }
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
+
+        double gini = buffer.getGiniIndex()[i];
+        // Continuous polarization friction: smooth logistic activation around Gini=0.45
+        double polarizationActivation = 1.0 / (1.0 + Math.exp(-12.0 * (gini - 0.45)));
+        if (polarizationActivation > 0.02) {
+            double frictionIncrement = 0.05 * polarizationActivation * Math.max(0.0, gini - 0.35) * dtYears;
+            acc.dFluxPressure += frictionIncrement;
         }
     }
 }

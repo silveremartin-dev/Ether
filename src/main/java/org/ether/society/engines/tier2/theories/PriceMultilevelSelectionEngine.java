@@ -6,15 +6,16 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Multilevel Cultural Selection & Price Equation Engine (George R. Price, 1970).
@@ -67,43 +68,42 @@ public class PriceMultilevelSelectionEngine extends AbstractSimulationEngine {
         return "Tier 2: Evolutionary Cliodynamics";
     }
 
+    private transient double meanWealth = 10.0;
+
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        double meanWealth = cells.stream()
-                .filter(java.util.Objects::nonNull)
-                .mapToDouble(c -> c.getResourceCapitalOr(0.0))
-                .average().orElse(10.0);
+    @Override
+    public void prepareTick(WorldBuffer buffer, double dtYears) {
+        meanWealth = 10.0;
+        if (buffer == null || buffer.getResourceCapital() == null) return;
+        float[] capArr = buffer.getResourceCapital();
+        double sum = 0.0;
+        int n = buffer.getCapacity();
+        for (int i = 0; i < n; i++) sum += capArr[i];
+        meanWealth = n > 0 ? Math.max(1.0, sum / n) : 10.0;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 0) continue;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 1.0) return;
 
-            double gini = cell.getGiniIndexOr(0.35);
-            double capital = cell.getResourceCapitalOr(10.0);
+        double gini = buffer.getGiniIndex() != null ? buffer.getGiniIndex()[i] : 0.35;
+        double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0;
 
-            // Group-level prosociality / civic solidarity index z = (1.0 - Gini)
-            double prosociality = Math.clamp(1.0 - gini, 0.0, 1.0);
+        double prosociality = Math.clamp(1.0 - gini, 0.0, 1.0);
+        double relativeCapital = (2.0 * capital) / (capital + meanWealth);
+        double betweenGroupAdvantage = prosociality * 0.03 * relativeCapital;
+        double withinGroupErosion = 0.02 * (1.0 / (1.0 + Math.exp(-12.0 * (gini - 0.45)))) * Math.max(0.0, gini - 0.35);
 
-            // Between-group selective advantage: high cooperation increases collective labor and capital output
-            // Normalized saturation ratio ensures stable bounds [0.0, 2.0]
-            double relativeCapital = (2.0 * capital) / (capital + Math.max(1.0, meanWealth));
-            double betweenGroupAdvantage = prosociality * 0.03 * relativeCapital;
-
-            // Within-group free-rider erosion: smooth continuous softplus penalty for elite inequality / rent extraction
-            double withinGroupErosion = 0.02 * (1.0 / (1.0 + Math.exp(-12.0 * (gini - 0.45)))) * Math.max(0.0, gini - 0.35);
-
-            double netAltruismShift = Math.clamp((betweenGroupAdvantage - withinGroupErosion) * deltaYears, -0.50, 0.50);
-
-            double currentWork = cell.getResourceWorkOr(50.0);
-            cell.setResourceWork(Math.max(10.0, currentWork * (1.0 + netAltruismShift)));
-
-            // Civic prosociality compounds into productive capital accumulation
-            if (netAltruismShift > 0.0) {
-                cell.setResourceCapital(capital + (capital * netAltruismShift * 0.10));
-            }
+        double netAltruismShift = Math.clamp((betweenGroupAdvantage - withinGroupErosion) * dtYears, -0.50, 0.50);
+        if (netAltruismShift > 0.0) {
+            acc.dResourceCapital += (float) (capital * netAltruismShift * 0.10);
         }
+        acc.dInstitutionalComplexity += (float) (netAltruismShift * 0.05);
     }
 }

@@ -6,16 +6,17 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * David Ricardo Differential Land Rent &amp; Extensive Agricultural Margin Engine.
@@ -76,56 +77,43 @@ public class RicardoDifferentialLandRentEngine extends AbstractSimulationEngine 
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processDifferentialRentDynamics(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Evaluates Ricardian differential rent extraction, profit compression, and inequality across cells.
-     *
-     * @param cells      simulation cells
-     * @param deltaYears time step duration in astronomical Julian years
-     */
-    public static void processDifferentialRentDynamics(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 20) continue;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 20.0) return;
 
-            double agriBiomass = cell.getBiomassAgricultureOr(0.0);
-            if (agriBiomass <= 50.0) continue;
+        double agriBiomass = buffer.getBiomassAgriculture()[i];
+        if (agriBiomass <= 50.0) return;
 
-            double capital = cell.getResourceCapitalOr(0.0);
-            double kpc = capital / (double) pop;
-            if (kpc < RENT_KPC_FLOOR) continue;
+        double capital = buffer.getResourceCapital()[i];
+        double kpc = capital / pop;
+        if (kpc < RENT_KPC_FLOOR) return;
 
-            // Subsistence food demand relative to local agricultural biomass endowment
-            double foodDemand = (double) pop * 1.20;
-            double marginalPressure = foodDemand / (agriBiomass + 1.0);
+        double foodDemand = pop * 1.20;
+        double marginalPressure = foodDemand / (agriBiomass + 1.0);
+        double marginFactor = SmoothMath.sigmoid(marginalPressure - 1.0, 0.0, 0.25);
 
-            // Continuous sigmoid activation of the extensive margin
-            double marginFactor = SmoothMath.sigmoid(marginalPressure - 1.0, 0.0, 0.25);
+        if (marginFactor > 0.05) {
+            double rentExtraction = 0.04 * marginFactor * dtYears;
+            double newAgri = Math.max(20.0, agriBiomass * (1.0 - rentExtraction * 0.30));
+            acc.dBiomassAgriculture += (newAgri - agriBiomass);
 
-            if (marginFactor > 0.05) {
-                // 1. Rent capture by landed elite: converts productive agricultural surplus into landlord consumption
-                double rentExtraction = 0.04 * marginFactor * deltaYears;
-                cell.setBiomassAgriculture(Math.max(20.0, agriBiomass * (1.0 - rentExtraction * 0.30)));
+            double capitalDrag = 0.035 * marginFactor * dtYears;
+            double newCap = Math.max(10.0, capital * (1.0 - capitalDrag));
+            acc.dResourceCapital += (newCap - capital);
 
-                // 2. Ricardian profit squeeze: rising food costs and rents reduce capital reinvestment
-                double capitalDrag = 0.035 * marginFactor * deltaYears;
-                cell.setResourceCapital(Math.max(10.0, capital * (1.0 - capitalDrag)));
+            double currentGini = buffer.getGiniIndex()[i];
+            double deltaGini = 0.02 * marginFactor * dtYears;
+            double newGini = Math.min(0.85, currentGini + deltaGini);
+            acc.dGiniIndex += (newGini - currentGini);
 
-                // 3. Inequality increase: land concentration elevates Gini index
-                double currentGini = cell.getGiniIndexOr(0.35);
-                double deltaGini = 0.02 * marginFactor * deltaYears;
-                cell.setGiniIndex(Math.min(0.85, currentGini + deltaGini));
-
-                // 4. Transport/trade friction increases slightly due to localized rentier tolls and tariff walls
-                double friction = cell.getMovementFrictionOr(1.0);
-                cell.setMovementFriction(Math.min(3.0, friction + (0.015 * marginFactor * deltaYears)));
-            }
+            acc.dFluxPressure += 0.015 * marginFactor * dtYears;
         }
     }
 }

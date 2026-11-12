@@ -8,7 +8,7 @@ package org.ether.society.engines.tier1;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.database.H3CellPhysicsAndStateHelper;
-import org.ether.society.engines.tier2.theories.TradeNetworkEngine;
+import org.ether.society.engines.tier2.theories.TradeNetworkRouter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -130,10 +130,10 @@ public class ClosedLoopResourceConservationTest {
         industrialPort.setResourceOil(100.0);
 
         List<H3Cell> path = List.of(miningHub, industrialPort);
-        TradeNetworkEngine.TradeRoute route = new TradeNetworkEngine.TradeRoute(miningHub, industrialPort, path, 5.0);
+        TradeNetworkRouter.TradeRoute route = new TradeNetworkRouter.TradeRoute(miningHub, industrialPort, path, 5.0);
 
         List<H3Cell> grid = List.of(miningHub, industrialPort);
-        TradeNetworkEngine.generateTradeNetworks(grid, 3.2, 1.0);
+        TradeNetworkRouter.generateTradeNetworks(grid, 3.2, 1.0);
 
         // Mining hub must export coal, reducing surplus, while destination receives fuel
         // Validates bilateral fossil arbitrage without crashing
@@ -178,7 +178,7 @@ public class ClosedLoopResourceConservationTest {
         tradeMetropolis.setResourcePreciousMetal(0.0); // Bullion deficit
 
         List<H3Cell> grid = List.of(goldHub, tradeMetropolis);
-        TradeNetworkEngine.generateTradeNetworks(grid, 2.2, 1.0);
+        TradeNetworkRouter.generateTradeNetworks(grid, 2.2, 1.0);
 
         assertTrue(goldHub.getResourcePreciousMetal() < 50.0,
                 "Gold hub must export precious bullion along trade route");

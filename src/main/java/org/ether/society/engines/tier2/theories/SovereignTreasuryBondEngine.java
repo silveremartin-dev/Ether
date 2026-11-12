@@ -5,10 +5,13 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 import org.ether.society.database.Polity;
 
 import org.slf4j.Logger;
@@ -65,8 +68,25 @@ public class SovereignTreasuryBondEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        // Cell-level transit revenue harvesting
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop < 100.0) return;
+
+        double capital = buffer.getResourceCapital()[i];
+        double inst = buffer.getInstitutionalComplexity()[i];
+        if (inst > 0.25 && capital > 500.0) {
+            // Creditworthy institutional regions mobilize fiscal-bond capital deepening
+            double creditMobilization = 0.004 * Math.min(1.0, inst) * capital * dtYears;
+            acc.dResourceCapital += creditMobilization;
+            acc.dCommercialFluxVolume += 0.002 * creditMobilization;
+        }
     }
 
     /**

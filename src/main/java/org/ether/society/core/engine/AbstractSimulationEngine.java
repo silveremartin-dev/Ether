@@ -83,6 +83,7 @@ public abstract class AbstractSimulationEngine implements SimulationEngineModule
     @Override
     public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
         if (!supportsCellularDerivatives() || buffer == null) return;
+        prepareTick(buffer, dtYears);
         int capacity = buffer.getCapacity();
         DerivativeAccumulator acc = new DerivativeAccumulator();
         for (int i = 0; i < capacity; i++) {
@@ -136,6 +137,54 @@ public abstract class AbstractSimulationEngine implements SimulationEngineModule
         if (acc.dInstitutionalComplexity != 0.0f) {
             float[] inst = buffer.getInstitutionalComplexity();
             inst[i] = (float) Math.min(1.0, Math.max(0.0, inst[i] + acc.dInstitutionalComplexity));
+        }
+        if (acc.dBiomassAgriculture != 0.0f) {
+            float[] bagr = buffer.getBiomassAgriculture();
+            bagr[i] = (float) Math.max(0.0, bagr[i] + acc.dBiomassAgriculture);
+        }
+        if (acc.dBiomassNatural != 0.0f) {
+            float[] bnat = buffer.getBiomassNatural();
+            bnat[i] = (float) Math.max(0.0, bnat[i] + acc.dBiomassNatural);
+        }
+        if (acc.dMetalResource != 0.0f) {
+            float[] metal = buffer.getMetalResource();
+            metal[i] = (float) Math.max(0.0, metal[i] + acc.dMetalResource);
+        }
+        if (acc.dFluxPressure != 0.0f) {
+            float[] flux = buffer.getFluxPressure();
+            flux[i] = (float) Math.max(0.0, flux[i] + acc.dFluxPressure);
+        }
+        if (acc.dCommercialFluxVolume != 0.0f) {
+            float[] comm = buffer.getCommercialFluxVolume();
+            comm[i] = (float) Math.max(0.0, comm[i] + acc.dCommercialFluxVolume);
+        }
+        if (acc.dLifespan != 0.0f) {
+            float[] life = buffer.getLifespan();
+            life[i] = (float) Math.clamp(life[i] + acc.dLifespan, 15.0, 120.0);
+        }
+        if (acc.dFertility != 0.0f) {
+            float[] fert = buffer.getFertility();
+            fert[i] = (float) Math.clamp(fert[i] + acc.dFertility, 0.5, 10.0);
+        }
+        if (acc.dBiomassFish != 0.0f) {
+            float[] fish = buffer.getBiomassFish();
+            fish[i] = (float) Math.max(0.0, fish[i] + acc.dBiomassFish);
+        }
+        if (acc.dResourceCoal != 0.0f) {
+            float[] coal = buffer.getResourceCoal();
+            coal[i] = (float) Math.max(0.0, coal[i] + acc.dResourceCoal);
+        }
+        if (acc.dWoodResource != 0.0f) {
+            float[] wood = buffer.getWoodResource();
+            wood[i] = (float) Math.max(0.0, wood[i] + acc.dWoodResource);
+        }
+        if (acc.dFreshwaterAquifer != 0.0f) {
+            float[] aq = buffer.getFreshwaterAquifer();
+            aq[i] = (float) Math.clamp(aq[i] + acc.dFreshwaterAquifer, 0.0, 2000.0);
+        }
+        if (acc.dSoilOrganicCarbon != 0.0f) {
+            float[] soc = buffer.getSoilOrganicCarbon();
+            soc[i] = (float) Math.max(0.0, soc[i] + acc.dSoilOrganicCarbon);
         }
     }
 }

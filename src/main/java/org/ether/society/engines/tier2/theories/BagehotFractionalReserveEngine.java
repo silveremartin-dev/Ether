@@ -10,12 +10,12 @@ import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Walter Bagehot Fractional-Reserve Liquidity &amp; Lender of Last Resort Engine.
@@ -78,61 +78,42 @@ public class BagehotFractionalReserveEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processBagehotBankingLiquidity(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Evaluates fractional-reserve credit dynamics and liquidity interventions across cells.
-     *
-     * @param cells      simulation cells
-     * @param deltaYears time step duration in astronomical Julian years
-     */
-    public static void processBagehotBankingLiquidity(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 20.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 20) continue;
+        double cap = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0;
+        double kpc = cap / pop;
+        double trade = buffer.getCommercialFluxVolume() != null ? buffer.getCommercialFluxVolume()[i] : 0.0;
 
-            double cap = cell.getResourceCapitalOr(0.0);
-            double kpc = cap / (double) pop;
-            double trade = cell.getTradeNetworkOr(0.0);
+        double bankingActivation = SmoothMath.sigmoid(kpc, BANKING_KPC_FLOOR, 35.0)
+                * SmoothMath.sigmoid(trade, 15.0, 5.0);
 
-            // Fractional-reserve commercial banking density emerges continuously
-            double bankingActivation = SmoothMath.sigmoid(kpc, BANKING_KPC_FLOOR, 35.0)
-                    * SmoothMath.sigmoid(trade, 15.0, 5.0);
+        if (bankingActivation > 0.05) {
+            double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 0.0;
+            double foodPerCapita = food / pop;
+            double systemicStress = Math.max(0.0, 1.0 - (foodPerCapita / 1.10));
 
-            if (bankingActivation > 0.05) {
-                double food = cell.getFoodResourceOr(0.0);
-                double foodPerCapita = food / (double) pop;
-                double systemicStress = Math.max(0.0, 1.0 - (foodPerCapita / 1.10));
+            if (systemicStress > 0.25) {
+                double creditFreezeLoss = 0.06 * bankingActivation * systemicStress * dtYears;
+                double metalReserves = buffer.getMetalResource() != null ? buffer.getMetalResource()[i] : 0.0;
+                boolean hasLenderOfLastResort = (metalReserves / pop) >= 15.0;
 
-                if (systemicStress > 0.25) {
-                    // Liquidity panic phase: private credit freeze threatens working capital
-                    double creditFreezeLoss = 0.06 * bankingActivation * systemicStress * deltaYears;
-
-                    // Evaluate whether sovereign reserves or state capacity acts as lender of last resort
-                    double metalReserves = cell.getResourceMetalOr(0.0);
-                    boolean hasLenderOfLastResort = (metalReserves / (double) pop) >= 15.0;
-
-                    if (hasLenderOfLastResort) {
-                        // Bagehot Intervention: State advances liquidity from bullion reserves to stem panic
-                        double liquidityInjected = Math.min(metalReserves * 0.10, cap * creditFreezeLoss);
-                        cell.setResourceMetal(metalReserves - liquidityInjected);
-                        // Working capital preserved with zero debt-deflation destruction
-                    } else {
-                        // Unbuffered Panic: Debt deflation contracts productive active capital
-                        cell.setResourceCapital(Math.max(10.0, cap * (1.0 - creditFreezeLoss)));
-                        double work = cell.getResourceWorkOr(50.0);
-                        cell.setResourceWork(Math.max(15.0, work * (1.0 - creditFreezeLoss * 0.5)));
-                    }
+                if (hasLenderOfLastResort) {
+                    double liquidityInjected = Math.min(metalReserves * 0.10, cap * creditFreezeLoss);
+                    acc.dMetalResource -= (float) liquidityInjected;
                 } else {
-                    // Normal Expansion Phase: Credit multiplier deepens physical capital circulation smoothly
-                    double creditExpansion = 0.02 * bankingActivation * deltaYears;
-                    cell.setResourceCapital(cap * (1.0 + creditExpansion));
+                    acc.dResourceCapital -= (float) (cap * creditFreezeLoss);
                 }
+            } else {
+                double creditExpansion = 0.02 * bankingActivation * dtYears;
+                acc.dResourceCapital += (float) (cap * creditExpansion);
             }
         }
     }

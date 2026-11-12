@@ -8,8 +8,8 @@ package org.ether.society.util;
 
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
-import org.ether.society.engines.tier1.PlanetaryBoundariesEngine;
-import org.ether.society.engines.tier2.theories.CliodynamicAdvisorEngine;
+import org.ether.society.engines.tier1.PlanetaryBoundariesEvaluator;
+import org.ether.society.engines.tier2.theories.CliodynamicAdvisor;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -47,7 +47,7 @@ public class SimulationReportGenerator {
         sb.append("--- \n\n");
         sb.append("## 📊 Assessment of Planetary Boundaries\n\n");
 
-        var boundaries = PlanetaryBoundariesEngine.assessBoundaries(cells);
+        var boundaries = PlanetaryBoundariesEvaluator.assessBoundaries(cells);
         sb.append(String.format("- **Climate Forcing Risk**: %.1f%%\n", boundaries.climateChangeRisk() * 100));
         sb.append(String.format("- **Biosphere Integrity Risk**: %.1f%%\n", boundaries.biosphereIntegrityRisk() * 100));
         sb.append(String.format("- **Freshwater Depletion Risk**: %.1f%%\n", boundaries.freshwaterDepletionRisk() * 100));
@@ -55,7 +55,7 @@ public class SimulationReportGenerator {
         sb.append(String.format("- **Stratospheric Aerosol Risk**: %.1f%%\n\n", boundaries.atmosphericAerosolRisk() * 100));
 
         sb.append("## 🧠 Cliodynamic Advisor & Physical Alerts\n\n");
-        var alerts = CliodynamicAdvisorEngine.generateAdvisorAlerts(cells, year);
+        var alerts = CliodynamicAdvisor.generateAdvisorAlerts(cells, year);
         for (var alert : alerts) {
             sb.append("### [").append(alert.severity()).append("] ").append(alert.title()).append("\n");
             sb.append(alert.description()).append("\n\n");

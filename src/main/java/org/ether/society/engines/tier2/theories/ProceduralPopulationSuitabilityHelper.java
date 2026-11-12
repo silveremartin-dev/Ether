@@ -11,11 +11,11 @@ import org.ether.society.model.Scenario;
 
 /**
  * Biophysical niche suitability, paleoclimatic orbital insolation, megafaunal extinction
- * coupling, and regional historical geography helper for {@link ProceduralPopulationEngine}.
+ * coupling, and regional historical geography helper for {@link ProceduralPopulationGenerator}.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
- * @see ProceduralPopulationEngine
+ * @see ProceduralPopulationGenerator
  */
 final class ProceduralPopulationSuitabilityHelper {
 

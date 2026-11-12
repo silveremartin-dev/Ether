@@ -6,15 +6,16 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Granovetter Revolutionary Threshold & Collective Action Cascade Engine (Mark Granovetter, 1978).
@@ -94,33 +95,27 @@ public class GranovetterThresholdCascadeEngine extends AbstractSimulationEngine 
      * @param deltaYears the delta years parameter (double)
      */
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            double gini = cell.getGiniIndexOr(0.35);
-            double food = cell.getFoodResourceOr(500.0);
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 1.0) return;
 
-            // Environmental grievance driver: high inequality + acute hunger
-            // Continuous environmental grievance driver (Granovetter 1978, Gurr 1970 "Why Men Rebel"):
-            // Grievance arises smoothly from income inequality (Gini > 0.35) and caloric scarcity (food < 500)
-            double giniGrievance = 1.0 / (1.0 + Math.exp(-12.0 * (gini - 0.45)));
-            double caloricGrievance = 1.0 / (1.0 + Math.exp(0.015 * (food - 350.0)));
-            double grievance = 0.5 * (giniGrievance + caloricGrievance);
+        double gini = buffer.getGiniIndex() != null ? buffer.getGiniIndex()[i] : 0.35;
+        double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 500.0;
 
-            // Continuous Granovetter collective action mobilization CDF (Granovetter 1978):
-            // Mobilization fraction Phi(g) reallocates labor away from standard economic production toward defiance
-            double mobilizationFraction = 1.0 / (1.0 + Math.exp(-8.0 * (grievance - 0.40)));
+        double giniGrievance = 1.0 / (1.0 + Math.exp(-12.0 * (gini - 0.45)));
+        double caloricGrievance = 1.0 / (1.0 + Math.exp(0.015 * (food - 350.0)));
+        double grievance = 0.5 * (giniGrievance + caloricGrievance);
+        double mobilizationFraction = 1.0 / (1.0 + Math.exp(-8.0 * (grievance - 0.40)));
 
-            double work = cell.getResourceWorkOr(50.0);
-            // Strike / civil defiance reallocates labor away from standard production
-            cell.setResourceWork(Math.max(0.0, work * (1.0 - 0.08 * mobilizationFraction * deltaYears)));
-
-        }
+        double cap = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0;
+        acc.dResourceCapital -= (float) (cap * 0.02 * mobilizationFraction * dtYears);
+        acc.dInstitutionalComplexity -= (float) (0.04 * mobilizationFraction * dtYears);
     }
 }
 

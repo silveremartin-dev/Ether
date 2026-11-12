@@ -79,6 +79,23 @@ double efficiency = calculateContinuousRecyclingDiscount(capital, work);
             }
         }
     }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 0.0) return;
+
+        double capital = buffer.getResourceCapital()[i];
+        double work = buffer.getInstitutionalComplexity()[i] * 100.0;
+        double efficiency = calculateContinuousRecyclingDiscount(capital, work);
+        if (efficiency > 0.05) {
+            acc.dResourceCapital += (float) (capital * efficiency * 0.025 * dtYears);
+        }
+    }
 }
-
-

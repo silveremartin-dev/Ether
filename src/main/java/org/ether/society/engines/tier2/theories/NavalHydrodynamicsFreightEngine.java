@@ -5,15 +5,16 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * <h1>Naval Hydrodynamics &amp; Maritime Freight Index Engine</h1>
@@ -57,62 +58,43 @@ public class NavalHydrodynamicsFreightEngine extends AbstractSimulationEngine {
         return "NavalHydrodynamicsFreightEngine";
     }
 
+    private transient double currentCostIndex = 1415.0;
+
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processNavalFreight(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Evaluates global maritime freight cost index based on prevailing fleet metallurgical and energetic capacity.
-     *
-     * @param cells      inhabited/coastal cells
-     * @param deltaYears time step fraction in years
-     */
-    public static void processNavalFreight(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    @Override
+    public void prepareTick(WorldBuffer buffer, double dtYears) {
+        currentCostIndex = 1415.0;
+        if (buffer == null || buffer.getBiomassHuman() == null) return;
+        int n = buffer.getCapacity();
+        float[] popArr = buffer.getBiomassHuman();
+        float[] capArr = buffer.getResourceCapital();
+        float[] fireArr = buffer.getEnergyFire();
 
-        double maxCapitalPerCapita = 0.0;
-        double maxPowerWatts = 0.0;
-        double totalPop = 0.0;
-
-        for (H3Cell c : cells) {
-            if (c == null) continue;
-            int p = c.getPopulationOr(0);
-            if (p <= 0) continue;
-            totalPop += p;
-            double kpc = c.getResourceCapitalOr(0.0) / p;
-            if (kpc > maxCapitalPerCapita) maxCapitalPerCapita = kpc;
-            double pw = c.getEnergyFireOr(120.0);
-            if (pw > maxPowerWatts) maxPowerWatts = pw;
+        double maxKpc = 0.0;
+        double maxPw = 0.0;
+        for (int i = 0; i < n; i++) {
+            double p = popArr[i] / 0.06;
+            if (p <= 1.0) continue;
+            double kpc = (capArr != null ? capArr[i] : 0.0) / p;
+            if (kpc > maxKpc) maxKpc = kpc;
+            double pw = fireArr != null ? fireArr[i] : 120.0;
+            if (pw > maxPw) maxPw = pw;
         }
+        double sailEff = maxKpc > 150.0 ? Math.min(0.80, (maxKpc - 150.0) / 1000.0) : 0.0;
+        double steamEff = (maxKpc > 1800.0 && maxPw > 600.0) ? Math.min(0.96, (maxKpc - 1800.0) / 4000.0) : 0.0;
+        currentCostIndex = Math.clamp(1415.0 * (1.0 - sailEff * 0.82) * (1.0 - steamEff * 0.75), 15.0, 1415.0);
+    }
 
-        if (totalPop <= 0.0) return;
-
-        // Baseline ancient cabotage freight index
-        double baselineCost = 1415.0;
-
-        // Oceanic sail efficiency: reduces cost as timber/rigging capital reaches full-rigged ship scale (k_pc >= 250)
-        double sailEfficiency = 0.0;
-        if (maxCapitalPerCapita > 150.0) {
-            sailEfficiency = Math.min(0.80, (maxCapitalPerCapita - 150.0) / 1000.0);
-        }
-
-        // Marine steam & steel hull efficiency: drops cost further as mechanical power exceeds 600 W and capital > 1800
-        double steamSteelEfficiency = 0.0;
-        if (maxCapitalPerCapita > 1800.0 && maxPowerWatts > 600.0) {
-            steamSteelEfficiency = Math.min(0.96, (maxCapitalPerCapita - 1800.0) / 4000.0);
-        }
-
-        // Combined freight cost index (Harley 1988)
-        double currentCostIndex = baselineCost * (1.0 - sailEfficiency * 0.82) * (1.0 - steamSteelEfficiency * 0.75);
-        currentCostIndex = Math.clamp(currentCostIndex, 15.0, 1415.0);
-
-        // Store onto coastal cells trade network or movement friction
-        for (H3Cell c : cells) {
-            if (c == null) continue;
-            if (c.getBiome() == org.ether.society.model.Biome.OCEAN || (c.getElevation() != null && c.getElevation() < 0.0)) {
-                c.setMovementFriction(currentCostIndex / 1415.0);
-            }
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getElevation() == null || dtYears <= 0.0) return;
+        if (buffer.getElevation()[i] < 0.0f) {
+            double efficiencyGain = 1.0 - (currentCostIndex / 1415.0);
+            acc.dCommercialFluxVolume += (float) (0.05 * efficiencyGain * dtYears);
         }
     }
 }

@@ -58,16 +58,16 @@ public class OceanTradeCouplingTest {
         cells.add(coastalHub2);
 
         // Healthy ocean baseline routes
-        List<TradeNetworkEngine.TradeRoute> normalRoutes = TradeNetworkEngine.generateTradeNetworks(cells, 2.0);
+        List<TradeNetworkRouter.TradeRoute> normalRoutes = TradeNetworkRouter.generateTradeNetworks(cells, 2.0);
         assertNotNull(normalRoutes);
-        assertFalse(TradeNetworkEngine.getLatestRoutes().isEmpty());
+        assertFalse(TradeNetworkRouter.getLatestRoutes().isEmpty());
 
         // Now trigger severe ocean acidification lowering fish biomass
         OceanAcidificationEngine.processOceanAcidification(cells, 800.0);
         assertTrue(coastalHub1.getBiomassFish() < 500.0);
 
         // Re-simulate trade networks under acidified ocean
-        List<TradeNetworkEngine.TradeRoute> acidifiedRoutes = TradeNetworkEngine.generateTradeNetworks(cells, 2.0);
+        List<TradeNetworkRouter.TradeRoute> acidifiedRoutes = TradeNetworkRouter.generateTradeNetworks(cells, 2.0);
         assertNotNull(acidifiedRoutes);
     }
 }

@@ -67,7 +67,7 @@ public class CliodynamicsEngineTest {
 
         List<H3Cell> cells = List.of(origin, dest);
 
-        List<TradeNetworkEngine.TradeRoute> routes = TradeNetworkEngine.generateTradeNetworks(cells, 5.0);
+        List<TradeNetworkRouter.TradeRoute> routes = TradeNetworkRouter.generateTradeNetworks(cells, 5.0);
         assertNotNull(routes, "Trade route list should not be null");
     }
 

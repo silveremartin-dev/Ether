@@ -577,7 +577,41 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-## 📊 4. Central Summary Matrix of All Calibrated Subsystems (Entries 1 to 24)
+### Entry 26: Solow-Swan Physical Capital Accumulation with Ayres-Garrett Exergy Feedback
+* **Subsystem**: `UrbanKernel.java` & `urban.rs`
+* **Canonical Literature**:
+  * Solow, R. M. (1956). *A contribution to the theory of economic growth*. The Quarterly Journal of Economics, 70(1), 65–94.
+  * Swan, T. W. (1956). *Economic growth and capital accumulation*. Economic Record, 32(2), 334–361.
+  * Garrett, T. J. (2011). *Are there basic physical constraints on future anthropogenic emissions of carbon dioxide?* Climatic Change, 104(3), 437–455.
+  * Ayres, R. U., & Warr, B. (2009). *The Economic Growth Engine: How Energy and Work Drive Material Prosperity*. Edward Elgar Publishing.
+  * Krausmann, F., et al. (2017). *Global socioeconomic material stocks rise 23-fold over the 20th century and require half of annual resource use*. Proceedings of the National Academy of Sciences, 114(8), 1880–1885.
+* **Canonical Published Formulation**:
+  * In canonical neoclassical growth theory (Solow 1956), capital accumulation is governed by an aggregate differential equation driven by an exogenous savings rate $s$ and technological progress $A(t)$:
+    $$\dot{K} = s Y - \delta K = s A K^\alpha L^{1-\alpha} - \delta K$$
+  * Garrett (2011) proposes that global physical economic capacity is thermodynamically tied to current primary power consumption: $P(t) = \lambda \cdot K(t)$, where $\lambda \approx 9.7 \pm 0.3\text{ mW per 1990 USD}$.
+* **Calibrated Ether Formulation**:
+  * To eliminate abstract non-physical variables ($A(t)$, abstract currency $Y$) and avoid numerical singularities during demographic collapses ($N \to 0$), Ether formalizes physical capital $k_{\text{pc}} = K / N$ (kg of durable material infrastructure, tools, machines per capita; Krausmann et al. 2017) as an analytical $O(1)$ ODE coupled to useful dissipated mechanical/electrical power per capita $P_{\text{watts}}$:
+    $$\dot{k}_{\text{pc}} = \delta \cdot (k^* - k_{\text{pc}}) + \dot{i}_{\text{gross}}$$
+  * The thermodynamic steady-state target capital $k^*(P_{\text{watts}})$ scales with power above somatic/hearth subsistence ($P_0 \approx 348\text{ W}$):
+    $$k^* = 5.0 + 580.0 \tanh\left(\frac{\text{softplus}(P_{\text{watts}} - 348.0, 0.2)}{38.0}\right) + 62.0 \cdot \left(\frac{\text{softplus}(P_{\text{watts}} - 400.0, 0.1)}{100.0}\right)^{1.95}$$
+  * Gross capital formation from useful exergy surplus:
+    $$\dot{i}_{\text{gross}} = \gamma \cdot s \cdot \max(0.0, P_{\text{watts}} - 380.0) \cdot \text{sedentaryCapability}$$
+    where $s = 0.20$ is the global gross fixed capital formation share, and $\gamma \approx 0.08\text{ kg}/(\text{Watt}\cdot\text{year})$ represents the physical capital synthesis yield per unit continuous surplus power.
+* **Parameters, Material Properties & Physical Units**:
+  * $k_{\text{pc}}$: Physical capital stock per capita [$\text{kg/person}$] ($5\text{ kg}$ Paleolithic tools, $120\text{ kg}$ Neolithic/agrarian infrastructure, $4\,500\text{--}15\,000\text{ kg}$ 20th century industrial built environment; Krausmann et al. 2017).
+  * $P_{\text{watts}}$: Continuous useful power dissipation per capita [$\text{W/person}$] (somatic basal + fire + draft + hydraulic + fossil/electric grid).
+  * $\delta = 0.04\text{ yr}^{-1}$: Physical infrastructure entropic depreciation rate ($4\%$ annual depreciation of buildings, masonry, machinery, and tools).
+  * $s = 0.20$: Gross fixed capital formation savings share ($20\%$ of surplus exergy redirected to structural investment).
+  * $\text{sedentaryCapability} = \max(\sigma(B_{\text{agr}}, 100, 30), \sigma(P_{\text{watts}}, 480, 80))$: Biophysical mobility constraint preventing mobile hunter-gatherer bands from accumulating stationary capital stock.
+* **Academic Justification & Root Cause of Divergence**:
+  1. *Replacement of Abstract Technology with Conserved Exergy*: Canonical Solow-Swan treats technology $A$ as an exogenous residual (Solow residual) without energy conservation constraints. In Ether, capital accumulation is grounded in physical thermodynamics: structural machinery cannot be built or maintained without continuous useful power dissipation.
+  2. *Singularity Prevention during Population Shocks*: In standard neoclassical models, if population drops precipitously ($N \to 0$), capital per capita diverges ($K/N \to \infty$). Coupling steady-state capital $k^*$ and gross investment directly to active physical power ensures that abandoned infrastructure depreciates entropicly ($\delta$) toward zero without numerical divergence.
+* **Empirical Validation**:
+  * Krausmann et al. (2017), PNAS material stock database 1900–2010; Maddison Project Database (2020); Ayres & Warr (2009); Garrett (2011).
+
+---
+
+## 📊 4. Central Summary Matrix of All Calibrated Subsystems (Entries 1 to 26)
 
 | # | Category | Subsystem | Canonical Literature | Calibrated Ether Formulation | Specific Adaptation / Material Calibration |
 |---|---|---|---|---|---|
@@ -606,3 +640,4 @@ The foundational purpose of this registry is **epistemic transparency and algori
 | **23** | Tier 2 | Kondratiev Long Wave | Kondratiev (1925), Schumpeter (1939) | $\phi(t) = \sin(2\pi(t-1780)/52)$, creative destruction trough | Infrastructure cycle coupled to physical capital scrapping and scrap metal recovery |
 | **24** | Tier 2 | Pomeranz Great Divergence | Pomeranz (2000), Allen (2009), Wrigley | $\mathcal{P}_{\text{div}} = \text{CoalProx} \cdot (1 + 0.8 \cdot \text{GhostAcreage})$ | Energy transport proximity & transoceanic land relief driving takeoff vs organic involution |
 | **25** | Tier 1/2 | Municipal Sanitation & Infant Survival | Omran (1971), Cutler & Miller (2005) | Hill kinetics $f_{\text{clean}} = \frac{k}{k + 1200}$, $f_{\text{sewer}} = \frac{k^2}{k^2 + 2500^2}$ | Canonical Eq. 99 restoring physical water/sewage infrastructure, eradicating premature ad-hoc sigmoids |
+| **26** | Tier 1/2 | Solow-Swan Capital Accumulation | Solow (1956), Garrett (2011), Ayres (2009) | $\dot{k}_{\text{pc}} = \delta(k^* - k_{\text{pc}}) + \dot{i}_{\text{gross}}$, $k^*(P_{\text{watts}})$ | Thermodynamic grounding of capital formation in useful surplus power, replacing abstract Solow residual |

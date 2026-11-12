@@ -6,7 +6,7 @@
 package org.ether.society.analytics;
 
 import org.ether.society.analytics.SimulationRunRecord.MetricSnapshot;
-import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
+import org.ether.society.engines.tier2.theories.ProceduralPopulationGenerator;
 
 /**
  * Dispatches canonical cliodynamic metric queries strictly to pre-recorded simulation observables
@@ -81,10 +81,10 @@ public final class PostHocCliodynamicMetricDispatcher {
                 return CliodynamicFormulasRegistry.computeTemperatureAnomaly(year);
             }
             case "milankovitchInsolation" -> {
-                return ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(year);
+                return ProceduralPopulationGenerator.calculateMilankovitchSummerInsolation65N(year);
             }
             case "megafaunaIndex" -> {
-                return ProceduralPopulationEngine.calculateMegafaunaAbundanceIndex(year, (double) pop / 1e6, 0.2);
+                return ProceduralPopulationGenerator.calculateMegafaunaAbundanceIndex(year, (double) pop / 1e6, 0.2);
             }
             case "zeroContainmentScore" -> {
                 double trade = snap.hasValue("globalTradeVolume") ? snap.getValue("globalTradeVolume") : 0.0;

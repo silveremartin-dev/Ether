@@ -106,6 +106,35 @@ public class OceanAcidificationEngine extends AbstractSimulationEngine {
                     impactedCells, String.format("%.1f", co2Ppm));
         }
     }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+        byte biomeOrd = buffer.getBiomes()[i];
+        boolean isMarine = biomeOrd == (byte) Biome.OCEAN.ordinal()
+                || biomeOrd == (byte) Biome.DEEP_OCEAN.ordinal()
+                || biomeOrd == (byte) Biome.BEACH.ordinal()
+                || buffer.getElevation()[i] <= 0.0f;
+        if (!isMarine) return;
+
+        // Estimate local CO2 pressure proxy from pollution load (baseline 280 ppm + industrial pollution proxy)
+        double co2Ppm = 280.0 + buffer.getPollutionLevel()[i] * 0.4;
+        if (co2Ppm <= 350.0) return;
+
+        double acidificationFactor = Math.min(1.0, (co2Ppm - 350.0) / 650.0);
+        double tempC = buffer.getTemperature()[i];
+        double polarAcidificationMultiplier = calculateHenrySolubility(tempC) / HENRY_K0_CO2;
+        double fish = buffer.getBiomassFish()[i];
+        if (fish > 0.0) {
+            double loss = fish * 0.05 * acidificationFactor * polarAcidificationMultiplier * Math.min(1.0, dtYears);
+            acc.dBiomassFish -= (float) Math.min(fish, loss);
+        }
+    }
 }
 
 

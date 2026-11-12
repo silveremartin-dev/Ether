@@ -298,7 +298,6 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
             SoilNutrientNPKEngine.processSoilNutrients(globalCells);
             NetEnergyEROEIEngine.processNetEnergyEROEI(globalCells);
             PhysicalLawEngine.applyPhysicalLaws(globalCells, 1.0);
-            ProceduralEngineRegistry.processPlugins(globalCells, 1.0);
 
             // Assert absolute numerical safety across all cells
             for (H3Cell cell : globalCells) {

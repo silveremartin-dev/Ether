@@ -161,12 +161,30 @@ public class SimulationPipeline {
 
         profiler.endPhase("3_DemographicsAndCulture");
 
+        // --- Phase 1b: Essential Tier 1 Biophysical Engines (Thermodynamics, Degradation, Pollution, Metallurgy) ---
+        profiler.beginPhase("3b_Tier1Biophysical");
+        typeBPassRunner.executeActiveTier1Engines(worldBuffer, dtYears, dtMonthly, activeScenario);
+        profiler.endPhase("3b_Tier1Biophysical");
+
         // --- Phase 2: Active Cliodynamic Sub-Systems (Data-Oriented DoD) ---
         profiler.beginPhase("4_ProceduralEngines");
 
         boolean runTier2 = perfConfig == null || perfConfig.isEnableTier2Cliodynamics();
         if (runTier2 && engine != null && engine.getWorldBuffer() != null) {
             typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), dtYears, dtMonthly, activeScenario, compiledKernel);
+
+            if (engine.getNations() != null && !engine.getNations().isEmpty() && cells != null && !cells.isEmpty()) {
+                java.util.Map<String, Boolean> states = activeScenario != null ? activeScenario.getTypeBEngineStates() : null;
+                if (states == null || Boolean.TRUE.equals(states.get("CliodynamicsEngine"))) {
+                    org.ether.society.engines.tier2.theories.CliodynamicsEngine.updateCliodynamics(engine.getNations(), cells, dtYears);
+                }
+                if (states == null || Boolean.TRUE.equals(states.get("WarDiplomacyEngine"))) {
+                    org.ether.society.engines.tier2.theories.WarDiplomacyEngine.processGeopoliticalConflicts(engine.getNations(), cells, activeScenario);
+                }
+                if (states == null || Boolean.TRUE.equals(states.get("SovereignTreasuryBondEngine"))) {
+                    org.ether.society.engines.tier2.theories.SovereignTreasuryBondEngine.processPolityFiscalCycles(engine.getNations(), cells, dtYears);
+                }
+            }
         }
 
         profiler.endPhase("4_ProceduralEngines");

@@ -6,16 +6,17 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 
 import org.ether.society.engines.tier2.historical.CulturalMaterialismPureEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Marvin Harris Cultural Materialism Engine.
@@ -61,7 +62,23 @@ public class HarrisCulturalMaterialismEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        CulturalMaterialismPureEngine.processHybrid(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 1.0) return;
+
+        double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 0.0;
+        double foodPerCap = food / pop;
+        double deficitPressure = 1.0 / (1.0 + Math.exp(40.0 * (foodPerCap - 0.05)));
+        if (deficitPressure > 0.02) {
+            double cap = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0;
+            acc.dResourceCapital -= (float) (cap * 0.10 * deficitPressure * dtYears);
+            acc.dInstitutionalComplexity -= (float) (0.05 * deficitPressure * dtYears);
+        }
     }
 }

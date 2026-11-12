@@ -1,7 +1,7 @@
 package org.ether.society.generation;
 
 import org.ether.society.database.H3Cell;
-import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
+import org.ether.society.engines.tier2.theories.ProceduralPopulationGenerator;
 import org.ether.society.model.FutureAndExoplanetScenarioRegistry;
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class MarsColonyDistributionTest {
             sampleCells.add(c);
         }
 
-        ProceduralPopulationEngine.distributePopulation(
+        ProceduralPopulationGenerator.distributePopulation(
                 sampleCells,
                 marsScenario,
                 marsScenario.getInitialHumanCount(),

@@ -6,16 +6,17 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * W. Arthur Lewis Dual-Sector Model &amp; Turning Point Engine.
@@ -80,61 +81,36 @@ public class LewisDualSectorTurningPointEngine extends AbstractSimulationEngine 
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processDualSectorDynamics(cells, deltaYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
-    /**
-     * Evaluates dual-sector labor reallocation and the Lewis turning point across cells.
-     *
-     * @param cells      simulation cells
-     * @param deltaYears time step duration in astronomical Julian years
-     */
-    public static void processDualSectorDynamics(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 50.0) return;
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 50) continue;
+        double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0;
+        double kpc = capital / pop;
+        if (kpc < DUAL_SECTOR_KPC_ONSET) return;
 
-            double capital = cell.getResourceCapitalOr(0.0);
-            double kpc = capital / (double) pop;
-            if (kpc < DUAL_SECTOR_KPC_ONSET) continue;
+        double trade = buffer.getCommercialFluxVolume() != null ? buffer.getCommercialFluxVolume()[i] : 0.0;
+        double earlyAbsorptionFactor = SmoothMath.sigmoid(kpc, DUAL_SECTOR_KPC_ONSET, 25.0)
+                * (1.0 - SmoothMath.sigmoid(kpc, LEWIS_TURNING_POINT_KPC, 40.0));
 
-            double trade = cell.getTradeNetworkOr(0.0);
+        if (earlyAbsorptionFactor > 0.05) {
+            double extGrowth = capital * 0.030 * earlyAbsorptionFactor * dtYears;
+            acc.dResourceCapital += (float) extGrowth;
+            capital += extGrowth;
+        }
 
-            // 1. Phase 1: Unlimited Surplus Labor Absorption (k_pc < 250)
-            double earlyAbsorptionFactor = SmoothMath.sigmoid(kpc, DUAL_SECTOR_KPC_ONSET, 25.0)
-                    * (1.0 - SmoothMath.sigmoid(kpc, LEWIS_TURNING_POINT_KPC, 40.0));
+        double turningPointIntensity = SmoothMath.sigmoid(kpc, LEWIS_TURNING_POINT_KPC, 40.0)
+                * SmoothMath.sigmoid(trade, 20.0, 5.0);
 
-            if (earlyAbsorptionFactor > 0.05) {
-                // High profit margins reinvested into extensive capital expansion
-                double extensiveCapitalGrowth = 0.030 * earlyAbsorptionFactor * deltaYears;
-                cell.setResourceCapital(capital * (1.0 + extensiveCapitalGrowth));
-                capital = cell.getResourceCapitalOr(0.0);
-            }
-
-            // 2. Phase 2: Post-Lewis Turning Point (k_pc >= 250)
-            // Surplus labor is exhausted; real wages rise, inducing labor-saving capital-deepening
-            double turningPointIntensity = SmoothMath.sigmoid(kpc, LEWIS_TURNING_POINT_KPC, 40.0)
-                    * SmoothMath.sigmoid(trade, 20.0, 5.0);
-
-            if (turningPointIntensity > 0.05) {
-                // Induced mechanization: capital accumulation accelerates as machinery replaces scarce labor
-                double deepeningGrowth = 0.045 * turningPointIntensity * deltaYears;
-                cell.setResourceCapital(capital * (1.0 + deepeningGrowth));
-
-                // Work efficiency increases as productive power tools augment human hours
-                double currentWork = cell.getResourceWorkOr(50.0);
-                double workAugmentation = 0.025 * turningPointIntensity * deltaYears;
-                cell.setResourceWork(Math.min(100.0, currentWork * (1.0 + workAugmentation)));
-
-                // Income inequality moderates as rising real wages compress the landlord/capitalist Gini wedge
-                double gini = cell.getGiniIndexOr(0.40);
-                double giniCompression = 0.015 * turningPointIntensity * deltaYears;
-                cell.setGiniIndex(Math.max(0.25, gini - giniCompression));
-            }
+        if (turningPointIntensity > 0.05) {
+            acc.dResourceCapital += (float) (capital * 0.045 * turningPointIntensity * dtYears);
+            acc.dGiniIndex -= (float) (0.015 * turningPointIntensity * dtYears);
         }
     }
 }

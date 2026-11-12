@@ -17,11 +17,11 @@ import java.util.Set;
 
 /**
  * Bilateral physical commodity arbitrage, corridor spillover diffusion, and topological
- * strategic choke-point rent evaluator for {@link TradeNetworkEngine}.
+ * strategic choke-point rent evaluator for {@link TradeNetworkRouter}.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
- * @see TradeNetworkEngine
+ * @see TradeNetworkRouter
  */
 final class TradeCorridorArbitrageHelper {
     private static final Logger logger = LoggerFactory.getLogger(TradeCorridorArbitrageHelper.class);
@@ -39,7 +39,7 @@ final class TradeCorridorArbitrageHelper {
      * @param techLevel technological index
      * @param dtYears   simulation time step in Julian years
      */
-    static void applyTradeCorridorEffects(TradeNetworkEngine.TradeRoute route, double techLevel, double dtYears) {
+    static void applyTradeCorridorEffects(TradeNetworkRouter.TradeRoute route, double techLevel, double dtYears) {
         if (route == null || route.pathCells().isEmpty()) return;
 
         double friction = Math.max(1.0, route.totalFrictionCost() * 0.1);
@@ -74,9 +74,9 @@ final class TradeCorridorArbitrageHelper {
         routeValue *= marineFactor;
 
         if (route.isMaritimeRoute()) {
-            TradeNetworkEngine.addMaritimeOceanicVolume(routeValue * conductance);
+            TradeNetworkRouter.addMaritimeOceanicVolume(routeValue * conductance);
         } else {
-            TradeNetworkEngine.addInlandFluvialVolume(routeValue * conductance);
+            TradeNetworkRouter.addInlandFluvialVolume(routeValue * conductance);
         }
 
         int pathLen = Math.max(1, route.pathCells().size());
@@ -113,14 +113,14 @@ final class TradeCorridorArbitrageHelper {
             if (exportPotential > 0.0) {
                 orig.setFoodResource(Math.max(0.0, origFood - exportPotential));
                 dest.setFoodResource(destFood + exportPotential * foodRetention);
-                TradeNetworkEngine.addCumulativeTradedFood(exportPotential);
+                TradeNetworkRouter.addCumulativeTradedFood(exportPotential);
             }
         } else if (destSurplus > 5.0 && origSurplus < -5.0) {
             double exportPotential = Math.min(destSurplus * 0.35, -origSurplus * 0.80) * conductance * dtYears;
             if (exportPotential > 0.0) {
                 dest.setFoodResource(Math.max(0.0, destFood - exportPotential));
                 orig.setFoodResource(origFood + exportPotential * foodRetention);
-                TradeNetworkEngine.addCumulativeTradedFood(exportPotential);
+                TradeNetworkRouter.addCumulativeTradedFood(exportPotential);
             }
         }
     }
@@ -133,14 +133,14 @@ final class TradeCorridorArbitrageHelper {
             if (metalTrade > 0.0) {
                 orig.setResourceMetal(Math.max(0.0, origMetal - metalTrade));
                 dest.setResourceMetal(destMetal + metalTrade * bulkRetention);
-                TradeNetworkEngine.addCumulativeTradedMetal(metalTrade);
+                TradeNetworkRouter.addCumulativeTradedMetal(metalTrade);
             }
         } else if (destMetal > origMetal + 10.0) {
             double metalTrade = Math.min(destMetal * 0.20, (destMetal - origMetal) * 0.25) * conductance * dtYears;
             if (metalTrade > 0.0) {
                 dest.setResourceMetal(Math.max(0.0, destMetal - metalTrade));
                 orig.setResourceMetal(origMetal + metalTrade * bulkRetention);
-                TradeNetworkEngine.addCumulativeTradedMetal(metalTrade);
+                TradeNetworkRouter.addCumulativeTradedMetal(metalTrade);
             }
         }
     }
@@ -225,14 +225,14 @@ final class TradeCorridorArbitrageHelper {
             if (capTrade > 0.0) {
                 orig.setResourceCapital(Math.max(0.0, origCap - capTrade));
                 dest.setResourceCapital(destCap + capTrade * bulkRetention);
-                TradeNetworkEngine.addCumulativeTradedCapital(capTrade);
+                TradeNetworkRouter.addCumulativeTradedCapital(capTrade);
             }
         } else if (destCapPerCap > origCapPerCap * 1.3 && destCap > 50.0) {
             double capTrade = Math.min(destCap * 0.15, (destCapPerCap - origCapPerCap) * origPop * 0.20) * conductance * dtYears;
             if (capTrade > 0.0) {
                 dest.setResourceCapital(Math.max(0.0, destCap - capTrade));
                 orig.setResourceCapital(origCap + capTrade * bulkRetention);
-                TradeNetworkEngine.addCumulativeTradedCapital(capTrade);
+                TradeNetworkRouter.addCumulativeTradedCapital(capTrade);
             }
         }
     }
@@ -246,13 +246,13 @@ final class TradeCorridorArbitrageHelper {
      * @param previouslyScoredChokeCells mutable set tracking previously active choke-point indices
      * @param dtYears                    simulation time step in Julian years
      */
-    static void evaluateStrategicChokePoints(Map<Long, H3Cell> cellMap, List<TradeNetworkEngine.TradeRoute> routes,
+    static void evaluateStrategicChokePoints(Map<Long, H3Cell> cellMap, List<TradeNetworkRouter.TradeRoute> routes,
                                              Set<Long> previouslyScoredChokeCells, double dtYears) {
         if (cellMap == null || cellMap.isEmpty()) return;
 
         Map<Long, Integer> transitFrequency = new HashMap<>();
         if (routes != null && !routes.isEmpty()) {
-            for (TradeNetworkEngine.TradeRoute r : routes) {
+            for (TradeNetworkRouter.TradeRoute r : routes) {
                 if (r == null || r.pathCells() == null) continue;
                 for (H3Cell c : r.pathCells()) {
                     if (c != null && c.getH3Index() != 0L) {

@@ -62,7 +62,7 @@ public class PlanetaryBoundariesAndAdvisorTest {
      *
      */
     public void testPlanetaryBoundariesAssessment() {
-        var status = PlanetaryBoundariesEngine.assessBoundaries(testCells);
+        var status = PlanetaryBoundariesEvaluator.assessBoundaries(testCells);
         assertNotNull(status);
         assertTrue(status.climateChangeRisk() > 0.5, "Temperature offset should trigger climate change risk.");
     }
@@ -77,7 +77,7 @@ public class PlanetaryBoundariesAndAdvisorTest {
      *
      */
     public void testCliodynamicAdvisorAlerts() {
-        var alerts = CliodynamicAdvisorEngine.generateAdvisorAlerts(testCells, 2026);
+        var alerts = CliodynamicAdvisor.generateAdvisorAlerts(testCells, 2026);
         assertNotNull(alerts);
         assertFalse(alerts.isEmpty());
     }

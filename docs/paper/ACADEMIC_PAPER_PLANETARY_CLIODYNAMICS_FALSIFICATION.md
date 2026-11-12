@@ -193,7 +193,7 @@ When polar meltwater discharge freshens the Arctic/subpolar gyre ($\Delta S_{\te
 #### E. Mechanical Transport Work, Inland Fluvial Freight & Oceanic Conductance
 Inter-cell movement of goods, armies, and migrants consumes mechanical work $W_{\text{transport}}$ proportional to slope friction (Tobler's hiking function [^Tobler1993]), vegetation drag, and transport mode:
 $$W_{\text{transport}}(i \to j) = m \cdot g \cdot d_{ij} \cdot \mu_{\text{mode}} \cdot \exp\left(3.5 \cdot |\tan \theta_{ij} + 0.05|\right)$$
-Furthermore, `TradeNetworkEngine` and `TradeCorridorArbitrageHelper` explicitly separate **domestic inland fluvial/canal freight** (e.g., Yangtze, Grand Canal, Nile cabotage) from **trans-oceanic maritime shipping**, deriving global international trade volume from a single physical conductance law inversely proportional to real maritime shipping freight costs $C_{\text{freight}}(\Phi_{\text{exergy}})$ (Harley 1988; Federico & Tena-Junguito 2017).
+Furthermore, `TradeNetworkRouter` and `TradeCorridorArbitrageHelper` explicitly separate **domestic inland fluvial/canal freight** (e.g., Yangtze, Grand Canal, Nile cabotage) from **trans-oceanic maritime shipping**, deriving global international trade volume from a single physical conductance law inversely proportional to real maritime shipping freight costs $C_{\text{freight}}(\Phi_{\text{exergy}})$ (Harley 1988; Federico & Tena-Junguito 2017).
 
 #### F. Non-Linear Ecosystem Tipping Points, Critical Slowing Down & Kramers Escape Rate
 Biomes and societal resource systems subject to environmental erosion (e.g., Holocene Green Sahara aridification or Nile hydrological fluctuations) exhibit non-linear fold (saddle-node) catastrophic bifurcations [^Scheffer2009] [^Strogatz2018]:

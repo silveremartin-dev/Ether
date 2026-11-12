@@ -69,7 +69,7 @@ public final class SimulationEngineStateCoordinator {
         KurzweilAcceleratingReturnsEngine.resetState();
         LanguageLinguisticEngine.resetState();
         TerraformingEngine.resetState();
-        TradeNetworkEngine.resetState();
+        TradeNetworkRouter.resetState();
         World3CouplingEngine.resetState();
     }
 }

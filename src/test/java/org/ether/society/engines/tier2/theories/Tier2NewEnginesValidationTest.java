@@ -25,6 +25,52 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("scientific")
 public class Tier2NewEnginesValidationTest {
 
+    private static void runDoD(org.ether.society.core.engine.SimulationEngineModule engine, List<H3Cell> cells, double dtYears) {
+        if (cells == null || cells.isEmpty()) return;
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            buf.getBiomassHuman()[i] = (float) (c.getPopulationOr(0) * 0.06);
+            buf.getResourceCapital()[i] = (float) c.getResourceCapitalOr(0.0);
+            buf.getFoodResource()[i] = (float) c.getFoodResourceOr(0.0);
+            buf.getWaterResource()[i] = (float) c.getWaterResourceOr(0.0);
+            buf.getWoodResource()[i] = (float) c.getWoodResourceOr(0.0);
+            buf.getResourceCoal()[i] = (float) c.getResourceCoalOr(0.0);
+            buf.getResourceOil()[i] = (float) c.getResourceOilOr(0.0);
+            buf.getBiomassAgriculture()[i] = (float) c.getBiomassAgricultureOr(0.0);
+            buf.getBiomassLivestock()[i] = (float) c.getBiomassLivestockOr(0.0);
+            buf.getBiomassNatural()[i] = (float) c.getBiomassNaturalOr(0.0);
+            buf.getEnergyFire()[i] = (float) c.getEnergyFireOr(0.0);
+            buf.getEnergyWind()[i] = (float) c.getEnergyWindOr(0.0);
+            buf.getEnergySolar()[i] = (float) c.getEnergySolarOr(0.0);
+            buf.getEnergyFoodConsumed()[i] = (float) c.getEnergyFoodConsumedOr(0.0);
+            buf.getGiniIndex()[i] = (float) c.getGiniIndexOr(0.35);
+            buf.getInstitutionalComplexity()[i] = (float) (c.getResourceWorkOr(50.0) / 100.0);
+            buf.getFluxPressure()[i] = (float) c.getMovementFrictionOr(1.0);
+            buf.getCommercialFluxVolume()[i] = (float) c.getTradeNetworkOr(0.0);
+            buf.getElevation()[i] = (float) c.getElevationOr(0.0);
+            buf.getTemperature()[i] = (float) c.getTemperatureOr(15.0);
+            buf.getRainfall()[i] = (float) c.getRainfallOr(500.0);
+            if (c.getBiome() != null) buf.getBiomes()[i] = (byte) c.getBiome().ordinal();
+        }
+        engine.tick(buf, dtYears, dtYears);
+        for (int i = 0; i < cells.size(); i++) {
+            H3Cell c = cells.get(i);
+            c.setPopulation((int) Math.max(0, Math.round(buf.getBiomassHuman()[i] / 0.06)));
+            c.setResourceCapital((double) buf.getResourceCapital()[i]);
+            c.setFoodResource((double) buf.getFoodResource()[i]);
+            c.setWaterResource((double) buf.getWaterResource()[i]);
+            c.setWoodResource((double) buf.getWoodResource()[i]);
+            c.setBiomassAgriculture((double) buf.getBiomassAgriculture()[i]);
+            c.setBiomassLivestock((double) buf.getBiomassLivestock()[i]);
+            c.setBiomassNatural((double) buf.getBiomassNatural()[i]);
+            c.setGiniIndex((double) buf.getGiniIndex()[i]);
+            c.setResourceWork((double) buf.getInstitutionalComplexity()[i] * 100.0);
+            c.setMovementFriction((double) buf.getFluxPressure()[i]);
+            c.setTradeNetwork((double) buf.getCommercialFluxVolume()[i]);
+        }
+    }
+
     @Test
     @DisplayName("Polanyi Fictitious Commodities: Enclosure boosts yield and triggers protective double movement")
     public void testPolanyiFictitiousCommodities() {
@@ -41,7 +87,7 @@ public class Tier2NewEnginesValidationTest {
 
         // Run 5 years of normal market commodification: allocation efficiency boosts agricultural yield
         for (int yr = 0; yr < 5; yr++) {
-            PolanyiFictitiousCommoditiesEngine.processPolanyiTransformation(grid, 1.0);
+            runDoD(new PolanyiFictitiousCommoditiesEngine(), grid, 1.0);
         }
 
         assertTrue(cell.getBiomassAgriculture() > 5000.0,
@@ -51,7 +97,7 @@ public class Tier2NewEnginesValidationTest {
         cell.setFoodResource(2000.0); // 0.40 per capita
 
         for (int yr = 0; yr < 5; yr++) {
-            PolanyiFictitiousCommoditiesEngine.processPolanyiTransformation(grid, 1.0);
+            runDoD(new PolanyiFictitiousCommoditiesEngine(), grid, 1.0);
         }
 
         assertTrue(cell.getMovementFriction() > 1.0,
@@ -86,8 +132,8 @@ public class Tier2NewEnginesValidationTest {
 
         // Run 4 years of liquidity crisis / bank run
         for (int yr = 0; yr < 4; yr++) {
-            BagehotFractionalReserveEngine.processBagehotBankingLiquidity(bufferedGrid, 1.0);
-            BagehotFractionalReserveEngine.processBagehotBankingLiquidity(unbufferedGrid, 1.0);
+            runDoD(new BagehotFractionalReserveEngine(), bufferedGrid, 1.0);
+            runDoD(new BagehotFractionalReserveEngine(), unbufferedGrid, 1.0);
         }
 
         // Cell with lender of last resort advances bullion to preserve active capital
@@ -118,7 +164,7 @@ public class Tier2NewEnginesValidationTest {
         List<H3Cell> grid = List.of(cell);
 
         for (int yr = 0; yr < 15; yr++) {
-            CordenNearyDutchDiseaseEngine.processDutchDiseaseDynamics(grid, 1.0);
+            runDoD(new CordenNearyDutchDiseaseEngine(), grid, 1.0);
         }
 
         assertTrue(cell.getBiomassAgriculture() < 2000.0,
@@ -141,7 +187,7 @@ public class Tier2NewEnginesValidationTest {
         List<H3Cell> grid = List.of(cell);
 
         for (int yr = 0; yr < 10; yr++) {
-            InnisStaplesThesisEngine.processStaplesDynamics(grid, 1.0);
+            runDoD(new InnisStaplesThesisEngine(), grid, 1.0);
         }
 
         assertTrue(cell.getTradeNetwork() > 5.0,
@@ -163,7 +209,7 @@ public class Tier2NewEnginesValidationTest {
         List<H3Cell> grid = List.of(deficitCell);
 
         for (int yr = 0; yr < 5; yr++) {
-            WienerCyberneticHomeostasisEngine.processCyberneticHomeostasis(grid, 1.0);
+            runDoD(new WienerCyberneticHomeostasisEngine(), grid, 1.0);
         }
 
         assertTrue(deficitCell.getResourceWork() > 50.0,
@@ -190,7 +236,7 @@ public class Tier2NewEnginesValidationTest {
         amerindianCell.setResourceWork(80.0);
 
         CrosbyColumbianExchangeEngine engine = new CrosbyColumbianExchangeEngine();
-        engine.process(List.of(amerindianCell), 1.0);
+        runDoD(engine, List.of(amerindianCell), 1.0);
 
         assertTrue(amerindianCell.getResourceWork() <= 40.0,
                 "Absence of domesticated draft animals caps muscle work EROEI.");
@@ -216,7 +262,7 @@ public class Tier2NewEnginesValidationTest {
         List<H3Cell> grid = List.of(crowdedCell, sparseCell);
 
         for (int yr = 0; yr < 10; yr++) {
-            RicardoDifferentialLandRentEngine.processDifferentialRentDynamics(grid, 1.0);
+            runDoD(new RicardoDifferentialLandRentEngine(), grid, 1.0);
         }
 
         assertTrue(crowdedCell.getResourceCapital() < 400000.0,
@@ -248,7 +294,7 @@ public class Tier2NewEnginesValidationTest {
         List<H3Cell> grid = List.of(surplusCell, turningPointCell);
 
         for (int yr = 0; yr < 15; yr++) {
-            LewisDualSectorTurningPointEngine.processDualSectorDynamics(grid, 1.0);
+            runDoD(new LewisDualSectorTurningPointEngine(), grid, 1.0);
         }
 
         assertTrue(turningPointCell.getResourceCapital() > 600000.0,
@@ -273,7 +319,7 @@ public class Tier2NewEnginesValidationTest {
         // Run through 52 annual ticks (one complete Kondratiev cycle)
         double initialCap = cell.getResourceCapital();
         for (int yr = 0; yr < 52; yr++) {
-            KondratievSchumpeterLongWaveEngine.processLongWaveDynamics(grid, 1800.0 + yr, 1.0);
+            runDoD(new KondratievSchumpeterLongWaveEngine(), grid, 1.0);
         }
 
         assertTrue(cell.getResourceCapital() != initialCap,
@@ -317,7 +363,7 @@ public class Tier2NewEnginesValidationTest {
         cell.setResourceCapital(100000.0);
         cell.setFoodResource(20.0); // Food/Pop = 0.02 < 0.05 caloric threshold
 
-        engine.process(List.of(cell), 1.0);
+        runDoD(engine, List.of(cell), 1.0);
 
         assertTrue(cell.getResourceCapital() < 100000.0,
                 "Caloric infrastructural deficit must trigger structural capital decay under Harris's law.");
@@ -334,7 +380,7 @@ public class Tier2NewEnginesValidationTest {
         agrarianCell.setResourceCapital(150000.0); // 150 kg/cap (agrarian peak)
 
         double initialCap = agrarianCell.getResourceCapital();
-        engine.process(List.of(agrarianCell), 5.0);
+        runDoD(engine, List.of(agrarianCell), 5.0);
 
         assertTrue(agrarianCell.getResourceCapital() < initialCap,
                 "Lenski inequality drag reduces capital reinvestment efficiency in high-inequality agrarian regime.");
@@ -355,7 +401,7 @@ public class Tier2NewEnginesValidationTest {
         portCell.setResourceCapital(2000000.0); // 200 kg/cap (oceanic sailing fleet)
         portCell.setMovementFriction(0.80);
 
-        NavalHydrodynamicsFreightEngine.processNavalFreight(List.of(portCell), 1.0);
+        runDoD(new NavalHydrodynamicsFreightEngine(), List.of(portCell), 1.0);
 
         assertNotNull(portCell.getMovementFriction(), "Movement friction must remain bounded and non-null.");
     }
@@ -371,7 +417,7 @@ public class Tier2NewEnginesValidationTest {
         inlandCity.setResourceCapital(1000000.0); // low transport capital per capita (5 kg/cap)
         inlandCity.setFoodResource(50000.0);
 
-        VonThunenAgriculturalRingsEngine.processAgriculturalRings(List.of(inlandCity), 1.0);
+        runDoD(new VonThunenAgriculturalRingsEngine(), List.of(inlandCity), 1.0);
 
         assertNotNull(inlandCity.getFoodResource(), "Food resources must be adjusted by spatial transport decay.");
     }
@@ -388,7 +434,7 @@ public class Tier2NewEnginesValidationTest {
         cell.setFoodResource(2000.0);
         cell.setBiomassNatural(5000.0);
 
-        engine.process(List.of(cell), 1.0);
+        runDoD(engine, List.of(cell), 1.0);
 
         assertNotNull(cell.getResourceCapital(), "Capital must scale with exergy capture according to White's law.");
     }

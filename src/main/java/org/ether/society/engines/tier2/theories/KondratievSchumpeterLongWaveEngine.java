@@ -6,16 +6,17 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Nikolai Kondratiev &amp; Joseph Schumpeter Infrastructure Long-Wave &amp; Creative Destruction Engine.
@@ -80,60 +81,49 @@ public class KondratievSchumpeterLongWaveEngine extends AbstractSimulationEngine
         return "Tier 2: Macroeconomic Dynamics";
     }
 
+    private transient double elapsedCycleYears = 0.0;
+    private transient double waveSine = 0.0;
+
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        processLongWaveDynamics(cells, 1850.0, deltaYears);
+    public void reset() {
+        elapsedCycleYears = 0.0;
+        waveSine = 0.0;
     }
 
-    /**
-     * Evaluates Kondratiev infrastructure long-wave modulation across cells.
-     *
-     * @param cells       simulation cells
-     * @param currentYear astronomical Julian year of the simulation
-     * @param deltaYears  time step duration in astronomical Julian years
-     */
-    public static void processLongWaveDynamics(List<H3Cell> cells, double currentYear, double deltaYears) {
-        if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
 
-        // Calculate phase angle within the 52-year infrastructural lifecycle
-        double cyclePhase = ((currentYear % KONDRATIEV_CYCLE_YEARS) + KONDRATIEV_CYCLE_YEARS) % KONDRATIEV_CYCLE_YEARS;
-        double normalizedAngle = (cyclePhase / KONDRATIEV_CYCLE_YEARS) * 2.0 * Math.PI;
-        double waveSine = Math.sin(normalizedAngle);
+    @Override
+    public void prepareTick(WorldBuffer buffer, double dtYears) {
+        elapsedCycleYears += dtYears;
+        double cyclePhase = ((elapsedCycleYears % KONDRATIEV_CYCLE_YEARS) + KONDRATIEV_CYCLE_YEARS) % KONDRATIEV_CYCLE_YEARS;
+        waveSine = Math.sin((cyclePhase / KONDRATIEV_CYCLE_YEARS) * 2.0 * Math.PI);
+    }
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop <= 20) continue;
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop <= 20.0) return;
 
-            double capital = cell.getResourceCapitalOr(0.0);
-            double kpc = capital / (double) pop;
-            if (kpc < INFRASTRUCTURE_KPC_FLOOR) continue;
+        double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0;
+        double kpc = capital / pop;
+        if (kpc < INFRASTRUCTURE_KPC_FLOOR) return;
 
-            // Long-wave infrastructural dynamics emerge with physical capital density
-            double waveActivation = SmoothMath.sigmoid(kpc, INFRASTRUCTURE_KPC_FLOOR, 30.0);
-            double effectiveModulator = waveSine * waveActivation;
+        double waveActivation = SmoothMath.sigmoid(kpc, INFRASTRUCTURE_KPC_FLOOR, 30.0);
+        double effectiveModulator = waveSine * waveActivation;
 
-            // 1. Capital productivity modulation: installation & deployment surge vs maturity exhaustion
-            double capitalGrowthRate = (0.015 + 0.025 * effectiveModulator) * deltaYears;
-            double newCapital = Math.max(10.0, capital * (1.0 + capitalGrowthRate));
-            cell.setResourceCapital(newCapital);
+        double capitalGrowthRate = (0.015 + 0.025 * effectiveModulator) * dtYears;
+        double deltaK = capital * capitalGrowthRate;
+        acc.dFluxPressure -= (float) (0.05 * effectiveModulator * dtYears);
 
-            // 2. Transport & Communication infrastructure friction: drops during deployment, rises during fatigue
-            double currentFriction = cell.getMovementFrictionOr(1.0);
-            double frictionDelta = -0.05 * effectiveModulator * deltaYears;
-            cell.setMovementFriction(Math.clamp(currentFriction + frictionDelta, 0.20, 3.0));
-
-            // 3. Creative Destruction Shakeout (Trough Phase, waveSine < -0.70)
-            if (effectiveModulator < -0.50) {
-                // Obsolete capital scrap clears space for next-generation technology
-                double scrapRate = 0.015 * Math.abs(effectiveModulator) * deltaYears;
-                cell.setResourceCapital(Math.max(10.0, newCapital * (1.0 - scrapRate)));
-
-                // Metal recycling flux from dismantled legacy infrastructure
-                double metal = cell.getResourceMetalOr(0.0);
-                double recoveredMetal = (capital * scrapRate) * 0.15;
-                cell.setResourceMetal(metal + recoveredMetal);
-            }
+        if (effectiveModulator < -0.50) {
+            double scrapRate = 0.015 * Math.abs(effectiveModulator) * dtYears;
+            deltaK -= (capital + deltaK) * scrapRate;
+            acc.dMetalResource += (float) ((capital * scrapRate) * 0.15);
         }
+        acc.dResourceCapital += (float) deltaK;
     }
 }

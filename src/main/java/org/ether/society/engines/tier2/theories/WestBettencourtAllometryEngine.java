@@ -6,17 +6,18 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.DerivativeAccumulator;
+
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
-import org.ether.society.database.H3Cell;
 import org.ether.society.database.H3CellPhysicsAndStateHelper;
 
 import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Urban Allometry & Metabolic Scaling Engine (West, Bettencourt et al., 2007).
@@ -68,31 +69,32 @@ public class WestBettencourtAllometryEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void process(List<H3Cell> cells, double deltaYears) {
-        if (cells == null || cells.isEmpty()) return;
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (dtYears <= 0.0) return;
+
+        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (pop < 100.0) return;
 
         double refPop = 1000.0;
+        double normalizedPop = Math.max(1.0, pop / refPop);
 
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-            int pop = cell.getPopulationOr(0);
-            if (pop < 100) continue;
+        double superlinearFactor = Math.pow(normalizedPop, SUPERLINEAR_EXPONENT - 1.0);
+        double currentCapital = buffer.getResourceCapital()[i];
+        double kPerCapita = currentCapital / pop;
+        double powerWatts = Math.max(85.0, ((buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i]
+                + buffer.getEnergySolar()[i] + buffer.getEnergyFoodConsumed()[i]) * 31.688) / pop);
+        double kEnergized = Math.max(120.0, powerWatts / org.ether.society.database.H3CellPhysicsAndStateHelper.GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT);
+        double thermodynamicHeadroom = Math.max(0.0, 1.0 - (kPerCapita / kEnergized));
+        acc.dResourceCapital += currentCapital * 0.02 * superlinearFactor * thermodynamicHeadroom * dtYears;
 
-            double normalizedPop = Math.max(1.0, (double) pop / refPop);
-
-            // Super-linear capital & innovation output (West & Bettencourt 2007: Y aˆ N^1.15), bounded by thermodynamic power capacity (Garrett 2011)
-            double superlinearFactor = Math.pow(normalizedPop, SUPERLINEAR_EXPONENT - 1.0); // N^0.15 boost per capita
-            double currentCapital = cell.getResourceCapitalOr(10.0);
-            double kPerCapita = currentCapital / pop;
-            double powerWatts = PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(cell);
-            double kEnergized = Math.max(120.0, powerWatts / H3CellPhysicsAndStateHelper.GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT);
-            double thermodynamicHeadroom = Math.max(0.0, 1.0 - (kPerCapita / kEnergized));
-            cell.setResourceCapital(currentCapital + (currentCapital * 0.02 * superlinearFactor * thermodynamicHeadroom * deltaYears));
-
-            // Sub-linear infrastructure maintenance cost efficiency (N^-0.15 savings per capita)
-            double sublinearFactor = Math.pow(normalizedPop, SUBLINEAR_EXPONENT - 1.0);
-            double friction = cell.getMovementFrictionOr(1.0);
-            cell.setMovementFriction(Math.max(0.5, friction * (1.0 - 0.01 * sublinearFactor * deltaYears)));
-        }
+        double sublinearFactor = Math.pow(normalizedPop, SUBLINEAR_EXPONENT - 1.0);
+        acc.dFluxPressure -= 0.01 * sublinearFactor * dtYears;
     }
 }
+
+
