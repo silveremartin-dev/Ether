@@ -186,7 +186,7 @@ public class XylemHydraulicCavitationEngine extends AbstractSimulationEngine {
             double tempC = cell.getTemperatureOr(15.0);
 
             // 1. Soil Moisture Saturation Approximation from Water Balance
-            // Mean evapotranspiration demand ~ 600 mm/yr at 15°C
+            // Mean evapotranspiration demand ~ 600 mm/yr at 15A°C
             double petDemand = Math.max(100.0, (tempC + 10.0) * 25.0);
             double aridityIndex = rainfall / petDemand;
             double moistureSaturation = Math.clamp(aridityIndex * 0.75, 0.02, 1.0);

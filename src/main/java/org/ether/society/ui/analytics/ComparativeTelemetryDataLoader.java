@@ -19,7 +19,7 @@ import org.ether.society.analytics.Tier2EngineContributionAnalyzer;
 import org.ether.society.config.EtherPaths;
 import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
 import org.ether.society.model.Scenario;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,7 +153,7 @@ public final class ComparativeTelemetryDataLoader {
                     Path m = d.resolve("metadata.json");
                     if (Files.exists(m)) {
                         try {
-                            JsonNode node = EtherJsonUtil.getMapper().readTree(m.toFile());
+                            JsonNode node = EtherJsonHelper.getMapper().readTree(m.toFile());
                             if (node.has("id") && saveId.equalsIgnoreCase(node.get("id").asText())) return true;
                             if (scenarioName != null && node.has("scenarioName") && scenarioName.equalsIgnoreCase(node.get("scenarioName").asText())) return true;
                         } catch (Exception ex) {
@@ -172,7 +172,7 @@ public final class ComparativeTelemetryDataLoader {
         if (!Files.exists(histPath)) return;
 
         try {
-            ObjectMapper mapper = EtherJsonUtil.getMapper();
+            ObjectMapper mapper = EtherJsonHelper.getMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             List<HistorySnapshot> snaps = mapper.readValue(histPath.toFile(),
                 new TypeReference<List<HistorySnapshot>>() {});
@@ -185,7 +185,7 @@ public final class ComparativeTelemetryDataLoader {
                         try {
                             Scenario sc = mapper.readValue(scenarioPath.toFile(), Scenario.class);
                             if (sc != null) {
-                                paramMatrix.put("Préréglage Planétaire", sc.getPlanetPreset() != null ? sc.getPlanetPreset().name() : "EARTH_LIKE");
+                                paramMatrix.put("PrÃ©rÃ©glage PlanÃ©taire", sc.getPlanetPreset() != null ? sc.getPlanetPreset().name() : "EARTH_LIKE");
                                 paramMatrix.put("H3 Resolution", String.valueOf(sc.getH3Resolution()));
                                 paramMatrix.put("Strict Determinism", String.valueOf(sc.isStrictDeterminism()));
                                 paramMatrix.put("Spatial Domain", sc.isClippingEnabled() ? "REGIONAL_WINDOW" : "PLANETARY_MESH");
@@ -196,7 +196,7 @@ public final class ComparativeTelemetryDataLoader {
                                 if (sc.getTypeBEngineStates() != null) {
                                     for (var entry : sc.getTypeBEngineStates().entrySet()) {
                                         if (Boolean.TRUE.equals(entry.getValue())) {
-                                            paramMatrix.put("Engine: " + entry.getKey(), "✅ Activé");
+                                            paramMatrix.put("Engine: " + entry.getKey(), "âœ… ActivÃ©");
                                         }
                                     }
                                 }
@@ -371,3 +371,4 @@ public final class ComparativeTelemetryDataLoader {
         }
     }
 }
+

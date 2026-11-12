@@ -26,7 +26,7 @@ import java.util.List;
 public final class CulturalEpochRegistryLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(CulturalEpochRegistryLoader.class);
-    private static final ObjectMapper MAPPER = org.ether.society.persistence.EtherJsonUtil.getMapper();
+    private static final ObjectMapper MAPPER = org.ether.society.persistence.EtherJsonHelper.getMapper();
 
     private CulturalEpochRegistryLoader() {
         // Utility class
@@ -46,7 +46,7 @@ public final class CulturalEpochRegistryLoader {
                             try {
                                 long yr = Long.parseLong(name);
                                 epochs.add(yr);
-                            } catch (NumberFormatException ignored) {}
+                            } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(CulturalEpochRegistryLoader.class).debug("Non-fatal condition in CulturalEpochRegistryLoader: {}", ignored.getMessage()); }
                         });
             } catch (Exception ex) {
                 logger.warn("Failed to dynamically list Earth map epochs: {}", ex.getMessage());
@@ -63,32 +63,32 @@ public final class CulturalEpochRegistryLoader {
 
     
     public static String formatEpochName(long yr) {
-        if (yr == -100000L) return I18n.getOrDefault("cultural.epoch.eemian", "–100 000 BP (Sortie d'Afrique / Éémien)");
-        if (yr == -74000L)  return I18n.getOrDefault("cultural.epoch.toba", "–74 000 BP (Goulot d'Étranglement de Toba)");
-        if (yr == -50000L)  return I18n.getOrDefault("cultural.epoch.sahul", "–50 000 BP (Peuplement Maritime du Sahul)");
-        if (yr == -25000L)  return I18n.getOrDefault("cultural.epoch.beringia", "–25 000 BP (Pause Béringienne & Gravettien)");
-        if (yr == -20000L)  return I18n.getOrDefault("cultural.epoch.lgm", "–20 000 BP (Dernier Maximum Glaciaire & Solutréen)");
-        if (yr == -10900L)  return I18n.getOrDefault("cultural.epoch.dryas", "–10 900 BP (Dryas Récent & Proto-Néolithique)");
-        if (yr == -10000L)  return I18n.getOrDefault("cultural.epoch.holocene", "–10 000 BP (Aube de l'Holocène / Göbekli Tepe)");
-        if (yr == -8000L)   return I18n.getOrDefault("cultural.epoch.neolithic", "–8 000 BP (Néolithique / Çatalhöyük & Jéricho)");
-        if (yr == -6000L)   return I18n.getOrDefault("cultural.epoch.uruk", "–6 000 BP (Proto-Urbain / Mésopotamie & Yangshao)");
-        if (yr == -3000L)   return I18n.getOrDefault("cultural.epoch.earlybronze", "–3 000 AEC (Premier Âge du Bronze / Dynasties Archaïques)");
-        if (yr == -1900L)   return I18n.getOrDefault("cultural.epoch.bronze", "–1 900 AEC (Âge du Bronze Moyen / Babylone & Shang)");
-        if (yr == -1000L)   return I18n.getOrDefault("cultural.epoch.iron", "–1 000 AEC (Premier Âge du Fer / Phéniciens & Zhou)");
-        if (yr == -500L)    return I18n.getOrDefault("cultural.epoch.classical", "–500 AEC (Époque Classique / Athènes, Confucius & Magadha)");
+        if (yr == -100000L) return I18n.getOrDefault("cultural.epoch.eemian", "â€“100 000 BP (Sortie d'Afrique / Ã‰Ã©mien)");
+        if (yr == -74000L)  return I18n.getOrDefault("cultural.epoch.toba", "â€“74 000 BP (Goulot d'Ã‰tranglement de Toba)");
+        if (yr == -50000L)  return I18n.getOrDefault("cultural.epoch.sahul", "â€“50 000 BP (Peuplement Maritime du Sahul)");
+        if (yr == -25000L)  return I18n.getOrDefault("cultural.epoch.beringia", "â€“25 000 BP (Pause BÃ©ringienne & Gravettien)");
+        if (yr == -20000L)  return I18n.getOrDefault("cultural.epoch.lgm", "â€“20 000 BP (Dernier Maximum Glaciaire & SolutrÃ©en)");
+        if (yr == -10900L)  return I18n.getOrDefault("cultural.epoch.dryas", "â€“10 900 BP (Dryas RÃ©cent & Proto-NÃ©olithique)");
+        if (yr == -10000L)  return I18n.getOrDefault("cultural.epoch.holocene", "â€“10 000 BP (Aube de l'HolocÃ¨ne / GÃ¶bekli Tepe)");
+        if (yr == -8000L)   return I18n.getOrDefault("cultural.epoch.neolithic", "â€“8 000 BP (NÃ©olithique / Ã‡atalhÃ¶yÃ¼k & JÃ©richo)");
+        if (yr == -6000L)   return I18n.getOrDefault("cultural.epoch.uruk", "â€“6 000 BP (Proto-Urbain / MÃ©sopotamie & Yangshao)");
+        if (yr == -3000L)   return I18n.getOrDefault("cultural.epoch.earlybronze", "â€“3 000 AEC (Premier Ã‚ge du Bronze / Dynasties ArchaÃ¯ques)");
+        if (yr == -1900L)   return I18n.getOrDefault("cultural.epoch.bronze", "â€“1 900 AEC (Ã‚ge du Bronze Moyen / Babylone & Shang)");
+        if (yr == -1000L)   return I18n.getOrDefault("cultural.epoch.iron", "â€“1 000 AEC (Premier Ã‚ge du Fer / PhÃ©niciens & Zhou)");
+        if (yr == -500L)    return I18n.getOrDefault("cultural.epoch.classical", "â€“500 AEC (Ã‰poque Classique / AthÃ¨nes, Confucius & Magadha)");
         if (yr == 0L)       return "0 CE / AD (Pax Romana & Dynastie Han)";
-        if (yr == 500L)     return "+500 CE (Antiquité Tardive / Justinien & Gupta)";
-        if (yr == 1000L)    return "+1 000 CE (Moyen Âge / Song & Califats)";
-        if (yr == 1500L)    return "+1 500 CE (Grandes Découvertes & Renaissance)";
-        if (yr == 1800L)    return "+1 800 CE (Révolution Industrielle)";
-        if (yr == 1900L)    return "+1 900 CE (Ère Moderne / Belle Époque)";
-        if (yr == 2026L)    return "+2 026 CE (Anthropocène Contemporain)";
+        if (yr == 500L)     return "+500 CE (AntiquitÃ© Tardive / Justinien & Gupta)";
+        if (yr == 1000L)    return "+1 000 CE (Moyen Ã‚ge / Song & Califats)";
+        if (yr == 1500L)    return "+1 500 CE (Grandes DÃ©couvertes & Renaissance)";
+        if (yr == 1800L)    return "+1 800 CE (RÃ©volution Industrielle)";
+        if (yr == 1900L)    return "+1 900 CE (Ãˆre Moderne / Belle Ã‰poque)";
+        if (yr == 2026L)    return "+2 026 CE (AnthropocÃ¨ne Contemporain)";
         if (yr < 0) {
             long absYr = Math.abs(yr);
             if (absYr >= 10000) {
-                return String.format("–%,d BP", absYr).replace(',', ' ');
+                return String.format("â€“%,d BP", absYr).replace(',', ' ');
             } else {
-                return String.format("–%,d AEC", absYr).replace(',', ' ');
+                return String.format("â€“%,d AEC", absYr).replace(',', ' ');
             }
         }
         return String.format("+%,d CE", yr).replace(',', ' ');
@@ -214,10 +214,10 @@ public static long closestSupportedEpoch(long yr) {
         };
         String[] ids = {"clade_alpha", "clade_beta", "clade_gamma", "clade_delta", "clade_epsilon", "clade_zeta", "clade_eta", "clade_theta", "clade_iota"};
         String[] namesEn = {"Equatorial Basin Clade", "Rift & Valley Lineage", "Maritime Coastal Foragers", "Highland Mountain Tribe", "Savanna Nomad Confederacy", "Lacustrine Forest Dwellers", "Arid Steppe Clan", "Alluvial Delta Society", "Tundra Boreal Band"};
-        String[] namesFr = {"Clade du Bassin Équatorial", "Lignée du Rift & Vallées", "Chasseurs-Cueilleurs Côtiers", "Tribu des Hauts Plateaux", "Confédération Nomade des Savanes", "Société Lacustre des Forêts", "Clan des Steppes Arides", "Société des Deltas Alluviaux", "Bande Boréale de Toundra"};
-        String[] namesDe = {"Äquatoriales Becken-Klade", "Grabenbruch-Linie", "Küstensammler-Gemeinschaft", "Hochland-Bergstamm", "Savannen-Nomadenbund", "See- und Waldbewohner", "Arider Steppen-Klan", "Alluviale Delta-Gemeinschaft", "Boreale Tundragruppe"};
-        String[] namesEs = {"Clado de la Cuenca Ecuatorial", "Linaje del Rift y Valles", "Recolectores Costeros Marítimos", "Tribu de las Altas Montañas", "Confederación Nómada de la Sabana", "Habitantes Lacustres del Bosque", "Clan de la Estepa Árida", "Sociedad del Delta Aluvial", "Banda Boreal de Tundra"};
-        String[] namesZh = {"赤道盆地演化支", "大裂谷与山谷世系", "海洋沿海采集者", "高山山地部落", "稀树草原游牧联盟", "湖泊森林居民", "干旱草原部落", "冲积三角洲社会", "苔原北方群体"};
+        String[] namesFr = {"Clade du Bassin Ã‰quatorial", "LignÃ©e du Rift & VallÃ©es", "Chasseurs-Cueilleurs CÃ´tiers", "Tribu des Hauts Plateaux", "ConfÃ©dÃ©ration Nomade des Savanes", "SociÃ©tÃ© Lacustre des ForÃªts", "Clan des Steppes Arides", "SociÃ©tÃ© des Deltas Alluviaux", "Bande BorÃ©ale de Toundra"};
+        String[] namesDe = {"Ã„quatoriales Becken-Klade", "Grabenbruch-Linie", "KÃ¼stensammler-Gemeinschaft", "Hochland-Bergstamm", "Savannen-Nomadenbund", "See- und Waldbewohner", "Arider Steppen-Klan", "Alluviale Delta-Gemeinschaft", "Boreale Tundragruppe"};
+        String[] namesEs = {"Clado de la Cuenca Ecuatorial", "Linaje del Rift y Valles", "Recolectores Costeros MarÃ­timos", "Tribu de las Altas MontaÃ±as", "ConfederaciÃ³n NÃ³mada de la Sabana", "Habitantes Lacustres del Bosque", "Clan de la Estepa Ãrida", "Sociedad del Delta Aluvial", "Banda Boreal de Tundra"};
+        String[] namesZh = {"èµ¤é“ç›†åœ°æ¼”åŒ–æ”¯", "å¤§è£‚è°·ä¸Žå±±è°·ä¸–ç³»", "æµ·æ´‹æ²¿æµ·é‡‡é›†è€…", "é«˜å±±å±±åœ°éƒ¨è½", "ç¨€æ ‘è‰åŽŸæ¸¸ç‰§è”ç›Ÿ", "æ¹–æ³Šæ£®æž—å±…æ°‘", "å¹²æ—±è‰åŽŸéƒ¨è½", "å†²ç§¯ä¸‰è§’æ´²ç¤¾ä¼š", "è‹”åŽŸåŒ—æ–¹ç¾¤ä½“"};
         double[][] traits = {
             {0.10, 0.15, 0.20, 0.40},
             {0.18, 0.22, 0.28, 0.48},
@@ -239,3 +239,5 @@ public static long closestSupportedEpoch(long yr) {
         }
     }
 }
+
+

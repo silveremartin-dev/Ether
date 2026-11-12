@@ -99,7 +99,7 @@ public class H3MapCanvas extends Canvas {
     private H3Globe3DSubScene globe3DSubScene;
 
     // --- Metadata & Recording State ---
-    private String scenarioName = "Scénario Standard";
+    private String scenarioName = "ScÃ©nario Standard";
     private String currentDateStr = "An -100000";
     private boolean isRecordingVideo = false;
 
@@ -382,7 +382,7 @@ public class H3MapCanvas extends Canvas {
                     this.h3Service = new H3Service(detectedRes);
                     this.colorResolver.setH3Service(this.h3Service);
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(H3MapCanvas.class).debug("Non-fatal condition in H3MapCanvas: {}", ignored.getMessage()); }
         }
 
         double[] bounds = H3MapViewportAndRenderHelper.computeGeographicBounds(cells, false);
@@ -494,3 +494,4 @@ public class H3MapCanvas extends Canvas {
     public double getCellDisplayValue(H3Cell cell, int unusedIndex) { return colorResolver.getCellDisplayValue(cell, getPrimaryDisplayMode(), getPrimaryDisplayMode()); }
     public double getCellDisplayValue(H3Cell cell, DisplayMode mode, int unusedIndex) { return colorResolver.getCellDisplayValue(cell, mode, getPrimaryDisplayMode()); }
 }
+

@@ -44,7 +44,7 @@ public class SplashScreen {
     public SplashScreen() {
         stage = new Stage();
         stage.initStyle(StageStyle.TRANSPARENT);
-        WindowUtils.applyWindowIcon(stage);
+        WindowHelper.applyWindowIcon(stage);
 
         double width = 620;
         double height = 350;
@@ -70,8 +70,7 @@ public class SplashScreen {
 
                 card.getChildren().add(bgView);
             }
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(SplashScreen.class).debug("Non-fatal condition in SplashScreen: {}", ignored.getMessage()); }
 
         StackPane overlay = new StackPane();
         overlay.setPrefSize(width, height);
@@ -149,3 +148,5 @@ public class SplashScreen {
         javafx.application.Platform.runLater(stage::close);
     }
 }
+
+

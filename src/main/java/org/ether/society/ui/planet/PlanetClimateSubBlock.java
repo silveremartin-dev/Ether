@@ -88,8 +88,8 @@ public class PlanetClimateSubBlock {
 
     private void initUI() {
         ToggleGroup toggle = new ToggleGroup();
-        radioProc = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
-        radioImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "📂 External Source (PNG / WMS)"));
+        radioProc = new RadioButton(I18n.getOrDefault("planet.radio.procedural", "â–¶ Procedural Generation (Perlin Noise)"));
+        radioImport = new RadioButton(I18n.getOrDefault("planet.radio.import_wms", "ðŸ“‚ External Source (PNG / WMS)"));
         radioProc.setToggleGroup(toggle);
         radioProc.setSelected(true);
         radioProc.getStyleClass().add("radio-proc");
@@ -101,7 +101,7 @@ public class PlanetClimateSubBlock {
             if (!context.isUpdatingFromPreset()) context.notifyParamChange();
             context.updatePreview();
         });
-        Button randBtn = new Button("🎲");
+        Button randBtn = new Button("ðŸŽ²");
         randBtn.getStyleClass().add("button-secondary");
         randBtn.setOnAction(e -> {
             seedField.setText(String.valueOf(new Random().nextLong(1_000_000)));
@@ -116,7 +116,7 @@ public class PlanetClimateSubBlock {
         hintLabel.setWrapText(true);
         hintLabel.getStyleClass().add("card-description-muted");
 
-        exportBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_" + mapType, "📤 Export Procedural Map (PNG)"));
+        exportBtn = new Button(I18n.getOrDefault("planet.btn.export_climate_" + mapType, "ðŸ“¤ Export Procedural Map (PNG)"));
         exportBtn.setMaxWidth(Double.MAX_VALUE);
         exportBtn.getStyleClass().add("button-secondary");
         exportBtn.setOnAction(e -> context.exportProceduralClimateMap(mapType));
@@ -139,17 +139,17 @@ public class PlanetClimateSubBlock {
             }
         });
 
-        fileLabel = new Label("—");
+        fileLabel = new Label("â€”");
         fileLabel.getStyleClass().add("value-label");
         loadBtn = new Button(I18n.get("planet.map.btn_load"));
         loadBtn.getStyleClass().add("button-secondary");
         loadBtn.setOnAction(e -> chooseMapFile());
-        clearBtn = new Button("❌");
+        clearBtn = new Button("âŒ");
         clearBtn.getStyleClass().add("button-secondary");
         clearBtn.setOnAction(e -> {
             customImage = null;
             cachedB64 = null;
-            fileLabel.setText("—");
+            fileLabel.setText("â€”");
             if (!context.isUpdatingFromPreset()) context.notifyParamChange();
             context.updatePreview();
         });
@@ -207,7 +207,7 @@ public class PlanetClimateSubBlock {
                 case "precip" -> "mars_precipitation.png";
                 default -> "mars_seasonality.png";
             };
-        } else if (key.contains("vénus") || key.contains("venus") || key.contains("magellan")) {
+        } else if (key.contains("vÃ©nus") || key.contains("venus") || key.contains("magellan")) {
             return switch (mapType) {
                 case "temp" -> "venus_temperature.png";
                 case "precip" -> "venus_precipitation.png";
@@ -255,7 +255,7 @@ public class PlanetClimateSubBlock {
     }
 
     public void setLocalFileInCombo(String fileName) {
-        String prefix = "📌 Fichier local : ";
+        String prefix = "ðŸ“Œ Fichier local : ";
         sourceCombo.getItems().removeIf(item -> item != null && item.startsWith(prefix));
         String entry = prefix + fileName;
         sourceCombo.getItems().add(entry);
@@ -286,8 +286,8 @@ public class PlanetClimateSubBlock {
     }
 
     public void updateTexts() {
-        if (radioProc != null) radioProc.setText(I18n.getOrDefault("planet.radio.procedural", "▶ Procedural Generation (Perlin Noise)"));
-        if (radioImport != null) radioImport.setText(I18n.getOrDefault("planet.radio.import_wms", "📂 Source Externe (PNG / WMS)"));
+        if (radioProc != null) radioProc.setText(I18n.getOrDefault("planet.radio.procedural", "â–¶ Procedural Generation (Perlin Noise)"));
+        if (radioImport != null) radioImport.setText(I18n.getOrDefault("planet.radio.import_wms", "ðŸ“‚ Source Externe (PNG / WMS)"));
         if (subHeader != null) subHeader.setText(I18n.getOrDefault("planet.climate." + mapType + ".header", ""));
         if (seedLabel != null) seedLabel.setText(I18n.getOrDefault("planet.climate.seed_label", "Generation seed:"));
         if (sourceLabel != null) sourceLabel.setText(I18n.getOrDefault("planet.climate.source_label", "Reference source:"));
@@ -304,7 +304,7 @@ public class PlanetClimateSubBlock {
             if (seedField != null && seedField.getText() != null && !seedField.getText().isEmpty()) {
                 return Long.parseLong(seedField.getText());
             }
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(PlanetClimateSubBlock.class).debug("Non-fatal condition in PlanetClimateSubBlock: {}", ignored.getMessage()); }
         return defaultSeed + defaultSeedOffset;
     }
 
@@ -318,3 +318,4 @@ public class PlanetClimateSubBlock {
     public Label getFileLabel() { return fileLabel; }
     public ComboBox<String> getSourceCombo() { return sourceCombo; }
 }
+

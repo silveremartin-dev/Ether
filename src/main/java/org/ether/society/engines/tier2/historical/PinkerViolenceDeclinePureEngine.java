@@ -68,7 +68,7 @@ public class PinkerViolenceDeclinePureEngine extends AbstractSimulationEngine {
 
             int pop = cell.getPopulation();
             double kpc = cell.getResourceCapitalOr(0.0) / pop;
-            // Endogenous scribal & print literacy and Leviathan administrative capacity from physical infrastructure capital (AGENTS.md §8)
+            // Endogenous scribal & print literacy and Leviathan administrative capacity from physical infrastructure capital (AGENTS.md A§8)
             double literacy = kpc < 30.0 ? 0.0 : Math.clamp(Math.tanh((kpc - 30.0) / 1500.0), 0.0, 1.0);
             double stateStrength = kpc < 50.0 ? 0.0 : Math.clamp(Math.tanh((kpc - 50.0) / 800.0), 0.0, 1.0);
             double tradeOpenness = 0.50;

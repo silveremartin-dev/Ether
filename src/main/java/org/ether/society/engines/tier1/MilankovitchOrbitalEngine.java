@@ -37,7 +37,7 @@ public class MilankovitchOrbitalEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(MilankovitchOrbitalEngine.class);
 
-    /** Solar Constant TOA in W/m² */
+    /** Solar Constant TOA in W/mÂ² */
     public static final double SOLAR_CONSTANT_TOA_W_M2 = 1361.0;
 
     /** Mean orbital eccentricity baseline */
@@ -71,7 +71,7 @@ public class MilankovitchOrbitalEngine extends AbstractSimulationEngine {
         double e = MEAN_ECCENTRICITY + ECCENTRICITY_AMPLITUDE * Math.sin(2.0 * Math.PI * t / ECCENTRICITY_PERIOD_YEARS);
         e = Math.clamp(e, 0.005, 0.060);
 
-        // Obliquity ε(t) in degrees
+        // Obliquity Iµ(t) in degrees
         double eps = MEAN_OBLIQUITY_DEG + OBLIQUITY_AMPLITUDE_DEG * Math.sin(2.0 * Math.PI * t / OBLIQUITY_PERIOD_YEARS);
 
         // Precession longitude of perihelion: anchored to J2000 epoch (\varpi_0 = 102.93 deg = 1.7965 rad)
@@ -83,18 +83,18 @@ public class MilankovitchOrbitalEngine extends AbstractSimulationEngine {
     }
 
     /**
-     * Computes daily average TOA insolation (W/m²) for a given latitude and day of year.
+     * Computes daily average TOA insolation (W/mÂ²) for a given latitude and day of year.
      *
      * @param latDeg Latitude in degrees [-90, +90]
      * @param dayOfYear Day of year [1, 365]
      * @param params MilankovitchParameters
-     * @return Daily average insolation in W/m²
+     * @return Daily average insolation in W/mÂ²
      */
     public static double calculateDailyInsolation(double latDeg, int dayOfYear, MilankovitchParameters params) {
         double phi = Math.toRadians(latDeg);
         double eps = Math.toRadians(params.obliquityDeg());
 
-        // Solar true anomaly / longitude λ_s
+        // Solar true anomaly / longitude I»_s
         double lambdaS = 2.0 * Math.PI * ((double) (dayOfYear - 80) / 365.25);
         double sinDelta = Math.sin(eps) * Math.sin(lambdaS);
         double delta = Math.asin(sinDelta); // Solar declination
@@ -136,12 +136,12 @@ public class MilankovitchOrbitalEngine extends AbstractSimulationEngine {
 
         MilankovitchParameters params = computeOrbitalParameters(currentYear);
 
-        // Compute high-latitude summer insolation anomaly (65°N at summer solstice day 172)
+        // Compute high-latitude summer insolation anomaly (65A°N at summer solstice day 172)
         double refInsolation65N = calculateDailyInsolation(65.0, 172, new MilankovitchParameters(MEAN_ECCENTRICITY, MEAN_OBLIQUITY_DEG, 0.0));
         double curInsolation65N = calculateDailyInsolation(65.0, 172, params);
         double anomalyW_M2 = curInsolation65N - refInsolation65N;
 
-        // Radiative forcing scaling: ~0.08 °C per W/m² of 65°N summer insolation anomaly
+        // Radiative forcing scaling: ~0.08 A°C per W/mA² of 65A°N summer insolation anomaly
         double globalTempShiftC = anomalyW_M2 * 0.08;
         double dtSafe = Math.max(0.0001, deltaYears);
         double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 2.0);

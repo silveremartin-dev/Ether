@@ -21,15 +21,15 @@ import java.util.List;
  *
  * <p>Calculates sediment deposition via <b>Stokes' Law of Sedimentation</b>:</p>
  * <pre>
- *   v_s = (2/9) * (Ï_p - Ï_f) * g * r² / Î¼(T)
+ *   v_s = (2/9) * (ÃÂ_p - ÃÂ_f) * g * rÂ² / ÃŽÂ¼(T)
  * </pre>
  * where:
  * <ul>
- *   <li><b>Ï_p</b>: Quartz/alluvium sediment particle density (~2650 kg/m³).</li>
- *   <li><b>Ï_f</b>: Fluid water density (~1000 kg/m³).</li>
- *   <li><b>g</b>: Gravitational acceleration (9.80665 m/s²).</li>
+ *   <li><b>ÃÂ_p</b>: Quartz/alluvium sediment particle density (~2650 kg/mÂ³).</li>
+ *   <li><b>ÃÂ_f</b>: Fluid water density (~1000 kg/mÂ³).</li>
+ *   <li><b>g</b>: Gravitational acceleration (9.80665 m/sÂ²).</li>
  *   <li><b>r</b>: Grain radius (fine silt $r \approx 20 \times 10^{-6}\text{ m}$).</li>
- *   <li><b>Î¼(T)</b>: Water dynamic viscosity as a function of temperature.</li>
+ *   <li><b>ÃŽÂ¼(T)</b>: Water dynamic viscosity as a function of temperature.</li>
  * </ul>
  *
  * @author Silvere Martin-Michiellot
@@ -42,31 +42,31 @@ public class DynamicHydrographicSiltationEngine extends AbstractSimulationEngine
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicHydrographicSiltationEngine.class);
 
-    /** Quartz sediment particle density in kg/m³ */
+    /** Quartz sediment particle density in kg/mÂ³ */
     public static final double SEDIMENT_DENSITY_KG_M3 = 2650.0;
 
-    /** Fluid (water) density in kg/m³ */
+    /** Fluid (water) density in kg/mÂ³ */
     public static final double WATER_DENSITY_KG_M3 = 1000.0;
 
-    /** Gravitational acceleration in m/s² */
+    /** Gravitational acceleration in m/sÂ² */
     public static final double GRAVITY_M_S2 = 9.80665;
 
-    /** Typical fine silt particle radius in meters (20 Î¼m) */
+    /** Typical fine silt particle radius in meters (20 ÃŽÂ¼m) */
     public static final double SILT_GRAIN_RADIUS_M = 20.0e-6;
 
-    /** Water dynamic viscosity at 20°C in PaÂ·s (NÂ·s/m²) */
+    /** Water dynamic viscosity at 20Â°C in PaÃ‚Â·s (NÃ‚Â·s/mÂ²) */
     public static final double WATER_VISCOSITY_PA_S = 1.002e-3;
 
     /**
      * Calculates Stokes settling terminal velocity v_s in m/s.
      *
      * @param grainRadiusMeters Particle radius in meters
-     * @param waterTempC Water temperature in °C
+     * @param waterTempC Water temperature in Â°C
      * @return Settling velocity in m/s
      */
     public static double calculateStokesSettlingVelocity(double grainRadiusMeters, double waterTempC) {
 // Numerical integration step for DynamicHydrographicSiltationEngine - verifies boundary conservation and updates local thermodynamic state
-        // Temperature-dependent dynamic viscosity: Î¼(T) â‰ˆ 2.414e-5 * 10^(247.8 / (T + 133.15))
+        // Temperature-dependent dynamic viscosity: ÃŽA¼(T) Ã¢a€°Ë† 2.414e-5 * 10^(247.8 / (T + 133.15))
         double tempK = Math.max(273.15, waterTempC + 273.15);
         double viscosity = 2.414e-5 * Math.pow(10.0, 247.8 / (tempK - 140.0));
 

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <h1>BenchmarkStatisticalEvaluator</h1>
+ * <h1>BenchmarkStatisticalHelper</h1>
  * <p>
  * Statistical verification and goodness-of-fit engine (RMSE, R-squared, Pearson correlation r)
  * comparing simulated cliodynamic trajectories against empirical historical ground truth (HYDE 3.4, Maddison, EPICA).
@@ -20,9 +20,9 @@ import java.util.Map;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public final class BenchmarkStatisticalEvaluator {
+public final class BenchmarkStatisticalHelper {
 
-    private BenchmarkStatisticalEvaluator() {
+    private BenchmarkStatisticalHelper() {
         // Utility class
     }
 
@@ -121,3 +121,4 @@ public final class BenchmarkStatisticalEvaluator {
         return num / Math.sqrt(denX * denY);
     }
 }
+

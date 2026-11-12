@@ -74,7 +74,7 @@ public class AsymmetricColonialTradeEngine extends AbstractSimulationEngine {
             double metal = cell.getResourceMetal(); // Bullion stock
             double capital = cell.getResourceCapitalOr(0.0);
 
-            // Asymmetric trade bullion drain: silver exchanged for perishable spices (Flynn & GirÃ¡ldez 1995)
+            // Asymmetric trade bullion drain: silver exchanged for perishable spices (Flynn & GirÃƒA¡ldez 1995)
             // Continuous Michaelis-Menten / Hill extraction envelope replacing discrete jump at metal > 10.0
             if (metal > 0.0) {
                 double drainFactor = metal / (metal + 15.0);

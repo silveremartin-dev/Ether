@@ -3,7 +3,7 @@ package org.ether.society.data;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -74,7 +74,7 @@ public class InspectScenarioNamesTest {
                 Paths.get("src/main/resources/data/presets/scenarios")
         );
 
-        ObjectMapper mapper = EtherJsonUtil.getMapper();
+        ObjectMapper mapper = EtherJsonHelper.getMapper();
 
         for (Path dir : dirs) {
             if (!Files.exists(dir)) continue;
@@ -90,12 +90,12 @@ public class InspectScenarioNamesTest {
                     String enName = ENGLISH_NAMES.get(key);
                     obj.put("name", enName);
                     obj.put("displayName", enName);
-                    // Also clean description header if it starts with SCÉNARIO HISTORIQUE
+                    // Also clean description header if it starts with SCÃ‰NARIO HISTORIQUE
                     if (obj.has("description")) {
                         String desc = obj.get("description").asText();
-                        desc = desc.replace("SCÉNARIO HISTORIQUE", "HISTORICAL SCENARIO")
+                        desc = desc.replace("SCÃ‰NARIO HISTORIQUE", "HISTORICAL SCENARIO")
                                    .replace("CONTEXTE HISTORIQUE & PHYSIQUE", "HISTORICAL & BIOPHYSICAL CONTEXT")
-                                   .replace("THÉORIE DE L'INFLUENCE DES GRANDS HOMMES & OBSERVABLES", "GREAT MAN THEORY & OBSERVABLE STATE DYNAMICS")
+                                   .replace("THÃ‰ORIE DE L'INFLUENCE DES GRANDS HOMMES & OBSERVABLES", "GREAT MAN THEORY & OBSERVABLE STATE DYNAMICS")
                                    .replace("av. J.-C.", "BCE");
                         obj.put("description", desc);
                     }
@@ -106,3 +106,4 @@ public class InspectScenarioNamesTest {
         }
     }
 }
+

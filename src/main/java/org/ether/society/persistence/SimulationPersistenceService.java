@@ -28,10 +28,10 @@ import java.util.stream.Stream;
 /**
  * Unified High-Performance Simulation Persistence &amp; Replay Manager.
  * Orchestrates saving and loading of:
- * 1. Topology (topology.bin.gz) — Static/cold spatial baselines via CellTopologyWireCodec
- * 2. World State (state.bin.gz &amp; snapshots/) — Dynamic simulation arrays via WorldBufferWireCodec
- * 3. Metadata (metadata.json) — Scenario identification, timeline, and tick indexes
- * 4. Telemetry (history.json) — Time series analytics and historical snapshots
+ * 1. Topology (topology.bin.gz) â€” Static/cold spatial baselines via CellTopologyWireCodec
+ * 2. World State (state.bin.gz &amp; snapshots/) â€” Dynamic simulation arrays via WorldBufferWireCodec
+ * 3. Metadata (metadata.json) â€” Scenario identification, timeline, and tick indexes
+ * 4. Telemetry (history.json) â€” Time series analytics and historical snapshots
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -80,7 +80,7 @@ public class SimulationPersistenceService {
     public SimulationPersistenceService(Path customSaveDir) {
         this.customSaveDir = customSaveDir;
         this.cellRepository = new H3CellRepository(DatabaseConfig.getEntityManagerFactory());
-        this.objectMapper = EtherJsonUtil.getPrettyMapper();
+        this.objectMapper = EtherJsonHelper.getPrettyMapper();
 
         try {
             Files.createDirectories(getSaveDirectory());
@@ -165,19 +165,19 @@ public class SimulationPersistenceService {
 
             // 3. Save Scenario Configuration (scenario.json) atomically
             if (engine.getCurrentScenario() != null) {
-                EtherJsonUtil.writePrettyAtomic(savePath.resolve(SCENARIO_FILE), engine.getCurrentScenario());
+                EtherJsonHelper.writePrettyAtomic(savePath.resolve(SCENARIO_FILE), engine.getCurrentScenario());
             }
 
             // 4. Save Historical Telemetry & Analytics (history.json) atomically
             if (engine.getHistoryManager() != null && engine.getHistoryManager().getHistory() != null) {
-                EtherJsonUtil.writePrettyAtomic(savePath.resolve(HISTORY_FILE), engine.getHistoryManager().getHistory().getSnapshots());
+                EtherJsonHelper.writePrettyAtomic(savePath.resolve(HISTORY_FILE), engine.getHistoryManager().getHistory().getSnapshots());
             }
 
             // 4.b Save Chronicle History & Timeline (chronicles.json and chronicles.csv)
             if (engine.getEventSystem() != null) {
                 List<org.ether.society.events.ActiveEvent> chronicleEvents = engine.getEventSystem().getChronicleHistory();
                 if (chronicleEvents != null && !chronicleEvents.isEmpty()) {
-                    EtherJsonUtil.writePrettyAtomic(savePath.resolve(CHRONICLES_JSON_FILE), chronicleEvents);
+                    EtherJsonHelper.writePrettyAtomic(savePath.resolve(CHRONICLES_JSON_FILE), chronicleEvents);
                     Path csvPath = savePath.resolve(CHRONICLES_CSV_FILE);
                     StringBuilder csv = new StringBuilder();
                     csv.append("Year,Month,Day,Type,Magnitude,Latitude,Longitude,DurationDays,Title\n");
@@ -204,7 +204,7 @@ public class SimulationPersistenceService {
                     cells.size(),
                     h3Res
             );
-            EtherJsonUtil.writePrettyAtomic(savePath.resolve(METADATA_FILE), metadata);
+            EtherJsonHelper.writePrettyAtomic(savePath.resolve(METADATA_FILE), metadata);
 
             // 6. Optional Database persistence
             if (DatabaseConfig.isDatabaseAvailable()) {
@@ -212,7 +212,7 @@ public class SimulationPersistenceService {
                 cellRepository.saveAll(cells);
             }
 
-            logger.info("✅ Simulation saved successfully: '{}' [{}] ({} cells, Tick {})",
+            logger.info("âœ… Simulation saved successfully: '{}' [{}] ({} cells, Tick {})",
                     saveName, saveId, cells.size(), currentTick);
 
         } catch (Exception e) {
@@ -254,14 +254,14 @@ public class SimulationPersistenceService {
                                 try {
                                     SaveMetadata sm = objectMapper.readValue(m.toFile(), SaveMetadata.class);
                                     return sm != null && saveId.equalsIgnoreCase(sm.getId());
-                                } catch (Exception ignored) {}
+                                } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(SimulationPersistenceService.class).debug("Non-fatal condition in SimulationPersistenceService: {}", ignored.getMessage()); }
                             }
                             return false;
                         }).findFirst();
                         if (found.isPresent()) {
                             resolvedFallback = found.get();
                         }
-                    } catch (IOException ignored) {}
+                    } catch (IOException ignored) { org.slf4j.LoggerFactory.getLogger(SimulationPersistenceService.class).debug("Non-fatal condition in SimulationPersistenceService: {}", ignored.getMessage()); }
                     if (resolvedFallback != null) {
                         savePath = resolvedFallback;
                     } else {
@@ -409,3 +409,5 @@ public class SimulationPersistenceService {
         return SimulationSaveIOHelper.listSaves(getSaveDirectory(), objectMapper);
     }
 }
+
+

@@ -29,7 +29,7 @@ import java.util.*;
 /**
  * Enhanced GIS-grade Multi-Layer Color Legend component.
  * Displays stacked, responsive statistical legend blocks for all active map layers
- * (Min, Max, Mean μ, Median M) with distinct indicators (Cyan for Mean, Dashed Amber for Median)
+ * (Min, Max, Mean Î¼, Median M) with distinct indicators (Cyan for Mean, Dashed Amber for Median)
  * and interactive folding/collapse support.
  */
 public class ColorLegend extends VBox {
@@ -89,7 +89,7 @@ public class ColorLegend extends VBox {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        toggleCollapseBtn = new Button("−");
+        toggleCollapseBtn = new Button("âˆ’");
         toggleCollapseBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 0 4; -fx-cursor: hand;");
         toggleCollapseBtn.setOnAction(e -> toggleCollapse());
 
@@ -107,7 +107,7 @@ public class ColorLegend extends VBox {
         collapsed = !collapsed;
         layersContainer.setVisible(!collapsed);
         layersContainer.setManaged(!collapsed);
-        toggleCollapseBtn.setText(collapsed ? "+" : "−");
+        toggleCollapseBtn.setText(collapsed ? "+" : "âˆ’");
     }
 
     /**
@@ -247,14 +247,14 @@ public class ColorLegend extends VBox {
     private void updateTitle() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         int count = activeModes != null ? activeModes.size() : 0;
-        String titlePrefix = I18n.getOrDefault("sim.legend.title", "LÉGENDE SIG");
+        String titlePrefix = I18n.getOrDefault("sim.legend.title", "LÃ‰GENDE SIG");
         if (count > 1) {
-            titleLabel.setText(String.format("📊 %s (%d %s)", titlePrefix, count, I18n.getOrDefault("sim.legend.layers", "calques")));
+            titleLabel.setText(String.format("ðŸ“Š %s (%d %s)", titlePrefix, count, I18n.getOrDefault("sim.legend.layers", "calques")));
         } else if (count == 1) {
             DisplayMode single = activeModes.iterator().next();
-            titleLabel.setText("📊 " + titlePrefix + " — " + single.getDisplayName().toUpperCase());
+            titleLabel.setText("ðŸ“Š " + titlePrefix + " â€” " + single.getDisplayName().toUpperCase());
         } else {
-            titleLabel.setText("📊 " + titlePrefix);
+            titleLabel.setText("ðŸ“Š " + titlePrefix);
         }
     }
 
@@ -294,7 +294,7 @@ public class ColorLegend extends VBox {
         ModeStats st = statsMap.getOrDefault(mode, new ModeStats());
         String unit = getUnitForMode(mode);
 
-        Label statsBadge = new Label(String.format("▲ μ: %.1f%s  ▼ M: %.1f%s", st.mean, unit, st.median, unit));
+        Label statsBadge = new Label(String.format("â–² Î¼: %.1f%s  â–¼ M: %.1f%s", st.mean, unit, st.median, unit));
         statsBadge.setFont(Font.font("Segoe UI", 8.5));
         statsBadge.setTextFill(Color.web("#38bdf8"));
 
@@ -312,7 +312,7 @@ public class ColorLegend extends VBox {
         if (mode == null) return "";
         return switch (mode) {
             case POPULATION -> " hab";
-            case TEMPERATURE -> "°C";
+            case TEMPERATURE -> "Â°C";
             case PRECIPITATION -> " mm";
             case INEQUALITY -> "";
             case TECHNOLOGY -> " lvl";
@@ -345,7 +345,7 @@ public class ColorLegend extends VBox {
 
         double range = Math.max(1e-6, st.max - st.min);
 
-        // 2. Mean Indicator (Solid Cyan ▲ pointing down + Solid Vertical Line)
+        // 2. Mean Indicator (Solid Cyan a–² pointing down + Solid Vertical Line)
         double meanNorm = Math.max(0.0, Math.min(1.0, (st.mean - st.min) / range));
         double meanX = BAR_X + meanNorm * BAR_WIDTH;
 
@@ -356,7 +356,7 @@ public class ColorLegend extends VBox {
         gc.setLineWidth(1.2);
         gc.strokeLine(meanX, BAR_Y, meanX, BAR_Y + BAR_HEIGHT);
 
-        // 3. Median Indicator (Dashed Amber ▼ pointing up + Dashed Vertical Line)
+        // 3. Median Indicator (Dashed Amber a–¼ pointing up + Dashed Vertical Line)
         double medNorm = Math.max(0.0, Math.min(1.0, (st.median - st.min) / range));
         double medX = BAR_X + medNorm * BAR_WIDTH;
 

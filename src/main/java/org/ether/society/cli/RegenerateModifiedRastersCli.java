@@ -64,8 +64,7 @@ public final class RegenerateModifiedRastersCli {
             stream.filter(Files::isDirectory).forEach(p -> {
                 try {
                     epochYears.add(Long.parseLong(p.getFileName().toString()));
-                } catch (NumberFormatException ignored) {
-                }
+                } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(RegenerateModifiedRastersCli.class).debug("Non-fatal condition in RegenerateModifiedRastersCli: {}", ignored.getMessage()); }
             });
         }
         Collections.sort(epochYears);
@@ -196,3 +195,4 @@ public final class RegenerateModifiedRastersCli {
         }
     }
 }
+

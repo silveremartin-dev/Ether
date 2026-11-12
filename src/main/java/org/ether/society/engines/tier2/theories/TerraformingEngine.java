@@ -61,7 +61,7 @@ public class TerraformingEngine extends AbstractSimulationEngine {
         // Apply orbital mirror solar forcing & greenhouse atmospheric warming
         double safeCo2 = Math.max(1.0, co2Ppm);
         double radiativeForcingWm2 = 5.35 * Math.log(safeCo2 / 280.0) + (solarMirrorInsolationMultiplier - 1.0) * 1361.0;
-        double globalTempAnomaly = radiativeForcingWm2 * 0.8; // Equilibrium temperature anomaly in °C
+        double globalTempAnomaly = radiativeForcingWm2 * 0.8; // Equilibrium temperature anomaly in A°C
         double dtSafe = Math.max(0.0001, deltaYears);
         double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 5.0);
 

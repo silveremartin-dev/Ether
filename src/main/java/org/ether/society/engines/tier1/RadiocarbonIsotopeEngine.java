@@ -45,7 +45,7 @@ public class RadiocarbonIsotopeEngine extends AbstractSimulationEngine {
     /** Half-life of Carbon-14 in years */
     public static final double C14_HALF_LIFE_YEARS = 5730.0;
 
-    /** Nuclear decay constant λ_14 in yr⁻¹ */
+    /** Nuclear decay constant Î»_14 in yrâ»Â¹ */
     public static final double LAMBDA_14 = Math.log(2.0) / C14_HALF_LIFE_YEARS; // ~1.20968e-4
 
     /** Mean Libby lifetime in years (8033 yr) */
@@ -74,11 +74,11 @@ public class RadiocarbonIsotopeEngine extends AbstractSimulationEngine {
     }
 
     /**
-     * Determines characteristic $\delta^{13}\text{C}$ isotopic signature (in ‰ vs VPDB) continuously
+     * Determines characteristic $\delta^{13}\text{C}$ isotopic signature (in â€° vs VPDB) continuously
      * based on thermodynamic temperature and precipitation crossover (Ehleringer et al. 1997, Still et al. 2003).
      *
      * @param cell target cell with biophysical state variables
-     * @return isotopic signature in ‰ vs VPDB
+     * @return isotopic signature in â€° vs VPDB
      */
     public static double determineIsotopicSignatureDelta13C(H3Cell cell) {
         if (cell == null) return -26.0;
@@ -96,12 +96,12 @@ public class RadiocarbonIsotopeEngine extends AbstractSimulationEngine {
     /**
      * Continuous analytical calculation of $\delta^{13}\text{C}$ from climatic parameters.
      *
-     * @param tempC mean annual surface temperature in °C
+     * @param tempC mean annual surface temperature in Â°C
      * @param rainMm mean annual precipitation in mm
-     * @return isotopic signature in ‰ vs VPDB
+     * @return isotopic signature in â€° vs VPDB
      */
     public static double calculateContinuousDelta13C(double tempC, double rainMm) {
-        // C4 quantum yield crossover occurs at T >= 22°C with moderate-to-low rainfall (Ehleringer 1997)
+        // C4 quantum yield crossover occurs at T >= 22A°C with moderate-to-low rainfall (Ehleringer 1997)
         double thermalAffinity = 1.0 / (1.0 + Math.exp(-0.35 * (tempC - 22.0)));
         double moistureAffinity = 1.0 / (1.0 + Math.exp(0.003 * (rainMm - 1200.0)));
         double c4Fraction = Math.clamp(thermalAffinity * moistureAffinity, 0.0, 1.0);

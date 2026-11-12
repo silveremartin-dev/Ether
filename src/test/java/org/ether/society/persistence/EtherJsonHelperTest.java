@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 Silvère Martin-Michiellot
+ * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
  */
 package org.ether.society.persistence;
 
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class EtherJsonUtilTest {
+public class EtherJsonHelperTest {
 
     @Test
     public void testAtomicWriteAndReadSaveMetadata(@TempDir Path tempDir) throws IOException {
@@ -35,7 +35,7 @@ public class EtherJsonUtilTest {
         meta.setTimestamp(LocalDateTime.of(2026, 10, 9, 22, 30, 0));
 
         // Atomic write
-        EtherJsonUtil.writePrettyAtomic(metadataFile, meta);
+        EtherJsonHelper.writePrettyAtomic(metadataFile, meta);
 
         assertTrue(Files.exists(metadataFile), "metadata.json must exist after atomic write");
         assertTrue(Files.size(metadataFile) > 100, "metadata.json must contain serialized content");
@@ -46,7 +46,7 @@ public class EtherJsonUtilTest {
         assertTrue(jsonContent.contains("2026-10-09T22:30:00"), "JSON must properly format LocalDateTime without truncating");
 
         // Read back
-        Optional<SaveMetadata> restored = EtherJsonUtil.readSafely(metadataFile, SaveMetadata.class);
+        Optional<SaveMetadata> restored = EtherJsonHelper.readSafely(metadataFile, SaveMetadata.class);
         assertTrue(restored.isPresent(), "Must deserialize cleanly");
         assertEquals("TEST-RUN-001", restored.get().getId());
         assertEquals("Test Calibration Run", restored.get().getName());
@@ -68,3 +68,5 @@ public class EtherJsonUtilTest {
         }
     }
 }
+
+

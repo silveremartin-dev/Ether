@@ -45,7 +45,7 @@ public class DPlaceIngestionService {
         List<DPlaceSociety> societies = loadAllSocieties();
 
         for (DPlaceSociety soc : societies) {
-            String label = "Société Traditionnelle : " + soc.name() 
+            String label = "SociÃ©tÃ© Traditionnelle : " + soc.name() 
                     + (soc.glottocode() != null && !soc.glottocode().isBlank() ? " [" + soc.glottocode() + "]" : "")
                     + " (" + soc.dataset() + ")";
             if (label.length() > 120) label = label.substring(0, 117) + "...";
@@ -124,7 +124,7 @@ public class DPlaceIngestionService {
                     if (idxYear >= 0 && idxYear < cols.length && !cols[idxYear].isBlank()) {
                         try {
                             year = Integer.parseInt(cols[idxYear].trim().replaceAll("[^0-9-]", ""));
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(DPlaceIngestionService.class).debug("Non-fatal condition in DPlaceIngestionService: {}", ignored.getMessage()); }
                     }
 
                     double lat = Double.parseDouble(cols[idxLat].trim());
@@ -180,3 +180,4 @@ public class DPlaceIngestionService {
         return list.toArray(new String[0]);
     }
 }
+

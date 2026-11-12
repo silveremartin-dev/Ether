@@ -20,13 +20,13 @@ import java.util.stream.Collectors;
  * <p>Loads and validates socio-economic, cliodynamic, ecological, and technological variables
  * from standardized benchmark datasets ({@code historical_cliodynamic_benchmarks.json}) and
  * prospective 1D trajectories via {@link HistoricalBenchmarkDatasetRepository}, evaluating
- * goodness-of-fit statistics via {@link BenchmarkStatisticalEvaluator}.</p>
+ * goodness-of-fit statistics via {@link BenchmarkStatisticalHelper}.</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @see HistoricalBenchmarkDatasetRepository
  * @see BenchmarkInterpolator
- * @see BenchmarkStatisticalEvaluator
+ * @see BenchmarkStatisticalHelper
  */
 public class HistoricalValidationKernel {
 
@@ -63,14 +63,14 @@ public class HistoricalValidationKernel {
     public static String getReferenceModelDisplayLabel(String modelKey) {
         if (modelKey == null) return "HYDE 3.4 & Maddison Project";
         return switch (modelKey.toUpperCase(Locale.ROOT)) {
-            case "PALEO_SOURCES" -> "Paléo Sources (EPICA Dome C, PaleoClim v1.2, Biraben)";
+            case "PALEO_SOURCES" -> "PalÃ©o Sources (EPICA Dome C, PaleoClim v1.2, Biraben)";
             case "HYDE_MADDISON" -> "HYDE 3.4 & Maddison Project (10k BCE - 2024 CE)";
-            case "SSP1", "PREDICTIVE_SSP1" -> "SSP1 - Durabilité & Décarbonation Rapide (IIASA/IEA)";
+            case "SSP1", "PREDICTIVE_SSP1" -> "SSP1 - DurabilitÃ© & DÃ©carbonation Rapide (IIASA/IEA)";
             case "SSP2", "PREDICTIVE_SSP2" -> "SSP2 - Tendances Actuelles / Milieu de la Route (UN WPP / IIASA)";
-            case "SSP3", "PREDICTIVE_SSP3_WORLD3" -> "SSP3 - Rivalités Régionales & Limites Ressources (Club de Rome)";
-            case "SSP4", "PREDICTIVE_SSP4" -> "SSP4 - Inégalités & Stratification Sociale (GCAM4)";
-            case "SSP5", "PREDICTIVE_SSP5" -> "SSP5 - Énergies Fossiles & Croissance Forcée (PIK/IIASA)";
-            case "ETHER_CALIBRATED" -> "Ether Biophysique Calibré (ERA5 / Continuité Endogène 2025-2200)";
+            case "SSP3", "PREDICTIVE_SSP3_WORLD3" -> "SSP3 - RivalitÃ©s RÃ©gionales & Limites Ressources (Club de Rome)";
+            case "SSP4", "PREDICTIVE_SSP4" -> "SSP4 - InÃ©galitÃ©s & Stratification Sociale (GCAM4)";
+            case "SSP5", "PREDICTIVE_SSP5" -> "SSP5 - Ã‰nergies Fossiles & Croissance ForcÃ©e (PIK/IIASA)";
+            case "ETHER_CALIBRATED" -> "Ether Biophysique CalibrÃ© (ERA5 / ContinuitÃ© EndogÃ¨ne 2025-2200)";
             default -> modelKey;
         };
     }
@@ -233,7 +233,7 @@ public class HistoricalValidationKernel {
      * @return RMSE statistic
      */
     public static double calculateRmse(Map<Integer, Double> simulatedData, Map<Integer, Double> benchmarkData) {
-        return BenchmarkStatisticalEvaluator.calculateRmse(simulatedData, benchmarkData);
+        return BenchmarkStatisticalHelper.calculateRmse(simulatedData, benchmarkData);
     }
 
     /**
@@ -244,7 +244,7 @@ public class HistoricalValidationKernel {
      * @return \(R^2\) statistic
      */
     public static double calculateRSquared(Map<Integer, Double> simulatedData, Map<Integer, Double> benchmarkData) {
-        return BenchmarkStatisticalEvaluator.calculateRSquared(simulatedData, benchmarkData);
+        return BenchmarkStatisticalHelper.calculateRSquared(simulatedData, benchmarkData);
     }
 
     /**
@@ -256,7 +256,7 @@ public class HistoricalValidationKernel {
      * @return Pearson correlation coefficient \(r\)
      */
     public static double calculatePearsonCorrelation(Map<Integer, Double> simulatedData, Map<Integer, Double> benchmarkData) {
-        return BenchmarkStatisticalEvaluator.calculatePearsonCorrelation(simulatedData, benchmarkData);
+        return BenchmarkStatisticalHelper.calculatePearsonCorrelation(simulatedData, benchmarkData);
     }
 
     /**
@@ -348,7 +348,7 @@ public class HistoricalValidationKernel {
 
     /**
      * Retrieves the interpolated predictive benchmark value for a specific predictive model suite
-     * across the 2026–2100 horizon.
+     * across the 2026â€“2100 horizon.
      *
      * @param modelId predictive model identifier
      * @param key     metric variable key
@@ -386,7 +386,7 @@ public class HistoricalValidationKernel {
     /**
      * Computes the continuous, differentiable \(C^1\) temporal confidence tolerance envelope \(\tau(t)\).
      *
-     * <p>Formula (AGENTS.md §11):
+     * <p>Formula (AGENTS.md Â§11):
      * \[\tau(t) = \tau_{\text{mod}} + \frac{\tau_{\text{paleo}} - \tau_{\text{mod}}}{1 + \exp\left(\frac{t - t_{\text{trans}}}{s_{\text{trans}}}\right)}\]
      * with \(\tau_{\text{paleo}} = 0.50\) (50% relative uncertainty in prehistoric and ancient eras),
      * \(\tau_{\text{mod}} = 0.05\) (5% asymptotic relative uncertainty in the modern satellite and census era),
@@ -424,3 +424,4 @@ public class HistoricalValidationKernel {
     /** @return empirical historical coinage precious-metal purity / currency debasement dataset (%) */
     public static Map<Integer, Double> getHistoricalCurrencyDebasement() { return getBenchmarkDataset("currencyDebasement"); }
 }
+

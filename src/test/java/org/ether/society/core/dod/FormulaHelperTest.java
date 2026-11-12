@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit & Algorithmic Test Suite for {@link FormulaEvaluator}.
+ * Unit & Algorithmic Test Suite for {@link FormulaHelper}.
  * Tests statistical aggregation functions (SUM, AVG, MEAN, MEDIAN, VAR, STDDEV, MIN, MAX, GINI, COUNT),
  * nested arithmetic expressions, precedence, and resolver bindings.
  */
-public class FormulaEvaluatorTest {
+public class FormulaHelperTest {
 
-    private final FormulaEvaluator evaluator = new FormulaEvaluator();
+    private final FormulaHelper evaluator = new FormulaHelper();
 
     @Test
     @DisplayName("Verify basic arithmetic expression evaluation")
@@ -38,7 +38,7 @@ public class FormulaEvaluatorTest {
     public void testStatisticalAggregationFunctions() {
         float[] wealthData = { 10.0f, 20.0f, 30.0f, 40.0f };
 
-        FormulaEvaluator.VariableResolver arrayResolver = var -> {
+        FormulaHelper.VariableResolver arrayResolver = var -> {
             if ("wealth".equalsIgnoreCase(var)) return wealthData;
             return new float[0];
         };
@@ -64,7 +64,7 @@ public class FormulaEvaluatorTest {
     public void testDispersionMetrics() {
         float[] data = { 2.0f, 4.0f, 4.0f, 4.0f, 5.0f, 5.0f, 7.0f, 9.0f };
 
-        FormulaEvaluator.VariableResolver arrayResolver = var -> {
+        FormulaHelper.VariableResolver arrayResolver = var -> {
             if ("sample".equalsIgnoreCase(var)) return data;
             return new float[0];
         };
@@ -88,7 +88,7 @@ public class FormulaEvaluatorTest {
         float[] food = { 500.0f, 1500.0f, 1000.0f };
         float[] pop = { 10.0f, 20.0f, 20.0f };
 
-        FormulaEvaluator.VariableResolver arrayResolver = var -> {
+        FormulaHelper.VariableResolver arrayResolver = var -> {
             if ("food".equalsIgnoreCase(var)) return food;
             if ("population".equalsIgnoreCase(var)) return pop;
             return new float[0];
@@ -102,7 +102,7 @@ public class FormulaEvaluatorTest {
     @Test
     @DisplayName("Verify scalar resolver binding")
     public void testScalarResolver() {
-        FormulaEvaluator.ScalarResolver scalarResolver = var -> {
+        FormulaHelper.ScalarResolver scalarResolver = var -> {
             if ("taxRate".equalsIgnoreCase(var)) return 0.25;
             if ("baseGDP".equalsIgnoreCase(var)) return 1000.0;
             return 0.0;
@@ -122,3 +122,5 @@ public class FormulaEvaluatorTest {
         assertEquals(0.0, evaluator.evaluate("10 + / 5", var -> null, var -> 0.0));
     }
 }
+
+

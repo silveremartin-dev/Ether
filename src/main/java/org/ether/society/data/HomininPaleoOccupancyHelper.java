@@ -37,7 +37,7 @@ public final class HomininPaleoOccupancyHelper {
         if (lat < -60.0 || lon < -26.0) return null; // Americas & Antarctica uninhabited
         if (lat < -35.2) return null; // All sub-Antarctic & South Indian islands (Marion, Crozet, Kerguelen, Bouvet)
 
-        // Madagascar & Mascarene Islands (Africa mainland coast is lon <= 41.0°E, Madagascar is >= 43.0°E)
+        // Madagascar & Mascarene Islands (Africa mainland coast is lon <= 41.0A°E, Madagascar is >= 43.0A°E)
         if (lat <= -10.0 && lat >= -30.0 && lon >= 43.0 && lon <= 65.0) return null;
         if (lat > -10.0 && lat <= -4.0 && lon >= 53.0 && lon <= 57.0) return null; // Seychelles
 
@@ -49,7 +49,7 @@ public final class HomininPaleoOccupancyHelper {
         if (lon >= -6.5 && lon <= -5.0 && lat >= -16.5 && lat <= -15.5) return null; // Saint Helena
         if (lon >= -15.0 && lon <= -13.5 && lat >= -8.5 && lat <= -7.5) return null; // Ascension
 
-        if (lat >= -2.0 && lat <= 2.0 && lon >= 6.0 && lon <= 9.0) return null; // São Tomé & Príncipe
+        if (lat >= -2.0 && lat <= 2.0 && lon >= 6.0 && lon <= 9.0) return null; // SÃ£o TomÃ© & PrÃ­ncipe
         if (lat >= 12.0 && lat <= 13.0 && lon >= 53.0 && lon <= 55.0) return null; // Socotra Island
         if (lat <= -8.0 && lon >= 110.0) return null; // Australia / Sahul / Tasmania
         if (lat > -8.0 && lat <= 0.0 && lon >= 128.0) return null; // New Guinea

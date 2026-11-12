@@ -19,8 +19,8 @@ import java.util.List;
  * Global Nuclear Winter & Stratospheric Soot Climate Engine.
  * Models the macro-environmental consequences of high-intensity nuclear conflict:
  * 1. <b>Stratospheric Soot Injection (Tg Soot)</b>: Biomass & urban firestorms inject carbonaceous aerosol into the upper atmosphere.
- * 2. <b>Solar Irradiance Attenuation (S_0 * e^-τ)</b>: Atmospheric soot optical depth (τ) attenuates surface solar irradiance S_0.
- * 3. <b>Nuclear Winter Cooling & Famine</b>: Sub-zero surface temperature anomaly (ΔT_cool) causes global crop failure and demographic collapse.
+ * 2. <b>Solar Irradiance Attenuation (S_0 * e^-Ï„)</b>: Atmospheric soot optical depth (Ï„) attenuates surface solar irradiance S_0.
+ * 3. <b>Nuclear Winter Cooling & Famine</b>: Sub-zero surface temperature anomaly (Î”T_cool) causes global crop failure and demographic collapse.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -66,7 +66,7 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
     /**
      * Calculates surface solar irradiance attenuation multiplier based on stratospheric soot optical depth.
      *
-     * @param opticalDepth Stratospheric soot optical depth τ
+     * @param opticalDepth Stratospheric soot optical depth Ï„
      * @return Solar transmittance fraction (0.0 to 1.0)
      */
     public static double calculateSolarTransmittance(double opticalDepth) {
@@ -114,7 +114,7 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
         // 2. Apply Nuclear Winter global solar attenuation & temperature anomaly
         if (globalSootOpticalDepth > 0.01) {
             double transmittance = calculateSolarTransmittance(globalSootOpticalDepth);
-            double tempAnomaly = -15.0 * (1.0 - transmittance); // Up to -15°C global temperature drop
+            double tempAnomaly = -15.0 * (1.0 - transmittance); // Up to -15A°C global temperature drop
 
             for (H3Cell cell : cells) {
                 if (cell == null) continue;
@@ -136,7 +136,7 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
             // Stratospheric soot atmospheric decay per tick (half-life ~ 5-10 years)
             globalSootOpticalDepth *= 0.98;
 
-            logger.warn("Nuclear Winter Engine: Stratospheric soot optical depth tau={}. Global temperature anomaly: {}°C across cells.",
+            logger.warn("Nuclear Winter Engine: Stratospheric soot optical depth tau={}. Global temperature anomaly: {}Â°C across cells.",
                     String.format(java.util.Locale.ROOT, "%.2f", globalSootOpticalDepth), String.format(java.util.Locale.ROOT, "%.1f", tempAnomaly));
         }
 

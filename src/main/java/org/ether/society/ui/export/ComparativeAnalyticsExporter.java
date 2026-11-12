@@ -83,7 +83,7 @@ public final class ComparativeAnalyticsExporter {
 
             if (exportMdBtn != null) {
                 String origText = exportMdBtn.getText();
-                exportMdBtn.setText(String.format(I18n.getOrDefault("analytics.status.export_md_success", "✅ Exporté : %s"), fileName));
+                exportMdBtn.setText(String.format(I18n.getOrDefault("analytics.status.export_md_success", "âœ… ExportÃ© : %s"), fileName));
                 exportMdBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #059669; -fx-text-fill: white; -fx-padding: 6 14;");
 
                 Timeline resetTimer = new Timeline(new KeyFrame(Duration.seconds(3), evt -> {
@@ -148,7 +148,7 @@ public final class ComparativeAnalyticsExporter {
 
             if (exportCsvBtn != null) {
                 String origText = exportCsvBtn.getText();
-                exportCsvBtn.setText(String.format(I18n.getOrDefault("analytics.status.export_csv_success", "✅ Exporté : %s"), fileName));
+                exportCsvBtn.setText(String.format(I18n.getOrDefault("analytics.status.export_csv_success", "âœ… ExportÃ© : %s"), fileName));
                 exportCsvBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #6d28d9; -fx-text-fill: white; -fx-padding: 6 14;");
 
                 Timeline resetTimer = new Timeline(new KeyFrame(Duration.seconds(3), evt -> {
@@ -201,7 +201,7 @@ public final class ComparativeAnalyticsExporter {
         try {
             File defaultDir = EtherPaths.getExportsDir().toFile();
             if (defaultDir.exists()) fileChooser.setInitialDirectory(defaultDir);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(ComparativeAnalyticsExporter.class).debug("Non-fatal condition in ComparativeAnalyticsExporter: {}", ignored.getMessage()); }
 
         Window window = (export2DZipBtn != null && export2DZipBtn.getScene() != null) ? export2DZipBtn.getScene().getWindow() : null;
         File selectedFile = (window != null) ? fileChooser.showSaveDialog(window) : EtherPaths.getExportsDir().resolve(zipName).toFile();
@@ -211,7 +211,7 @@ public final class ComparativeAnalyticsExporter {
 
         if (export2DZipBtn != null) {
             export2DZipBtn.setDisable(true);
-            export2DZipBtn.setText("⏳ Compression ZIP...");
+            export2DZipBtn.setText("â³ Compression ZIP...");
         }
 
         CompletableFuture.runAsync(() -> {
@@ -249,10 +249,10 @@ public final class ComparativeAnalyticsExporter {
                 if (export2DZipBtn != null) {
                     Platform.runLater(() -> {
                         export2DZipBtn.setDisable(false);
-                        export2DZipBtn.setText("✅ Exporté : " + savedFileName);
+                        export2DZipBtn.setText("âœ… ExportÃ© : " + savedFileName);
                         export2DZipBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #059669; -fx-text-fill: white; -fx-padding: 6 14;");
                         Timeline t = new Timeline(new KeyFrame(Duration.seconds(4), evt -> {
-                            export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "📦 Export 2D Tensors (.zip)"));
+                            export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "ðŸ“¦ Export 2D Tensors (.zip)"));
                             export2DZipBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #6366f1; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
                         }));
                         t.setCycleCount(1);
@@ -264,7 +264,7 @@ public final class ComparativeAnalyticsExporter {
                 if (export2DZipBtn != null) {
                     Platform.runLater(() -> {
                         export2DZipBtn.setDisable(false);
-                        export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "📦 Export 2D Tensors (.zip)"));
+                        export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "ðŸ“¦ Export 2D Tensors (.zip)"));
                     });
                 }
             }
@@ -311,3 +311,4 @@ public final class ComparativeAnalyticsExporter {
         return name.replaceAll("[^a-zA-Z0-9_.-]", "_");
     }
 }
+

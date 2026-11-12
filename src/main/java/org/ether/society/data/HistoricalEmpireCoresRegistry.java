@@ -8,7 +8,7 @@ package org.ether.society.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public final class HistoricalEmpireCoresRegistry {
 
     private static synchronized void loadCatalog() {
         EPOCHS_CACHE.clear();
-        ObjectMapper mapper = EtherJsonUtil.getMapper();
+        ObjectMapper mapper = EtherJsonHelper.getMapper();
         JsonNode root = null;
 
         try {
@@ -109,3 +109,4 @@ public final class HistoricalEmpireCoresRegistry {
         return last != null ? last.getValue() : Collections.emptyList();
     }
 }
+

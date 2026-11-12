@@ -213,12 +213,12 @@ public class StructuralDemographicBifurcationEngine extends AbstractSimulationEn
     public String getEquationsTooltip() {
         return """
                [Turchin-Goldstone Structural Demographic Bifurcation Model]
-               • Political Stress Index:  PSI = MMP · EMP · SF
-               • Mass Immiseration:       MMP = (Food_req / Food_avail) · (P / CarryingCapacity)
-               • Elite Overproduction:    EMP = (Capital / BaseCapital) · Gini²
-               • State Fiscal Distress:   SF  = 1.0 + 1.5 / (1.0 + exp(-0.01 · (Capital - 500)))
-               • Poisson Jump Hazard:     λ_crisis = λ₀ · exp(κ · max(0, PSI - PSI_crit))
-               • Crisis Dissipation:      ΔGini = -30%, ΔCapital = -25%, ΔMortality = +15%
+               â€¢ Political Stress Index:  PSI = MMP Â· EMP Â· SF
+               â€¢ Mass Immiseration:       MMP = (Food_req / Food_avail) Â· (P / CarryingCapacity)
+               â€¢ Elite Overproduction:    EMP = (Capital / BaseCapital) Â· GiniÂ²
+               â€¢ State Fiscal Distress:   SF  = 1.0 + 1.5 / (1.0 + exp(-0.01 Â· (Capital - 500)))
+               â€¢ Poisson Jump Hazard:     Î»_crisis = Î»â‚€ Â· exp(Îº Â· max(0, PSI - PSI_crit))
+               â€¢ Crisis Dissipation:      Î”Gini = -30%, Î”Capital = -25%, Î”Mortality = +15%
                Ref: P. Turchin (2016) "Ages of Discord", W. Scheidel (2017) "The Great Leveler"
                """;
     }
@@ -276,7 +276,7 @@ public class StructuralDemographicBifurcationEngine extends AbstractSimulationEn
             double psi = mmp * emp * sf;
             sumPSI += psi;
 
-            // 4. Poisson Jump Hazard Rate: λ(t) = λ₀ · exp(0.4 · max(0, PSI - PSI_crit))
+            // 4. Poisson Jump Hazard Rate: I»(t) = I»a‚€ A· exp(0.4 A· max(0, PSI - PSI_crit))
             if (psi > psiThreshold) {
                 double excessPsi = Math.min(10.0, psi - psiThreshold);
                 double hazardRate = baseJumpIntensity * Math.exp(0.4 * excessPsi);

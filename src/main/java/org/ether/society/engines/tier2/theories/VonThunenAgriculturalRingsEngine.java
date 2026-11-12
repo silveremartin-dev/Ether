@@ -16,17 +16,17 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * <h1>Von ThÃ¼nen Agricultural Rings &amp; Overland Transport Friction Engine</h1>
+ * <h1>Von ThÃƒÂ¼nen Agricultural Rings &amp; Overland Transport Friction Engine</h1>
  * <p>
  * Models the geographic logistics of agricultural food transport and urban agglomeration limits.
  * Replaces synthetic urbanization rate sigmoids with authentic spatial transport decay
- * (Von ThÃ¼nen 1826; Krugman 1991).
+ * (Von ThÃƒÂ¼nen 1826; Krugman 1991).
  * </p>
  *
  * <h2>Scientific Foundations</h2>
  * <ul>
- *   <li><b>Johann Heinrich von ThÃ¼nen (1826)</b> <i>Der isolirte Staat in Beziehung auf Landwirthschaft und NationalÃ¶konomie</i>, Perthes, Hamburg.</li>
- *   <li><b>Paul Krugman (1991)</b> <i>Increasing Returns and Economic Geography</i>, J. Political Econ. 99(3): 483â€“499.</li>
+ *   <li><b>Johann Heinrich von ThÃƒÂ¼nen (1826)</b> <i>Der isolirte Staat in Beziehung auf Landwirthschaft und NationalÃƒÂ¶konomie</i>, Perthes, Hamburg.</li>
+ *   <li><b>Paul Krugman (1991)</b> <i>Increasing Returns and Economic Geography</i>, J. Political Econ. 99(3): 483Ã¢â‚¬â€œ499.</li>
  *   <li><b>Paul Bairoch (1988)</b> <i>Cities and Economic Development: From the Dawn of History to the Present</i>, Univ. of Chicago Press.</li>
  * </ul>
  *
@@ -89,8 +89,8 @@ public class VonThunenAgriculturalRingsEngine extends AbstractSimulationEngine {
                 // Coastal cities access low-friction maritime grain fleets (Rome, Alexandria, Song Hangzhou)
                 maxSustainableAgglomeration = 500_000.0 + capitalPerCapita * 2500.0;
             } else {
-                // Inland cities strictly bounded by Von ThÃ¼nen terrestrial friction
-                // Continuous C^1 transport radius expansion eliminating piecewise threshold cliffs (Von Thünen 1826)
+                // Inland cities strictly bounded by Von ThÃƒA¼nen terrestrial friction
+                // Continuous C^1 transport radius expansion eliminating piecewise threshold cliffs (Von ThÃ¼nen 1826)
                 double ancientInlandBase = 25_000.0;
                 double earlyModernExpansion = 55_000.0 * org.ether.society.core.math.SmoothMath.sigmoid(capitalPerCapita, 250.0, 75.0);
                 double industrialRailExpansion = 5000.0 * org.ether.society.core.math.SmoothMath.softplus(capitalPerCapita - 800.0, 0.0, 100.0);

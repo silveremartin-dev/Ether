@@ -157,7 +157,7 @@ public class DynamicEnergyBudgetEngine extends AbstractSimulationEngine {
             double foodPerCapita = foodStockGJ / Math.max(1.0, pop);
 
             // 1. Scaled Functional Response & Assimilation
-            // Humans are homeothermic endotherms (core ~37°C); ambient cold increases thermoregulation load
+            // Humans are homeothermic endotherms (core ~37A°C); ambient cold increases thermoregulation load
             double f = calculateFunctionalResponse(foodPerCapita, HUMAN_FOOD_HALF_SATURATION_GJ);
             double potentialAssimilationPerCapita = HUMAN_MAX_INGESTION_GJ_PER_YEAR * f;
 
@@ -176,7 +176,7 @@ public class DynamicEnergyBudgetEngine extends AbstractSimulationEngine {
             double somaticAllocation = KAPPA_SOMA * pC;
             double reproductiveAllocation = (1.0 - KAPPA_SOMA) * pC;
 
-            // Somatic Maintenance Demand (scaled slightly by cold thermoregulation below 18°C)
+            // Somatic Maintenance Demand (scaled slightly by cold thermoregulation below 18A°C)
             double coldThermoregulation = tempC < 18.0 ? 1.0 + 0.015 * (18.0 - tempC) : 1.0;
             double somaticDemand = HUMAN_SOMATIC_MAINTENANCE_GJ_PER_YEAR * coldThermoregulation;
 

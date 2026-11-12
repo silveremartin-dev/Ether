@@ -116,7 +116,7 @@ public class PhysicalLeontiefInputOutputEngine extends AbstractSimulationEngine 
                     + (currentFish * 0.15) + (currentLivestock * 0.20);
 
             // Target capital expansion based on population, physical tool stock per capita, and Material Entropy Spectrum
-            // Prehistoric deep-time baseline (AGENTS.md §8 & §10): Paleolithic tool production (k_pc < 15 kg/cap) is bounded by somatic labor
+            // Prehistoric deep-time baseline (AGENTS.md A§8 & A§10): Paleolithic tool production (k_pc < 15 kg/cap) is bounded by somatic labor
             double neolithicTransition = 1.0 / (1.0 + Math.exp(-(kPerCapita - 15.0) / 5.0));
             double toolStockMultiplier = (0.20 * (1.0 - neolithicTransition))
                     + (neolithicTransition * (1.0 + 0.12 * Math.log1p(kPerCapita / 20.0)));

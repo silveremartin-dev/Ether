@@ -73,7 +73,7 @@ public class EtherNetworkClient {
         if (securityManager != null) {
             try {
                 welcome = securityManager.decrypt(welcome);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(EtherNetworkClient.class).debug("Non-fatal condition in EtherNetworkClient: {}", ignored.getMessage()); }
         }
         EtherSecurityAuditLogger.logAuditEvent("CLIENT_CONNECT", host + ":" + port, "Handshake: " + welcome);
     }
@@ -134,4 +134,5 @@ public class EtherNetworkClient {
      */
     public boolean isConnected() { return connected; }
 }
+
 

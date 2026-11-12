@@ -92,7 +92,7 @@ public final class EtherFutureCalibrationScenarioHarness {
         // Configure Tier 2 Cliodynamic Engines (Filter: Accept authentic, Reject falsified)
         Map<String, Boolean> engines = new LinkedHashMap<>();
 
-        // ── 1. ACTIVATED & VALIDATED THEORIES (Contemporary / Future Era) ──
+        // a”€a”€ 1. ACTIVATED & VALIDATED THEORIES (Contemporary / Future Era) a”€a”€
         engines.put("TurchinGoldstoneSDTEngine", true);                   // Elite overproduction & social cohesion cycles
         engines.put("AcemogluRobinsonInstitutionsEngine", true);           // Inclusive vs extractive institutional feedback
         engines.put("BoserupAgriculturalIntensificationEngine", true);     // Endogenous agricultural yield response
@@ -110,7 +110,7 @@ public final class EtherFutureCalibrationScenarioHarness {
         engines.put("PhysicalLeontiefInputOutputEngine", true);            // Biophysical material balance input-output matrix
         engines.put("DynamicMaritimeRoutingGraph", true);                  // Global container trade choke-points (Suez, Malacca, Panama)
 
-        // ── 2. FORMALLY REJECTED / FALSIFIED MODELS (STRICTLY DISABLED) ──
+        // a”€a”€ 2. FORMALLY REJECTED / FALSIFIED MODELS (STRICTLY DISABLED) a”€a”€
         // Model 1: Malthusian Static Subsistence Trap (Falsified by Boserup, Green Revolution, & Technological substitution)
         engines.put("MalthusianCapacityEngine", false);
         // Model 2: Nordhaus DICE Quadratic Climate Damage (Falsified by critical biophysical exergy collapse thresholds)

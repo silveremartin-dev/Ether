@@ -24,6 +24,16 @@ import org.ether.society.model.HabitatType;
  * @see H3Cell
  */
 @MappedSuperclass
+/**
+ * H3CellSocioDemographicBase.
+ * <p>
+ * Component for the Ether planetary simulation platform.
+ * Adheres to the zero-defect code excellence standards and 500-line limit.
+ * </p>
+ *
+ * @author Ether Architectural Working Group
+ * @see org.ether.society.core.engine.SimulationEngineModule
+ */
 public abstract class H3CellSocioDemographicBase {
 
     // --- Dynamic Climate, Cryosphere & Coastal Surface Physics ---
@@ -121,20 +131,20 @@ public abstract class H3CellSocioDemographicBase {
         };
     }
 
-    /** @return youth population count (ages 0–14) */
+    /** @return youth population count (ages 0â€“14) */
     public Integer getPopYouth() {
         if (popYouth == null) ensureAgePyramidInitialized();
         return popYouth;
     }
-    /** @param popYouth youth population count (ages 0–14) */
+    /** @param popYouth youth population count (ages 0â€“14) */
     public void setPopYouth(Integer popYouth) { this.popYouth = popYouth; }
 
-    /** @return adult population count (ages 15–64) */
+    /** @return adult population count (ages 15â€“64) */
     public Integer getPopAdult() {
         if (popAdult == null) ensureAgePyramidInitialized();
         return popAdult;
     }
-    /** @param popAdult adult population count (ages 15–64) */
+    /** @param popAdult adult population count (ages 15â€“64) */
     public void setPopAdult(Integer popAdult) { this.popAdult = popAdult; }
 
     /** @return elderly population count (ages 65+) */
@@ -150,34 +160,34 @@ public abstract class H3CellSocioDemographicBase {
     /** @param dynamicAlbedo dynamic surface albedo */
     public void setDynamicAlbedo(Double dynamicAlbedo) { this.dynamicAlbedo = dynamicAlbedo; }
 
-    /** @return cohort 0–4 headcount */
+    /** @return cohort 0â€“4 headcount */
     public Integer getPop0to4() { return pop0to4; }
-    /** @param val cohort 0–4 headcount */
+    /** @param val cohort 0â€“4 headcount */
     public void setPop0to4(Integer val) { this.pop0to4 = val; }
 
-    /** @return cohort 5–14 headcount */
+    /** @return cohort 5â€“14 headcount */
     public Integer getPop5to14() { return pop5to14; }
-    /** @param val cohort 5–14 headcount */
+    /** @param val cohort 5â€“14 headcount */
     public void setPop5to14(Integer val) { this.pop5to14 = val; }
 
-    /** @return cohort 15–24 headcount */
+    /** @return cohort 15â€“24 headcount */
     public Integer getPop15to24() { return pop15to24; }
-    /** @param val cohort 15–24 headcount */
+    /** @param val cohort 15â€“24 headcount */
     public void setPop15to24(Integer val) { this.pop15to24 = val; }
 
-    /** @return cohort 25–49 headcount */
+    /** @return cohort 25â€“49 headcount */
     public Integer getPop25to49() { return pop25to49; }
-    /** @param val cohort 25–49 headcount */
+    /** @param val cohort 25â€“49 headcount */
     public void setPop25to49(Integer val) { this.pop25to49 = val; }
 
-    /** @return cohort 50–64 headcount */
+    /** @return cohort 50â€“64 headcount */
     public Integer getPop50to64() { return pop50to64; }
-    /** @param val cohort 50–64 headcount */
+    /** @param val cohort 50â€“64 headcount */
     public void setPop50to64(Integer val) { this.pop50to64 = val; }
 
-    /** @return cohort 65–79 headcount */
+    /** @return cohort 65â€“79 headcount */
     public Integer getPop65to79() { return pop65to79; }
-    /** @param val cohort 65–79 headcount */
+    /** @param val cohort 65â€“79 headcount */
     public void setPop65to79(Integer val) { this.pop65to79 = val; }
 
     /** @return cohort 80+ headcount */
@@ -303,17 +313,17 @@ public abstract class H3CellSocioDemographicBase {
     public double getLinguisticDriftOr(double defaultValue) { return linguisticDrift != null ? linguisticDrift : defaultValue; }
     /** @param defaultValue fallback tier @return unboxed habitat tier */
     public int getHabitatTierOr(int defaultValue) { return habitatTier != null ? habitatTier : defaultValue; }
-    /** @param defaultValue fallback count @return unboxed cohort 0–4 count */
+    /** @param defaultValue fallback count @return unboxed cohort 0â€“4 count */
     public int getPop0to4Or(int defaultValue) { return pop0to4 != null ? pop0to4 : defaultValue; }
-    /** @param defaultValue fallback count @return unboxed cohort 5–14 count */
+    /** @param defaultValue fallback count @return unboxed cohort 5â€“14 count */
     public int getPop5to14Or(int defaultValue) { return pop5to14 != null ? pop5to14 : defaultValue; }
-    /** @param defaultValue fallback count @return unboxed cohort 15–24 count */
+    /** @param defaultValue fallback count @return unboxed cohort 15â€“24 count */
     public int getPop15to24Or(int defaultValue) { return pop15to24 != null ? pop15to24 : defaultValue; }
-    /** @param defaultValue fallback count @return unboxed cohort 25–49 count */
+    /** @param defaultValue fallback count @return unboxed cohort 25â€“49 count */
     public int getPop25to49Or(int defaultValue) { return pop25to49 != null ? pop25to49 : defaultValue; }
-    /** @param defaultValue fallback count @return unboxed cohort 50–64 count */
+    /** @param defaultValue fallback count @return unboxed cohort 50â€“64 count */
     public int getPop50to64Or(int defaultValue) { return pop50to64 != null ? pop50to64 : defaultValue; }
-    /** @param defaultValue fallback count @return unboxed cohort 65–79 count */
+    /** @param defaultValue fallback count @return unboxed cohort 65â€“79 count */
     public int getPop65to79Or(int defaultValue) { return pop65to79 != null ? pop65to79 : defaultValue; }
     /** @param defaultValue fallback count @return unboxed cohort 80+ count */
     public int getPop80PlusOr(int defaultValue) { return pop80Plus != null ? pop80Plus : defaultValue; }

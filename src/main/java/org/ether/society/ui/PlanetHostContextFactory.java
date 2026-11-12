@@ -120,8 +120,9 @@ final class PlanetHostContextFactory {
                 return panel.climateSectionBuilder != null ? panel.climateSectionBuilder.getSeasonSeed(baseSeed) : baseSeed + 2000L;
             }
             @Override public void setBusyCursor(boolean busy) {
-                WindowUtils.setBusyCursor(panel, busy);
+                WindowHelper.setBusyCursor(panel, busy);
             }
         };
     }
 }
+

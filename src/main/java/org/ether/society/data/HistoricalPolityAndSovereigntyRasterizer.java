@@ -111,10 +111,10 @@ public final class HistoricalPolityAndSovereigntyRasterizer {
                 double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
                 double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
                 if (lat < -60.0 && year < 1900L) {
-                    // Antarctica before modern era: uninhabited land → neutral gray
+                    // Antarctica before modern era: uninhabited land a†’ neutral gray
                     sovImg.setRGB(x, y, 0x2D3748);
                 } else if (occWeight <= 0.001 && year < 1900L) {
-                    // Uninhabited land (remote tundra, uninhabited islands) → neutral gray
+                    // Uninhabited land (remote tundra, uninhabited islands) a†’ neutral gray
                     sovImg.setRGB(x, y, 0x2D3748);
                 } else {
                     int currentRgb = sovImg.getRGB(x, y) & 0xFFFFFF;

@@ -53,7 +53,7 @@ public class OstromCommonsPureEngine extends AbstractSimulationEngine {
             double aquifer = cell.getAccessibleAquifer();
             // Ostrom polycentric governance (Ostrom 1990) institutes community extraction quotas
             // that prevent overdraft beyond natural Darcy precipitation recharge.
-            // Strict mass conservation (AGENTS.md §8): water recharge is bounded by actual precipitation inflow
+            // Strict mass conservation (AGENTS.md A§8): water recharge is bounded by actual precipitation inflow
             if (aquifer < 50.0) {
                 double rainfall = cell.getRainfallOr(0.0);
                 double naturalInflowCap = Math.max(0.0, (rainfall / 500.0) * 0.5 * deltaYears);

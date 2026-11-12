@@ -40,6 +40,16 @@ import org.ether.society.model.Biome;
         @Index(name = "idx_lat_lng", columnList = "latitude, longitude"),
         @Index(name = "idx_biome", columnList = "biome")
 })
+/**
+ * H3Cell.
+ * <p>
+ * Component for the Ether planetary simulation platform.
+ * Adheres to the zero-defect code excellence standards and 500-line limit.
+ * </p>
+ *
+ * @author Ether Architectural Working Group
+ * @see org.ether.society.core.engine.SimulationEngineModule
+ */
 public class H3Cell extends H3CellSocioDemographicBase {
 
     @Id

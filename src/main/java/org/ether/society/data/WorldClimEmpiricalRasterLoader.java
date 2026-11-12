@@ -127,7 +127,7 @@ public class WorldClimEmpiricalRasterLoader {
                                 ? (float) computePhysicalMarinePrecipitation(lat, lon)
                                 : pv;
 
-                        // Temperature Seasonality (WorldClim Bio4 = std dev * 100 -> peak-to-peak amplitude °C = 2 * sqrt(2) * SD)
+                        // Temperature Seasonality (WorldClim Bio4 = std dev * 100 -> peak-to-peak amplitude A°C = 2 * sqrt(2) * SD)
                         float sv = sResampled[y][x];
                         seasonBaseline[y][x] = Float.isNaN(sv)
                                 ? (float) computePhysicalMarineSeasonality(lat, lon)
@@ -245,7 +245,7 @@ public class WorldClimEmpiricalRasterLoader {
     }
 
     /**
-     * Compute authentic Sea Surface Temperature (SST) for oceans (°C).
+     * Compute authentic Sea Surface Temperature (SST) for oceans (Â°C).
      */
     public static double computePhysicalOceanSST(double lat, double lon) {
         return MarineClimatePhysics.computePhysicalOceanSST(lat, lon);
@@ -260,7 +260,7 @@ public class WorldClimEmpiricalRasterLoader {
     }
 
     /**
-     * Sample baseline empirical temperature with paleoclimatic delta anomaly (°C).
+     * Sample baseline empirical temperature with paleoclimatic delta anomaly (Â°C).
      */
     public static double getTemperature(double lat, double lon, double elevM, long year) {
         ensureInitialized();
@@ -349,7 +349,7 @@ public class WorldClimEmpiricalRasterLoader {
     }
 
     /**
-     * Sample baseline empirical seasonality with paleoclimatic delta anomaly (°C range).
+     * Sample baseline empirical seasonality with paleoclimatic delta anomaly (Â°C range).
      */
     public static double getSeasonality(double lat, double lon, double elevM, long year) {
         ensureInitialized();

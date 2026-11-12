@@ -6,7 +6,7 @@
 package org.ether.society.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ final class ScenarioOperationsHelper {
 
     static Scenario copy(Scenario src) {
         try {
-            ObjectMapper mapper = EtherJsonUtil.getMapper();
+            ObjectMapper mapper = EtherJsonHelper.getMapper();
             String json = mapper.writeValueAsString(src);
             return mapper.readValue(json, Scenario.class);
         } catch (Exception e) {
@@ -115,21 +115,21 @@ final class ScenarioOperationsHelper {
 
     static String formatDefaultDescription(Scenario s) {
         return String.format("""
-                🔬 SCÉNARIO EXPÉRIMENTAL ÉTHER : Configuration de Simulation Planétaire (%s)
+                ðŸ”¬ SCÃ‰NARIO EXPÃ‰RIMENTAL Ã‰THER : Configuration de Simulation PlanÃ©taire (%s)
                 
                 [CONTEXTE HISTORIQUE & PHYSIQUE]
-                Ce scénario définit les conditions aux limites et les termes de forçage physique initiaux pour la modélisation multi-échelle des systèmes humains, écologiques et atmosphériques.
+                Ce scÃ©nario dÃ©finit les conditions aux limites et les termes de forÃ§age physique initiaux pour la modÃ©lisation multi-Ã©chelle des systÃ¨mes humains, Ã©cologiques et atmosphÃ©riques.
                 
                 [CONDITIONS INITIALES PHYSIQUES (T_0)]
-                • Population Initiale : %,d individus.
-                • Capital Physique (K₀) : %.1f kg/habitant (Outillages & machines).
-                • Énergie Stockée (E₀) : %.1f MJ/habitant (Stocks énergétiques).
-                • Réserves Alimentaires (F₀) : %.1f mois (Autonomie alimentaire).
-                • Savoir Archivé (I₀) : %.1f bits/habitant (Mémoire technique).
-                • Rayon Planétaire : %.0f km (g_rel = %.2f g).
-                • Rotation Planétaire : %.1f heures | Inclinaison Axiale : %.1f°.
+                â€¢ Population Initiale : %,d individus.
+                â€¢ Capital Physique (Kâ‚€) : %.1f kg/habitant (Outillages & machines).
+                â€¢ Ã‰nergie StockÃ©e (Eâ‚€) : %.1f MJ/habitant (Stocks Ã©nergÃ©tiques).
+                â€¢ RÃ©serves Alimentaires (Fâ‚€) : %.1f mois (Autonomie alimentaire).
+                â€¢ Savoir ArchivÃ© (Iâ‚€) : %.1f bits/habitant (MÃ©moire technique).
+                â€¢ Rayon PlanÃ©taire : %.0f km (g_rel = %.2f g).
+                â€¢ Rotation PlanÃ©taire : %.1f heures | Inclinaison Axiale : %.1fÂ°.
                 """,
-                s.getName() != null ? s.getName() : "Scénario Standard",
+                s.getName() != null ? s.getName() : "ScÃ©nario Standard",
                 s.getInitialHumanCount(),
                 s.getInitialCapitalPerCapita(),
                 s.getInitialEnergyPerCapita(),
@@ -142,3 +142,4 @@ final class ScenarioOperationsHelper {
         );
     }
 }
+

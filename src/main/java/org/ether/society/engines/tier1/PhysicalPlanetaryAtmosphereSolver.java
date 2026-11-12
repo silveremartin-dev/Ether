@@ -15,7 +15,7 @@ import org.ether.society.data.WorldClimEmpiricalRasterLoader;
  * <p>
  * Universally applicable to arbitrary procedural and extraterrestrial planetary bodies
  * (Earth, Mars, Venus, Moon, Exoplanets) with zero calendar-year or Earth coordinate hardcoding
- * ({@code AGENTS.md} §1, §10.2, §10.3).
+ * ({@code AGENTS.md} Â§1, Â§10.2, Â§10.3).
  * </p>
  *
  * @author Silvere Martin-Michiellot &amp; Gemini AI
@@ -26,9 +26,9 @@ public class PhysicalPlanetaryAtmosphereSolver {
     /**
      * Solved 2D climatological fields across an equirectangular planetary grid.
      *
-     * @param temperatureGrid   mean annual surface temperature (°C)
+     * @param temperatureGrid   mean annual surface temperature (Â°C)
      * @param precipitationGrid annual precipitation (mm/yr)
-     * @param seasonalityGrid   annual temperature range (°C)
+     * @param seasonalityGrid   annual temperature range (Â°C)
      * @param biomeGrid         24-bit RGB Whittaker biome classification
      */
     public record PlanetaryClimateResult(
@@ -105,7 +105,7 @@ public class PhysicalPlanetaryAtmosphereSolver {
             double lat = 90.0 - (y + 0.5) * 180.0 / height;
             double absLat = Math.abs(lat);
             double signLat = Math.signum(lat);
-            // Smooth 3-cell zonal wind harmonic: Easterlies (0-30°), Westerlies (30-60°), Polar Easterlies (60-90°)
+            // Smooth 3-cell zonal wind harmonic: Easterlies (0-30A°), Westerlies (30-60A°), Polar Easterlies (60-90A°)
             double u = -9.0 * Math.cos(Math.toRadians(absLat * 3.0)) * (1.0 - 0.35 * (absLat / 90.0));
 
             for (int x = 0; x < width; x++) {

@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class WikidataEventsFetcher {
     private static final Logger logger = LoggerFactory.getLogger(WikidataEventsFetcher.class);
-    private static final ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
+    private static final ObjectMapper mapper = org.ether.society.persistence.EtherJsonHelper.getMapper();
 
     /** Primary Earth catalog file path under data/history/ether/earth/events/ */
     public static final String CATALOG_FILE_PATH = "data/history/ether/earth/events/historical_events_catalog.json";
@@ -266,7 +266,7 @@ public class WikidataEventsFetcher {
             if (m2.find()) {
                 return Integer.parseInt(m2.group(1));
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(WikidataEventsFetcher.class).debug("Non-fatal condition in WikidataEventsFetcher: {}", ignored.getMessage()); }
         return -1000;
     }
 
@@ -274,3 +274,5 @@ public class WikidataEventsFetcher {
         return DefaultHistoricalMilestonesRegistry.buildComprehensiveCatalog();
     }
 }
+
+

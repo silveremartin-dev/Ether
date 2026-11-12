@@ -62,7 +62,7 @@ public class SpatialTensorTimelineAnimator {
                 preloadedTimelineYears.add((int) dateSlider.getValue());
             }
             isPlayingAnimation = true;
-            if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.pause_timeline", "⏸️ Pause"));
+            if (playTimelineBtn != null) playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.pause_timeline", "â¸ï¸ Pause"));
             currentTimelineFrameIndex = 0;
             if (dateSlider != null && !preloadedTimelineYears.isEmpty()) {
                 int curVal = (int) dateSlider.getValue();
@@ -91,7 +91,7 @@ public class SpatialTensorTimelineAnimator {
         }
         isPlayingAnimation = false;
         if (playTimelineBtn != null) {
-            playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.play_timeline", "▶️ Play Timeline"));
+            playTimelineBtn.setText(I18n.getOrDefault("analytics.btn.play_timeline", "â–¶ï¸ Play Timeline"));
         }
     }
 
@@ -108,7 +108,7 @@ public class SpatialTensorTimelineAnimator {
             mapRegenBox.setVisible(true);
             mapRegenBox.setManaged(true);
             mapRegenProgress.setProgress(0.0);
-            mapRegenStatusLabel.setText(I18n.getOrDefault("analytics.status.preloading_frames", "⏳ Preloading 2D temporal frames..."));
+            mapRegenStatusLabel.setText(I18n.getOrDefault("analytics.status.preloading_frames", "â³ Preloading 2D temporal frames..."));
         }
 
         preloadedTimelineYears.clear();
@@ -180,7 +180,8 @@ public class SpatialTensorTimelineAnimator {
                 if (buf != null) {
                     RASTER_IMAGE_CACHE.put(cacheKey, buf);
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(SpatialTensorTimelineAnimator.class).debug("Non-fatal condition in SpatialTensorTimelineAnimator: {}", ignored.getMessage()); }
         }
     }
 }
+

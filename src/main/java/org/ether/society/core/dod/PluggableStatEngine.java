@@ -33,7 +33,7 @@ public class PluggableStatEngine {
     }
 
     private final Map<String, StatDefinition> registeredStats = new LinkedHashMap<>();
-    private final FormulaEvaluator evaluator = new FormulaEvaluator();
+    private final FormulaHelper evaluator = new FormulaHelper();
 
     /**
      * Pluggable stat engine.
@@ -47,100 +47,100 @@ public class PluggableStatEngine {
         registerStat(new StatDefinition(
                 "custom_gini_wealth",
                 "Indice de Gini Richesse / PIB",
-                "💎 Économie & Richesse",
+                "ðŸ’Ž Ã‰conomie & Richesse",
                 "GINI(wealth)",
                 "Coeff",
-                "Distribution d'inégalité de la richesse individuelle (0 = égalité absolue, 1 = inégalité totale)",
+                "Distribution d'inÃ©galitÃ© de la richesse individuelle (0 = Ã©galitÃ© absolue, 1 = inÃ©galitÃ© totale)",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "custom_variance_wealth",
                 "Variance de Richesse Entre Individus",
-                "💎 Économie & Richesse",
+                "ðŸ’Ž Ã‰conomie & Richesse",
                 "VAR(wealth)",
                 "G$^2",
-                "Statistique de variance entre individus sur la variable richesse : à quel point les gens s'éloignent du schéma standard",
+                "Statistique de variance entre individus sur la variable richesse : Ã  quel point les gens s'Ã©loignent du schÃ©ma standard",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "custom_stddev_food",
-                "Écart-Type Distribution Nourriture",
-                "🌾 Énergie & Matière",
+                "Ã‰cart-Type Distribution Nourriture",
+                "ðŸŒ¾ Ã‰nergie & MatiÃ¨re",
                 "STDDEV(food)",
                 "t",
-                "Écart-type de la quantité de nourriture disponible par maille/individu par rapport à la moyenne",
+                "Ã‰cart-type de la quantitÃ© de nourriture disponible par maille/individu par rapport Ã  la moyenne",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "custom_food_per_capita",
                 "Nourriture Moyenne Par Habitant",
-                "🌾 Énergie & Matière",
+                "ðŸŒ¾ Ã‰nergie & MatiÃ¨re",
                 "SUM(food) / COUNT(population)",
                 "t/hab",
-                "Formule calculée : Somme totale des réserves alimentaires divisée par le nombre de mailles/habitants",
+                "Formule calculÃ©e : Somme totale des rÃ©serves alimentaires divisÃ©e par le nombre de mailles/habitants",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "custom_pop_density_variance",
-                "Variance Densité de Population",
-                "👥 Démographie & Santé",
+                "Variance DensitÃ© de Population",
+                "ðŸ‘¥ DÃ©mographie & SantÃ©",
                 "VAR(population)",
                 "hab^2",
-                "Variance de la répartition de densité de population entre les zones du terrarium",
+                "Variance de la rÃ©partition de densitÃ© de population entre les zones du terrarium",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "custom_median_age",
-                "Âge Médian de la Population",
-                "👥 Démographie & Santé",
+                "Ã‚ge MÃ©dian de la Population",
+                "ðŸ‘¥ DÃ©mographie & SantÃ©",
                 "MEDIAN(age)",
                 "ans",
-                "Valeur médiane séparant la moitié la plus jeune de la moitié la plus âgée",
+                "Valeur mÃ©diane sÃ©parant la moitiÃ© la plus jeune de la moitiÃ© la plus Ã¢gÃ©e",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "largest_org_complexity",
-                "Complexité de la Plus Grande Organisation",
-                "🏛️ Société & Institutions",
+                "ComplexitÃ© de la Plus Grande Organisation",
+                "ðŸ›ï¸ SociÃ©tÃ© & Institutions",
                 "MAX(population * tech * (1 + giniindex))",
                 "Idx",
-                "Mesure de la complexité sociétale et administrative maximale atteinte par le plus grand empire/organisation",
+                "Mesure de la complexitÃ© sociÃ©tale et administrative maximale atteinte par le plus grand empire/organisation",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "largest_org_entropy",
-                "Entropie Générée par la Plus Grande Civilisation",
-                "⚡ Énergie & Matière",
+                "Entropie GÃ©nÃ©rÃ©e par la Plus Grande Civilisation",
+                "âš¡ Ã‰nergie & MatiÃ¨re",
                 "MAX(population * tech * pollution)",
                 "J/K",
-                "Quantité d'entropie thermodynamique et de chaleur résiduelle générée par la plus grande civilisation",
+                "QuantitÃ© d'entropie thermodynamique et de chaleur rÃ©siduelle gÃ©nÃ©rÃ©e par la plus grande civilisation",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "avg_tech_level",
                 "Niveau Technologique Moyen",
-                "🏛️ Société & Institutions",
+                "ðŸ›ï¸ SociÃ©tÃ© & Institutions",
                 "AVG(tech)",
                 "Niv",
-                "Moyenne globale du niveau d'avancement scientifique et technologique à travers la grille",
+                "Moyenne globale du niveau d'avancement scientifique et technologique Ã  travers la grille",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "max_tech_level",
                 "Niveau Technologique Maximal",
-                "🏛️ Société & Institutions",
+                "ðŸ›ï¸ SociÃ©tÃ© & Institutions",
                 "MAX(tech)",
                 "Niv",
-                "Niveau technologique de pointe atteint par la cellule/civilisation la plus avancée",
+                "Niveau technologique de pointe atteint par la cellule/civilisation la plus avancÃ©e",
                 true
         ));
     }
@@ -197,8 +197,8 @@ public class PluggableStatEngine {
         // Vectorized SIMD / analytical state updates with zero heap allocation
         if (expression == null || expression.isBlank()) return 0.0;
 
-        FormulaEvaluator.VariableResolver arrayResolver = varName -> extractVariableArray(varName, cells, buffer);
-        FormulaEvaluator.ScalarResolver scalarResolver = varName -> computeScalarVariable(varName, cells, buffer);
+        FormulaHelper.VariableResolver arrayResolver = varName -> extractVariableArray(varName, cells, buffer);
+        FormulaHelper.ScalarResolver scalarResolver = varName -> computeScalarVariable(varName, cells, buffer);
 
         return evaluator.evaluate(expression, arrayResolver, scalarResolver);
     }
@@ -260,3 +260,4 @@ public class PluggableStatEngine {
         }
     }
 }
+

@@ -22,7 +22,7 @@ import java.util.List;
  *   <li><b>Geothermal Thermal Gradient ($\Delta T = 30\,^\circ\text{C/km}$)</b>: Sub-surface rock temperature rise with depth.</li>
  *   <li><b>Thermodynamic Shaft Dewatering &amp; Ventilation Cutoff</b>: Maximum accessible mining depth governed smoothly ($C^\infty$)
  *       by available mechanical pumping/ventilation power per capita ($P_{\text{watts}}$) and physical capital ($K$),
- *       strictly without any synthetic {@code techLevel} parameter ({@code AGENTS.md} §10.1, §10.2).</li>
+ *       strictly without any synthetic {@code techLevel} parameter ({@code AGENTS.md} Â§10.1, Â§10.2).</li>
  * </ol>
  * </p>
  *
@@ -87,7 +87,7 @@ public class CrustalGeothermalEngine extends AbstractSimulationEngine {
             double effectiveGradient = GEOTHERMAL_GRADIENT_C_PER_KM * Math.clamp(heatFlowRatio, 0.5, 3.0);
             double miningSubsurfaceTempC = surfaceTempC + (maxDepthMeters / 1000.0) * effectiveGradient;
 
-            // Smooth C^infty geothermal HVAC energy penalty when deep rock exceeds wet-bulb physiological limit (35°C)
+            // Smooth C^infty geothermal HVAC energy penalty when deep rock exceeds wet-bulb physiological limit (35A°C)
             double thermalCoolingLoad = SmoothMath.softplus(miningSubsurfaceTempC - 35.0, 0.5) * 0.002;
             double curWork = cell.getResourceWorkOr(pop * 0.60);
             double hvacWorkFraction = SmoothMath.softmin(0.25, thermalCoolingLoad, 20.0);

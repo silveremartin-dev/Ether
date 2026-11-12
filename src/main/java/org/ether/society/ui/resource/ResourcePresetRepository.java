@@ -11,7 +11,7 @@ import javafx.stage.Window;
 import org.ether.society.data.ImageMapLoader;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.model.EcologyPreset;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.ether.society.persistence.PresetStorageService;
 import org.ether.society.ui.PresetControlBar;
 import org.slf4j.Logger;
@@ -72,7 +72,7 @@ public class ResourcePresetRepository {
 
     public ResourcePresetRepository(HostContext host) {
         this.host = host;
-        this.ecologyPresetBar = new PresetControlBar<>("resource.preset_title", "Préréglage Écologique & Ressources");
+        this.ecologyPresetBar = new PresetControlBar<>("resource.preset_title", "PrÃ©rÃ©glage Ã‰cologique & Ressources");
         this.ecologyPresetBar.setExportCategory("ecology");
         this.ecologyPresetBar.setPresets(PresetStorageService.loadAllEcologyPresets(), EcologyPreset.EARTH_STANDARD);
 
@@ -114,7 +114,7 @@ public class ResourcePresetRepository {
                     if (host.getSeedField() != null) {
                         seedVal = Long.parseLong(host.getSeedField().getText());
                     }
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(ResourcePresetRepository.class).debug("Non-fatal condition in ResourcePresetRepository: {}", ignored.getMessage()); }
 
                 String customBiomeB64 = host.getBiomeSectionBuilder().getCustomBiomeImage() != null
                         ? ImageMapLoader.imageToBase64Png(host.getBiomeSectionBuilder().getCustomBiomeImage()) : null;
@@ -166,7 +166,7 @@ public class ResourcePresetRepository {
             @Override
             public void onExportPreset(File targetFile, EcologyPreset preset) {
                 try {
-                    ObjectMapper mapper = EtherJsonUtil.getMapper();
+                    ObjectMapper mapper = EtherJsonHelper.getMapper();
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);
                     mapper.writeValue(targetFile, preset);
                     logger.info("Exported ecology preset to {}", targetFile.getAbsolutePath());
@@ -178,7 +178,7 @@ public class ResourcePresetRepository {
             @Override
             public void onImportPreset(File sourceFile) {
                 try {
-                    ObjectMapper mapper = EtherJsonUtil.getMapper();
+                    ObjectMapper mapper = EtherJsonHelper.getMapper();
                     EcologyPreset preset = mapper.readValue(sourceFile, EcologyPreset.class);
                     ecologyPresetBar.getPresetCombo().getItems().add(preset);
                     ecologyPresetBar.getPresetCombo().setValue(preset);
@@ -267,7 +267,7 @@ public class ResourcePresetRepository {
 
             if (p.customResourceBase64() != null) {
                 host.setCustomResourceImage(ImageMapLoader.base64PngToImage(p.customResourceBase64()));
-                host.setResourceFileLabelText("🪨 Preset Resources");
+                host.setResourceFileLabelText("ðŸª¨ Preset Resources");
             } else if ("earth".equals(planetKey)) {
                 String yearStr = (epochYear <= 0) ? Math.abs(epochYear) + " BP" : epochYear + " AD";
                 host.setResourceFileLabelText(host.getGeologySourceDisplayName("earth") + " (" + yearStr + ")");
@@ -277,7 +277,7 @@ public class ResourcePresetRepository {
                 host.prepopulateGeologyTensors(planetKey, epochYear);
             } else {
                 host.setCustomResourceImage(null);
-                host.setResourceFileLabelText("— Aucun fichier —");
+                host.setResourceFileLabelText("â€” Aucun fichier â€”");
             }
 
             host.getHydroSectionBuilder().applyPresetHydro(p, planetKey, epochYear);
@@ -302,9 +302,9 @@ public class ResourcePresetRepository {
         String lower = name.toLowerCase();
         if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) return PlanetPreset.EARTH_LIG_100000BP;
         if (lower.contains("-50") || lower.contains("sahul") || lower.contains("mis3") || lower.contains("mis 3")) return PlanetPreset.EARTH_MIS3_50000BP;
-        if (lower.contains("-25") || lower.contains("beringia") || lower.contains("béringie")) return PlanetPreset.EARTH_LGM_ONSET_25000BP;
-        if (lower.contains("-20") || lower.contains("lgm") || lower.contains("glaciaire") || lower.contains("solutrean") || lower.contains("solutréen")) return PlanetPreset.EARTH_LGM_20000BP;
-        if (lower.contains("-10") || lower.contains("eh") || lower.contains("précoce") || lower.contains("early holocene") || lower.contains("dryas")) return PlanetPreset.EARTH_EH_10000BP;
+        if (lower.contains("-25") || lower.contains("beringia") || lower.contains("bÃ©ringie")) return PlanetPreset.EARTH_LGM_ONSET_25000BP;
+        if (lower.contains("-20") || lower.contains("lgm") || lower.contains("glaciaire") || lower.contains("solutrean") || lower.contains("solutrÃ©en")) return PlanetPreset.EARTH_LGM_20000BP;
+        if (lower.contains("-10") || lower.contains("eh") || lower.contains("prÃ©coce") || lower.contains("early holocene") || lower.contains("dryas")) return PlanetPreset.EARTH_EH_10000BP;
         if (lower.contains("-6") || lower.contains("mh") || lower.contains("sahara") || lower.contains("mid holocene")) return PlanetPreset.EARTH_MH_6000BP;
         if (lower.contains("-3") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene")) return PlanetPreset.EARTH_LH_3000BP;
         if (lower.contains("-1900") || lower.contains("bronze")) return PlanetPreset.EARTH_BRONZE_1900BP;
@@ -320,3 +320,5 @@ public class ResourcePresetRepository {
         return PlanetPreset.EARTH_LIKE;
     }
 }
+
+

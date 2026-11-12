@@ -12,8 +12,8 @@ import org.ether.society.generation.PlanetPreset;
 import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Biome;
-import org.ether.society.persistence.EtherJsonUtil;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.persistence.EtherJsonHelper;
+import org.ether.society.ui.WindowHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +89,7 @@ public final class ResourceDistributionRasterExporter {
                 gisData.put("planetPreset", activePlanet != null ? activePlanet.name() : "EARTH_LIKE");
                 gisData.put("exportTimestamp", Instant.now().toString());
 
-                ObjectMapper mapper = EtherJsonUtil.getMapper();
+                ObjectMapper mapper = EtherJsonHelper.getMapper();
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 mapper.writeValue(targetFile, gisData);
 
@@ -132,7 +132,7 @@ public final class ResourceDistributionRasterExporter {
                 hashes.put("unesco_whymap_baseline", "771b9f67a2139e801b7a2cf6c41b8a9d15e982136e64c2970b13dc4086ad3b0a");
                 manifest.put("sha256Signatures", hashes);
 
-                ObjectMapper mapper = EtherJsonUtil.getMapper();
+                ObjectMapper mapper = EtherJsonHelper.getMapper();
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 mapper.writeValue(targetFile, manifest);
 
@@ -177,7 +177,7 @@ public final class ResourceDistributionRasterExporter {
      * @param dialogTitle localized dialog title
      */
     public static void exportRasterImage(Window window, Image img, String defaultFileName, String dialogTitle) {
-        WindowUtils.exportImageWithChooser(window, img, defaultFileName, dialogTitle);
+        WindowHelper.exportImageWithChooser(window, img, defaultFileName, dialogTitle);
     }
 
     /**
@@ -303,40 +303,41 @@ public final class ResourceDistributionRasterExporter {
      * Displays the technical specification dialog detailing discrete polychrome biomes and geological rasters.
      */
     public static void showEcologyImportFormatHelp() {
-        WindowUtils.showScrollableInfoDialog(
-                I18n.getOrDefault("resource.dialog.specs_title", "Spécifications des Biomes & Ressources Géologiques"),
-                I18n.getOrDefault("resource.dialog.specs_header", "Formats Attendus : Biomes Polychromes & Gisements Minéraux"),
-                "Vous pouvez importer des cartes de biomes et de ressources géologiques (PNG/JPEG ratio 2:1) :\n\n" +
-                "1. CARTE DE BIOMES (POLYCHROME DISCRET CATÉGORIEL) :\n" +
-                "   Chaque biome correspond à un code couleur RVB strict (identique sur toutes les planètes) :\n" +
-                "   • Océan Profond : RGB(0, 0, 100)\n" +
-                "   • Océan / Mer : RGB(0, 50, 200)\n" +
-                "   • Plage / Littoral : RGB(240, 220, 150)\n" +
-                "   • Plaines / Prairies : RGB(100, 200, 50)\n" +
-                "   • Forêt Tempérée : RGB(20, 120, 20)\n" +
-                "   • Jungle Tropicale : RGB(0, 80, 0)\n" +
-                "   • Désert Aride : RGB(255, 200, 50)\n" +
-                "   • Collines : RGB(150, 150, 100)\n" +
-                "   • Montagnes : RGB(100, 100, 100)\n" +
-                "   • Toundra : RGB(150, 200, 220)\n" +
-                "   • Neige / Glaciers : RGB(255, 255, 255)\n\n" +
-                "2. CARTES GÉOLOGIQUES & ÉNERGÉTIQUES UNIFIÉES (PAR CORPS CÉLESTE) :\n" +
-                "   Les couches géologiques utilisent une charte chromatique standardisée :\n" +
-                "   • 🪨 Charbon : Dégradé Ambre / Brun doré (#92400E → #FBBF24)\n" +
-                "   • 🛢️ Pétrole : Dégradé Rouge Rubis / Carmin (#991B1B → #F87171)\n" +
-                "   • 💨 Gaz Naturel : Dégradé Cyan / Bleu Ciel (#0E7490 → #38BDF8)\n" +
-                "   • ☢️ Uranium / Thorium : Vert Émeraude (#22C55E)\n" +
-                "   • ⚛️ Hélium-3 : Violet Néon / Pourpre (#A855F7)\n" +
-                "   • ⛏️ Fer & Cuivre : Rouille / Cuivre Orangé (#8B4513 → #F97316)\n" +
-                "   • 🪙 Métaux Précieux & Terres Rares : Or / Jaune (#EAB308)\n" +
-                "   • 🌋 Géothermie / Chaleur Mantellique : Incandescence Rouge-Orange (#EF4444)\n" +
-                "   • 💧 Aquifères & Glace d'Eau : Bleu Azur (#3B82F6)\n\n" +
-                "3. CARTE GÉOLOGIQUE MULTI-CANAUX COMBINÉE (RGB) :\n" +
-                "   • Canal Rouge (R) = Gisements Métalliques (Fer, Cuivre)\n" +
-                "   • Canal Vert (V) = Biomasse Végétale et Forêts\n" +
-                "   • Canal Bleu (B) = Eau Souterraine / Aquifères\n\n" +
-                "4. GÉORÉFÉRENCEMENT ESRI WORLD FILE (.tfw) :\n" +
-                "   • L'export génère automatiquement un fichier .tfw pour l'ouverture directe dans QGIS / ArcGIS."
+        WindowHelper.showScrollableInfoDialog(
+                I18n.getOrDefault("resource.dialog.specs_title", "SpÃ©cifications des Biomes & Ressources GÃ©ologiques"),
+                I18n.getOrDefault("resource.dialog.specs_header", "Formats Attendus : Biomes Polychromes & Gisements MinÃ©raux"),
+                "Vous pouvez importer des cartes de biomes et de ressources gÃ©ologiques (PNG/JPEG ratio 2:1) :\n\n" +
+                "1. CARTE DE BIOMES (POLYCHROME DISCRET CATÃ‰GORIEL) :\n" +
+                "   Chaque biome correspond Ã  un code couleur RVB strict (identique sur toutes les planÃ¨tes) :\n" +
+                "   â€¢ OcÃ©an Profond : RGB(0, 0, 100)\n" +
+                "   â€¢ OcÃ©an / Mer : RGB(0, 50, 200)\n" +
+                "   â€¢ Plage / Littoral : RGB(240, 220, 150)\n" +
+                "   â€¢ Plaines / Prairies : RGB(100, 200, 50)\n" +
+                "   â€¢ ForÃªt TempÃ©rÃ©e : RGB(20, 120, 20)\n" +
+                "   â€¢ Jungle Tropicale : RGB(0, 80, 0)\n" +
+                "   â€¢ DÃ©sert Aride : RGB(255, 200, 50)\n" +
+                "   â€¢ Collines : RGB(150, 150, 100)\n" +
+                "   â€¢ Montagnes : RGB(100, 100, 100)\n" +
+                "   â€¢ Toundra : RGB(150, 200, 220)\n" +
+                "   â€¢ Neige / Glaciers : RGB(255, 255, 255)\n\n" +
+                "2. CARTES GÃ‰OLOGIQUES & Ã‰NERGÃ‰TIQUES UNIFIÃ‰ES (PAR CORPS CÃ‰LESTE) :\n" +
+                "   Les couches gÃ©ologiques utilisent une charte chromatique standardisÃ©e :\n" +
+                "   â€¢ ðŸª¨ Charbon : DÃ©gradÃ© Ambre / Brun dorÃ© (#92400E â†’ #FBBF24)\n" +
+                "   â€¢ ðŸ›¢ï¸ PÃ©trole : DÃ©gradÃ© Rouge Rubis / Carmin (#991B1B â†’ #F87171)\n" +
+                "   â€¢ ðŸ’¨ Gaz Naturel : DÃ©gradÃ© Cyan / Bleu Ciel (#0E7490 â†’ #38BDF8)\n" +
+                "   â€¢ â˜¢ï¸ Uranium / Thorium : Vert Ã‰meraude (#22C55E)\n" +
+                "   â€¢ âš›ï¸ HÃ©lium-3 : Violet NÃ©on / Pourpre (#A855F7)\n" +
+                "   â€¢ â›ï¸ Fer & Cuivre : Rouille / Cuivre OrangÃ© (#8B4513 â†’ #F97316)\n" +
+                "   â€¢ ðŸª™ MÃ©taux PrÃ©cieux & Terres Rares : Or / Jaune (#EAB308)\n" +
+                "   â€¢ ðŸŒ‹ GÃ©othermie / Chaleur Mantellique : Incandescence Rouge-Orange (#EF4444)\n" +
+                "   â€¢ ðŸ’§ AquifÃ¨res & Glace d'Eau : Bleu Azur (#3B82F6)\n\n" +
+                "3. CARTE GÃ‰OLOGIQUE MULTI-CANAUX COMBINÃ‰E (RGB) :\n" +
+                "   â€¢ Canal Rouge (R) = Gisements MÃ©talliques (Fer, Cuivre)\n" +
+                "   â€¢ Canal Vert (V) = Biomasse VÃ©gÃ©tale et ForÃªts\n" +
+                "   â€¢ Canal Bleu (B) = Eau Souterraine / AquifÃ¨res\n\n" +
+                "4. GÃ‰ORÃ‰FÃ‰RENCEMENT ESRI WORLD FILE (.tfw) :\n" +
+                "   â€¢ L'export gÃ©nÃ¨re automatiquement un fichier .tfw pour l'ouverture directe dans QGIS / ArcGIS."
         );
     }
 }
+

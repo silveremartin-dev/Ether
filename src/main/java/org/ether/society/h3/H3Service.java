@@ -40,7 +40,7 @@ public class H3Service {
      *
      */
     public H3Service() {
-        this(8); // Default to Level 8 (~0.74 km²)
+        this(8); // Default to Level 8 (~0.74 kmA²)
     }
 
     /**

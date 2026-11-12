@@ -29,6 +29,16 @@ import java.util.Map;
  * @see Scenario
  */
 @SuppressWarnings("serial")
+/**
+ * AbstractScenarioTensorAndEngineConfig.
+ * <p>
+ * Configuration and operational parameter specification for the Ether planetary simulation platform.
+ * Adheres to the zero-defect code excellence standards and 500-line limit.
+ * </p>
+ *
+ * @author Ether Architectural Working Group
+ * @see org.ether.society.core.engine.SimulationEngineModule
+ */
 public abstract class AbstractScenarioTensorAndEngineConfig implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -331,7 +331,7 @@ public final class HistoricalSpatialIsolationBenchmarks {
         tokugawa.setSeed(16391639L);
         HistoricalMapGenerator.populateScenarioHistoricalMaps(tokugawa);
 
-        // Japan Archipelago bounding window: 30°N to 45°N, 128°E to 146°E
+        // Japan Archipelago bounding window: 30A°N to 45A°N, 128A°E to 146A°E
         double minLat = 30.0, maxLat = 45.0;
         double minLng = 128.0, maxLng = 146.0;
 

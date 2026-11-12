@@ -41,23 +41,47 @@ public final class HeadlessScenarioResolver {
 
         boolean matched = false;
 
-        for (HistoricalScenarioCalibrationHarness.CalibrationScenarioDefinition calDef
-                : HistoricalScenarioCalibrationHarness.CALIBRATION_SCENARIOS) {
-            if (calDef.scenarioKey().equalsIgnoreCase(scenarioName)
-                    || calDef.displayName().equalsIgnoreCase(scenarioName)
-                    || scenarioName.toLowerCase().contains(calDef.scenarioKey().toLowerCase())) {
-                scenario.setStartDateYear(calDef.startYear());
-                scenario.setEndDateYear(calDef.endYear());
-                scenario.setInitialHumanCount((long) (calDef.initialWorldPopMillions() * 1_000_000L));
-                scenario.setInitialCapitalPerCapita(calDef.initialCapitalPerCapita());
-                scenario.setInitialTechLevel((int) calDef.initialTechLevel());
-                scenario.setTemporalResolutionDays(365.0);
-                scenario.setName(calDef.displayName());
-                scenario.setDescription(calDef.historicalRegimeDescription());
-                logger.info("Matched Historical Calibration Scenario: '{}' (Years {} -> {})",
-                        calDef.displayName(), calDef.startYear(), calDef.endYear());
-                matched = true;
-                break;
+        // Direct file resolution for preset JSON (e.g. earth_+1950_great_acceleration or path/to/file.json)
+        java.nio.file.Path directJsonPath = java.nio.file.Paths.get(scenarioName.endsWith(".json") ? scenarioName : scenarioName + ".json");
+        if (!java.nio.file.Files.exists(directJsonPath)) {
+            directJsonPath = org.ether.society.config.EtherPaths.getPresetsScenariosDir().resolve(scenarioName.endsWith(".json") ? scenarioName : scenarioName + ".json");
+        }
+        if (java.nio.file.Files.exists(directJsonPath)) {
+            try {
+                Scenario loaded = org.ether.society.persistence.PresetStorageService.getMapper().readValue(directJsonPath.toFile(), Scenario.class);
+                if (loaded != null) {
+                    scenario = loaded.copy();
+                    if (scenario.getName() == null || scenario.getName().isBlank()) {
+                        scenario.setName(scenarioName);
+                    }
+                    logger.info("Directly loaded JSON Scenario Preset from file '{}': '{}' (Years {} -> {})",
+                            directJsonPath.getFileName(), scenario.getName(), scenario.getStartDateYear(), scenario.getEndDateYear());
+                    matched = true;
+                }
+            } catch (Exception e) {
+                logger.warn("Could not directly load scenario JSON '{}': {}", directJsonPath, e.getMessage());
+            }
+        }
+
+        if (!matched) {
+            for (HistoricalScenarioCalibrationHarness.CalibrationScenarioDefinition calDef
+                    : HistoricalScenarioCalibrationHarness.CALIBRATION_SCENARIOS) {
+                if (calDef.scenarioKey().equalsIgnoreCase(scenarioName)
+                        || calDef.displayName().equalsIgnoreCase(scenarioName)
+                        || scenarioName.toLowerCase().contains(calDef.scenarioKey().toLowerCase())) {
+                    scenario.setStartDateYear(calDef.startYear());
+                    scenario.setEndDateYear(calDef.endYear());
+                    scenario.setInitialHumanCount((long) (calDef.initialWorldPopMillions() * 1_000_000L));
+                    scenario.setInitialCapitalPerCapita(calDef.initialCapitalPerCapita());
+                    scenario.setInitialTechLevel((int) calDef.initialTechLevel());
+                    scenario.setTemporalResolutionDays(365.0);
+                    scenario.setName(calDef.displayName());
+                    scenario.setDescription(calDef.historicalRegimeDescription());
+                    logger.info("Matched Historical Calibration Scenario: '{}' (Years {} -> {})",
+                            calDef.displayName(), calDef.startYear(), calDef.endYear());
+                    matched = true;
+                    break;
+                }
             }
         }
 

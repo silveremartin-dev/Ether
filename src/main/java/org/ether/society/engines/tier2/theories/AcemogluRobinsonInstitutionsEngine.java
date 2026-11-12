@@ -58,7 +58,7 @@ public class AcemogluRobinsonInstitutionsEngine extends AbstractSimulationEngine
             // Inclusiveness score: low Gini + broad-based distribution of economic opportunities
             double inclusiveness = SmoothMath.smoothClamp(1.0 - gini, 0.05, 0.95, 20.0);
 
-            // Sedentary property rights activation: dormant for nomadic / low-capital bands (AGENTS.md §8)
+            // Sedentary property rights activation: dormant for nomadic / low-capital bands (AGENTS.md A§8)
             double propertyRightsActivation = SmoothMath.sigmoid(kPerCapita, 100.0, 30.0);
 
             // Inclusive institutions protect property rights and encourage capital reinvestment;

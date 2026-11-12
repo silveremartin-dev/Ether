@@ -31,7 +31,7 @@ import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.i18n.I18n;
 import org.ether.society.i18n.Language;
 import org.ether.society.ui.DisplayMode;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.ui.WindowHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +102,7 @@ public class StatsChartsSection {
                     setText(null);
                     setGraphic(null);
                     setStyle("");
-                } else if (item.startsWith("─── ") && item.endsWith(" ───")) {
+                } else if (item.startsWith("â”€â”€â”€ ") && item.endsWith(" â”€â”€â”€")) {
                     setDisable(true);
                     setStyle("-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 11px; -fx-padding: 4 6; -fx-opacity: 1.0; -fx-background-color: rgba(30, 41, 59, 0.5);");
                     setText(item);
@@ -128,7 +128,7 @@ public class StatsChartsSection {
         chartMetricCombo.setOnAction(e -> {
             if (isUpdatingTexts) return;
             String title = chartMetricCombo.getValue();
-            if (title != null && !title.startsWith("─── ")) {
+            if (title != null && !title.startsWith("â”€â”€â”€ ")) {
                 resetChartSeries();
                 if (onDisplayModeRequested != null) {
                     MetricDescriptor desc = MetricRegistry.getInstance().getDescriptorByName(title);
@@ -205,7 +205,7 @@ public class StatsChartsSection {
         lineChart.setPrefHeight(160);
         lineChart.getData().add(chartSeries);
 
-        Label chartNavHelpLabel = new Label(I18n.getOrDefault("stats.chart.nav_help", "💡 Navigation : Molette pour zoomer sur le curseur | Glisser (clic) pour défiler temporellement | Double-clic pour réinitialiser"));
+        Label chartNavHelpLabel = new Label(I18n.getOrDefault("stats.chart.nav_help", "ðŸ’¡ Navigation : Molette pour zoomer sur le curseur | Glisser (clic) pour dÃ©filer temporellement | Double-clic pour rÃ©initialiser"));
         chartNavHelpLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #38bdf8; -fx-padding: 3 6; -fx-background-color: rgba(56, 189, 248, 0.08); -fx-background-radius: 4;");
         chartNavHelpLabel.setWrapText(true);
 
@@ -239,7 +239,7 @@ public class StatsChartsSection {
             if (newLower < minYear) newLower = minYear;
             xAxis.setLowerBound(newLower);
             xAxis.setUpperBound(newUpper);
-            xAxis.setTickUnit(WindowUtils.computeNiceTickUnit(newUpper - newLower));
+            xAxis.setTickUnit(WindowHelper.computeNiceTickUnit(newUpper - newLower));
         });
         lineChart.setOnScroll(e -> {
             e.consume();
@@ -280,7 +280,7 @@ public class StatsChartsSection {
 
             xAxis.setLowerBound(newLower);
             xAxis.setUpperBound(newUpper);
-            xAxis.setTickUnit(WindowUtils.computeNiceTickUnit(newUpper - newLower));
+            xAxis.setTickUnit(WindowHelper.computeNiceTickUnit(newUpper - newLower));
         });
         lineChart.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2 || (e.isControlDown() && e.getButton() == MouseButton.SECONDARY)) {
@@ -354,7 +354,7 @@ public class StatsChartsSection {
                 xAxis.setLowerBound(minTime);
                 double maxTime = Math.max(minTime + 1.0, currentTime);
                 xAxis.setUpperBound(maxTime);
-                xAxis.setTickUnit(WindowUtils.computeNiceTickUnit(maxTime - minTime));
+                xAxis.setTickUnit(WindowHelper.computeNiceTickUnit(maxTime - minTime));
             }
         }
     }
@@ -391,7 +391,7 @@ public class StatsChartsSection {
         if (snapshots.isEmpty()) return;
 
         String selectedMetric = chartMetricCombo != null ? chartMetricCombo.getValue() : "Population Humaine";
-        if (selectedMetric == null || selectedMetric.startsWith("─── ")) {
+        if (selectedMetric == null || selectedMetric.startsWith("â”€â”€â”€ ")) {
             selectedMetric = "Population Humaine";
         }
         double currentTime = engine.getTimeManager().getCurrentYear() + (engine.getTimeManager().getCurrentMonth() / 12.0);
@@ -427,7 +427,7 @@ public class StatsChartsSection {
             xAxis.setLowerBound(minTime);
             double maxTime = Math.max(minTime + 1.0, currentTime);
             xAxis.setUpperBound(maxTime);
-            xAxis.setTickUnit(WindowUtils.computeNiceTickUnit(maxTime - minTime));
+            xAxis.setTickUnit(WindowHelper.computeNiceTickUnit(maxTime - minTime));
         } else {
             xAxis.setAutoRanging(true);
         }
@@ -435,15 +435,15 @@ public class StatsChartsSection {
 
     public void updateTexts(boolean isUpdating) {
         this.isUpdatingTexts = isUpdating;
-        chartHeaderLabel.setText("📈 " + I18n.getOrDefault("stats.header.chart", "HISTORIQUE DYNAMIQUE"));
-        comboLabel.setText(I18n.getOrDefault("stats.label.choose_metric", "Métrique représentée :"));
-        windowLabel.setText(I18n.getOrDefault("stats.label.window", "Fenêtre :"));
+        chartHeaderLabel.setText("ðŸ“ˆ " + I18n.getOrDefault("stats.header.chart", "HISTORIQUE DYNAMIQUE"));
+        comboLabel.setText(I18n.getOrDefault("stats.label.choose_metric", "MÃ©trique reprÃ©sentÃ©e :"));
+        windowLabel.setText(I18n.getOrDefault("stats.label.window", "FenÃªtre :"));
         btn1Yr.setText(I18n.getOrDefault("stats.btn.1yr", "1 an"));
         btn10Yr.setText(I18n.getOrDefault("stats.btn.10yr", "10 ans"));
         btn100Yr.setText(I18n.getOrDefault("stats.btn.100yr", "100 ans"));
         btn1000Yr.setText(I18n.getOrDefault("stats.btn.1000yr", "1 000 ans"));
         btnAll.setText(I18n.getOrDefault("stats.btn.all", "Tout"));
-        barHeaderLabel.setText("👥 " + I18n.getOrDefault("stats.header.pyramid", "PYRAMIDE DES ÂGES (POPULATION MONDIALE)"));
+        barHeaderLabel.setText("ðŸ‘¥ " + I18n.getOrDefault("stats.header.pyramid", "PYRAMIDE DES Ã‚GES (POPULATION MONDIALE)"));
     }
 
     private long getMinAllowedYear() {
@@ -470,3 +470,4 @@ public class StatsChartsSection {
         return 2100L;
     }
 }
+

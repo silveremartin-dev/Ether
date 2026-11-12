@@ -23,7 +23,7 @@ import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.Scenario;
 import org.ether.society.persistence.SaveMetadata;
 import org.ether.society.persistence.ScenarioRepository;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.ui.WindowHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,7 +142,7 @@ public class ScenarioSimulationLauncher {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle(I18n.getOrDefault("scenario.confirm_restart.title", "Simulation en cours"));
                 alert.setHeaderText(I18n.getOrDefault("scenario.confirm_restart.header", "Une simulation est actuellement active"));
-                alert.setContentText(I18n.getOrDefault("scenario.confirm_restart.content", "Lancer cette nouvelle configuration réinitialisera la simulation en cours. Souhaitez-vous continuer ?"));
+                alert.setContentText(I18n.getOrDefault("scenario.confirm_restart.content", "Lancer cette nouvelle configuration rÃ©initialisera la simulation en cours. Souhaitez-vous continuer ?"));
                 Optional<ButtonType> res = alert.showAndWait();
                 if (res.isEmpty() || res.get() != ButtonType.OK) {
                     return;
@@ -163,12 +163,12 @@ public class ScenarioSimulationLauncher {
      */
     public void cancelCalculation() {
         cancelRequested = true;
-        updateProgress(0.0, I18n.getOrDefault("scenario.progress.cancelling", "🛑 Cancelling computation at user request..."));
+        updateProgress(0.0, I18n.getOrDefault("scenario.progress.cancelling", "ðŸ›‘ Cancelling computation at user request..."));
         if (generationThread != null && generationThread.isAlive()) {
             generationThread.interrupt();
         }
         if (host != null) {
-            WindowUtils.setBusyCursor(host.getContainerNode(), false);
+            WindowHelper.setBusyCursor(host.getContainerNode(), false);
         }
         resetStartButtonState();
     }
@@ -218,7 +218,7 @@ public class ScenarioSimulationLauncher {
             final var selectedMeta = host.getSelectedSnapshotMetadata();
             logger.info("Directly resuming simulation from snapshot: {}", selectedMeta != null ? selectedMeta.getName() : "latest");
             Platform.runLater(() -> {
-                updateProgress(1.0, I18n.getOrDefault("scenario.progress.instant_resume", "⚡ Instant restoration from selected snapshot..."));
+                updateProgress(1.0, I18n.getOrDefault("scenario.progress.instant_resume", "âš¡ Instant restoration from selected snapshot..."));
                 setStartButtonCompletedState();
                 if (onStartSimulation != null) {
                     onStartSimulation.accept(scenarioToSave);
@@ -229,7 +229,7 @@ public class ScenarioSimulationLauncher {
 
         cancelRequested = false;
         setStartButtonCancelState();
-        WindowUtils.setBusyCursor(host.getContainerNode(), true);
+        WindowHelper.setBusyCursor(host.getContainerNode(), true);
 
         if (progressBar != null) {
             progressBar.setVisible(true);
@@ -239,7 +239,7 @@ public class ScenarioSimulationLauncher {
         if (progressStatusLabel != null) {
             progressStatusLabel.setVisible(true);
             progressStatusLabel.setManaged(true);
-            progressStatusLabel.setText(I18n.getOrDefault("scenario.progress.init_prep", "⚡ Scenario initialization & setup..."));
+            progressStatusLabel.setText(I18n.getOrDefault("scenario.progress.init_prep", "âš¡ Scenario initialization & setup..."));
         }
         if (externalOverlayContainer != null) {
             externalOverlayContainer.setVisible(true);
@@ -248,7 +248,7 @@ public class ScenarioSimulationLauncher {
 
         generationThread = new Thread(() -> {
             try {
-                updateProgress(0.02, I18n.getOrDefault("scenario.progress.saving_db", "⚡ Saving scenario & preparing H3 grid..."));
+                updateProgress(0.02, I18n.getOrDefault("scenario.progress.saving_db", "âš¡ Saving scenario & preparing H3 grid..."));
 
                 if (!host.isDirty() && scenarioRepo != null) {
                     try {
@@ -278,7 +278,7 @@ public class ScenarioSimulationLauncher {
                     scenarioToSave.setMaxLng(cMaxLng);
                 }
 
-                updateProgress(0.05, String.format(I18n.getOrDefault("scenario.progress.ready_h3", "✅ Scenario '%s' ready! ⚡ Generating H3 grid..."), scenarioToSave.getName()));
+                updateProgress(0.05, String.format(I18n.getOrDefault("scenario.progress.ready_h3", "âœ… Scenario '%s' ready! âš¡ Generating H3 grid..."), scenarioToSave.getName()));
                 logger.info("Initializing unified H3 grid & 2048x1024 rasters for scenario '{}' at resolution {}", scenarioToSave.getName(), cfg.resolution());
 
                 // Delegate 100% of grid/raster initialization to headless ScenarioGridInitializer (identical across GUI & CLI)
@@ -287,7 +287,7 @@ public class ScenarioSimulationLauncher {
                         (done, total) -> {
                             double progressVal = 0.05 + 0.78 * ((double) done / Math.max(1, total));
                             int percent = (int) (progressVal * 100);
-                            updateProgress(progressVal, String.format(I18n.getOrDefault("scenario.progress.relief_biomes", "🌍 Generating relief & H3 biomes: %d%% (%d / %d steps)"), percent, done, total));
+                            updateProgress(progressVal, String.format(I18n.getOrDefault("scenario.progress.relief_biomes", "ðŸŒ Generating relief & H3 biomes: %d%% (%d / %d steps)"), percent, done, total));
                         },
                         () -> cancelRequested || Thread.currentThread().isInterrupted());
 
@@ -300,20 +300,20 @@ public class ScenarioSimulationLauncher {
                 }
 
                 int totalCellCount = cells.size();
-                updateProgress(0.88, String.format(I18n.getOrDefault("scenario.progress.pop_capital", "👥 Distributing population, ecological footprint & capital K₀: 88%% (%d / %d cells)"), totalCellCount, totalCellCount));
+                updateProgress(0.88, String.format(I18n.getOrDefault("scenario.progress.pop_capital", "ðŸ‘¥ Distributing population, ecological footprint & capital Kâ‚€: 88%% (%d / %d cells)"), totalCellCount, totalCellCount));
 
                 host.distributeInitialPopulation(cells);
                 if (cancelRequested || Thread.currentThread().isInterrupted()) {
                     throw new CancellationException("Generation cancelled by user");
                 }
 
-                updateProgress(0.94, String.format(I18n.getOrDefault("scenario.progress.thermo_sync", "⚡ Synchronizing simulation buffers & thermodynamic pre-computation: 94%% (%d / %d cells)"), totalCellCount, totalCellCount));
+                updateProgress(0.94, String.format(I18n.getOrDefault("scenario.progress.thermo_sync", "âš¡ Synchronizing simulation buffers & thermodynamic pre-computation: 94%% (%d / %d cells)"), totalCellCount, totalCellCount));
 
                 host.onCellsGenerated(cells);
 
                 final List<H3Cell> finalCells = cells;
                 Platform.runLater(() -> {
-                    updateProgress(1.0, String.format(I18n.getOrDefault("scenario.progress.launching", "✅ %,d H3 cells generated! Launching scenario '%s'..."), finalCells.size(), scenarioToSave.getName()));
+                    updateProgress(1.0, String.format(I18n.getOrDefault("scenario.progress.launching", "âœ… %,d H3 cells generated! Launching scenario '%s'..."), finalCells.size(), scenarioToSave.getName()));
                     host.drawPreview();
                     host.setPreviewStatusText(I18n.getOrDefault("scenario.status.generated_prefix", "Generated: ") + finalCells.size() + I18n.getOrDefault("scenario.status.generated_h3_suffix", " H3 cells."));
 
@@ -330,16 +330,16 @@ public class ScenarioSimulationLauncher {
                         || (ex.getCause() instanceof CancellationException);
                 if (isCancel) {
                     logger.info("Deferred H3 calculation cancelled by user.");
-                    updateProgress(0.0, I18n.getOrDefault("scenario.progress.cancelled", "🛑 Computation cancelled by user."));
+                    updateProgress(0.0, I18n.getOrDefault("scenario.progress.cancelled", "ðŸ›‘ Computation cancelled by user."));
                 } else {
                     logger.error("Error during deferred H3 cell calculation", ex);
-                    updateProgress(1.0, String.format(I18n.getOrDefault("scenario.progress.error", "❌ Error during computation: %s"), ex.getMessage()));
+                    updateProgress(1.0, String.format(I18n.getOrDefault("scenario.progress.error", "âŒ Error during computation: %s"), ex.getMessage()));
                 }
                 resetStartButtonState();
             } finally {
                 generationThread = null;
                 if (host != null) {
-                    WindowUtils.setBusyCursor(host.getContainerNode(), false);
+                    WindowHelper.setBusyCursor(host.getContainerNode(), false);
                 }
             }
         }, "H3-Scenario-Generator-Thread");
@@ -374,7 +374,7 @@ public class ScenarioSimulationLauncher {
         } else {
             String pKey = "earth";
             if (mapSource.equals("mars") || presetName.contains("mars") || presetName.contains("ares")) pKey = "mars";
-            else if (mapSource.equals("venus") || presetName.contains("venus") || presetName.contains("vénus") || presetName.contains("hesperos")) pKey = "venus";
+            else if (mapSource.equals("venus") || presetName.contains("venus") || presetName.contains("vÃ©nus") || presetName.contains("hesperos")) pKey = "venus";
             else if (mapSource.equals("moon") || presetName.contains("lune") || presetName.contains("moon") || presetName.contains("selene")) pKey = "moon";
             else if (mapSource.equals("mercury") || presetName.contains("mercure") || presetName.contains("mercury") || presetName.contains("hermes")) pKey = "mercury";
             else if (mapSource.equals("titan") || presetName.contains("titan")) pKey = "titan";
@@ -429,11 +429,11 @@ public class ScenarioSimulationLauncher {
     public void resetStartButtonState() {
         isCalculationRunning = false;
         if (host != null) {
-            WindowUtils.setBusyCursor(host.getContainerNode(), false);
+            WindowHelper.setBusyCursor(host.getContainerNode(), false);
         }
         Platform.runLater(() -> {
             if (startBtn != null) {
-                startBtn.setText(I18n.getOrDefault("scenario.start_btn", "🚀 VALIDER ET LANCER LA SIMULATION"));
+                startBtn.setText(I18n.getOrDefault("scenario.start_btn", "ðŸš€ VALIDER ET LANCER LA SIMULATION"));
                 startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 6;");
                 startBtn.setDisable(false);
             }
@@ -446,11 +446,11 @@ public class ScenarioSimulationLauncher {
     public void setStartButtonCompletedState() {
         isCalculationRunning = false;
         if (host != null) {
-            WindowUtils.setBusyCursor(host.getContainerNode(), false);
+            WindowHelper.setBusyCursor(host.getContainerNode(), false);
         }
         Platform.runLater(() -> {
             if (startBtn != null) {
-                startBtn.setText(I18n.getOrDefault("scenario.btn.valid_ready", "⚡ VALID & READY — PROCEED TO EXECUTION CONTEXT (TAB 4)"));
+                startBtn.setText(I18n.getOrDefault("scenario.btn.valid_ready", "âš¡ VALID & READY â€” PROCEED TO EXECUTION CONTEXT (TAB 4)"));
                 startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #0284c7; -fx-text-fill: white; -fx-background-radius: 6;");
                 startBtn.setDisable(false);
             }
@@ -464,7 +464,7 @@ public class ScenarioSimulationLauncher {
         isCalculationRunning = true;
         Platform.runLater(() -> {
             if (startBtn != null) {
-                startBtn.setText(I18n.getOrDefault("scenario.btn.cancel_gen", "⏹ CANCEL / STOP GENERATION"));
+                startBtn.setText(I18n.getOrDefault("scenario.btn.cancel_gen", "â¹ CANCEL / STOP GENERATION"));
                 startBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 6;");
                 startBtn.setDisable(false);
             }
@@ -473,3 +473,4 @@ public class ScenarioSimulationLauncher {
 
     public boolean isCalculationRunning() { return isCalculationRunning; }
 }
+

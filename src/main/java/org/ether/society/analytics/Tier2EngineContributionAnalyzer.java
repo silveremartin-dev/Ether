@@ -12,7 +12,7 @@ import org.ether.society.core.ScenarioGridInitializer;
 import org.ether.society.core.engine.SimulationEngineRegistry;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -297,7 +297,7 @@ public final class Tier2EngineContributionAnalyzer {
         if (saveDir == null || report == null) return;
         try {
             Files.createDirectories(saveDir);
-            EtherJsonUtil.writePrettyAtomic(saveDir.resolve(CONTRIBUTIONS_FILENAME), report);
+            EtherJsonHelper.writePrettyAtomic(saveDir.resolve(CONTRIBUTIONS_FILENAME), report);
         } catch (Exception e) {
             logger.warn("Could not persist engine contribution report to {}: {}", saveDir, e.getMessage());
         }
@@ -314,7 +314,7 @@ public final class Tier2EngineContributionAnalyzer {
         Path path = saveDir.resolve(CONTRIBUTIONS_FILENAME);
         if (!Files.exists(path)) return null;
         try {
-            return EtherJsonUtil.getMapper().readValue(path.toFile(), EngineContributionReport.class);
+            return EtherJsonHelper.getMapper().readValue(path.toFile(), EngineContributionReport.class);
         } catch (Exception e) {
             logger.warn("Could not read engine contribution report from {}: {}", path, e.getMessage());
             return null;
@@ -410,17 +410,18 @@ public final class Tier2EngineContributionAnalyzer {
 
     private static String classifyContribution(boolean wiredInLoop, double globalSharePct) {
         if (!wiredInLoop) {
-            return "⚪ Inert (Unwired)";
+            return "âšª Inert (Unwired)";
         }
         if (globalSharePct >= 10.0) {
-            return "🔥 Dominant";
+            return "ðŸ”¥ Dominant";
         }
         if (globalSharePct >= 1.0) {
-            return "🟡 Moderate";
+            return "ðŸŸ¡ Moderate";
         }
         if (globalSharePct > 1e-4) {
-            return "🔹 Marginal";
+            return "ðŸ”¹ Marginal";
         }
-        return "⚪ Inert (0%)";
+        return "âšª Inert (0%)";
     }
 }
+

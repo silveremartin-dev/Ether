@@ -19,7 +19,7 @@ public final class MetricCatalogHelper {
     }
 
     public static void registerAll(Consumer<MetricDescriptor> register) {
-        // --- ⚡ 1. ENERGY & MATTER ---
+        // --- aš¡ 1. ENERGY & MATTER ---
         register.accept(new MetricDescriptor(
             "energyCaptured", "Captured Primary Energy", MetricDescriptor.Category.ENERGY_MATTER, "MW",
             "P_{tot} = \\sum (P_{solar} + P_{biomass} + P_{geothermal}). Total gross power extracted from physical environment.",
@@ -85,7 +85,7 @@ public final class MetricCatalogHelper {
         ));
 
         register.accept(new MetricDescriptor(
-            "potableWater", "Available Water Resources", MetricDescriptor.Category.ENERGY_MATTER, "10³ m³",
+            "potableWater", "Available Water Resources", MetricDescriptor.Category.ENERGY_MATTER, "10Â³ mÂ³",
             "Level of accessible fresh water reserves (aquifers, rivers, and lakes).",
             cell -> cell != null && cell.getWaterResource() != null ? cell.getWaterResource() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c != null && c.getWaterResource() != null ? c.getWaterResource() : 0.0).sum()
@@ -99,15 +99,15 @@ public final class MetricCatalogHelper {
         ));
 
         register.accept(new MetricDescriptor(
-            "temperature", "Mean Surface Temperature", MetricDescriptor.Category.ENERGY_MATTER, "°C",
-            "Surface temperature (°C) computed from top-of-atmosphere solar insolation and surface albedo.",
+            "temperature", "Mean Surface Temperature", MetricDescriptor.Category.ENERGY_MATTER, "Â°C",
+            "Surface temperature (Â°C) computed from top-of-atmosphere solar insolation and surface albedo.",
             cell -> cell != null && cell.getTemperature() != null ? cell.getTemperature() : 0.0,
             cells -> cells.stream().mapToDouble(c -> c != null && c.getTemperature() != null ? c.getTemperature() : 0.0).average().orElse(0.0)
         ));
 
         register.accept(new MetricDescriptor(
-            "temperatureAnomaly", "Temperature Anomaly", MetricDescriptor.Category.ENERGY_MATTER, "°C",
-            "Global mean surface temperature anomaly (°C) relative to pre-industrial 1850-1900 baseline.",
+            "temperatureAnomaly", "Temperature Anomaly", MetricDescriptor.Category.ENERGY_MATTER, "Â°C",
+            "Global mean surface temperature anomaly (Â°C) relative to pre-industrial 1850-1900 baseline.",
             cell -> cell != null && cell.getTemperature() != null ? cell.getTemperature() - 14.0 : 0.0,
             cells -> cells.stream().mapToDouble(c -> c != null && c.getTemperature() != null ? c.getTemperature() - 14.0 : 0.0).average().orElse(0.0)
         ));
@@ -119,7 +119,7 @@ public final class MetricCatalogHelper {
             cells -> cells.stream().mapToDouble(c -> c != null && c.getRainfall() != null ? c.getRainfall() : 0.0).average().orElse(0.0)
         ));
 
-        // --- 👥 2. DEMOGRAPHICS & HEALTH ---
+        // --- ðŸ‘¥ 2. DEMOGRAPHICS & HEALTH ---
         register.accept(new MetricDescriptor(
             "population", "Human Population", MetricDescriptor.Category.DEMOGRAPHICS, "cap",
             "Total number of human inhabitants residing within the H3 hexagonal cell.",
@@ -155,7 +155,7 @@ public final class MetricCatalogHelper {
             cells -> cells.stream().mapToDouble(c -> c != null ? Math.min(100.0, org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) * 10.0) : 0.0).average().orElse(0.0)
         ));
 
-        // --- 🏛️ 3. SOCIETY & INSTITUTIONS ---
+        // --- ðŸ›i¸ 3. SOCIETY & INSTITUTIONS ---
         register.accept(new MetricDescriptor(
             "asabiyyah", "Social Cohesion (Asabiyyah %)", MetricDescriptor.Category.SOCIETY_POLITICS, "%",
             "Ibn Khaldun index of group feeling, collective solidarity, and institutional trust.",
@@ -201,7 +201,7 @@ public final class MetricCatalogHelper {
             cells -> cells.stream().mapToDouble(c -> c != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) : 0.0).average().orElse(0.0)
         ));
 
-        // --- 💎 4. ECONOMY & WEALTH ---
+        // --- ðŸ’Ž 4. ECONOMY & WEALTH ---
         register.accept(new MetricDescriptor(
             "gini", "Gini Inequality Index", MetricDescriptor.Category.ECONOMY, "Coeff",
             "G = A / (A + B). Measure of wealth and income inequality (0 = perfect equality, 1 = absolute concentration).",
@@ -231,7 +231,7 @@ public final class MetricCatalogHelper {
             cells -> cells.stream().mapToDouble(c -> c != null && c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0)
         ));
 
-        // --- 🧠 5. COGNITION & INFORMATION ---
+        // --- ðŸ§  5. COGNITION & INFORMATION ---
         register.accept(new MetricDescriptor(
             "collectiveMemory", "Collective Memory Stock", MetricDescriptor.Category.COGNITION, "TB",
             "Cumulative storage volume of recorded knowledge, scientific archives, and cultural heritage.",
@@ -246,7 +246,7 @@ public final class MetricCatalogHelper {
             cells -> cells.stream().mapToDouble(c -> c != null && c.getLinguisticDrift() != null ? c.getLinguisticDrift() : 1.0).average().orElse(1.0)
         ));
 
-        // --- ⏳ 6. CLIODYNAMICS & SYSTEMIC RISKS ---
+        // --- a³ 6. CLIODYNAMICS & SYSTEMIC RISKS ---
         register.accept(new MetricDescriptor(
             "eliteOverproduction", "Elite Overproduction Index (Turchin)", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
             "Structural-demographic ratio of elite competition and surplus wealth aspirants.",
@@ -261,7 +261,7 @@ public final class MetricCatalogHelper {
             cells -> cells.stream().mapToDouble(c -> c != null && c.getPollutionLevel() != null ? c.getPollutionLevel() / 10.0 : 0.0).average().orElse(0.0)
         ));
 
-        // --- ⚙️ 7. SYSTEMIC COMPLEXITY & PALEOLITHIC ---
+        // --- aš™i¸ 7. SYSTEMIC COMPLEXITY & PALEOLITHIC ---
         register.accept(new MetricDescriptor(
             "systemInterdependence", "Systemic Interdependence & Fragility", MetricDescriptor.Category.COMPLEXITY, "%",
             "Interconnectivity index and vulnerability of supply networks and trade corridors.",
@@ -277,7 +277,7 @@ public final class MetricCatalogHelper {
         ));
 
         register.accept(new MetricDescriptor(
-            "milankovitchInsolation", "Milankovitch Summer Insolation 65°N", MetricDescriptor.Category.CLIODYNAMICS, "W/m²",
+            "milankovitchInsolation", "Milankovitch Summer Insolation 65Â°N", MetricDescriptor.Category.CLIODYNAMICS, "W/mÂ²",
             "Summer top-of-atmosphere solar insolation forcing governing glacial-interglacial cycles and African Humid Periods.",
             cell -> 480.0,
             cells -> 480.0
@@ -291,14 +291,14 @@ public final class MetricCatalogHelper {
         ));
 
         register.accept(new MetricDescriptor(
-            "lyapunovExponent", "Lyapunov Exponent λ_max", MetricDescriptor.Category.COMPLEXITY, "1/yr",
+            "lyapunovExponent", "Lyapunov Exponent Î»_max", MetricDescriptor.Category.COMPLEXITY, "1/yr",
             "Exponential divergence rate of shadow trajectories measuring sensitivity to initial conditions and deterministic chaos.",
             cell -> 0.0,
             cells -> 0.0
         ));
 
         register.accept(new MetricDescriptor(
-            "epistemicDiscrepancy", "Epistemic Discrepancy Ω_k", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
+            "epistemicDiscrepancy", "Epistemic Discrepancy Î©_k", MetricDescriptor.Category.CLIODYNAMICS, "Idx",
             "Quadratic discrepancy distance between simulated trajectories and empirical historical benchmarks (Seshat, HYDE).",
             cell -> 0.0,
             cells -> 0.0
@@ -326,7 +326,7 @@ public final class MetricCatalogHelper {
         ));
 
         register.accept(new MetricDescriptor(
-            "carbonFootprint", "Atmospheric Carbon Emissions", MetricDescriptor.Category.ENERGY_MATTER, "GtCO₂",
+            "carbonFootprint", "Atmospheric Carbon Emissions", MetricDescriptor.Category.ENERGY_MATTER, "GtCOâ‚‚",
             "Annual global fossil and land-use greenhouse carbon emissions.",
             cell -> cell != null && cell.getPollutionLevel() != null ? cell.getPollutionLevel() * 0.05 : 0.0,
             cells -> cells.stream().mapToDouble(c -> c != null && c.getPollutionLevel() != null ? c.getPollutionLevel() * 0.05 : 0.0).sum()
@@ -403,8 +403,8 @@ public final class MetricCatalogHelper {
         ));
 
         register.accept(new MetricDescriptor(
-            "wetBulbSafety", "Wet-Bulb Safety Margin", MetricDescriptor.Category.DEMOGRAPHICS, "°C",
-            "Residual thermal margin before physiological human hyperthermia lethality (T_w = 35°C).",
+            "wetBulbSafety", "Wet-Bulb Safety Margin", MetricDescriptor.Category.DEMOGRAPHICS, "Â°C",
+            "Residual thermal margin before physiological human hyperthermia lethality (T_w = 35Â°C).",
             cell -> 12.5,
             cells -> 12.5
         ));

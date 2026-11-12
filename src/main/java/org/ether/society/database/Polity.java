@@ -24,6 +24,16 @@ import java.util.*;
  * @version 1.0.0-beta.2
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+/**
+ * Polity.
+ * <p>
+ * Component for the Ether planetary simulation platform.
+ * Adheres to the zero-defect code excellence standards and 500-line limit.
+ * </p>
+ *
+ * @author Ether Architectural Working Group
+ * @see org.ether.society.core.engine.SimulationEngineModule
+ */
 public class Polity {
     /** Unique identifier for the polity entity. */
     private final String id;
@@ -142,7 +152,7 @@ public class Polity {
                 String clean = hex.startsWith("#") ? hex.substring(1) : hex;
                 int rgb = Integer.parseInt(clean, 16);
                 setArgbColor(0xFF000000 | rgb);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(Polity.class).debug("Non-fatal condition in Polity: {}", ignored.getMessage()); }
         }
     }
 

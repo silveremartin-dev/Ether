@@ -21,7 +21,7 @@ import org.ether.society.generation.PlanetPreset;
 import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.ui.WindowHelper;
 import org.ether.society.ui.util.ScenarioCellPopulationDistributor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,7 +142,7 @@ public class ScenarioPreviewPaneBuilder {
         root.setPadding(new Insets(10));
         root.getStyleClass().add("subcard-section");
 
-        previewTitleLabel = new Label(I18n.getOrDefault("scenario.title.right_view", "🗺️ Resource Cartography & Display"));
+        previewTitleLabel = new Label(I18n.getOrDefault("scenario.title.right_view", "ðŸ—ºï¸ Resource Cartography & Display"));
         previewTitleLabel.getStyleClass().add("label-header");
         previewTitleLabel.setMaxWidth(Double.MAX_VALUE);
         previewTitleLabel.setAlignment(Pos.CENTER);
@@ -163,7 +163,7 @@ public class ScenarioPreviewPaneBuilder {
                 if (empty || item == null) {
                     setText(null);
                     setDisable(false);
-                } else if (item.startsWith("──────────")) {
+                } else if (item.startsWith("â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€")) {
                     setText(item);
                     setDisable(true);
                     setStyle("-fx-font-weight: bold; -fx-opacity: 0.6; -fx-padding: 4 8;");
@@ -176,7 +176,7 @@ public class ScenarioPreviewPaneBuilder {
         });
         previewModeCombo.setOnAction(e -> {
             String val = previewModeCombo.getValue();
-            if (val != null && (val.startsWith("──────────") || val.startsWith("─") || val.contains("─────"))) {
+            if (val != null && (val.startsWith("â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€") || val.startsWith("â”€") || val.contains("â”€â”€â”€â”€â”€"))) {
                 previewModeCombo.getSelectionModel().select(0);
                 return;
             }
@@ -185,20 +185,20 @@ public class ScenarioPreviewPaneBuilder {
             drawPreview();
         });
 
-        btnReliefOverlay = new ToggleButton("🏔️ Relief Hypsométrique");
+        btnReliefOverlay = new ToggleButton("ðŸ”ï¸ Relief HypsomÃ©trique");
         btnReliefOverlay.setSelected(true);
         btnReliefOverlay.getStyleClass().add("button-secondary");
-        btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.relief_overlay", "Active/désactive le relief topographique ombré en arrière-plan")));
+        btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.relief_overlay", "Active/dÃ©sactive le relief topographique ombrÃ© en arriÃ¨re-plan")));
         btnReliefOverlay.setOnAction(e -> drawPreview());
 
-        btnExportPreviewRaster = new Button(I18n.getOrDefault("scenario.btn.export_preview_raster", "💾 Exporter Image"));
+        btnExportPreviewRaster = new Button(I18n.getOrDefault("scenario.btn.export_preview_raster", "ðŸ’¾ Exporter Image"));
         btnExportPreviewRaster.getStyleClass().add("button-secondary");
-        btnExportPreviewRaster.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_preview_raster", "Exporte l'aperçu cartographique actuel en haute résolution (PNG)")));
+        btnExportPreviewRaster.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_preview_raster", "Exporte l'aperÃ§u cartographique actuel en haute rÃ©solution (PNG)")));
         btnExportPreviewRaster.setOnAction(e -> exportPreviewImage());
 
-        btnGraphicSelect = new ToggleButton("📐 Sélection Zone");
+        btnGraphicSelect = new ToggleButton("ðŸ“ SÃ©lection Zone");
         btnGraphicSelect.getStyleClass().add("button-secondary");
-        btnGraphicSelect.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.graphic_select", "Activer la sélection rectangulaire sur la carte pour définir les limites de découpage")));
+        btnGraphicSelect.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.graphic_select", "Activer la sÃ©lection rectangulaire sur la carte pour dÃ©finir les limites de dÃ©coupage")));
         btnGraphicSelect.selectedProperty().addListener((obs, oldV, newV) -> {
             context.setGraphicSelectActive(newV);
             drawPreview();
@@ -275,25 +275,25 @@ public class ScenarioPreviewPaneBuilder {
         int prevIdx = previewModeCombo.getSelectionModel().getSelectedIndex();
 
         previewModeCombo.getItems().clear();
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.density", "👥 Densité Démographique & Biomes"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.density", "ðŸ‘¥ DensitÃ© DÃ©mographique & Biomes"));
 
         int dims = context.getCultureVectorDimensions();
         if (dims > 0) {
-            previewModeCombo.getItems().add("────────── " + I18n.getOrDefault("scenario.preview_group.tensors", "VECTEURS CULTURELS") + " ──────────");
+            previewModeCombo.getItems().add("â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ " + I18n.getOrDefault("scenario.preview_group.tensors", "VECTEURS CULTURELS") + " â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€");
             for (int i = 0; i < dims; i++) {
                 previewModeCombo.getItems().add(context.getCulturalTensorPreviewName(i));
             }
         }
 
-        previewModeCombo.getItems().add("────────── " + I18n.getOrDefault("scenario.preview_group.derived", "CALQUES DÉDUITS & PHYSIQUE") + " ──────────");
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.capital", "🏛️ Capital Productif K(x) [kg/hab]"));
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.energy", "⚡ Régime Énergétique E(x) [MJ/hab]"));
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.food", "🌾 Stocks Alimentaires F(x) [mois]"));
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.info", "🧠 Stock Informationnel I(x) [bits/hab]"));
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.footprint", "🌱 Empreinte Écologique & Pression Malthusienne"));
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.friction", "🏔️ Friction aux Frontières & Obstacles"));
+        previewModeCombo.getItems().add("â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ " + I18n.getOrDefault("scenario.preview_group.derived", "CALQUES DÃ‰DUITS & PHYSIQUE") + " â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€");
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.capital", "ðŸ›ï¸ Capital Productif K(x) [kg/hab]"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.energy", "âš¡ RÃ©gime Ã‰nergÃ©tique E(x) [MJ/hab]"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.food", "ðŸŒ¾ Stocks Alimentaires F(x) [mois]"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.info", "ðŸ§  Stock Informationnel I(x) [bits/hab]"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.footprint", "ðŸŒ± Empreinte Ã‰cologique & Pression Malthusienne"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.friction", "ðŸ”ï¸ Friction aux FrontiÃ¨res & Obstacles"));
 
-        if (prevIdx >= 0 && prevIdx < previewModeCombo.getItems().size() && !previewModeCombo.getItems().get(prevIdx).startsWith("──")) {
+        if (prevIdx >= 0 && prevIdx < previewModeCombo.getItems().size() && !previewModeCombo.getItems().get(prevIdx).startsWith("â”€â”€")) {
             previewModeCombo.getSelectionModel().select(prevIdx);
         } else if (prevSel != null && previewModeCombo.getItems().contains(prevSel)) {
             previewModeCombo.getSelectionModel().select(prevSel);
@@ -305,11 +305,11 @@ public class ScenarioPreviewPaneBuilder {
     public void updatePreviewTitleText() {
         if (previewTitleLabel == null || previewModeCombo == null) return;
         String sel = previewModeCombo.getValue();
-        if (sel == null || sel.isBlank() || sel.startsWith("──")) {
-            previewTitleLabel.setText(I18n.getOrDefault("scenario.title.right_view", "🗺️ Resource Cartography & Display"));
+        if (sel == null || sel.isBlank() || sel.startsWith("â”€â”€")) {
+            previewTitleLabel.setText(I18n.getOrDefault("scenario.title.right_view", "ðŸ—ºï¸ Resource Cartography & Display"));
             return;
         }
-        previewTitleLabel.setText("🗺️ " + sel);
+        previewTitleLabel.setText("ðŸ—ºï¸ " + sel);
     }
 
     public void updateBottomLegend() {
@@ -325,7 +325,7 @@ public class ScenarioPreviewPaneBuilder {
 
     public void generatePreview() {
         if (previewStatusLabel != null) {
-            previewStatusLabel.setText(I18n.getOrDefault("scenario.status.calc_preview", "⚡ Calculating demographic preview in background..."));
+            previewStatusLabel.setText(I18n.getOrDefault("scenario.status.calc_preview", "âš¡ Calculating demographic preview in background..."));
         }
         isPreviewGenerating.set(true);
         final long mySeq = previewSeq.incrementAndGet();
@@ -480,9 +480,9 @@ public class ScenarioPreviewPaneBuilder {
         try {
             WritableImage wImg = new WritableImage((int) previewCanvas.getWidth(), (int) previewCanvas.getHeight());
             previewCanvas.snapshot(null, wImg);
-            WindowUtils.exportImageWithChooser(
+            WindowHelper.exportImageWithChooser(
                     context.getWindow(), wImg, "ether-map-preview.png",
-                    I18n.getOrDefault("scenario.title.export_preview_dialog", "Exporter l'Aperçu Cartographique (PNG)"));
+                    I18n.getOrDefault("scenario.title.export_preview_dialog", "Exporter l'AperÃ§u Cartographique (PNG)"));
         } catch (Exception ex) {
             logger.error("Failed to export preview canvas image", ex);
         }
@@ -496,3 +496,4 @@ public class ScenarioPreviewPaneBuilder {
     public Label getPreviewStatusLabel() { return previewStatusLabel; }
     public Canvas getPreviewCanvas() { return previewCanvas; }
 }
+

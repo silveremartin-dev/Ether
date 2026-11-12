@@ -193,7 +193,7 @@ public class OrographicGlottologPropagator {
                 if (owner >= 0 && owner < seeds.size() && minCost[gy][gx] <= maxReachCost) {
                     img.setRGB(x, y, seeds.get(owner).rgbColor());
                 } else {
-                    // Unified neutral uncertainty gray — unassigned land or beyond cultural reach
+                    // Unified neutral uncertainty gray a€” unassigned land or beyond cultural reach
                     img.setRGB(x, y, 0x2D3748);
                 }
             }

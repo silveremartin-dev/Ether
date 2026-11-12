@@ -48,7 +48,7 @@ public class SeshatDataIntegrator {
         // Load embedded cliodynamic benchmarks JSON
         try (InputStream is = SeshatDataIntegrator.class.getResourceAsStream("/historical_cliodynamic_benchmarks.json")) {
             if (is != null) {
-                ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
+                ObjectMapper mapper = org.ether.society.persistence.EtherJsonHelper.getMapper();
                 cliodynamicBenchmarkJson = mapper.readTree(is);
                 logger.info("Loaded 20-Variable Cliodynamic Benchmark Suite from historical_cliodynamic_benchmarks.json");
             }
@@ -58,7 +58,7 @@ public class SeshatDataIntegrator {
 
         // Initialize default Seshat polity benchmarks
         registerPolity("ROMAN_EMPIRE", "ItRome01", "Imperium Romanum", -27, 476, 0.88, 0.90, 0.85, 0.82, 0.92);
-        registerPolity("FRANCE_1800", "FrFrance03", "République Française", 1792, 1815, 0.95, 0.96, 0.70, 0.95, 0.90);
+        registerPolity("FRANCE_1800", "FrFrance03", "RÃ©publique FranÃ§aise", 1792, 1815, 0.95, 0.96, 0.70, 0.95, 0.90);
         registerPolity("EGYPT_OLD_KINGDOM", "EgOldK01", "Old Kingdom of Egypt", -2686, -2181, 0.65, 0.60, 0.92, 0.50, 0.75);
         registerPolity("MESOPOTAMIA_SUMER", "IqSumer01", "Sumerian City-States", -3500, -2000, 0.58, 0.65, 0.88, 0.45, 0.70);
         registerPolity("SONG_DYNASTY", "CnSong01", "Song Dynasty China", 960, 1279, 0.92, 0.95, 0.80, 0.88, 0.94);
@@ -148,4 +148,5 @@ public class SeshatDataIntegrator {
         return cliodynamicBenchmarkJson;
     }
 }
+
 

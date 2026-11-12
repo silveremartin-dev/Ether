@@ -21,7 +21,7 @@ import java.awt.image.BufferedImage;
  */
 final class BenchmarkChartStylingHelper {
 
-    // High-Contrast Dark Scientific Palette (per AGENTS.md §5)
+    // High-Contrast Dark Scientific Palette (per AGENTS.md A§5)
     static final Color BG_DARK = new Color(13, 17, 23);
     static final Color PANEL_BG = new Color(22, 27, 34);
     static final Color GRID_LINE = new Color(48, 54, 61);

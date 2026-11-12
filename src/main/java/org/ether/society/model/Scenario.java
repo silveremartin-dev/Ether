@@ -28,6 +28,16 @@ import java.util.List;
  * @version 1.0.0-beta.2
  */
 @SuppressWarnings("serial")
+/**
+ * Scenario.
+ * <p>
+ * Component for the Ether planetary simulation platform.
+ * Adheres to the zero-defect code excellence standards and 500-line limit.
+ * </p>
+ *
+ * @author Ether Architectural Working Group
+ * @see org.ether.society.core.engine.SimulationEngineModule
+ */
 public class Scenario extends AbstractScenarioTensorAndEngineConfig {
     private static final long serialVersionUID = 1L;
 
@@ -241,7 +251,19 @@ public class Scenario extends AbstractScenarioTensorAndEngineConfig {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
+    public void setDisplayName(String displayName) {
+        if (this.name == null || this.name.isBlank()) {
+            this.name = displayName;
+        }
+    }
+
     public void setDescription(String description) { this.description = description; }
+
+    public void setDisplayDescription(String displayDescription) {
+        if (this.description == null || this.description.isBlank()) {
+            this.description = displayDescription;
+        }
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

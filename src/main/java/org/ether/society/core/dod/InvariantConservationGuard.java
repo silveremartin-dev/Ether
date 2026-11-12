@@ -156,7 +156,7 @@ public class InvariantConservationGuard {
             return false;
         }
 
-        // Expected mass balance: after.biomass ≈ before.biomass + externalBiomassInput
+        // Expected mass balance: after.biomass a‰ˆ before.biomass + externalBiomassInput
         double expectedBiomass = before.totalBiomass() + externalBiomassInput;
         double biomassDelta = Math.abs(after.totalBiomass() - expectedBiomass);
         double biomassScale = Math.max(1.0, Math.max(Math.abs(expectedBiomass), Math.abs(after.totalBiomass())));

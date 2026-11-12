@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Silvere Martin-Michiellot
  */
-public class FormulaEvaluator {
-    private static final Logger logger = LoggerFactory.getLogger(FormulaEvaluator.class);
+public class FormulaHelper {
+    private static final Logger logger = LoggerFactory.getLogger(FormulaHelper.class);
 
     /**
      * Interface for resolving raw variable arrays (e.g. "wealth" -> float[]{10.5, 42.0, ...})
@@ -435,3 +435,4 @@ public class FormulaEvaluator {
         }.parse();
     }
 }
+

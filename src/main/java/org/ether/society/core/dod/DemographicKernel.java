@@ -11,7 +11,7 @@ import org.ether.society.model.PhysicalConstants;
  * reproductive mitosis, and cohort splitting across the global H3 hexagonal grid.
  * </p>
  * <p>
- * <b>Governing Principles &amp; Universal Biophysical Laws ({@code AGENTS.md} §10.1–§10.3):</b>
+ * <b>Governing Principles &amp; Universal Biophysical Laws ({@code AGENTS.md} Â§10.1â€“Â§10.3):</b>
  * <ul>
  *   <li><b>Kleiber Allometric Metabolism</b>: Metabolic demand, primiparity, gestation load, and
  *       reproductive cadence scale universally via {@link OrganismBiophysicalProfile} (supporting
@@ -273,7 +273,7 @@ public class DemographicKernel {
             float maxBiologicalFertility = (float) ((1.0 - neolithicWeight) * foragerFertility + neolithicWeight * agrarianFertility);
             float fertilityModulation = fecundityAgeFactor * Math.min(1.0f, nutritionalFactor) * culturalFertilityMultiplier * densityFeedback;
 
-            // Maximum biological fecundity bound (Wood 1994, Dynamics of Human Reproduction, max biological CBR ~ 48‰)
+            // Maximum biological fecundity bound (Wood 1994, Dynamics of Human Reproduction, max biological CBR ~ 48a€°)
             float birthRate = (float) Math.min(0.048 / lifespanScale, maxBiologicalFertility * Math.clamp(fertilityModulation, 0.0f, 1.25f));
             float newBirths = m * birthRate * dtInYears;
             births[i] = m * birthRate;

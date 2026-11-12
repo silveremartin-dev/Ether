@@ -70,7 +70,7 @@ public final class PlanetControlRowHelper {
                     (SpinnerValueFactory.DoubleSpinnerValueFactory) spinner.getValueFactory();
             value = Math.clamp(value, factory.getMin(), factory.getMax());
             factory.setValue(value);
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(PlanetControlRowHelper.class).debug("Non-fatal condition in PlanetControlRowHelper: {}", ignored.getMessage()); }
     }
 
     public static VBox createControlRowWithSpinner(
@@ -110,7 +110,7 @@ public final class PlanetControlRowHelper {
             }
         });
 
-        String unit = formatPattern.replaceAll("[^a-zA-Z°☉%²³/]", "").trim();
+        String unit = formatPattern.replaceAll("[^a-zA-ZÂ°â˜‰%Â²Â³/]", "").trim();
         Label unitLbl = new Label(unit);
         unitLbl.getStyleClass().add("unit-label");
         HBox valBox = new HBox(4, spinner, unitLbl);
@@ -128,3 +128,4 @@ public final class PlanetControlRowHelper {
         return new VBox(3, header, slider);
     }
 }
+

@@ -13,7 +13,7 @@ import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
  * in {@link MetricSnapshot}, returning recorded ground-truth data or 0.0 when unsimulated.
  *
  * <p>
- * Strictly adheres to the Physical Observables Invariant ({@code AGENTS.md} §10 &amp; §11):
+ * Strictly adheres to the Physical Observables Invariant ({@code AGENTS.md} Â§10 &amp; Â§11):
  * no synthetic sigmoid interpolation or post-hoc fabrication of unsimulated variables.
  * </p>
  *
@@ -91,7 +91,7 @@ public final class PostHocCliodynamicMetricDispatcher {
                 return CliodynamicFormulasRegistry.computeZeroContainmentScoreFromTrade(trade);
             }
             default -> {
-                // Ground-truth invariant: unsimulated or unrecorded metrics default to 0.0 (AGENTS.md §8 & §10)
+                // Ground-truth invariant: unsimulated or unrecorded metrics default to 0.0 (AGENTS.md A§8 & A§10)
                 return snap.getValue(metricKey);
             }
         }

@@ -124,7 +124,7 @@ public final class PaleoClimateMapRasterizer {
             if (dCanada < 4.0) tempC -= (11.0 * Math.exp(-dCanada * 0.5));
         }
 
-        // Elevation Lapse Rate (-6.5 °C per 1000m)
+        // Elevation Lapse Rate (-6.5 A°C per 1000m)
         if (elevM > 0.0) {
             tempC -= 0.0065 * elevM;
         }

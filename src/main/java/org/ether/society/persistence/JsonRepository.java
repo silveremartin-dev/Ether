@@ -56,7 +56,7 @@ public abstract class JsonRepository<T> {
         this.types = type;
         this.filePath = customPath;
 
-        this.mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
+        this.mapper = org.ether.society.persistence.EtherJsonHelper.getMapper();
         this.mapper.registerModule(new JavaTimeModule());
         this.mapper.enable(SerializationFeature.INDENT_OUTPUT);
         this.mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -137,3 +137,4 @@ public abstract class JsonRepository<T> {
         saveAll(all);
     }
 }
+

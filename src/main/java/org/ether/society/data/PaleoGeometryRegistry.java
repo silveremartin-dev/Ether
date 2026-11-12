@@ -8,7 +8,7 @@ package org.ether.society.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class PaleoGeometryRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(PaleoGeometryRegistry.class);
-    private static final ObjectMapper mapper = EtherJsonUtil.getMapper();
+    private static final ObjectMapper mapper = EtherJsonHelper.getMapper();
 
     private static final Map<String, double[][]> HEARTHS_CACHE = new ConcurrentHashMap<>();
     private static final Map<String, double[][]> ICE_SHEETS_CACHE = new ConcurrentHashMap<>();
@@ -224,3 +224,4 @@ public final class PaleoGeometryRegistry {
         return null;
     }
 }
+

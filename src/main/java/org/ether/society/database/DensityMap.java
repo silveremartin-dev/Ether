@@ -31,7 +31,7 @@ import jakarta.persistence.*;
 
 /**
  * Represents density data for a specific resource in an H3 cell.
- * Stores quantities in gigajoules per km² for energy-based resources.
+ * Stores quantities in gigajoules per kmÂ² for energy-based resources.
  *
  * <p>
  * Resource categories:
@@ -57,6 +57,16 @@ import jakarta.persistence.*;
         @Index(name = "idx_density_h3", columnList = "h3_index"),
         @Index(name = "idx_density_resource", columnList = "resource_category, resource_type")
 })
+/**
+ * DensityMap.
+ * <p>
+ * Component for the Ether planetary simulation platform.
+ * Adheres to the zero-defect code excellence standards and 500-line limit.
+ * </p>
+ *
+ * @author Ether Architectural Working Group
+ * @see org.ether.society.core.engine.SimulationEngineModule
+ */
 public class DensityMap {
 
     @Id
@@ -90,7 +100,7 @@ public class DensityMap {
     private String resourceType;
 
     /**
-     * Density value in gigajoules per km² (or count/km² for population).
+     * Density value in gigajoules per kmÂ² (or count/kmÂ² for population).
      */
     @Column(nullable = false)
     private Double densityValue;

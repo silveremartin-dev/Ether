@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 Silvère Martin-Michiellot & Gemini AI
+ * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot & Gemini AI
  */
 package org.ether.society.data;
 
@@ -26,7 +26,7 @@ import java.util.*;
  * <p>Physical equations and historical baseline reference:
  * <ul>
  *   <li>Global Mean Surface Temperature (GMST) anomalies are expressed in degrees Celsius (\(^\circ\text{C}\))
- *       relative to the 1961–1990 CE instrumental climatological normal:
+ *       relative to the 1961â€“1990 CE instrumental climatological normal:
  *       $$\Delta T(t) = T(t) - \overline{T}_{1961-1990}$$</li>
  *   <li>Ensemble statistics include the median (\(q_{0.50}\)), the 2.5th percentile (\(q_{0.025}\)),
  *       and the 97.5th percentile (\(q_{0.975}\)) across 7,000 reconstructions spanning diverse methods
@@ -37,7 +37,7 @@ import java.util.*;
  * </ul>
  * </p>
  *
- * @author Silvère Martin-Michiellot &amp; Gemini AI
+ * @author SilvÃ¨re Martin-Michiellot &amp; Gemini AI
  * @version 1.0.0
  * @see org.ether.society.config.EtherPaths#resolveSourceFile(String)
  */
@@ -262,7 +262,7 @@ public final class Pages2kClimateProvider {
         return EARTH_RADIUS_KM * c;
     }
 
-    // ── Internal File Parsing ─────────────────────────────────────────────────
+    // a”€a”€ Internal File Parsing a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
 
     private static void loadReconstructionSeries() {
         File file = EtherPaths.resolveSourceFile("pages2k/pages2k_global_temperature_reconstruction_1_2000ce.tsv");

@@ -17,7 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Window;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.i18n.I18n;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.ui.WindowHelper;
 import org.ether.society.ui.export.ResourceDistributionRasterExporter;
 
 import java.util.*;
@@ -94,13 +94,13 @@ public class ResourceGeologySectionBuilder {
     }
 
     public VBox buildGeologySection() {
-        geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.geology", "4. DOMAINE GÉOLOGIE, TECTONIQUE & MINERAIS"));
+        geologyDomainSecHeader = new Label(I18n.getOrDefault("resource.domain.geology", "4. DOMAINE GÃ‰OLOGIE, TECTONIQUE & MINERAIS"));
         geologyDomainSecHeader.getStyleClass().add("label-section-header");
 
-        sec41Header = new Label(I18n.getOrDefault("resource.section.geology_4_1.title", "⚙️ 4.1 Contrôle Global, Graine & Formats"));
+        sec41Header = new Label(I18n.getOrDefault("resource.section.geology_4_1.title", "âš™ï¸ 4.1 ContrÃ´le Global, Graine & Formats"));
         sec41Header.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
-        btnGenerateProceduralGeologyTensors = new Button(I18n.getOrDefault("resource.btn.regen_tensors", "🪄 Régénérer tous les tenseurs géologiques"));
+        btnGenerateProceduralGeologyTensors = new Button(I18n.getOrDefault("resource.btn.regen_tensors", "ðŸª„ RÃ©gÃ©nÃ©rer tous les tenseurs gÃ©ologiques"));
         btnGenerateProceduralGeologyTensors.getStyleClass().add("button");
         btnGenerateProceduralGeologyTensors.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnGenerateProceduralGeologyTensors.setMinWidth(Region.USE_PREF_SIZE);
@@ -115,7 +115,7 @@ public class ResourceGeologySectionBuilder {
             if (!host.isUpdatingFromPreset()) host.notifyParamChange();
         });
 
-        Button geoRandSeedBtn = new Button("🎲");
+        Button geoRandSeedBtn = new Button("ðŸŽ²");
         geoRandSeedBtn.getStyleClass().add("button-secondary");
         geoRandSeedBtn.setStyle("-fx-font-size: 11px;");
         geoRandSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.random_geology_seed", "Draw a new random stochastic seed for all geological tensors.")));
@@ -125,30 +125,30 @@ public class ResourceGeologySectionBuilder {
         });
 
         geoSeedLabel = new Label(I18n.getOrDefault("resource.label.geology_seed", "Graine :"));
-        HBox geoSeedBox = new HBox(4, geoSeedLabel, new Label("🎲"), geologySeedInput, geoRandSeedBtn);
+        HBox geoSeedBox = new HBox(4, geoSeedLabel, new Label("ðŸŽ²"), geologySeedInput, geoRandSeedBtn);
         geoSeedBox.setAlignment(Pos.CENTER_LEFT);
 
         HBox seedRow = new HBox(8, geoSeedBox, btnGenerateProceduralGeologyTensors);
         seedRow.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(btnGenerateProceduralGeologyTensors, Priority.ALWAYS);
 
-        geologyHelpBtn = new Button(I18n.getOrDefault("resource.btn.geology_format_help", "❓ Format Calques"));
+        geologyHelpBtn = new Button(I18n.getOrDefault("resource.btn.geology_format_help", "â“ Format Calques"));
         geologyHelpBtn.getStyleClass().add("button-secondary");
         geologyHelpBtn.setStyle("-fx-font-size: 11px;");
         geologyHelpBtn.setMinWidth(Region.USE_PREF_SIZE);
-        geologyHelpBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.geology_specs", "Spécifications des formats d'image et standards géologiques (PNG, GeoTIFF, NetCDF, ASC, GeoJSON).")));
+        geologyHelpBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.geology_specs", "SpÃ©cifications des formats d'image et standards gÃ©ologiques (PNG, GeoTIFF, NetCDF, ASC, GeoJSON).")));
         geologyHelpBtn.setOnAction(e -> ResourceGeologyLayerImportHelper.showGeologyImportFormatHelp(this));
 
-        btnExportGisMultiFormat = new Button(I18n.getOrDefault("resource.btn.export_gis", "🗺️ Export SIG Multi-Format"));
+        btnExportGisMultiFormat = new Button(I18n.getOrDefault("resource.btn.export_gis", "ðŸ—ºï¸ Export SIG Multi-Format"));
         btnExportGisMultiFormat.getStyleClass().add("button-secondary");
         btnExportGisMultiFormat.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
-        btnExportGisMultiFormat.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_gis", "Exporter les 10 tenseurs géologiques sous formats SIG professionnels (GeoTIFF, NetCDF-4, GeoJSON).")));
+        btnExportGisMultiFormat.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_gis", "Exporter les 10 tenseurs gÃ©ologiques sous formats SIG professionnels (GeoTIFF, NetCDF-4, GeoJSON).")));
         btnExportGisMultiFormat.setOnAction(e -> ResourceDistributionRasterExporter.exportGisMultiFormat(host.getWindow(), host.getActivePlanetPreset()));
 
-        btnExportProvenanceManifest = new Button(I18n.getOrDefault("resource.btn.provenance_manifest", "🔒 Manifeste Provenance SHA-256"));
+        btnExportProvenanceManifest = new Button(I18n.getOrDefault("resource.btn.provenance_manifest", "ðŸ”’ Manifeste Provenance SHA-256"));
         btnExportProvenanceManifest.getStyleClass().add("button-secondary");
         btnExportProvenanceManifest.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
-        btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.gen_provenance", "Générer un manifeste cryptographique JSON (provenance.json) contenant les hashs SHA-256 des jeux de données géologiques.")));
+        btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.gen_provenance", "GÃ©nÃ©rer un manifeste cryptographique JSON (provenance.json) contenant les hashs SHA-256 des jeux de donnÃ©es gÃ©ologiques.")));
         btnExportProvenanceManifest.setOnAction(e -> ResourceDistributionRasterExporter.exportProvenanceManifest(host.getWindow(), geologySeedInput != null ? geologySeedInput.getText() : "45678"));
 
         HBox formatRow = new HBox(8, geologyHelpBtn, btnExportGisMultiFormat, btnExportProvenanceManifest);
@@ -157,7 +157,7 @@ public class ResourceGeologySectionBuilder {
         VBox sec41Box = new VBox(6, sec41Header, seedRow, formatRow);
         sec41Box.setStyle("-fx-padding: 8px 10px; -fx-background-color: rgba(148, 163, 184, 0.08); -fx-background-radius: 6px; -fx-border-color: rgba(148, 163, 184, 0.25); -fx-border-radius: 6px; -fx-border-width: 1px;");
 
-        sec42Header = new Label(I18n.getOrDefault("resource.section.geology_4_2.title", "🗺️ 4.2 TENSEURS GÉOLOGIQUES & ÉNERGÉTIQUES CANONIQUES (10 Sous-Blocs)"));
+        sec42Header = new Label(I18n.getOrDefault("resource.section.geology_4_2.title", "ðŸ—ºï¸ 4.2 TENSEURS GÃ‰OLOGIQUES & Ã‰NERGÃ‰TIQUES CANONIQUES (10 Sous-Blocs)"));
         sec42Header.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
         sec42Header.setWrapText(true);
 
@@ -189,8 +189,8 @@ public class ResourceGeologySectionBuilder {
             geologySubTitles.put(layerIdx, subTitle);
 
             ToggleGroup tg = new ToggleGroup();
-            RadioButton radioProc = new RadioButton(I18n.getOrDefault("resource.mode.procedural", "▶ Procedural Generation (Hotspots & Physics)"));
-            RadioButton radioImport = new RadioButton(I18n.getOrDefault("resource.mode.import_file", "📂 External Source (PNG / GeoTIFF)"));
+            RadioButton radioProc = new RadioButton(I18n.getOrDefault("resource.mode.procedural", "â–¶ Procedural Generation (Hotspots & Physics)"));
+            RadioButton radioImport = new RadioButton(I18n.getOrDefault("resource.mode.import_file", "ðŸ“‚ External Source (PNG / GeoTIFF)"));
             radioProc.setToggleGroup(tg);
             radioImport.setToggleGroup(tg);
             radioProc.getStyleClass().add("radio-proc");
@@ -212,7 +212,7 @@ public class ResourceGeologySectionBuilder {
             });
             geologyTensorSeeds.put(layerIdx, seedTF);
 
-            Button randSeedBtn = new Button("🎲");
+            Button randSeedBtn = new Button("ðŸŽ²");
             randSeedBtn.getStyleClass().add("button-secondary");
             randSeedBtn.setStyle("-fx-font-size: 11px;");
             randSeedBtn.setOnAction(e -> {
@@ -223,10 +223,10 @@ public class ResourceGeologySectionBuilder {
                 host.updatePreviewCanvas();
             });
 
-            Button btnExportTensor = new Button(I18n.getOrDefault("resource.btn.export_single_tensor", "📤 Exporter"));
+            Button btnExportTensor = new Button(I18n.getOrDefault("resource.btn.export_single_tensor", "ðŸ“¤ Exporter"));
             btnExportTensor.getStyleClass().add("button-secondary");
             btnExportTensor.setStyle("-fx-font-size: 11px;");
-            btnExportTensor.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_tensor", "Exporter ce tenseur géologique sous forme d'image raster haute résolution (PNG / JPEG).")));
+            btnExportTensor.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_tensor", "Exporter ce tenseur gÃ©ologique sous forme d'image raster haute rÃ©solution (PNG / JPEG).")));
             btnExportTensor.setOnAction(e -> exportGeologyTensor(layerIdx));
             geologyGenBtns.put(layerIdx, btnExportTensor);
 
@@ -247,17 +247,17 @@ public class ResourceGeologySectionBuilder {
             ComboBox<String> sourceCombo = ResourceGeologyLayerImportHelper.buildGeologySourceCombo(this, layerIdx);
             geologySourceCombos.put(layerIdx, sourceCombo);
 
-            Label fileLbl = new Label("—");
+            Label fileLbl = new Label("â€”");
             fileLbl.setStyle("-fx-font-style: italic; -fx-font-size: 11px; -fx-text-fill: #94a3b8;");
             fileLbl.setWrapText(true);
             geologyFileLabels.put(layerIdx, fileLbl);
 
-            Button loadBtn = new Button(I18n.getOrDefault("resource.btn.import_map_action", "📁 Importer fichier..."));
+            Button loadBtn = new Button(I18n.getOrDefault("resource.btn.import_map_action", "ðŸ“ Importer fichier..."));
             loadBtn.getStyleClass().add("button-secondary");
             loadBtn.setStyle("-fx-font-size: 11px;");
             loadBtn.setOnAction(e -> ResourceGeologyLayerImportHelper.loadCustomGeologyLayer(this, layerIdx, img -> {
                 customGeologyLayerImages.put(layerIdx, img);
-                fileLbl.setText(I18n.getOrDefault("resource.status.custom_layer_active", "Fichier personnalisé chargé"));
+                fileLbl.setText(I18n.getOrDefault("resource.status.custom_layer_active", "Fichier personnalisÃ© chargÃ©"));
                 radioImport.setSelected(true);
                 host.selectViewMode(host.getGeologyViewComboIndex(layerIdx));
                 if (!host.isUpdatingFromPreset()) host.notifyParamChange();
@@ -348,7 +348,7 @@ public class ResourceGeologySectionBuilder {
         }
         customGeologyLayerImages.clear();
         for (Label lbl : geologyFileLabels.values()) {
-            if (lbl != null) lbl.setText("—");
+            if (lbl != null) lbl.setText("â€”");
         }
         if (geologySeedInput != null && !geologySeedInput.getText().isBlank()) {
             try {
@@ -357,7 +357,7 @@ public class ResourceGeologySectionBuilder {
                     TextField tf = geologyTensorSeeds.get(i);
                     if (tf != null) tf.setText(String.valueOf(baseSeed + i * 777L));
                 }
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(ResourceGeologySectionBuilder.class).debug("Non-fatal condition in ResourceGeologySectionBuilder: {}", ignored.getMessage()); }
         }
         host.selectViewMode(3);
         if (!host.isUpdatingFromPreset()) host.notifyParamChange();
@@ -396,7 +396,7 @@ public class ResourceGeologySectionBuilder {
         Image img = (isImport && customGeologyLayerImages.get(layerIdx) != null)
                 ? customGeologyLayerImages.get(layerIdx)
                 : generateProceduralGeologyRasterImage(layerIdx, 1024, 512);
-        WindowUtils.exportImageWithChooser(host.getWindow(),
+        WindowHelper.exportImageWithChooser(host.getWindow(),
                 img, "geology_tensor_" + (layerIdx + 1) + ".png",
                 I18n.getOrDefault("resource.dialog.export_geology_tensor_title", "Export Geology Tensor Map (PNG / JPEG)"));
     }
@@ -422,3 +422,5 @@ public class ResourceGeologySectionBuilder {
     }
     public Image getGeologyLayerImage(int layerIdx) { return customGeologyLayerImages.get(layerIdx); }
 }
+
+

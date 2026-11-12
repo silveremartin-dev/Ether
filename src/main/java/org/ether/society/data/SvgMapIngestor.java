@@ -228,7 +228,7 @@ public class SvgMapIngestor {
                             Double.parseDouble(parts[2]),
                             Double.parseDouble(parts[3])
                     };
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(SvgMapIngestor.class).debug("Non-fatal condition in SvgMapIngestor: {}", ignored.getMessage()); }
             }
         }
         double w = parseDimension(svgRoot.getAttribute("width"), 1024);
@@ -365,3 +365,4 @@ public class SvgMapIngestor {
         return SvgFeatureRasterizer.rasterizeFeatures(features);
     }
 }
+

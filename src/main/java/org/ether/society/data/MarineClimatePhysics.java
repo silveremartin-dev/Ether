@@ -27,31 +27,31 @@ public final class MarineClimatePhysics {
     }
 
     /**
-     * Computes authentic Sea Surface Temperature (SST) for oceans (°C).
+     * Computes authentic Sea Surface Temperature (SST) for oceans (Â°C).
      *
      * @param lat latitude in degrees
      * @param lon longitude in degrees
      * @return SST in degrees Celsius
      */
     public static double computePhysicalOceanSST(double lat, double lon) {
-        double absLat = Math.abs(lat - 6.0); // Thermal equator at 6°N
+        double absLat = Math.abs(lat - 6.0); // Thermal equator at 6A°N
         double frac = Math.clamp(absLat / 86.0, 0.0, 1.0);
-        // Smooth C-infinity cosine glide from tropical peak (28.5°C) to polar sea-ice freezing point (-1.8°C)
+        // Smooth C-infinity cosine glide from tropical peak (28.5A°C) to polar sea-ice freezing point (-1.8A°C)
         double sst = -1.8 + (28.5 - (-1.8)) * Math.pow(Math.cos(frac * (Math.PI / 2.0)), 1.35);
 
-        // Gulf Stream & North Atlantic Drift (+7.5°C in NE Atlantic)
+        // Gulf Stream & North Atlantic Drift (+7.5A°C in NE Atlantic)
         double dGulf = Math.exp(-(Math.pow(lat - 55.0, 2) / 220.0 + Math.pow(lon - (-10.0), 2) / 500.0));
         sst += dGulf * 7.5;
 
-        // Kuroshio Current (+4.0°C off Japan)
+        // Kuroshio Current (+4.0A°C off Japan)
         double dKuro = Math.exp(-(Math.pow(lat - 35.0, 2) / 140.0 + Math.pow(lon - 142.0, 2) / 300.0));
         sst += dKuro * 4.0;
 
-        // Cold Humboldt / Peru current (-5.5°C)
+        // Cold Humboldt / Peru current (-5.5A°C)
         double dHumb = Math.exp(-(Math.pow(lat - (-20.0), 2) / 220.0 + Math.pow(lon - (-78.0), 2) / 60.0));
         sst -= dHumb * 5.5;
 
-        // Cold Benguela current (-4.5°C)
+        // Cold Benguela current (-4.5A°C)
         double dBeng = Math.exp(-(Math.pow(lat - (-22.0), 2) / 180.0 + Math.pow(lon - 11.0, 2) / 50.0));
         sst -= dBeng * 4.5;
 
@@ -79,12 +79,12 @@ public final class MarineClimatePhysics {
         // Narrow equatorial ITCZ band (2200 mm/yr)
         double itczRain = 2200.0 * Math.exp(-(dItcz * dItcz) / 60.0);
 
-        // Subtropical high pressure dry belts (15° to 30° latitude) - down to 100 mm/yr
+        // Subtropical high pressure dry belts (15A° to 30A° latitude) - down to 100 mm/yr
         double dryNorth = Math.exp(-Math.pow(lat - 24.0, 2) / 55.0);
         double drySouth = Math.exp(-Math.pow(lat - (-22.0), 2) / 50.0);
         double baseRain = (itczRain + 450.0) * (1.0 - Math.max(dryNorth, drySouth) * 0.82);
 
-        // Mid-latitude oceanic storm tracks (40° to 60° N/S)
+        // Mid-latitude oceanic storm tracks (40A° to 60A° N/S)
         double stormNorth = Math.exp(-Math.pow(lat - 50.0, 2) / 75.0) * 1150.0;
         double stormSouth = Math.exp(-Math.pow(lat - (-50.0), 2) / 70.0) * 1350.0;
 
@@ -114,11 +114,11 @@ public final class MarineClimatePhysics {
     }
 
     /**
-     * Computes realistic marine thermal seasonality (°C annual temperature range).
+     * Computes realistic marine thermal seasonality (Â°C annual temperature range).
      *
      * @param lat latitude in degrees
      * @param lon longitude in degrees
-     * @return seasonality in °C
+     * @return seasonality in Â°C
      */
     public static double computePhysicalMarineSeasonality(double lat, double lon) {
         double absLat = Math.abs(lat);

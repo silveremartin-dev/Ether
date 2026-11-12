@@ -23,7 +23,7 @@ import org.ether.society.i18n.I18n;
 import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.EtherScenarioBundle;
 import org.ether.society.model.Scenario;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.ether.society.security.EtherBundleSigner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,21 +86,21 @@ public class ScenarioBundleService {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        bundleHeader = new Label(I18n.getOrDefault("scenario.bundle.header", "📦 7. UNIFIED BUNDLE MULTI-SCENARIO IMPORT/EXPORT (.ETHER)"));
+        bundleHeader = new Label(I18n.getOrDefault("scenario.bundle.header", "ðŸ“¦ 7. UNIFIED BUNDLE MULTI-SCENARIO IMPORT/EXPORT (.ETHER)"));
         bundleHeader.getStyleClass().add("label-section-header");
 
         bundleSubtitle = new Label(I18n.getOrDefault("scenario.desc.bundle", "Export or import the complete scenario (planetary context, ecology, active engines, cultural layers, and demographic grid) in unified .ether format for archiving or sharing."));
         bundleSubtitle.setWrapText(true);
         bundleSubtitle.getStyleClass().add("card-description-muted");
 
-        btnExportBundle = new Button(I18n.getOrDefault("scenario.btn.export_bundle", "📦 Export Bundle (.ether)"));
+        btnExportBundle = new Button(I18n.getOrDefault("scenario.btn.export_bundle", "ðŸ“¦ Export Bundle (.ether)"));
         btnExportBundle.getStyleClass().add("button-secondary");
         btnExportBundle.setMaxWidth(Double.MAX_VALUE);
         btnExportBundle.getStyleClass().add("button-accent-blue");
         btnExportBundle.setOnAction(e -> exportUnifiedBundle());
         btnExportBundle.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_bundle", "Export complete scenario (physics, ecology, engines, layers, and demographics) to a unified .ether bundle file.")));
 
-        btnImportBundle = new Button(I18n.getOrDefault("scenario.btn.import_bundle", "📂 Import Bundle (.ether)"));
+        btnImportBundle = new Button(I18n.getOrDefault("scenario.btn.import_bundle", "ðŸ“‚ Import Bundle (.ether)"));
         btnImportBundle.getStyleClass().add("button-secondary");
         btnImportBundle.setMaxWidth(Double.MAX_VALUE);
         btnImportBundle.setOnAction(e -> importUnifiedBundle());
@@ -135,7 +135,7 @@ public class ScenarioBundleService {
                 EtherScenarioBundle rawBundle = new EtherScenarioBundle("1.0.0-beta.2", planet, eco, scenario);
                 EtherScenarioBundle bundle = EtherBundleSigner.signBundle(rawBundle, "Ether Lead Planner");
 
-                ObjectMapper mapper = EtherJsonUtil.getMapper();
+                ObjectMapper mapper = EtherJsonHelper.getMapper();
                 mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 mapper.writeValue(file, bundle);
@@ -166,7 +166,7 @@ public class ScenarioBundleService {
         File file = chooser.showOpenDialog(owner);
         if (file != null) {
             try {
-                ObjectMapper mapper = EtherJsonUtil.getMapper();
+                ObjectMapper mapper = EtherJsonHelper.getMapper();
                 mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
                 mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -175,7 +175,7 @@ public class ScenarioBundleService {
                 if (bundle != null) {
                     boolean isValid = EtherBundleSigner.verifyBundle(bundle);
                     if (!isValid && host != null) {
-                        host.showIntegrityWarning("⚠️ Avertissement d'intégrité : Le bundle importé a été modifié ou sa signature ne concorde pas.");
+                        host.showIntegrityWarning("âš ï¸ Avertissement d'intÃ©gritÃ© : Le bundle importÃ© a Ã©tÃ© modifiÃ© ou sa signature ne concorde pas.");
                     }
 
                     if (host != null) {
@@ -206,14 +206,14 @@ public class ScenarioBundleService {
      * Updates localized UI strings for unified bundle elements.
      */
     public void updateTexts() {
-        if (bundleHeader != null) bundleHeader.setText(I18n.getOrDefault("scenario.bundle.header", "📦 UNIFIED BUNDLE MULTI-SCENARIO IMPORT/EXPORT (.ETHER)"));
+        if (bundleHeader != null) bundleHeader.setText(I18n.getOrDefault("scenario.bundle.header", "ðŸ“¦ UNIFIED BUNDLE MULTI-SCENARIO IMPORT/EXPORT (.ETHER)"));
         if (bundleSubtitle != null) bundleSubtitle.setText(I18n.getOrDefault("scenario.desc.bundle", "Export or import the complete scenario (planetary context, ecology, active engines, cultural layers, and demographic grid) in unified .ether format for archiving or sharing."));
         if (btnExportBundle != null) {
-            btnExportBundle.setText(I18n.getOrDefault("scenario.btn.export_bundle", "📦 Export Bundle (.ether)"));
+            btnExportBundle.setText(I18n.getOrDefault("scenario.btn.export_bundle", "ðŸ“¦ Export Bundle (.ether)"));
             btnExportBundle.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_bundle", "Export complete scenario (physics, ecology, engines, layers, and demographics) to a unified .ether bundle file.")));
         }
         if (btnImportBundle != null) {
-            btnImportBundle.setText(I18n.getOrDefault("scenario.btn.import_bundle", "📂 Import Bundle (.ether)"));
+            btnImportBundle.setText(I18n.getOrDefault("scenario.btn.import_bundle", "ðŸ“‚ Import Bundle (.ether)"));
             btnImportBundle.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.import_bundle", "Import and apply a unified .ether bundle file to instantly restore full scenario state.")));
         }
     }
@@ -221,3 +221,4 @@ public class ScenarioBundleService {
     public Button getBtnExportBundle() { return btnExportBundle; }
     public Button getBtnImportBundle() { return btnImportBundle; }
 }
+

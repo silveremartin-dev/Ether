@@ -16,7 +16,7 @@ import org.ether.society.analytics.SimulationRunRepository;
 import org.ether.society.i18n.I18n;
 import org.ether.society.ui.ExecutionContextPanel;
 import org.ether.society.ui.Theme;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.ui.WindowHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,9 +64,9 @@ public final class ComparativeBatchExecutionCoordinator {
         long unexecutedCount = selected.stream().filter(i -> !i.isExecuted() && !i.isExternalBaseline()).count();
 
         if (selected.isEmpty()) {
-            warningLabel.setText(I18n.getOrDefault("analytics.warning.none_selected", "ℹ️ Aucun scénario sélectionné pour la comparaison."));
+            warningLabel.setText(I18n.getOrDefault("analytics.warning.none_selected", "â„¹ï¸ Aucun scÃ©nario sÃ©lectionnÃ© pour la comparaison."));
             warningLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8; -fx-padding: 0; -fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: default;");
-            executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.execute_scenarios", "🚀 Exécuter les scénarios"));
+            executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.execute_scenarios", "ðŸš€ ExÃ©cuter les scÃ©narios"));
             executeMissingBtn.setDisable(true);
             cancelBatchBtn.setVisible(false);
             cancelBatchBtn.setManaged(false);
@@ -83,34 +83,34 @@ public final class ComparativeBatchExecutionCoordinator {
             String hwName = ExecutionContextPanel.getActiveHardwareMode().name();
 
             if (unexecutedCount == 1) {
-                warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.unexecuted_single_est", "⚠️ 1 scénario sélectionné non simulé | %,d ans | ⏱️ Temps estimé : %s (%s)"), totalUnexecutedYears, durStr, hwName));
+                warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.unexecuted_single_est", "âš ï¸ 1 scÃ©nario sÃ©lectionnÃ© non simulÃ© | %,d ans | â±ï¸ Temps estimÃ© : %s (%s)"), totalUnexecutedYears, durStr, hwName));
             } else {
-                warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.unexecuted_plural_est", "⚠️ %d scénarios sélectionnés non simulés | Horizon total : %,d ans | ⏱️ Temps estimé : %s (%s)"), unexecutedCount, totalUnexecutedYears, durStr, hwName));
+                warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.unexecuted_plural_est", "âš ï¸ %d scÃ©narios sÃ©lectionnÃ©s non simulÃ©s | Horizon total : %,d ans | â±ï¸ Temps estimÃ© : %s (%s)"), unexecutedCount, totalUnexecutedYears, durStr, hwName));
             }
             warningLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #f59e0b; -fx-padding: 0; -fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: default;");
             
             if (!isBatchRunning.get()) {
                 executeMissingBtn.setText(unexecutedCount == 1
-                    ? String.format(I18n.getOrDefault("analytics.btn.execute_missing_single_fmt", "🚀 Lancer le scénario (%s)"), durStr)
-                    : String.format(I18n.getOrDefault("analytics.btn.execute_missing_plural_fmt", "🚀 Lancer %d scénarios en file (%s)"), unexecutedCount, durStr));
+                    ? String.format(I18n.getOrDefault("analytics.btn.execute_missing_single_fmt", "ðŸš€ Lancer le scÃ©nario (%s)"), durStr)
+                    : String.format(I18n.getOrDefault("analytics.btn.execute_missing_plural_fmt", "ðŸš€ Lancer %d scÃ©narios en file (%s)"), unexecutedCount, durStr));
                 executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
                 executeMissingBtn.setDisable(false);
                 cancelBatchBtn.setVisible(false);
                 cancelBatchBtn.setManaged(false);
             }
         } else {
-            warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.ready", "✅ Tous les scénarios sélectionnés (%d) sont prêts pour l'audit et la comparaison."), selected.size()));
+            warningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.ready", "âœ… Tous les scÃ©narios sÃ©lectionnÃ©s (%d) sont prÃªts pour l'audit et la comparaison."), selected.size()));
             warningLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #10b981; -fx-padding: 0; -fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: default;");
             long simulatedCount = selected.stream().filter(i -> !i.isExternalBaseline()).count();
             if (!isBatchRunning.get()) {
                 if (simulatedCount == 0) {
-                    executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.reexecute_single", "🔄 Réexécuter le scénario"));
+                    executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.reexecute_single", "ðŸ”„ RÃ©exÃ©cuter le scÃ©nario"));
                     executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #64748b; -fx-text-fill: white; -fx-padding: 6 14;");
                     executeMissingBtn.setDisable(true);
                 } else {
                     executeMissingBtn.setText(simulatedCount == 1
-                        ? I18n.getOrDefault("analytics.btn.reexecute_single", "🔄 Réexécuter le scénario")
-                        : String.format(I18n.getOrDefault("analytics.btn.reexecute_plural", "🔄 Réexécuter les %d scénarios"), simulatedCount));
+                        ? I18n.getOrDefault("analytics.btn.reexecute_single", "ðŸ”„ RÃ©exÃ©cuter le scÃ©nario")
+                        : String.format(I18n.getOrDefault("analytics.btn.reexecute_plural", "ðŸ”„ RÃ©exÃ©cuter les %d scÃ©narios"), simulatedCount));
                     executeMissingBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
                     executeMissingBtn.setDisable(false);
                 }
@@ -150,7 +150,7 @@ public final class ComparativeBatchExecutionCoordinator {
 
         Dialog<ButtonType> confirmDialog = new Dialog<>();
         confirmDialog.setTitle(allAlreadyExecuted
-            ? I18n.getOrDefault("analytics.confirm.reexecute_title", "Confirmation de réexécution")
+            ? I18n.getOrDefault("analytics.confirm.reexecute_title", "Confirmation de rÃ©exÃ©cution")
             : I18n.getOrDefault("analytics.confirm.execute_title", "Confirmation du calcul de simulation"));
         confirmDialog.setHeaderText(null);
 
@@ -175,14 +175,14 @@ public final class ComparativeBatchExecutionCoordinator {
         dialogContent.setMaxWidth(480);
 
         Label headerTitleLabel = new Label(allAlreadyExecuted
-            ? I18n.getOrDefault("analytics.confirm.reexecute_header", "🔄 Réexécuter les scénarios sélectionnés ?")
-            : I18n.getOrDefault("analytics.confirm.execute_header", "🚀 Lancer la simulation physique en tâche de fond"));
+            ? I18n.getOrDefault("analytics.confirm.reexecute_header", "ðŸ”„ RÃ©exÃ©cuter les scÃ©narios sÃ©lectionnÃ©s ?")
+            : I18n.getOrDefault("analytics.confirm.execute_header", "ðŸš€ Lancer la simulation physique en tÃ¢che de fond"));
         headerTitleLabel.setWrapText(true);
         headerTitleLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: " + textTitleColor + ";");
 
         Label introLabel = new Label(allAlreadyExecuted
-            ? I18n.getOrDefault("analytics.confirm.reexecute_content", "Les scénarios sélectionnés ont déjà été simulés et enregistrés sur disque. Les réexécuter régénérera l'intégralité de la télémétrie de manière déterministe. Souhaitez-vous continuer ?")
-            : I18n.getOrDefault("analytics.confirm.execute_intro", "Vous êtes sur le point de lancer l'exécution physique déterministe des scénarios sélectionnés :"));
+            ? I18n.getOrDefault("analytics.confirm.reexecute_content", "Les scÃ©narios sÃ©lectionnÃ©s ont dÃ©jÃ  Ã©tÃ© simulÃ©s et enregistrÃ©s sur disque. Les rÃ©exÃ©cuter rÃ©gÃ©nÃ©rera l'intÃ©gralitÃ© de la tÃ©lÃ©mÃ©trie de maniÃ¨re dÃ©terministe. Souhaitez-vous continuer ?")
+            : I18n.getOrDefault("analytics.confirm.execute_intro", "Vous Ãªtes sur le point de lancer l'exÃ©cution physique dÃ©terministe des scÃ©narios sÃ©lectionnÃ©s :"));
         introLabel.setWrapText(true);
         introLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: " + textBodyColor + "; -fx-line-spacing: 2px;");
 
@@ -190,21 +190,21 @@ public final class ComparativeBatchExecutionCoordinator {
         recapBox.setPadding(new Insets(10, 12, 10, 12));
         recapBox.setStyle("-fx-background-color: " + bgCard + "; -fx-border-color: " + borderColor + "; -fx-border-radius: 6; -fx-background-radius: 6;");
 
-        Label item1 = new Label(String.format("• %s : %d", I18n.getOrDefault("analytics.confirm.scenarios_count", "Scénarios"), targetItems.size()));
+        Label item1 = new Label(String.format("â€¢ %s : %d", I18n.getOrDefault("analytics.confirm.scenarios_count", "ScÃ©narios"), targetItems.size()));
         item1.setStyle("-fx-font-size: 11px; -fx-text-fill: " + textBodyColor + "; -fx-font-weight: bold;");
 
-        Label item2 = new Label(String.format("• %s : %s", I18n.getOrDefault("analytics.confirm.est_time", "Temps total estimé"), durStr));
+        Label item2 = new Label(String.format("â€¢ %s : %s", I18n.getOrDefault("analytics.confirm.est_time", "Temps total estimÃ©"), durStr));
         item2.setStyle("-fx-font-size: 11px; -fx-text-fill: #f59e0b; -fx-font-weight: bold;");
 
-        Label item3 = new Label(String.format("• %s : %s (%d cœurs)", I18n.getOrDefault("analytics.confirm.hardware", "Moteur matériel"), hwName, cores));
+        Label item3 = new Label(String.format("â€¢ %s : %s (%d cÅ“urs)", I18n.getOrDefault("analytics.confirm.hardware", "Moteur matÃ©riel"), hwName, cores));
         item3.setStyle("-fx-font-size: 11px; -fx-text-fill: " + textMutedColor + ";");
 
-        Label item4 = new Label(String.format("• %s : %s", I18n.getOrDefault("analytics.confirm.determinism", "Reproductibilité"), "100% bit-à-bit déterministe"));
+        Label item4 = new Label(String.format("â€¢ %s : %s", I18n.getOrDefault("analytics.confirm.determinism", "ReproductibilitÃ©"), "100% bit-Ã -bit dÃ©terministe"));
         item4.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981;");
 
         recapBox.getChildren().addAll(item1, item2, item3, item4);
 
-        Label questionLabel = new Label(I18n.getOrDefault("analytics.confirm.start_question", "Confirmez-vous le démarrage immédiat ?"));
+        Label questionLabel = new Label(I18n.getOrDefault("analytics.confirm.start_question", "Confirmez-vous le dÃ©marrage immÃ©diat ?"));
         questionLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: " + textBodyColor + ";");
 
         dialogContent.getChildren().addAll(headerTitleLabel, introLabel, recapBox, questionLabel);
@@ -220,8 +220,8 @@ public final class ComparativeBatchExecutionCoordinator {
         pane.getButtonTypes().setAll(confirmBtnType, cancelBtnType);
 
         try {
-            WindowUtils.styleDialogPane(pane);
-            WindowUtils.applyWindowIcon(confirmDialog);
+            WindowHelper.styleDialogPane(pane);
+            WindowHelper.applyWindowIcon(confirmDialog);
             
             Button confirmBtn = (Button) pane.lookupButton(confirmBtnType);
             if (confirmBtn != null) {
@@ -262,16 +262,16 @@ public final class ComparativeBatchExecutionCoordinator {
         };
 
         executeMissingBtn.setDisable(true);
-        executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.executing", "⏳ Processing Batch Queue..."));
+        executeMissingBtn.setText(I18n.getOrDefault("analytics.btn.executing", "â³ Processing Batch Queue..."));
         cancelBatchBtn.setVisible(true);
         cancelBatchBtn.setManaged(true);
         cancelBatchBtn.setDisable(false);
-        cancelBatchBtn.setText(I18n.getOrDefault("analytics.btn.cancel_batch", "🛑 Cancel Batch"));
+        cancelBatchBtn.setText(I18n.getOrDefault("analytics.btn.cancel_batch", "ðŸ›‘ Cancel Batch"));
 
         batchProgressBar.setProgress(0.0);
         batchProgressBar.setVisible(true);
         batchProgressBar.setManaged(true);
-        etaLabel.setText(I18n.getOrDefault("analytics.eta_calculating", "⏱️ Calculating..."));
+        etaLabel.setText(I18n.getOrDefault("analytics.eta_calculating", "â±ï¸ Calculating..."));
         etaLabel.setVisible(true);
         etaLabel.setManaged(true);
 
@@ -352,7 +352,7 @@ public final class ComparativeBatchExecutionCoordinator {
                 isBatchRunning.set(false);
                 batchProgressBar.setVisible(false);
                 batchProgressBar.setManaged(false);
-                etaLabel.setText(String.format(I18n.getOrDefault("analytics.status.batch_completed_fmt", "✅ Completed in %ds (%d scenarios)"), totalElapsedSec, finishedCount.get()));
+                etaLabel.setText(String.format(I18n.getOrDefault("analytics.status.batch_completed_fmt", "âœ… Completed in %ds (%d scenarios)"), totalElapsedSec, finishedCount.get()));
                 scenarioTable.refresh();
                 if (onBatchCompletedCallback != null) {
                     onBatchCompletedCallback.run();
@@ -380,7 +380,8 @@ public final class ComparativeBatchExecutionCoordinator {
             long remainingMs = Math.max(0, totalEstMs - elapsedMs);
             String elapsedStr = ExecutionContextPanel.formatDuration(elapsedMs / 1000.0);
             String remainingStr = ExecutionContextPanel.formatDuration(remainingMs / 1000.0);
-            etaLabel.setText(String.format("⏱️ %s | %s: %s (%.0f%%)", elapsedStr, I18n.getOrDefault("analytics.label.remaining", "Remaining"), remainingStr, overallProgress * 100.0));
+            etaLabel.setText(String.format("â±ï¸ %s | %s: %s (%.0f%%)", elapsedStr, I18n.getOrDefault("analytics.label.remaining", "Remaining"), remainingStr, overallProgress * 100.0));
         }
     }
 }
+

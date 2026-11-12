@@ -15,7 +15,7 @@ import java.util.Map;
  * <p>Fully parameterised for non-Earth worlds (Mars, Venus, Moon, Titan, Super-Earths, Eyeball worlds):</p>
  * <ul>
  *   <li><b>Gravity &amp; Altitude Lapse Rate</b>: Surface gravity $g_{rel}$ scales dynamically with planetary radius
- *       and body type. The environmental lapse rate $\Gamma = 6.5 \times g_{rel}$ (°C/km) scales with gravity.</li>
+ *       and body type. The environmental lapse rate $\Gamma = 6.5 \times g_{rel}$ (Â°C/km) scales with gravity.</li>
  *   <li><b>Atmospheric Pressure &amp; CO2 Partial Pressure</b>: Greenhouse forcing is computed from absolute
  *       CO2 partial pressure $P_{CO2} = P_{atmo} \times [CO2]/10^6$ rather than Earth-bound ppm. Airless worlds ($P_{atmo} &lt; 0.01$ atm)
  *       have zero greenhouse forcing and zero precipitation.</li>
@@ -41,7 +41,7 @@ public class ProceduralGenerator {
 
     /** Pre-industrial Earth reference CO2 partial pressure (1.0 atm * 280 ppm = 0.00028 atm). */
     private static final double CO2_REF_PARTIAL_PRESSURE_ATM = 0.00028;
-    /** Radiative sensitivity: +3.0 °C per doubling of CO2 partial pressure. */
+    /** Radiative sensitivity: +3.0 Â°C per doubling of CO2 partial pressure. */
     private static final double CLIMATE_SENSITIVITY_K = 3.0;
 
     // -------------------------------------------------------------------------
@@ -131,7 +131,7 @@ public class ProceduralGenerator {
         double freq  = preset.noiseFrequency();
         double scale = preset.noiseScale();
 
-        // â”€â”€ 1. Elevation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 1. Elevation Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double e = computeElevationAt(lat, lng, elevNoise, freq, scale, preset);
 
         double elevMeters;
@@ -141,7 +141,7 @@ public class ProceduralGenerator {
             elevMeters = e * Math.abs(preset.minAltitudeMeters());
         }
 
-        // â”€â”€ 2. Slope / Declivity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 2. Slope / Declivity Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double dDeg = 0.3;
         double eN = computeElevationAt(lat + dDeg, lng,       elevNoise, freq, scale, preset);
         double eS = computeElevationAt(lat - dDeg, lng,       elevNoise, freq, scale, preset);
@@ -152,22 +152,22 @@ public class ProceduralGenerator {
         double dLng      = (eE - eW) / (2.0 * dDeg);
         double declivity = Math.sqrt(dLat * dLat + dLng * dLng);
 
-        // â”€â”€ 3. Tidal Acceleration & Internal Dissipation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 3. Tidal Acceleration & Internal Dissipation Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double tidalForce = computeTidalForceIntensity(preset);
 
-        // â”€â”€ 4. Rainfall â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 4. Rainfall Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double r = computeRainfallAt(lat, lng, rainfallNoise, freq, preset);
 
-        // â”€â”€ 5. Temperature (with Tidal Geothermal Heating) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 5. Temperature (with Tidal Geothermal Heating) Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double tempC = computeTemperatureAt(lat, lng, e, elevMeters, r, preset, tidalForce);
 
-        // â”€â”€ 6. Seasonality â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 6. Seasonality Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double seasonality = computeSeasonalityAt(lat, lng, seasonNoise, preset);
 
-        // â”€â”€ 7. Biome â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 7. Biome Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         Biome biome = determineBiome(lat, e, elevMeters, tempC, r, preset, tidalForce);
 
-        // â”€â”€ 8. Hydrography â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 8. Hydrography Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double avgSurround  = (eN + eS + eE + eW) / 4.0;
         double valleyDepth  = Math.max(0.0, avgSurround - e);
         double riverFlow    = 0.0;
@@ -182,7 +182,7 @@ public class ProceduralGenerator {
             aquifer = Math.min(1.0, Math.max(0.0, aquifer));
         }
 
-        // â”€â”€ 9. Crustal Metal Density (Modulated by Seismic/Volcanic/Tidal Flexure)
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 9. Crustal Metal Density (Modulated by Seismic/Volcanic/Tidal Flexure)
         double effectiveSeismic  = preset.seismicActivityLevel() + Math.min(5.0, 1.5 * tidalForce);
         double effectiveVolcanic = preset.volcanicActivityLevel() + Math.min(5.0, 2.0 * tidalForce);
         double seismicBoost  = Math.min(1.0, effectiveSeismic  / 5.0);
@@ -315,12 +315,12 @@ public class ProceduralGenerator {
 
     private double computeTemperatureAt(double lat, double lng, double normElev, double elevMeters,
                                          double rainfall, PlanetPreset preset, double tidalForce) {
-        // â”€â”€ 1. Relative Surface Gravity & Dynamic Lapse Rate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 1. Relative Surface Gravity & Dynamic Lapse Rate Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double rRel = Math.max(0.1, preset.radiusKm() / 6371.0);
         double gRel = preset.isSatellite() ? Math.max(0.05, rRel * 0.4) : Math.max(0.1, rRel);
         double lapseRateCPerKm = 6.5 * gRel;
 
-        // â”€â”€ 2. Rotation & Latitudinal Gradient Damping / Tidal Locking â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 2. Rotation & Latitudinal Gradient Damping / Tidal Locking Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double dayHours = Math.max(1.0, preset.dayLengthHours());
         double rotationDamping = Math.min(1.2, Math.max(0.15, Math.pow(24.0 / dayHours, 0.35)));
 
@@ -334,7 +334,7 @@ public class ProceduralGenerator {
             latTemp = preset.averageTempC() + (preset.temperatureGradient() * rotationDamping) * (cosLat - 0.5);
         }
 
-        // â”€â”€ 3. COâ‚‚ Partial Pressure Greenhouse Forcing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 3. COÃ¢a€ša€š Partial Pressure Greenhouse Forcing Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double pAtmo = Math.max(0.0, preset.atmospherePressureAtm());
         double co2Forcing = 0.0;
         double pressureBoost = 0.0;
@@ -355,16 +355,16 @@ public class ProceduralGenerator {
             }
         }
 
-        // â”€â”€ 4. Geothermal Heating from Internal Tidal Dissipation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 4. Geothermal Heating from Internal Tidal Dissipation Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double tidalGeothermalWarming = preset.isSatellite() ? Math.min(45.0, 10.0 * Math.sqrt(tidalForce)) : 0.0;
 
-        // â”€â”€ 5. Altitude Lapse Rate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 5. Altitude Lapse Rate Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double lapseCorrection = 0.0;
         if (elevMeters > 0) {
             lapseCorrection = (elevMeters / 1000.0) * lapseRateCPerKm;
         }
 
-        // â”€â”€ 6. Evaporative Cooling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 6. Evaporative Cooling Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
         double evapCooling = 0.0;
         if (latTemp > 20.0 && rainfall > 0.5 && pAtmo >= 0.1) {
             evapCooling = (latTemp - 20.0) * (rainfall - 0.5) * 0.4;

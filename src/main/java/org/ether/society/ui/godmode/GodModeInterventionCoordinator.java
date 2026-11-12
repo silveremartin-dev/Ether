@@ -16,7 +16,7 @@ import org.ether.society.i18n.I18n;
 import org.ether.society.model.Biome;
 import org.ether.society.model.ScenarioTimeline;
 import org.ether.society.ui.H3MapCanvas;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.ui.WindowHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +94,7 @@ public final class GodModeInterventionCoordinator {
         }
 
         String daysUnit = durationDays > 1 ? "jours" : "jour";
-        String details = String.format(Locale.ROOT, "Date: %d-%02d-%02d, Lat: %.2f°, Lng: %.2f°, Mag: %.1f, R: %.0fkm, Durée: %d %s",
+        String details = String.format(Locale.ROOT, "Date: %d-%02d-%02d, Lat: %.2fÂ°, Lng: %.2fÂ°, Mag: %.1f, R: %.0fkm, DurÃ©e: %d %s",
                 targetYear, targetMonth + 1, targetDay, lat, lng, mag, radiusKm, durationDays, daysUnit);
 
         timeline.addEntry(targetYear, type, name, details, true, lat, lng, mag, durationDays);
@@ -103,7 +103,7 @@ public final class GodModeInterventionCoordinator {
         if (engine != null && engine.getEventSystem() != null) {
             ActiveEvent ae = new ActiveEvent(
                     "GM_" + System.currentTimeMillis(),
-                    "⚡ GOD MODE: " + name,
+                    "âš¡ GOD MODE: " + name,
                     type, lat, lng, targetYear, targetMonth, targetDay,
                     Math.max(15.0, durationDays * 0.5), mag, durationDays
             );
@@ -175,26 +175,26 @@ public final class GodModeInterventionCoordinator {
         boolean isOcean = nearestCell.getBiome() == Biome.OCEAN || nearestCell.getBiome() == Biome.DEEP_OCEAN;
         if (GodModeDisasterExecutor.isTerrestrialEventType(type) && isOcean) {
             String warnMsg = String.format(Locale.ROOT,
-                    "⚠️ Incompatibilité Géographique :\nL'événement '%s' (%s) ne peut pas se produire en plein océan (Lat: %.2f°, Lng: %.2f°).",
+                    "âš ï¸ IncompatibilitÃ© GÃ©ographique :\nL'Ã©vÃ©nement '%s' (%s) ne peut pas se produire en plein ocÃ©an (Lat: %.2fÂ°, Lng: %.2fÂ°).",
                     name, type, lat, lng);
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
-            alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ Événement incompatible avec le milieu océanique"));
-            alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice", "Veuillez sélectionner des coordonnées situées sur la terre ferme."));
-            WindowUtils.applyWindowIcon(alert);
+            alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "âš ï¸ Ã‰vÃ©nement incompatible avec le milieu ocÃ©anique"));
+            alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice", "Veuillez sÃ©lectionner des coordonnÃ©es situÃ©es sur la terre ferme."));
+            WindowHelper.applyWindowIcon(alert);
             alert.showAndWait();
             return false;
         }
         if (GodModeDisasterExecutor.isOceanicEventType(type) && !isOcean
                 && nearestCell.getElevation() != null && nearestCell.getElevation() > 300) {
             String warnMsg = String.format(Locale.ROOT,
-                    "⚠️ Incompatibilité Géographique :\nL'événement '%s' (%s) nécessite une zone maritime ou côtière (Lat: %.2f°, Lng: %.2f°).",
+                    "âš ï¸ IncompatibilitÃ© GÃ©ographique :\nL'Ã©vÃ©nement '%s' (%s) nÃ©cessite une zone maritime ou cÃ´tiÃ¨re (Lat: %.2fÂ°, Lng: %.2fÂ°).",
                     name, type, lat, lng);
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
-            alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "⚠️ Événement incompatible avec les hautes terres"));
-            alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice_ocean", "Veuillez sélectionner des coordonnées maritimes ou côtières."));
-            WindowUtils.applyWindowIcon(alert);
+            alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "âš ï¸ Ã‰vÃ©nement incompatible avec les hautes terres"));
+            alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice_ocean", "Veuillez sÃ©lectionner des coordonnÃ©es maritimes ou cÃ´tiÃ¨res."));
+            WindowHelper.applyWindowIcon(alert);
             alert.showAndWait();
             return false;
         }
@@ -244,7 +244,7 @@ public final class GodModeInterventionCoordinator {
         if (engine != null && engine.getEventSystem() != null) {
             ActiveEvent ae = new ActiveEvent(
                     "GM_" + System.currentTimeMillis(),
-                    "⚡ GOD MODE: " + title,
+                    "âš¡ GOD MODE: " + title,
                     type, lat, lng, currentYear, currentMonth, currentDay,
                     Math.max(15.0, durationDays * 0.5), mag, durationDays
             );
@@ -286,7 +286,7 @@ public final class GodModeInterventionCoordinator {
                                 eventYear = Integer.parseInt(yearPart);
                             }
                         }
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(GodModeInterventionCoordinator.class).debug("Non-fatal condition in GodModeInterventionCoordinator: {}", ignored.getMessage()); }
 
                     if (eventYear < currentYear) {
                         setStyle("-fx-text-fill: #38bdf8; -fx-font-size: 11px; -fx-cursor: hand;");
@@ -312,15 +312,15 @@ public final class GodModeInterventionCoordinator {
                         String d = entry.details();
                         if (d.contains("Lat:") && d.contains("Lng:")) {
                             int latStart = d.indexOf("Lat:") + 4;
-                            int latEnd = d.indexOf("°", latStart);
+                            int latEnd = d.indexOf("Â°", latStart);
                             int lngStart = d.indexOf("Lng:") + 4;
-                            int lngEnd = d.indexOf("°", lngStart);
+                            int lngEnd = d.indexOf("Â°", lngStart);
                             if (latStart > 3 && latEnd > latStart && lngStart > 3 && lngEnd > lngStart) {
                                 lat = Double.parseDouble(d.substring(latStart, latEnd).trim());
                                 lng = Double.parseDouble(d.substring(lngStart, lngEnd).trim());
                             }
                         }
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(GodModeInterventionCoordinator.class).debug("Non-fatal condition in GodModeInterventionCoordinator: {}", ignored.getMessage()); }
                 }
 
                 if (onCoordinatesSelected != null) {
@@ -341,8 +341,8 @@ public final class GodModeInterventionCoordinator {
         int selected = timelineListView.getSelectionModel().getSelectedIndex();
         timelineListView.getItems().clear();
         String yearPrefix = I18n.getOrDefault("godmode.timeline.year_prefix", "Year");
-        String godBadge = I18n.getOrDefault("godmode.timeline.godmode_badge", "⚡ [GOD MODE]");
-        String histBadge = I18n.getOrDefault("godmode.timeline.historical_badge", "📜 [HISTORICAL]");
+        String godBadge = I18n.getOrDefault("godmode.timeline.godmode_badge", "âš¡ [GOD MODE]");
+        String histBadge = I18n.getOrDefault("godmode.timeline.historical_badge", "ðŸ“œ [HISTORICAL]");
         for (ScenarioTimeline.TimelineEntry entry : timeline.getEntries()) {
             String badge = entry.isGodModeIntervention() ? godBadge : histBadge;
             timelineListView.getItems().add(String.format("%s %5d | %s %s : %s",
@@ -353,3 +353,5 @@ public final class GodModeInterventionCoordinator {
         }
     }
 }
+
+

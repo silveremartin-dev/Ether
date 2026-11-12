@@ -14,7 +14,7 @@ import java.util.List;
  * Radiative Greenhouse Effect, Stefan-Boltzmann Equilibrium &amp; Clausius-Clapeyron Dynamics Engine.
  * <p>
  * Strictly governed by physical atmospheric concentrations ($[\text{CO}_2]$, $[\text{CH}_4]$) and
- * surface radiative physics ({@code AGENTS.md} §7.2, §10.1, §10.2), with zero dependency on
+ * surface radiative physics ({@code AGENTS.md} Â§7.2, Â§10.1, Â§10.2), with zero dependency on
  * synthetic {@code avgTechLevel} mitigation cliffs.
  * </p>
  *
@@ -26,7 +26,7 @@ public class GreenhouseRadiativeEngine extends AbstractSimulationEngine {
 
     private static final double BASELINE_CO2_PPM = 280.0;
     private static final double BASELINE_CH4_PPB = 720.0;
-    private static final double CLIMATE_SENSITIVITY_LAMBDA = 0.8; // °C per W/m²
+    private static final double CLIMATE_SENSITIVITY_LAMBDA = 0.8; // A°C per W/mA²
 
     public static final double STEFAN_BOLTZMANN_SIGMA = 5.670374e-8;
     public static final double EMISSIVITY_EPSILON = 0.98;
@@ -75,7 +75,7 @@ public class GreenhouseRadiativeEngine extends AbstractSimulationEngine {
     }
 
     /**
-     * Computes the global mean surface temperature anomaly (°C) relative to Holocene baseline.
+     * Computes the global mean surface temperature anomaly (Â°C) relative to Holocene baseline.
      */
     public double computeTemperatureAnomalyC() {
         return computeRadiativeForcingWpm2() * CLIMATE_SENSITIVITY_LAMBDA;
@@ -135,7 +135,7 @@ public class GreenhouseRadiativeEngine extends AbstractSimulationEngine {
 
         if (Math.abs(incrementalDeltaT) < 1.0e-5 && Math.abs(incrementalSeaShift) < 1.0e-5) return;
 
-        logger.debug("Greenhouse Engine Step: CO2={} ppm, CH4={} ppb | DeltaT=+{}°C, SeaLevelDelta=+{}m, Forcing={} W/m²",
+        logger.debug("Greenhouse Engine Step: CO2={} ppm, CH4={} ppb | DeltaT=+{}Â°C, SeaLevelDelta=+{}m, Forcing={} W/mÂ²",
                 currentCo2Ppm, currentCh4Ppb,
                 String.format(java.util.Locale.ROOT, "%.2f", deltaT),
                 String.format(java.util.Locale.ROOT, "%.1f", seaShift),

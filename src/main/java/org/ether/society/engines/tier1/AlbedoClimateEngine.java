@@ -21,10 +21,10 @@ import java.util.List;
  * <ul>
  *   <li><b>Humid Periods / Green Sahara (Orbital Precession)</b>: Simulates Milankovitch precession cycles
  *       (21,000-year cycle). Peak orbital insolation intensifies sub-tropical monsoons, transforming continental
- *       deserts (12°N to 30°N) into fertile grassland/savanna and filling mega-lakes & aquifers.</li>
+ *       deserts (12Â°N to 30Â°N) into fertile grassland/savanna and filling mega-lakes & aquifers.</li>
  *   <li><b>Climate Disasters</b>:
  *       <ul>
- *         <li><b>Volcanic Winter</b>: Stratospheric SO₂ aerosol cooling lowering global temperatures.</li>
+ *         <li><b>Volcanic Winter</b>: Stratospheric SOâ‚‚ aerosol cooling lowering global temperatures.</li>
  *         <li><b>Floods & Megastorms</b>: Coastal surges damaging infrastructure and triggering water-borne diseases.</li>
  *       </ul>
  *   </li>
@@ -63,7 +63,7 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
      *
      * @param cells                 List of H3 simulation cells
      * @param simulationYear        Current simulation year (for Milankovitch orbital cycle calculation)
-     * @param volcanicCoolingOffset Active volcanic aerosol cooling in °C (0.0 if normal, -2.0 to -6.0 during volcanic winters)
+     * @param volcanicCoolingOffset Active volcanic aerosol cooling in Â°C (0.0 if normal, -2.0 to -6.0 during volcanic winters)
      */
     public static void processAlbedoAndClimateEvents(List<H3Cell> cells, long simulationYear, double volcanicCoolingOffset) {
         processAlbedoAndClimateEvents(cells, simulationYear, volcanicCoolingOffset, 1.0 / 12.0);
@@ -74,7 +74,7 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
      *
      * @param cells                 List of H3 simulation cells
      * @param simulationYear        Current simulation year (for Milankovitch orbital cycle calculation)
-     * @param volcanicCoolingOffset Active volcanic aerosol cooling in °C (0.0 if normal, -2.0 to -6.0 during volcanic winters)
+     * @param volcanicCoolingOffset Active volcanic aerosol cooling in Â°C (0.0 if normal, -2.0 to -6.0 during volcanic winters)
      * @param dtYears               Time step in years
      */
     public static void processAlbedoAndClimateEvents(List<H3Cell> cells, long simulationYear, double volcanicCoolingOffset, double dtYears) {
@@ -101,7 +101,7 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
                 return;
             }
 
-            // ── 1. Orbital Precession / Continuous Subtropical Monsoon Forcing ─
+            // a”€a”€ 1. Orbital Precession / Continuous Subtropical Monsoon Forcing a”€
             double latitudinalMonsoonWeight = (lat >= 5.0 && lat <= 35.0) 
                     ? Math.sin(Math.toRadians((lat - 5.0) / 30.0 * 180.0)) 
                     : 0.0;
@@ -126,7 +126,7 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
                 cell.setBiomassNatural(Math.min(800.0, curBioNat + 300.0 * continuousMonsoonForcing * dtSafe));
             }
 
-            // ── 2. Budyko-Sellers 1-D Energy Balance Radiative Equilibrium ──────
+            // a”€a”€ 2. Budyko-Sellers 1-D Energy Balance Radiative Equilibrium a”€a”€a”€a”€a”€a”€
             double albedo = cell.calculateDynamicAlbedo();
             double currentTemp = cell.getTemperatureOr(15.0);
 
@@ -137,7 +137,7 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
             double updatedTemp = currentTemp + (targetTemp - currentTemp) * thermalRelaxationFactor;
             cell.setTemperature(Math.max(-250.0, Math.min(600.0, updatedTemp)));
 
-            // ── 3. Megastorm / Flood Disaster Impact ──────────────────────────
+            // a”€a”€ 3. Megastorm / Flood Disaster Impact a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
             double rain = cell.getRainfallOr(500.0);
             if (rain > 900.0 && elev < 30.0 && (Boolean.TRUE.equals(cell.getIsCoastal()) || cell.getBiome() == Biome.BEACH || elev < 10.0)) {
                 floodDisasterCounter.incrementAndGet();
@@ -163,7 +163,7 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
         int floodDisasterCells = floodDisasterCounter.get();
 
         if (greenSaharaCells > 0 || floodDisasterCells > 0 || volcanicCoolingOffset < -0.5) {
-            logger.debug("Climate Engine: Green Sahara active across {} cells, {} flood disaster cells, Volcanic cooling offset: {}°C",
+            logger.debug("Climate Engine: Green Sahara active across {} cells, {} flood disaster cells, Volcanic cooling offset: {}Â°C",
                     greenSaharaCells, floodDisasterCells, String.format("%.2f", volcanicCoolingOffset));
         }
     }

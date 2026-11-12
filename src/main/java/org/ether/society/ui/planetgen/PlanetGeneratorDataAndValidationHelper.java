@@ -18,7 +18,7 @@ import org.ether.society.data.OnlineMapService;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.i18n.I18n;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.ether.society.ui.PresetControlBar;
 import org.ether.society.ui.planet.PlanetAstroSectionBuilder;
 import org.ether.society.ui.planet.PlanetClimateSectionBuilder;
@@ -101,7 +101,7 @@ public final class PlanetGeneratorDataAndValidationHelper {
             @Override
             public void onExportPreset(File targetFile, PlanetPreset preset) {
                 try {
-                    ObjectMapper mapper = EtherJsonUtil.getMapper();
+                    ObjectMapper mapper = EtherJsonHelper.getMapper();
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);
                     mapper.writeValue(targetFile, preset);
                     logger.info("Exported planet preset to {}", targetFile.getAbsolutePath());
@@ -113,7 +113,7 @@ public final class PlanetGeneratorDataAndValidationHelper {
             @Override
             public void onImportPreset(File sourceFile) {
                 try {
-                    ObjectMapper mapper = EtherJsonUtil.getMapper();
+                    ObjectMapper mapper = EtherJsonHelper.getMapper();
                     PlanetPreset preset = mapper.readValue(sourceFile, PlanetPreset.class);
                     topPresetBar.getPresetCombo().getItems().add(preset);
                     topPresetBar.getPresetCombo().setValue(preset);
@@ -426,7 +426,7 @@ public final class PlanetGeneratorDataAndValidationHelper {
         if (!isValid) {
             if (showDialog && warningLabel != null && warningBanner != null) {
                 StringBuilder sb = new StringBuilder();
-                for (String err : errors) sb.append("• ").append(err).append("\n");
+                for (String err : errors) sb.append("â€¢ ").append(err).append("\n");
                 warningLabel.setText(sb.toString().trim());
                 warningBanner.setVisible(true);
                 warningBanner.setManaged(true);
@@ -438,3 +438,4 @@ public final class PlanetGeneratorDataAndValidationHelper {
         return isValid;
     }
 }
+

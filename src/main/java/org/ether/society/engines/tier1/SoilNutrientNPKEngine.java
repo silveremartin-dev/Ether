@@ -57,7 +57,7 @@ public class SoilNutrientNPKEngine extends AbstractSimulationEngine {
         // 1. Relief suitability (declining exponentially on steep mountain topography)
         double sRelief = 1.0 / (1.0 + Math.exp(0.0018 * (elev - 1400.0)));
 
-        // 2. Thermal suitability (growing season GDD response above base temperature T_base = 5°C)
+        // 2. Thermal suitability (growing season GDD response above base temperature T_base = 5A°C)
         double sThermal = 1.0 / (1.0 + Math.exp(-0.35 * (tempC - 7.5)));
 
         // 3. Moisture suitability (effective rain vs evapotranspiration)

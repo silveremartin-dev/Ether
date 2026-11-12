@@ -140,7 +140,7 @@ public final class CalibrationPersistenceService {
                     } catch (Exception snapEx) {
                         try {
                             Files.deleteIfExists(tmpSnapPath);
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(CalibrationPersistenceService.class).debug("Non-fatal condition in CalibrationPersistenceService: {}", ignored.getMessage()); }
                         logger.warn("Could not write snapshot tick {} to {}: {}", snapTick, snapPath, snapEx.getMessage());
                     }
                 }
@@ -155,10 +155,10 @@ public final class CalibrationPersistenceService {
             scenario.setInitialHumanCount(Math.round(def.initialWorldPopMillions() * 1_000_000.0));
             scenario.setInitialCapitalPerCapita(def.initialCapitalPerCapita());
             scenario.setPlanetPreset(PlanetPreset.EARTH_LIKE);
-            org.ether.society.persistence.EtherJsonUtil.writePrettyAtomic(saveDir.resolve("scenario.json"), scenario);
+            org.ether.society.persistence.EtherJsonHelper.writePrettyAtomic(saveDir.resolve("scenario.json"), scenario);
 
             // 5. Persist Historical Telemetry (history.json) atomically
-            org.ether.society.persistence.EtherJsonUtil.writePrettyAtomic(saveDir.resolve("history.json"), snapshots);
+            org.ether.society.persistence.EtherJsonHelper.writePrettyAtomic(saveDir.resolve("history.json"), snapshots);
 
             // 6. Persist Metadata (metadata.json) atomically
             SaveMetadata meta = new SaveMetadata(
@@ -168,12 +168,14 @@ public final class CalibrationPersistenceService {
                     1,
                     def.displayName()
             );
-            org.ether.society.persistence.EtherJsonUtil.writePrettyAtomic(saveDir.resolve("metadata.json"), meta);
+            org.ether.society.persistence.EtherJsonHelper.writePrettyAtomic(saveDir.resolve("metadata.json"), meta);
 
-            logger.info("✅ Reference calibration run '{}' fully persisted with topology & snapshots in {}", def.scenarioKey(), saveDir);
+            logger.info("âœ… Reference calibration run '{}' fully persisted with topology & snapshots in {}", def.scenarioKey(), saveDir);
 
         } catch (Exception ex) {
             logger.warn("Could not persist calibration result to disk for {}: {}", def.scenarioKey(), ex.getMessage(), ex);
         }
     }
 }
+
+

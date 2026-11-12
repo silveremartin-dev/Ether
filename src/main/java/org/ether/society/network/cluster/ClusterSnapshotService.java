@@ -62,7 +62,7 @@ public class ClusterSnapshotService {
     public ClusterSnapshotService(Path snapshotDir, int maxRetainedSnapshots) {
         this.snapshotDir = snapshotDir;
         this.maxRetainedSnapshots = Math.max(1, maxRetainedSnapshots);
-        this.objectMapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
+        this.objectMapper = org.ether.society.persistence.EtherJsonHelper.getMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.objectMapper.configure(com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -131,7 +131,7 @@ public class ClusterSnapshotService {
         Path headState = snapshotDir.resolve("state.bin.gz");
         try {
             Files.copy(targetFile, headState, StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(ClusterSnapshotService.class).debug("Non-fatal condition in ClusterSnapshotService: {}", ignored.getMessage()); }
 
         // Maintain metadata.json for direct UI discovery and replay loading
         try {
@@ -218,6 +218,8 @@ public class ClusterSnapshotService {
                     files[i].delete();
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(ClusterSnapshotService.class).debug("Non-fatal condition in ClusterSnapshotService: {}", ignored.getMessage()); }
     }
 }
+
+

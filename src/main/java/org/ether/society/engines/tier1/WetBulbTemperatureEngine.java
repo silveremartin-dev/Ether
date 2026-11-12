@@ -18,9 +18,9 @@ import java.util.List;
 /**
  * Wet-Bulb Temperature (T_wb) & Human Hyperthermia Limit Engine.
  * Models:
- * 1. <b>Stull Wet-Bulb Temperature Formula (T_wb in °C)</b>: Psychrometric thermodynamic function of dry-bulb temperature (T) and relative humidity (RH).
- * 2. <b>Continuous Hyperthermia Lethality Hazard</b>: Sherwood & Huber (2010), mortality grows exponentially beyond physiological skin cooling limit (T_wb >= 35.0°C).
- * 3. <b>Labor Productivity Attenuation</b>: Dunne et al. (2013), physical work capacity drops progressively between 25°C and 35°C wet-bulb.
+ * 1. <b>Stull Wet-Bulb Temperature Formula (T_wb in Â°C)</b>: Psychrometric thermodynamic function of dry-bulb temperature (T) and relative humidity (RH).
+ * 2. <b>Continuous Hyperthermia Lethality Hazard</b>: Sherwood & Huber (2010), mortality grows exponentially beyond physiological skin cooling limit (T_wb >= 35.0Â°C).
+ * 3. <b>Labor Productivity Attenuation</b>: Dunne et al. (2013), physical work capacity drops progressively between 25Â°C and 35Â°C wet-bulb.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
@@ -33,11 +33,11 @@ public class WetBulbTemperatureEngine extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(WetBulbTemperatureEngine.class);
 
     /**
-     * Calculates Stull Wet-Bulb Temperature (T_wb in °C) from Dry-Bulb Temperature T (°C) and Relative Humidity RH (%).
+     * Calculates Stull Wet-Bulb Temperature (T_wb in Â°C) from Dry-Bulb Temperature T (Â°C) and Relative Humidity RH (%).
      *
-     * @param tempC Dry-bulb temperature in °C
+     * @param tempC Dry-bulb temperature in Â°C
      * @param relativeHumidityPercent Relative humidity (0 to 100)
-     * @return Wet-bulb temperature in °C
+     * @return Wet-bulb temperature in Â°C
      */
     public static double calculateWetBulbTemperatureStull(double tempC, double relativeHumidityPercent) {
         double rh = Math.max(1.0, Math.min(100.0, relativeHumidityPercent));
@@ -76,7 +76,7 @@ public class WetBulbTemperatureEngine extends AbstractSimulationEngine {
 
             double wetBulbTempC = calculateWetBulbTemperatureStull(tempC, rh);
 
-            // Labor productivity attenuation (Dunne et al. 2013): progressive loss of physical work capacity above 25°C
+            // Labor productivity attenuation (Dunne et al. 2013): progressive loss of physical work capacity above 25A°C
             if (wetBulbTempC > 25.0) {
                 double work = cell.getResourceWorkOr(0.0);
                 if (work > 0.0) {
@@ -85,11 +85,11 @@ public class WetBulbTemperatureEngine extends AbstractSimulationEngine {
                 }
             }
 
-            // Continuous hyperthermia lethality limit (Sherwood & Huber 2010): T_wb >= 35.0°C
+            // Continuous hyperthermia lethality limit (Sherwood & Huber 2010): T_wb >= 35.0A°C
             if (wetBulbTempC >= 35.0 && cell.getPopulation() != null && cell.getPopulation() > 0) {
                 hyperthermiaCasualties++;
                 int pop = cell.getPopulation();
-                // Exponential mortality hazard beyond 35°C, scaled by heatwave exposure duration (deltaYears * 12 months)
+                // Exponential mortality hazard beyond 35A°C, scaled by heatwave exposure duration (deltaYears * 12 months)
                 double mortalityHazard = 1.0 - Math.exp(-0.25 * (wetBulbTempC - 35.0));
                 double exposureScale = Math.clamp(deltaYears * 12.0, 0.05, 1.0);
                 int deaths = (int) Math.round(pop * mortalityHazard * exposureScale);
@@ -99,7 +99,7 @@ public class WetBulbTemperatureEngine extends AbstractSimulationEngine {
         }
 
         if (hyperthermiaCasualties > 0) {
-            logger.warn("Wet-Bulb Engine: Lethal hyperthermia event (T_wb >= 35°C) affecting {} populated cells.", hyperthermiaCasualties);
+            logger.warn("Wet-Bulb Engine: Lethal hyperthermia event (T_wb >= 35Â°C) affecting {} populated cells.", hyperthermiaCasualties);
         }
     }
 }

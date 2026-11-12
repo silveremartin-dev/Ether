@@ -206,7 +206,7 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
             return null;
         }
 
-        // Spatial Grid Binning for n2 territory (1.5Ã‚Â° x 1.5Ã‚Â° grid cells)
+        // Spatial Grid Binning for n2 territory (1.5Ãƒa€šÃ‚A° x 1.5Ãƒa€šÃ‚A° grid cells)
         final double binSize = 1.5;
         Map<Long, List<H3Cell>> spatialBins2 = new HashMap<>();
         for (H3Cell c2 : n2.getTerritory()) {
@@ -374,7 +374,7 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
                 // Cliodynamic Warfare Demographics:
                 // 1. Direct combat casualties fall predominantly on the young recruitment cohorts (males 15-24 and 25-49)
                 // 2. Era-dependent & conflict-type civilian collateral attrition (Eckhardt 1989; Valentino 2004)
-                //    - Feudal/Mercenary peak (Thirty Years' War plundering & chevauchÃƒÂ©es at T ~ 3.4)
+                //    - Feudal/Mercenary peak (Thirty Years' War plundering & chevauchÃƒÆ’Ã‚A©es at T ~ 3.4)
                 //    - 18th-century linear army lull (Cabinet wars at T ~ 4.2)
                 //    - Industrial total war & urban siege surge (strategic bombing & mass artillery at T >= 5.0)
                 // 3. Post-battle camp disease outbreak (Zinsser 1935; Smallman-Raynor & Cliff 2004)
@@ -396,7 +396,7 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
 
                 // Physical ordnance & logistics capital per capita of belligerents (Dupuy 1987, Understanding War;
                 // Eckhardt 1989; Valentino 2004):
-                // - Early gunpowder & mercenary siege logistics peak around k_pc ~ 550 kg/cap (Thirty Years' War chevauchÃƒÂ©es)
+                // - Early gunpowder & mercenary siege logistics peak around k_pc ~ 550 kg/cap (Thirty Years' War chevauchÃƒÆ’Ã‚A©es)
                 // - 18th-century linear magazine supply lull around k_pc ~ 950 kg/cap (Cabinet wars)
                 // - Industrial high-explosive artillery & aerial bombardment surge for k_pc >= 2800 kg/cap (Total War)
                 double aggCapitalPerCapita = aggProfile.capitalPerCapita();

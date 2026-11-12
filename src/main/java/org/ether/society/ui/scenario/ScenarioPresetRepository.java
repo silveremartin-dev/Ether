@@ -13,7 +13,7 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Window;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.ether.society.persistence.PresetStorageService;
 import org.ether.society.persistence.ScenarioRepository;
 import org.ether.society.ui.PresetControlBar;
@@ -71,7 +71,7 @@ public class ScenarioPresetRepository {
     }
 
     private void initPresetBar() {
-        scenarioPresetBar = new PresetControlBar<>("scenario.preset_bar", "1. PRÉRÉGLAGES DE SCÉNARIOS");
+        scenarioPresetBar = new PresetControlBar<>("scenario.preset_bar", "1. PRÃ‰RÃ‰GLAGES DE SCÃ‰NARIOS");
         scenarioPresetBar.setExportCategory("scenario");
 
         List<Scenario> builtInScenarios = getBuiltInScenarios();
@@ -110,7 +110,7 @@ public class ScenarioPresetRepository {
             @Override
             public void onExportPreset(File targetFile, Scenario scenario) {
                 try {
-                    ObjectMapper mapper = EtherJsonUtil.getMapper();
+                    ObjectMapper mapper = EtherJsonHelper.getMapper();
                     mapper.enable(SerializationFeature.INDENT_OUTPUT);
                     mapper.writeValue(targetFile, scenario);
                     logger.info("Exported scenario preset to {}", targetFile.getAbsolutePath());
@@ -122,7 +122,7 @@ public class ScenarioPresetRepository {
             @Override
             public void onImportPreset(File sourceFile) {
                 try {
-                    ObjectMapper mapper = EtherJsonUtil.getMapper();
+                    ObjectMapper mapper = EtherJsonHelper.getMapper();
                     Scenario scenario = mapper.readValue(sourceFile, Scenario.class);
                     scenarioPresetBar.getPresetCombo().getItems().add(scenario);
                     scenarioPresetBar.getPresetCombo().setValue(scenario);
@@ -215,13 +215,13 @@ public class ScenarioPresetRepository {
      */
     public void updateTexts() {
         if (scenarioPresetHeader != null) {
-            scenarioPresetHeader.setText(I18n.getOrDefault("scenario.section.presets", "🎛️ GLOBAL PRESETS & SCENARIO SAVE"));
+            scenarioPresetHeader.setText(I18n.getOrDefault("scenario.section.presets", "ðŸŽ›ï¸ GLOBAL PRESETS & SCENARIO SAVE"));
         }
         if (scenarioPresetBar != null) {
             scenarioPresetBar.updateTexts();
         }
         if (scenarioDescLabel != null) {
-            scenarioDescLabel.setText(I18n.getOrDefault("scenario.section.description", "📖 Detailed Description, Initial Conditions & Key Observables:"));
+            scenarioDescLabel.setText(I18n.getOrDefault("scenario.section.description", "ðŸ“– Detailed Description, Initial Conditions & Key Observables:"));
         }
     }
 
@@ -235,3 +235,4 @@ public class ScenarioPresetRepository {
     public boolean isUpdatingFromPreset() { return isUpdatingFromPreset; }
     public void setUpdatingFromPreset(boolean updating) { this.isUpdatingFromPreset = updating; }
 }
+

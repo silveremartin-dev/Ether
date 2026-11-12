@@ -50,11 +50,11 @@ public class ExtractWorldClimTif {
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    // Temperature (°C)
+                    // Temperature (A°C)
                     float tv = tRaster.getSampleFloat(x, y, 0);
                     int tGray;
                     if (tv < -100 || tv > 100) { // NoData oceans/void
-                        tGray = (int) (((15.0 + 50.0) / 100.0) * 255.0); // Ocean baseline 15°C
+                        tGray = (int) (((15.0 + 50.0) / 100.0) * 255.0); // Ocean baseline 15A°C
                     } else {
                         double norm = Math.clamp((tv + 50.0) / 100.0, 0.0, 1.0);
                         tGray = (int) (norm * 255.0);

@@ -118,7 +118,7 @@ public class MethaneClathrateStabilityEngine extends AbstractSimulationEngine {
      */
     public static double calculateEquilibriumPhaseTemperatureCelsius(double pressureMPa) {
         if (pressureMPa < P_ZERO_CLATHRATE_MPA) {
-            // Below minimum pressure (shallow waters < 250m), hydrates are unstable at any oceanic temperature > -10°C
+            // Below minimum pressure (shallow waters < 250m), hydrates are unstable at any oceanic temperature > -10A°C
             return -50.0;
         }
         double logRatio = Math.log(pressureMPa / P_ZERO_CLATHRATE_MPA);
@@ -212,7 +212,7 @@ public class MethaneClathrateStabilityEngine extends AbstractSimulationEngine {
         }
 
         if (activeDissociationCells > 0 && totalMethanePpmOutgassed > 0.01) {
-            logger.info("Methane Clathrate Engine: Dissociation across {} deep marine cells released {} ppm CH4 equivalent (Anomaly: +{}°C).",
+            logger.info("Methane Clathrate Engine: Dissociation across {} deep marine cells released {} ppm CH4 equivalent (Anomaly: +{}Â°C).",
                     activeDissociationCells,
                     String.format(java.util.Locale.ROOT, "%.3f", totalMethanePpmOutgassed),
                     String.format(java.util.Locale.ROOT, "%.2f", globalBenthicWarmingAnomalyC));

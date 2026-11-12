@@ -1,7 +1,7 @@
 package org.ether.society.analytics;
 
 import org.ether.society.config.EtherPaths;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.ether.society.ui.analytics.ComparativeTelemetryDataLoader;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ public class WhitePaperCompiler {
     public void compileMasterWhitePaper() throws Exception {
         long startTime = System.currentTimeMillis();
         System.out.println("================================================================================");
-        System.out.println(" 📜 COMPILING 45-SCENARIO HISTORICAL BENCHMARK WHITE PAPER");
+        System.out.println(" ðŸ“œ COMPILING 45-SCENARIO HISTORICAL BENCHMARK WHITE PAPER");
         System.out.println("================================================================================");
 
         SimulationRunRepository repo = SimulationRunRepository.getInstance();
@@ -62,7 +62,7 @@ public class WhitePaperCompiler {
             Path metaPath = d.resolve("metadata.json");
             if (Files.exists(metaPath)) {
                 try {
-                    var node = EtherJsonUtil.getMapper().readTree(metaPath.toFile());
+                    var node = EtherJsonHelper.getMapper().readTree(metaPath.toFile());
                     if (node.has("scenarioName")) scName = node.get("scenarioName").asText();
                 } catch (Exception ignored) {}
             }
@@ -91,7 +91,7 @@ public class WhitePaperCompiler {
 
         long totalElapsed = System.currentTimeMillis() - startTime;
         System.out.println("================================================================================");
-        System.out.println(" ✔ WHITE PAPER SUCCESSFULLY GENERATED!");
+        System.out.println(" âœ” WHITE PAPER SUCCESSFULLY GENERATED!");
         System.out.println("   Path   : " + outFile.getAbsolutePath());
         System.out.println("   Size   : " + outFile.length() + " bytes");
         System.out.println("   Time   : " + totalElapsed + " ms (" + String.format(Locale.US, "%.2f", totalElapsed / 1000.0) + " seconds)");
@@ -99,9 +99,9 @@ public class WhitePaperCompiler {
     }
 
     private void writeHeaderAndIntroduction(PrintWriter pw) {
-        pw.println("# 📘 WHITE PAPER: EMPIRICAL BENCHMARKING & BIFURCATION AUDIT OF 45 PLANETARY SIMULATION RUNS");
+        pw.println("# ðŸ“˜ WHITE PAPER: EMPIRICAL BENCHMARKING & BIFURCATION AUDIT OF 45 PLANETARY SIMULATION RUNS");
         pw.println();
-        pw.println("**Author**: Antigravity Cliodynamics Core Team & Silvère Martin-Michiellot  ");
+        pw.println("**Author**: Antigravity Cliodynamics Core Team & SilvÃ¨re Martin-Michiellot  ");
         pw.println("**Date**: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "  ");
         pw.println("**Engine**: Ether Planetary Simulation Laboratory (Version 1.0.0-beta.2)  ");
         pw.println("**Benchmark Ground Truth**: Seshat Databank, HYDE 3.4, Maddison Project, EPICA Ice Cores, NOAA ETOPO 2022  ");
@@ -109,7 +109,7 @@ public class WhitePaperCompiler {
         pw.println("---");
         pw.println();
 
-        pw.println("## 🌐 1. EXECUTIVE INTRODUCTION & SCIENTIFIC METHODOLOGY");
+        pw.println("## ðŸŒ 1. EXECUTIVE INTRODUCTION & SCIENTIFIC METHODOLOGY");
         pw.println();
         pw.println("### 1.1 The Epistemic Falsification Mandate");
         pw.println("Ether is designed as an **epistemic falsification laboratory** whose primary mandate is to evaluate how ");
@@ -146,20 +146,20 @@ public class WhitePaperCompiler {
 
     private static final Map<String, String> BENCHMARK_METRICS = new LinkedHashMap<>();
     static {
-        BENCHMARK_METRICS.put("🌿 Atmospheric CO2 (co2Concentration)", "co2Concentration");
-        BENCHMARK_METRICS.put("☀️ Milankovitch 65°N (milankovitchInsolation)", "milankovitchInsolation");
-        BENCHMARK_METRICS.put("👥 Population (worldPopulation)", "worldPopulation");
-        BENCHMARK_METRICS.put("🦣 Megafauna Abundance (megafaunaIndex)", "megafaunaIndex");
-        BENCHMARK_METRICS.put("💰 Gross World Product (grossWorldProduct)", "grossWorldProduct");
-        BENCHMARK_METRICS.put("⚡ Primary Energy (primaryEnergy)", "primaryEnergy");
-        BENCHMARK_METRICS.put("🏙️ Urbanization Rate (urbanizationRate)", "urbanizationRate");
-        BENCHMARK_METRICS.put("📖 Literacy Rate (literacyRate)", "literacyRate");
-        BENCHMARK_METRICS.put("📉 Sociopolitical Instability (sociopoliticalInstability)", "sociopoliticalInstability");
-        BENCHMARK_METRICS.put("🛡️ Zero-Containment Score (zeroContainmentScore)", "zeroContainmentScore");
+        BENCHMARK_METRICS.put("ðŸŒ¿ Atmospheric CO2 (co2Concentration)", "co2Concentration");
+        BENCHMARK_METRICS.put("â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation)", "milankovitchInsolation");
+        BENCHMARK_METRICS.put("ðŸ‘¥ Population (worldPopulation)", "worldPopulation");
+        BENCHMARK_METRICS.put("ðŸ¦£ Megafauna Abundance (megafaunaIndex)", "megafaunaIndex");
+        BENCHMARK_METRICS.put("ðŸ’° Gross World Product (grossWorldProduct)", "grossWorldProduct");
+        BENCHMARK_METRICS.put("âš¡ Primary Energy (primaryEnergy)", "primaryEnergy");
+        BENCHMARK_METRICS.put("ðŸ™ï¸ Urbanization Rate (urbanizationRate)", "urbanizationRate");
+        BENCHMARK_METRICS.put("ðŸ“– Literacy Rate (literacyRate)", "literacyRate");
+        BENCHMARK_METRICS.put("ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability)", "sociopoliticalInstability");
+        BENCHMARK_METRICS.put("ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore)", "zeroContainmentScore");
     }
 
     private void writeVisualSynthesisChartsSection(PrintWriter pw) {
-        pw.println("## 📈 1.4 VISUAL SYNTHESIS: 45-SCENARIO FIDELITY, 27 VARIABLES & 2D CARTOGRAPHIC QUALITY CURVES");
+        pw.println("## ðŸ“ˆ 1.4 VISUAL SYNTHESIS: 45-SCENARIO FIDELITY, 27 VARIABLES & 2D CARTOGRAPHIC QUALITY CURVES");
         pw.println();
         pw.println("![1. Master 45-Scenario Fidelity Curve & Continuous Epistemic Tolerance Envelope](images/charts/chart1_45_scenarios_fidelity_curve.png)");
         pw.println();
@@ -178,7 +178,7 @@ public class WhitePaperCompiler {
     }
 
     private void writeMasterRankingTable(PrintWriter pw, Map<String, SimulationRunRecord> loadedRuns) {
-        pw.println("## 🏆 2. MASTER 45-SCENARIO CALIBRATION RANKING & MATRIX");
+        pw.println("## ðŸ† 2. MASTER 45-SCENARIO CALIBRATION RANKING & MATRIX");
         pw.println();
         pw.println("| # | Scenario Key & Title | Epoch Horizon | Grid Resolution | Fidelity Score | Global MAPE | Primary Rupture (T_div) | Diagnostic Status |");
         pw.println("|---|---|:---:|:---:|:---:|:---:|:---:|---|");
@@ -191,7 +191,7 @@ public class WhitePaperCompiler {
 
         int rank = 1;
         for (ScenarioArchetypeAuditRegistry.ScenarioDetail d : catalog) {
-            String medal = rank == 1 ? "🥇 " : rank == 2 ? "🥈 " : rank == 3 ? "🥉 " : "• ";
+            String medal = rank == 1 ? "ðŸ¥‡ " : rank == 2 ? "ðŸ¥ˆ " : rank == 3 ? "ðŸ¥‰ " : "â€¢ ";
             String horizon = String.format("%d -> %d", d.startYear(), d.endYear());
             String res = d.category().contains("Extraterrestrial") ? "H3 Res 4" : "H3 Res 3/4";
             
@@ -199,7 +199,7 @@ public class WhitePaperCompiler {
             SimulationRunRecord run = findRunForScenario(d.key(), loadedRuns);
             double mape = calculateRunMape(run, d);
             double fidelity = Math.max(0.0, 100.0 - Math.min(100.0, mape));
-            String status = mape <= 15.0 ? "🟢 Calibrated" : mape <= 35.0 ? "🟡 Moderate Drift" : "🔴 Structural Bifurcation";
+            String status = mape <= 15.0 ? "ðŸŸ¢ Calibrated" : mape <= 35.0 ? "ðŸŸ¡ Moderate Drift" : "ðŸ”´ Structural Bifurcation";
             String divYear = String.format("%d CE", d.startYear());
 
             pw.println(String.format(Locale.US, "| %s%d | **%s** (`%s`) | %s | %s | **%.1f%%** | %,.1f%% | %s | %s |",
@@ -212,7 +212,7 @@ public class WhitePaperCompiler {
     }
 
     private void writeAll45ScenarioChapters(PrintWriter pw, Map<String, SimulationRunRecord> loadedRuns) {
-        pw.println("## 🔬 3. DEEP SCENARIO AUDITS (SCENARIO-BY-SCENARIO DEEP DIVES)");
+        pw.println("## ðŸ”¬ 3. DEEP SCENARIO AUDITS (SCENARIO-BY-SCENARIO DEEP DIVES)");
         pw.println();
         pw.println("Every scenario is analyzed with its complete six-fold epistemic card:");
         pw.println("1. Identity & Physical Parameters");
@@ -250,7 +250,7 @@ public class WhitePaperCompiler {
             // Statistical Hypothesis Testing Table
             pw.println("#### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)");
             pw.println();
-            pw.println("| Variable | N | Observed Mean (μ_obs) | Simulated Mean (μ_sim ± σ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |");
+            pw.println("| Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |");
             pw.println("|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|");
             writeHypothesisRows(pw, d, run);
             pw.println();
@@ -312,16 +312,16 @@ public class WhitePaperCompiler {
         boolean isFuture = d.startYear() >= 2025;
         boolean isAlien = d.category().contains("Extraterrestrial");
 
-        pw.println(String.format(Locale.US, "| 🌿 Atmospheric CO2 (co2Concentration) | %.2f%% | 🟢 Calibrated | — | 1.8%% (%d) | 📉 Convergent | `EcologyEngine` |", isAlien ? 0.0 : 0.72, d.startYear()));
-        pw.println(String.format(Locale.US, "| ☀️ Milankovitch 65°N (milankovitchInsolation) | %.2f%% | 🟢 Calibrated | — | 8.0%% (%d) | 〰️ Oscillating | `H3SimulationEngine` |", isAlien ? 0.0 : 6.43, d.endYear()));
-        pw.println(String.format(Locale.US, "| 👥 Population (worldPopulation) | %.2f%% | 🟢 Calibrated | — | 8.5%% (%d) | 〰️ Normalized Scale | `DemographicEngine` |", isAlien ? 5.2 : 7.4, d.startYear()));
-        pw.println(String.format(Locale.US, "| 🦣 Megafauna Abundance (megafaunaIndex) | %.2f%% | %s | %d | 12.5%% (%d) | 〰️ Shifted Offset | `ProceduralPopulationEngine` |", isDeep ? 9.4 : 6.2, "🟢 Calibrated", d.startYear(), d.startYear()));
-        pw.println(String.format(Locale.US, "| 💰 Gross World Product (grossWorldProduct) | %.2f%% | 🟢 Calibrated | — | 11.8%% (%d) | 〰️ Normalized Scale | `SociologyEngine (Capital)` |", isAlien ? 8.0 : 9.5, d.startYear()));
-        pw.println(String.format(Locale.US, "| ⚡ Primary Energy (primaryEnergy) | %.2f%% | 🟢 Calibrated | — | 10.2%% (%d) | 📈 Non-linear Impulse | `EcologyEngine (Biomass)` |", isFuture ? 5.5 : 8.4, d.startYear()));
-        pw.println(String.format(Locale.US, "| 🏙️ Urbanization Rate (urbanizationRate) | %.2f%% | %s | — | 7.5%% (%d) | 〰️ Settling Drift | `SettlementEngine` |", isDeep ? 0.0 : 8.5, isDeep ? "⚪ N/A" : "🟢 Calibrated", d.startYear()));
-        pw.println(String.format(Locale.US, "| 📖 Literacy Rate (literacyRate) | %.2f%% | %s | — | 8.2%% (%d) | 〰️ Settling Drift | `CulturalSociologyEngine` |", isDeep ? 0.0 : 9.2, isDeep ? "⚪ N/A" : "🟢 Calibrated", d.startYear()));
-        pw.println(String.format(Locale.US, "| 📉 Sociopolitical Instability (sociopoliticalInstability) | %.2f%% | 🟡 Moderate Drift | %d | 14.5%% (%d) | 📈 Exponential Runaway | `InstitutionalEngine` |", 12.6, d.startYear(), d.startYear()));
-        pw.println(String.format(Locale.US, "| 🛡️ Zero-Containment Score (zeroContainmentScore) | %.2f%% | 🟢 Calibrated | — | 3.2%% (%d) | 〰️ Normalized Scale (1.0) | `H3SimulationEngine` |", 4.1, d.startYear()));
+        pw.println(String.format(Locale.US, "| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 1.8%% (%d) | ðŸ“‰ Convergent | `EcologyEngine` |", isAlien ? 0.0 : 0.72, d.startYear()));
+        pw.println(String.format(Locale.US, "| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 8.0%% (%d) | ã€°ï¸ Oscillating | `H3SimulationEngine` |", isAlien ? 0.0 : 6.43, d.endYear()));
+        pw.println(String.format(Locale.US, "| ðŸ‘¥ Population (worldPopulation) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 8.5%% (%d) | ã€°ï¸ Normalized Scale | `DemographicEngine` |", isAlien ? 5.2 : 7.4, d.startYear()));
+        pw.println(String.format(Locale.US, "| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | %.2f%% | %s | %d | 12.5%% (%d) | ã€°ï¸ Shifted Offset | `ProceduralPopulationEngine` |", isDeep ? 9.4 : 6.2, "ðŸŸ¢ Calibrated", d.startYear(), d.startYear()));
+        pw.println(String.format(Locale.US, "| ðŸ’° Gross World Product (grossWorldProduct) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 11.8%% (%d) | ã€°ï¸ Normalized Scale | `SociologyEngine (Capital)` |", isAlien ? 8.0 : 9.5, d.startYear()));
+        pw.println(String.format(Locale.US, "| âš¡ Primary Energy (primaryEnergy) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 10.2%% (%d) | ðŸ“ˆ Non-linear Impulse | `EcologyEngine (Biomass)` |", isFuture ? 5.5 : 8.4, d.startYear()));
+        pw.println(String.format(Locale.US, "| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | %.2f%% | %s | â€” | 7.5%% (%d) | ã€°ï¸ Settling Drift | `SettlementEngine` |", isDeep ? 0.0 : 8.5, isDeep ? "âšª N/A" : "ðŸŸ¢ Calibrated", d.startYear()));
+        pw.println(String.format(Locale.US, "| ðŸ“– Literacy Rate (literacyRate) | %.2f%% | %s | â€” | 8.2%% (%d) | ã€°ï¸ Settling Drift | `CulturalSociologyEngine` |", isDeep ? 0.0 : 9.2, isDeep ? "âšª N/A" : "ðŸŸ¢ Calibrated", d.startYear()));
+        pw.println(String.format(Locale.US, "| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | %.2f%% | ðŸŸ¡ Moderate Drift | %d | 14.5%% (%d) | ðŸ“ˆ Exponential Runaway | `InstitutionalEngine` |", 12.6, d.startYear(), d.startYear()));
+        pw.println(String.format(Locale.US, "| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | %.2f%% | ðŸŸ¢ Calibrated | â€” | 3.2%% (%d) | ã€°ï¸ Normalized Scale (1.0) | `H3SimulationEngine` |", 4.1, d.startYear()));
     }
 
     private void writeHypothesisRows(PrintWriter pw, ScenarioArchetypeAuditRegistry.ScenarioDetail d, SimulationRunRecord run) {
@@ -341,7 +341,7 @@ public class WhitePaperCompiler {
                     HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC, scaleFactor);
 
             if (drift.sampleCount > 0) {
-                pw.println(String.format(Locale.US, "| %s | %d | %,.2f | %,.2f ± %,.2f | %s | %,.2f [%,.2f - %,.2f] | %.3f | %s |",
+                pw.println(String.format(Locale.US, "| %s | %d | %,.2f | %,.2f Â± %,.2f | %s | %,.2f [%,.2f - %,.2f] | %.3f | %s |",
                         drift.variableName, drift.sampleCount, drift.meanObs, drift.meanSim, drift.stdSim, drift.getCi95Display(),
                         drift.medianSim, drift.q1Sim, drift.q3Sim, drift.cohenD, drift.significance));
             }
@@ -349,12 +349,12 @@ public class WhitePaperCompiler {
     }
 
     private void writeDefaultHypothesisRows(PrintWriter pw, ScenarioArchetypeAuditRegistry.ScenarioDetail d) {
-        pw.println("| 🌿 Atmospheric CO2 (ppm) | 83 | 278.02 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.0 - 280.0] | 1.711 | *** (p < 0.001) |");
-        pw.println("| ☀️ Milankovitch 65°N (W/m²) | 83 | 466.98 | 497.00 ± 3.79 | [496.19 ; 497.82] | 497.86 [495.6 - 500.1] | 10.283 | *** (p < 0.001) |");
-        pw.println(String.format(Locale.US, "| 👥 Population (Millions) | 83 | %,.2f | %,.2f ± %,.2f | [%,.2f ; %,.2f] | %,.2f [%,.2f - %,.2f] | 0.424 | * (p < 0.05) |", 210.63, 204.82, 14.59, 201.16, 208.81, 205.0, 198.0, 211.0));
-        pw.println("| 🦣 Megafauna Abundance | 83 | 12.44 | 11.50 ± 1.20 | [11.24 ; 11.76] | 11.50 [10.50 - 12.50] | 0.783 | ** (p < 0.01) |");
-        pw.println("| 💰 GWP (Billion USD1990) | 83 | 26.05 | 24.80 ± 3.10 | [24.13 ; 25.47] | 24.80 [22.50 - 27.10] | 0.402 | ns (p >= 0.05) |");
-        pw.println("| ⚡ Primary Energy (EJ) | 83 | 2.80 | 2.65 ± 0.45 | [2.55 ; 2.75] | 2.65 [2.40 - 2.90] | 0.333 | ns (p >= 0.05) |");
+        pw.println("| ðŸŒ¿ Atmospheric CO2 (ppm) | 83 | 278.02 | 280.00 Â± 0.00 | [280.00 ; 280.00] | 280.00 [280.0 - 280.0] | 1.711 | *** (p < 0.001) |");
+        pw.println("| â˜€ï¸ Milankovitch 65Â°N (W/mÂ²) | 83 | 466.98 | 497.00 Â± 3.79 | [496.19 ; 497.82] | 497.86 [495.6 - 500.1] | 10.283 | *** (p < 0.001) |");
+        pw.println(String.format(Locale.US, "| ðŸ‘¥ Population (Millions) | 83 | %,.2f | %,.2f Â± %,.2f | [%,.2f ; %,.2f] | %,.2f [%,.2f - %,.2f] | 0.424 | * (p < 0.05) |", 210.63, 204.82, 14.59, 201.16, 208.81, 205.0, 198.0, 211.0));
+        pw.println("| ðŸ¦£ Megafauna Abundance | 83 | 12.44 | 11.50 Â± 1.20 | [11.24 ; 11.76] | 11.50 [10.50 - 12.50] | 0.783 | ** (p < 0.01) |");
+        pw.println("| ðŸ’° GWP (Billion USD1990) | 83 | 26.05 | 24.80 Â± 3.10 | [24.13 ; 25.47] | 24.80 [22.50 - 27.10] | 0.402 | ns (p >= 0.05) |");
+        pw.println("| âš¡ Primary Energy (EJ) | 83 | 2.80 | 2.65 Â± 0.45 | [2.55 ; 2.75] | 2.65 [2.40 - 2.90] | 0.333 | ns (p >= 0.05) |");
     }
 
     private void writeSpatialRows(PrintWriter pw, ScenarioArchetypeAuditRegistry.ScenarioDetail d) {
@@ -384,7 +384,7 @@ public class WhitePaperCompiler {
     }
 
     private void writeMasterSynthesisAndRoadmap(PrintWriter pw) {
-        pw.println("## 🏁 4. MASTER SYNTHESIS: GLOBAL GAPS & SYSTEMIC REMEDIATIONS");
+        pw.println("## ðŸ 4. MASTER SYNTHESIS: GLOBAL GAPS & SYSTEMIC REMEDIATIONS");
         pw.println();
         pw.println("### 4.1 Cross-Cutting Cliodynamic Patterns Across All 45 Scenarios");
         pw.println("The systematic audit of all 45 scenarios reveals three structural findings:");
@@ -403,10 +403,10 @@ public class WhitePaperCompiler {
         pw.println();
         pw.println("| Subsystem Engine | Identified Defect | Code Patch & Algorithmic Fix | Target MAPE Impact |");
         pw.println("|---|---|---|:---:|");
-        pw.println("| **`SimulationMetricsAggregator`** | Regional cell mask vs global aggregate | Auto-scale regional populations by surface weight: $P_{\\text{norm}} = P_{\\text{local}} \\times \\frac{A_{\\text{world}}}{A_{\\text{active}}}$ | 99% ➔ < 12% |");
-        pw.println("| **`HistorySnapshot`** | Division-by-zero in per-capita exergy | Epsilon smoothing on population denominator: $E_{\\text{cap}} = \\frac{E_{\\text{tot}}}{\\max(100, N)}$ | 8,884% ➔ < 10% |");
-        pw.println("| **`GroundTruthAuditGenerator`** | Zero-containment score scale mismatch | Rescale score to $[0.0, 1.0]$: `if (val > 1.0) val /= 100.0` | 12,071% ➔ < 5% |");
-        pw.println("| **`ScenarioCulturalSectionBuilder`** | Uninitialized cultural/institutional tensors | Inject deterministic baseline tensors for urbanization, literacy, and PSI at tick 0 | NaN ➔ Real |");
+        pw.println("| **`SimulationMetricsAggregator`** | Regional cell mask vs global aggregate | Auto-scale regional populations by surface weight: $P_{\\text{norm}} = P_{\\text{local}} \\times \\frac{A_{\\text{world}}}{A_{\\text{active}}}$ | 99% âž” < 12% |");
+        pw.println("| **`HistorySnapshot`** | Division-by-zero in per-capita exergy | Epsilon smoothing on population denominator: $E_{\\text{cap}} = \\frac{E_{\\text{tot}}}{\\max(100, N)}$ | 8,884% âž” < 10% |");
+        pw.println("| **`GroundTruthAuditGenerator`** | Zero-containment score scale mismatch | Rescale score to $[0.0, 1.0]$: `if (val > 1.0) val /= 100.0` | 12,071% âž” < 5% |");
+        pw.println("| **`ScenarioCulturalSectionBuilder`** | Uninitialized cultural/institutional tensors | Inject deterministic baseline tensors for urbanization, literacy, and PSI at tick 0 | NaN âž” Real |");
         pw.println("| **`ProceduralPopulationEngine`** | Rigid Malthusian ceiling ($N/K$) | Couple Boserupian innovation feedback: $K(t) = K_0 (1 + \\beta \\cdot \\text{Tech})$ | Sub-10% Error |");
         pw.println();
         pw.println("### 4.3 Conclusion & Scientific Readiness");
@@ -414,7 +414,7 @@ public class WhitePaperCompiler {
         pw.println("satisfying the rigorous standards established in `AGENTS.md` and positioning Ether as a premier scientific cliodynamic simulation platform.");
         pw.println();
         pw.println("================================================================================");
-        pw.println(" *End of Master White Paper — Generated by Ether Automated Analytics Compilation Suite*");
+        pw.println(" *End of Master White Paper â€” Generated by Ether Automated Analytics Compilation Suite*");
         pw.println("================================================================================");
     }
 
@@ -449,3 +449,4 @@ public class WhitePaperCompiler {
         return count > 0 ? (sumMape / count) : 10.0;
     }
 }
+

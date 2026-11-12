@@ -100,7 +100,7 @@ public final class IamcSspCsvDataIngestor {
                                 yearIndices.add(i);
                                 years.add(yr);
                             }
-                        } catch (NumberFormatException ignored) {}
+                        } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(IamcSspCsvDataIngestor.class).debug("Non-fatal condition in IamcSspCsvDataIngestor: {}", ignored.getMessage()); }
                     }
                 }
             }
@@ -135,7 +135,7 @@ public final class IamcSspCsvDataIngestor {
                             try {
                                 double val = Double.parseDouble(rawVal);
                                 pts.put(years.get(k), val);
-                            } catch (NumberFormatException ignored) {}
+                            } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(IamcSspCsvDataIngestor.class).debug("Non-fatal condition in IamcSspCsvDataIngestor: {}", ignored.getMessage()); }
                         }
                     }
                 }
@@ -216,3 +216,4 @@ public final class IamcSspCsvDataIngestor {
         return null;
     }
 }
+

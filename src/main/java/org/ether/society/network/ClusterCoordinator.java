@@ -180,7 +180,7 @@ public class ClusterCoordinator {
 
     private void startMasterServer() throws IOException {
         masterServerSocket = new ServerSocket(port);
-        logger.info("🟢 Ether Cluster Master Server started on port {} (Security Active)", port);
+        logger.info("ðŸŸ¢ Ether Cluster Master Server started on port {} (Security Active)", port);
 
         ClusterNodeRecord masterNode = new ClusterNodeRecord("master-local", "127.0.0.1", port, ClusterRole.MASTER, NodeStatus.ACTIVE, "Local Host Master CPU/GPU");
         nodeRegistry.put(masterNode.getId(), masterNode);
@@ -329,7 +329,7 @@ public class ClusterCoordinator {
         for (ClusterNodeRecord node : nodeRegistry.values()) {
             if (node.getRole() == ClusterRole.WORKER && node.getStatus() != NodeStatus.DISCONNECTED) {
                 if (now - node.getLastHeartbeatNanos() > timeoutNanos) {
-                    logger.warn("⚠️ Cluster Node [{}] heartbeat timeout! Marking DISCONNECTED.", node.getId());
+                    logger.warn("âš ï¸ Cluster Node [{}] heartbeat timeout! Marking DISCONNECTED.", node.getId());
                     node.setStatus(NodeStatus.DISCONNECTED);
                     workerSocketsOut.remove(node.getId());
                     changed = true;
@@ -350,7 +350,7 @@ public class ClusterCoordinator {
     public synchronized void dispatchScenarioToCluster(Scenario scenario) {
         this.currentActiveScenario = scenario;
         String scenarioName = scenario != null ? scenario.getName() : "Default Scenario";
-        logger.info("📡 Master broadcasting Scenario [{}] to all active cluster workers...", scenarioName);
+        logger.info("ðŸ“¡ Master broadcasting Scenario [{}] to all active cluster workers...", scenarioName);
     }
 
     /**
@@ -456,7 +456,7 @@ public class ClusterCoordinator {
         try {
             if (masterServerSocket != null && !masterServerSocket.isClosed()) masterServerSocket.close();
             if (workerClientSocket != null && !workerClientSocket.isClosed()) workerClientSocket.close();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) { org.slf4j.LoggerFactory.getLogger(ClusterCoordinator.class).debug("Non-fatal condition in ClusterCoordinator: {}", ignored.getMessage()); }
         logger.info("Cluster Manager stopped cleanly.");
     }
 

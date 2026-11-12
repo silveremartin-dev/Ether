@@ -89,7 +89,7 @@ public final class HistoricalClimateRasterizer {
             tEq = 28.0; tNorthPole = -28.0; tSouthPole = -47.0; // Holocene Optimum
         }
 
-        // 1. Asymmetric hemispheric thermal baseline (thermal equator is naturally at ~6°N)
+        // 1. Asymmetric hemispheric thermal baseline (thermal equator is naturally at ~6A°N)
         double baseTemp;
         if (lat >= 6.0) {
             double f = Math.sin(Math.toRadians((lat - 6.0) * (90.0 / 84.0)));
@@ -131,7 +131,7 @@ public final class HistoricalClimateRasterizer {
             if (dCanada < 4.0) tempC -= (11.0 * Math.exp(-dCanada * 0.5));
         }
 
-        // 4. Elevation Lapse Rate (-6.5 °C per 1000m on land)
+        // 4. Elevation Lapse Rate (-6.5 A°C per 1000m on land)
         if (elevM > 0.0) {
             tempC -= 0.0065 * elevM;
         }
@@ -163,7 +163,7 @@ public final class HistoricalClimateRasterizer {
             tempC -= (coolLaurentide + coolFenno + amocPlume * 9.0);
         }
 
-        // 6. Spherical Harmonic & Planetary Wave Meander Noise (~1.5°C)
+        // 6. Spherical Harmonic & Planetary Wave Meander Noise (~1.5A°C)
         double thermalNoise = CLIMATE_NOISE.noise(nx * 2.5, ny * 2.5, nz * 2.5) * 1.8
                             + CLIMATE_NOISE.noise(nx * 6.0, ny * 6.0, nz * 6.0) * 0.7;
         tempC += thermalNoise;
@@ -204,7 +204,7 @@ public final class HistoricalClimateRasterizer {
         double stormSouth = Math.exp(-Math.pow(lat - (-48.0), 2) / 75.0) * 1250.0;
         rainMm += (stormNorth + stormSouth);
 
-        // 4. Polar Aridification (> 62° N/S)
+        // 4. Polar Aridification (> 62A° N/S)
         double absLat = Math.abs(lat);
         if (absLat > 62.0) {
             rainMm = Math.max(60.0, rainMm * Math.exp(-(absLat - 62.0) / 8.5));
@@ -329,7 +329,7 @@ public final class HistoricalClimateRasterizer {
      * Rasterizes the global temperature map encoded in grayscale.
      *
      * @param year epoch year
-     * @return grayscale BufferedImage [-50°C, +50°C]
+     * @return grayscale BufferedImage [-50Â°C, +50Â°C]
      */
     public static BufferedImage rasterizeTemperatureMap(long year) {
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -383,7 +383,7 @@ public final class HistoricalClimateRasterizer {
      * Rasterizes the global seasonal amplitude map encoded in grayscale.
      *
      * @param year epoch year
-     * @return grayscale BufferedImage [1°C, 65°C]
+     * @return grayscale BufferedImage [1Â°C, 65Â°C]
      */
     public static BufferedImage rasterizeSeasonalityMap(long year) {
         BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);

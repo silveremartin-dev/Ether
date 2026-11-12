@@ -23,9 +23,9 @@ import java.util.List;
  *
  * <p>Models non-linear fractal power laws governing human urban agglomerations:</p>
  * <ul>
- *   <li><b>Super-linear scaling (β ≈ 1.15)</b>: Socio-economic output (GDP, patents, innovation, crime)
+ *   <li><b>Super-linear scaling (Î² â‰ˆ 1.15)</b>: Socio-economic output (GDP, patents, innovation, crime)
  *       scales super-linearly with urban population: $Y \propto N^{1.15}$.</li>
- *   <li><b>Sub-linear scaling (γ ≈ 0.85)</b>: Material infrastructure networks (road surface, power grid length, pipes)
+ *   <li><b>Sub-linear scaling (Î³ â‰ˆ 0.85)</b>: Material infrastructure networks (road surface, power grid length, pipes)
  *       scale sub-linearly with urban population: $I \propto N^{0.85}$ (geometry of fractal supply networks).</li>
  * </ul>
  *
@@ -55,10 +55,10 @@ public class WestBettencourtAllometryEngine extends AbstractSimulationEngine {
     public String getEquationsTooltip() {
         return """
                [West-Bettencourt Urban Scaling Laws (PNAS 2007)]
-               • Super-Linear Output:  Y_i = Y_0 · (N_i / N_ref)^1.15  (GDP, Patents, Wages)
-               • Sub-Linear Network:  I_i = I_0 · (N_i / N_ref)^0.85  (Roads, Cables, Energy Grid)
-               • Metabolic Pace:      v_pace ∝ N_i^0.15 (Pace of urban life & interactions)
-               Units: N [hab], Y [$/an, brevets], I [km réseau, J/hab]
+               â€¢ Super-Linear Output:  Y_i = Y_0 Â· (N_i / N_ref)^1.15  (GDP, Patents, Wages)
+               â€¢ Sub-Linear Network:  I_i = I_0 Â· (N_i / N_ref)^0.85  (Roads, Cables, Energy Grid)
+               â€¢ Metabolic Pace:      v_pace âˆ N_i^0.15 (Pace of urban life & interactions)
+               Units: N [hab], Y [$/an, brevets], I [km rÃ©seau, J/hab]
                """;
     }
 
@@ -80,7 +80,7 @@ public class WestBettencourtAllometryEngine extends AbstractSimulationEngine {
 
             double normalizedPop = Math.max(1.0, (double) pop / refPop);
 
-            // Super-linear capital & innovation output (West & Bettencourt 2007: Y ∝ N^1.15), bounded by thermodynamic power capacity (Garrett 2011)
+            // Super-linear capital & innovation output (West & Bettencourt 2007: Y aˆ N^1.15), bounded by thermodynamic power capacity (Garrett 2011)
             double superlinearFactor = Math.pow(normalizedPop, SUPERLINEAR_EXPONENT - 1.0); // N^0.15 boost per capita
             double currentCapital = cell.getResourceCapitalOr(10.0);
             double kPerCapita = currentCapital / pop;

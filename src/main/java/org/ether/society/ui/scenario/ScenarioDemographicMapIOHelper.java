@@ -19,7 +19,7 @@ import org.ether.society.database.H3Cell;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.ui.WindowHelper;
 import org.ether.society.ui.util.DataSourceUIHelper;
 import org.ether.society.ui.util.ScenarioCellPopulationDistributor;
 import org.slf4j.Logger;
@@ -41,31 +41,31 @@ final class ScenarioDemographicMapIOHelper {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioDemographicMapIOHelper.class);
 
     static final Map<String, String> DENSITY_LABELS = Map.ofEntries(
-            Map.entry("EARTH_EMPIRICAL_RASTER", "🌍 Pre-Generated Earth Empirical Raster (HYDE 3.4 / Paleo)"),
-            Map.entry("UNBIASED_NATURAL", "⚖ Natural Bio-Climatic Equilibrium (Unbiased)"),
-            Map.entry("COASTAL_MARITIME", "🌊 Coastal & Maritime Focus"),
-            Map.entry("RIVER_VALLEYS", "🏞 River Valleys & Alluvial Basins"),
-            Map.entry("HIGHLAND_MOUNTAIN", "🏔 Highland Refuges & Mountain Reliefs"),
-            Map.entry("INLAND_OASIS", "🌴 Inland Hydrographic Basins & Oases"),
-            Map.entry("EQUATORIAL_BELT", "☀️ Equatorial Belt & Tropical Zone"),
-            Map.entry("URBAN_CLUSTERS", "🏙 Metropolises & Urban Clusters"),
-            Map.entry("SPARSE_NOMADIC", "⛺ Sparse Nomadic & Pastoralist Dispersion"),
-            Map.entry("UNIFORM", "🟦 Absolute Uniform Distribution"),
-            Map.entry("RANDOM", "🎲 Stochastic Random Distribution")
+            Map.entry("EARTH_EMPIRICAL_RASTER", "ðŸŒ Pre-Generated Earth Empirical Raster (HYDE 3.4 / Paleo)"),
+            Map.entry("UNBIASED_NATURAL", "âš– Natural Bio-Climatic Equilibrium (Unbiased)"),
+            Map.entry("COASTAL_MARITIME", "ðŸŒŠ Coastal & Maritime Focus"),
+            Map.entry("RIVER_VALLEYS", "ðŸž River Valleys & Alluvial Basins"),
+            Map.entry("HIGHLAND_MOUNTAIN", "ðŸ” Highland Refuges & Mountain Reliefs"),
+            Map.entry("INLAND_OASIS", "ðŸŒ´ Inland Hydrographic Basins & Oases"),
+            Map.entry("EQUATORIAL_BELT", "â˜€ï¸ Equatorial Belt & Tropical Zone"),
+            Map.entry("URBAN_CLUSTERS", "ðŸ™ Metropolises & Urban Clusters"),
+            Map.entry("SPARSE_NOMADIC", "â›º Sparse Nomadic & Pastoralist Dispersion"),
+            Map.entry("UNIFORM", "ðŸŸ¦ Absolute Uniform Distribution"),
+            Map.entry("RANDOM", "ðŸŽ² Stochastic Random Distribution")
     );
 
     static final Map<String, String> DENSITY_DESCRIPTIONS = Map.ofEntries(
-            Map.entry("EARTH_EMPIRICAL_RASTER", "🌍 Pre-Generated Earth Empirical Raster: Authoritative cartographic raster precomputed from HYDE 3.4, EPICA Dome C, and Paleolithic archaeological hearths."),
-            Map.entry("UNBIASED_NATURAL", "⚖ Natural Bio-Climatic Equilibrium: Pure physical model without artificial bias. Population settles strictly according to real environmental suitability (biomes, temperature, waterways, relief)."),
-            Map.entry("COASTAL_MARITIME", "🌊 Coastal & Maritime Focus: Encourages human settlement along ocean coastlines, river deltas, and maritime margins."),
-            Map.entry("RIVER_VALLEYS", "🏞 River Valleys & Alluvial Basins: High population concentration along major hydrographic river networks and fertile alluvial basins."),
-            Map.entry("HIGHLAND_MOUNTAIN", "🏔 Highland Refuges & Mountain Reliefs: Preferential densification in high valleys, mountain plateaus, and defensive elevated reliefs."),
-            Map.entry("INLAND_OASIS", "🌴 Inland Basins & Oases: Settlement around endorheic depressions and accessible groundwater tables."),
-            Map.entry("EQUATORIAL_BELT", "☀️ Equatorial Belt: Primary settlement concentrated around equatorial latitudes and high solar irradiance zones."),
-            Map.entry("URBAN_CLUSTERS", "🏙 Metropolises & Urban Clusters: Procedural emergence of multiple dense urban aggregation hubs."),
-            Map.entry("SPARSE_NOMADIC", "⛺ Sparse Nomadic Dispersion: Low-density pastoral population dispersed broadly across all viable biomes."),
-            Map.entry("UNIFORM", "🟦 Absolute Uniform Distribution: Strictly constant population density across all land cells on the H3 grid."),
-            Map.entry("RANDOM", "🎲 Stochastic Distribution: Uniformly random population allocation across land cells.")
+            Map.entry("EARTH_EMPIRICAL_RASTER", "ðŸŒ Pre-Generated Earth Empirical Raster: Authoritative cartographic raster precomputed from HYDE 3.4, EPICA Dome C, and Paleolithic archaeological hearths."),
+            Map.entry("UNBIASED_NATURAL", "âš– Natural Bio-Climatic Equilibrium: Pure physical model without artificial bias. Population settles strictly according to real environmental suitability (biomes, temperature, waterways, relief)."),
+            Map.entry("COASTAL_MARITIME", "ðŸŒŠ Coastal & Maritime Focus: Encourages human settlement along ocean coastlines, river deltas, and maritime margins."),
+            Map.entry("RIVER_VALLEYS", "ðŸž River Valleys & Alluvial Basins: High population concentration along major hydrographic river networks and fertile alluvial basins."),
+            Map.entry("HIGHLAND_MOUNTAIN", "ðŸ” Highland Refuges & Mountain Reliefs: Preferential densification in high valleys, mountain plateaus, and defensive elevated reliefs."),
+            Map.entry("INLAND_OASIS", "ðŸŒ´ Inland Basins & Oases: Settlement around endorheic depressions and accessible groundwater tables."),
+            Map.entry("EQUATORIAL_BELT", "â˜€ï¸ Equatorial Belt: Primary settlement concentrated around equatorial latitudes and high solar irradiance zones."),
+            Map.entry("URBAN_CLUSTERS", "ðŸ™ Metropolises & Urban Clusters: Procedural emergence of multiple dense urban aggregation hubs."),
+            Map.entry("SPARSE_NOMADIC", "â›º Sparse Nomadic Dispersion: Low-density pastoral population dispersed broadly across all viable biomes."),
+            Map.entry("UNIFORM", "ðŸŸ¦ Absolute Uniform Distribution: Strictly constant population density across all land cells on the H3 grid."),
+            Map.entry("RANDOM", "ðŸŽ² Stochastic Distribution: Uniformly random population allocation across land cells.")
     );
 
     private ScenarioDemographicMapIOHelper() {
@@ -167,7 +167,7 @@ final class ScenarioDemographicMapIOHelper {
             }
         });
         techPresetCombo.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.tech_preset",
-                "Select initial physical endowment (K₀, E₀, F₀, I₀) or leave auto-calculated based on T₀ year.")));
+                "Select initial physical endowment (Kâ‚€, Eâ‚€, Fâ‚€, Iâ‚€) or leave auto-calculated based on Tâ‚€ year.")));
         techPresetCombo.valueProperty().addListener((obs, oldV, newV) -> {
             context.notifyParamChange();
             boolean isCustom = (newV == Scenario.TechPreset.CUSTOM);
@@ -190,13 +190,13 @@ final class ScenarioDemographicMapIOHelper {
         combo.setMaxWidth(Double.MAX_VALUE);
         combo.getItems().addAll(
                 "",
-                "🌍 Terre — HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]",
-                "🌍 Terre — Paléo-Démographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC à -10 000 BC]",
-                "🌍 Terre — CShapes & Centennia Reconstitutions Démographiques [Empires & États, -3000 BC à +2000 AD]",
-                "🔴 Mars — Modèle de Colonisation Spatiale & Dômes d'Habitation [Planétaire (Mars), +2050 AD à Futur]",
-                "🟡 Vénus — Stations Aérostatiques Cloud Cities (Altitude 50 km) [Planétaire (Vénus), +2100 AD à Futur]",
-                "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton [Planétaire (Lune), +2040 AD à Futur]",
-                "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente [Planétaire (Mercure), +2150 AD à Futur]"
+                "ðŸŒ Terre â€” HYDE 3.4 / Grille Historique AnthropocÃ¨ne [Global, -10 000 BC Ã  +2023 AD]",
+                "ðŸŒ Terre â€” PalÃ©o-DÃ©mographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC Ã  -10 000 BC]",
+                "ðŸŒ Terre â€” CShapes & Centennia Reconstitutions DÃ©mographiques [Empires & Ã‰tats, -3000 BC Ã  +2000 AD]",
+                "ðŸ”´ Mars â€” ModÃ¨le de Colonisation Spatiale & DÃ´mes d'Habitation [PlanÃ©taire (Mars), +2050 AD Ã  Futur]",
+                "ðŸŸ¡ VÃ©nus â€” Stations AÃ©rostatiques Cloud Cities (Altitude 50 km) [PlanÃ©taire (VÃ©nus), +2100 AD Ã  Futur]",
+                "âšª Lune â€” Bases SÃ©lÃ©nites Sous-Terraines & CratÃ¨res Shackleton [PlanÃ©taire (Lune), +2040 AD Ã  Futur]",
+                "âšª Mercure â€” DÃ´mes Polaires & Habitats d'Ombre Permanente [PlanÃ©taire (Mercure), +2150 AD Ã  Futur]"
         );
         DataSourceUIHelper.setupDetailedSourceCombo(combo, "common.combo.prompt_source", "planet.tooltip.map_source_hint");
         String initSrc = pickDemoSourceForEpoch(context.getStartYear(), context.getActivePlanetPreset());
@@ -225,18 +225,18 @@ final class ScenarioDemographicMapIOHelper {
     static String pickDemoSourceForEpoch(long startYear, PlanetPreset planet) {
         String pName = planet != null ? planet.name().toLowerCase() : "";
         if (pName.contains("mars") || pName.contains("ares"))
-            return "🔴 Mars — Modèle de Colonisation Spatiale & Dômes d'Habitation [Planétaire (Mars), +2050 AD à Futur]";
-        if (pName.contains("vénus") || pName.contains("venus") || pName.contains("hesperos"))
-            return "🟡 Vénus — Stations Aérostatiques Cloud Cities (Altitude 50 km) [Planétaire (Vénus), +2100 AD à Futur]";
+            return "ðŸ”´ Mars â€” ModÃ¨le de Colonisation Spatiale & DÃ´mes d'Habitation [PlanÃ©taire (Mars), +2050 AD Ã  Futur]";
+        if (pName.contains("vÃ©nus") || pName.contains("venus") || pName.contains("hesperos"))
+            return "ðŸŸ¡ VÃ©nus â€” Stations AÃ©rostatiques Cloud Cities (Altitude 50 km) [PlanÃ©taire (VÃ©nus), +2100 AD Ã  Futur]";
         if (pName.contains("lune") || pName.contains("moon") || pName.contains("selene"))
-            return "⚪ Lune — Bases Sélénites Sous-Terraines & Cratères Shackleton [Planétaire (Lune), +2040 AD à Futur]";
+            return "âšª Lune â€” Bases SÃ©lÃ©nites Sous-Terraines & CratÃ¨res Shackleton [PlanÃ©taire (Lune), +2040 AD Ã  Futur]";
         if (pName.contains("mercure") || pName.contains("mercury") || pName.contains("hermes"))
-            return "⚪ Mercure — Dômes Polaires & Habitats d'Ombre Permanente [Planétaire (Mercure), +2150 AD à Futur]";
+            return "âšª Mercure â€” DÃ´mes Polaires & Habitats d'Ombre Permanente [PlanÃ©taire (Mercure), +2150 AD Ã  Futur]";
         if (startYear < -10000)
-            return "🌍 Terre — Paléo-Démographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC à -10 000 BC]";
+            return "ðŸŒ Terre â€” PalÃ©o-DÃ©mographie & Expansion Sapiens [Afrique & Eurasie, -100 000 BC Ã  -10 000 BC]";
         if (startYear >= -3000 && startYear < 1900)
-            return "🌍 Terre — CShapes & Centennia Reconstitutions Démographiques [Empires & États, -3000 BC à +2000 AD]";
-        return "🌍 Terre — HYDE 3.4 / Grille Historique Anthropocène [Global, -10 000 BC à +2023 AD]";
+            return "ðŸŒ Terre â€” CShapes & Centennia Reconstitutions DÃ©mographiques [Empires & Ã‰tats, -3000 BC Ã  +2000 AD]";
+        return "ðŸŒ Terre â€” HYDE 3.4 / Grille Historique AnthropocÃ¨ne [Global, -10 000 BC Ã  +2023 AD]";
     }
 
     /**
@@ -259,15 +259,15 @@ final class ScenarioDemographicMapIOHelper {
                 if (!val.valid()) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle(I18n.getOrDefault("scenario.dialog.invalid_map_title", "Carte Incompatible ou Invalide"));
-                    alert.setHeaderText(I18n.getOrDefault("scenario.dialog.invalid_map_header", "Fichier de carte non supporté ou illisible"));
+                    alert.setHeaderText(I18n.getOrDefault("scenario.dialog.invalid_map_header", "Fichier de carte non supportÃ© ou illisible"));
                     alert.setContentText(file.getName() + " :\n" + val.message() + "\n\n"
-                            + I18n.getOrDefault("scenario.dialog.invalid_map_hint", "Veuillez fournir une image raster valide (PNG/JPG) en projection équirectangulaire (2:1)."));
+                            + I18n.getOrDefault("scenario.dialog.invalid_map_hint", "Veuillez fournir une image raster valide (PNG/JPG) en projection Ã©quirectangulaire (2:1)."));
                     alert.showAndWait();
                     return;
                 }
                 builder.setCustomDensityImage(img);
                 if (builder.getDensityMapFileLabel() != null) {
-                    builder.getDensityMapFileLabel().setText(String.format("📷 %s (%dx%d)", file.getName(), val.width(), val.height()));
+                    builder.getDensityMapFileLabel().setText(String.format("ðŸ“· %s (%dx%d)", file.getName(), val.width(), val.height()));
                 }
                 if (builder.getRadioImportDemo() != null) builder.getRadioImportDemo().setSelected(true);
                 updateDemoCompatibilityDisplay(builder, context);
@@ -301,15 +301,15 @@ final class ScenarioDemographicMapIOHelper {
             ImageMapLoader.ImageValidationResult val = ImageMapLoader.validateMapImage(img);
             if (!val.valid()) {
                 compatLbl.setText(String.format(
-                        I18n.getOrDefault("scenario.demo.map_invalid", "⚠️ Carte démographique incompatible : %s"), val.message()));
+                        I18n.getOrDefault("scenario.demo.map_invalid", "âš ï¸ Carte dÃ©mographique incompatible : %s"), val.message()));
                 compatLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #ef4444; -fx-font-weight: bold;");
             } else {
                 compatLbl.setText(String.format(
-                        I18n.getOrDefault("scenario.demo.map_loaded", "✅ Map loaded and compatible with selected Tab 1 world (%s)"), planetName));
+                        I18n.getOrDefault("scenario.demo.map_loaded", "âœ… Map loaded and compatible with selected Tab 1 world (%s)"), planetName));
                 compatLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #10b981; -fx-font-weight: bold;");
             }
         } else {
-            compatLbl.setText(I18n.getOrDefault("scenario.demo.no_map", "🪐 No external map loaded — Procedural mode active"));
+            compatLbl.setText(I18n.getOrDefault("scenario.demo.no_map", "ðŸª No external map loaded â€” Procedural mode active"));
             compatLbl.getStyleClass().add("subcard-status-muted");
             compatLbl.setStyle("-fx-font-size: 11px;");
         }
@@ -358,7 +358,7 @@ final class ScenarioDemographicMapIOHelper {
                 }
             }
         }
-        WindowUtils.exportImageWithChooser(
+        WindowHelper.exportImageWithChooser(
                 context.getWindow(),
                 image,
                 "ether-population-density.png",
@@ -369,16 +369,16 @@ final class ScenarioDemographicMapIOHelper {
      * Displays the scrollable help specification modal for demographic density raster imports.
      */
     static void showDensityImportFormatHelp() {
-        WindowUtils.showScrollableInfoDialog(
-                I18n.getOrDefault("scenario.dialog.density_help_title", "Spécifications de la Carte de Densité"),
-                I18n.getOrDefault("scenario.dialog.density_help_header", "Formats d'Image Supportés pour l'Import de Densité Démographique"),
-                "Vous pouvez importer une carte de répartition démographique sous forme d'image PNG/JPEG au ratio 2:1 (ex: 2048x1024 pixels en projection équirectangulaire) :\n\n"
-                        + "1. CARTE DE DENSITÉ NIVEAUX DE GRIS :\n"
-                        + "   • Noir (0) = 0 hab/km² (Zone inhabitée / désertique / aquatique)\n"
-                        + "   • Blanc (255) = Densité maximale d'habitation (Foyer urbain ou métropole)\n\n"
-                        + "2. INTÉGRATION AVEC LE TERRAIN ET L'ÉCOLOGIE :\n"
-                        + "   • Les zones d'eau (océans/mers) définies dans l'onglet 1 sont automatiquement filtrées pour éviter l'apparition de populations en pleine mer.\n"
-                        + "   • La population totale paramétrée dans le spinner est distribuée au prorata de la luminosité de chaque pixel."
+        WindowHelper.showScrollableInfoDialog(
+                I18n.getOrDefault("scenario.dialog.density_help_title", "SpÃ©cifications de la Carte de DensitÃ©"),
+                I18n.getOrDefault("scenario.dialog.density_help_header", "Formats d'Image SupportÃ©s pour l'Import de DensitÃ© DÃ©mographique"),
+                "Vous pouvez importer une carte de rÃ©partition dÃ©mographique sous forme d'image PNG/JPEG au ratio 2:1 (ex: 2048x1024 pixels en projection Ã©quirectangulaire) :\n\n"
+                        + "1. CARTE DE DENSITÃ‰ NIVEAUX DE GRIS :\n"
+                        + "   â€¢ Noir (0) = 0 hab/kmÂ² (Zone inhabitÃ©e / dÃ©sertique / aquatique)\n"
+                        + "   â€¢ Blanc (255) = DensitÃ© maximale d'habitation (Foyer urbain ou mÃ©tropole)\n\n"
+                        + "2. INTÃ‰GRATION AVEC LE TERRAIN ET L'Ã‰COLOGIE :\n"
+                        + "   â€¢ Les zones d'eau (ocÃ©ans/mers) dÃ©finies dans l'onglet 1 sont automatiquement filtrÃ©es pour Ã©viter l'apparition de populations en pleine mer.\n"
+                        + "   â€¢ La population totale paramÃ©trÃ©e dans le spinner est distribuÃ©e au prorata de la luminositÃ© de chaque pixel."
         );
     }
 
@@ -436,7 +436,7 @@ final class ScenarioDemographicMapIOHelper {
             }
         } else {
             builder.setCustomDensityImage(null);
-            if (builder.getDensityMapFileLabel() != null) builder.getDensityMapFileLabel().setText("—");
+            if (builder.getDensityMapFileLabel() != null) builder.getDensityMapFileLabel().setText("â€”");
             if (builder.getRadioProcDemo() != null) builder.getRadioProcDemo().setSelected(true);
         }
         updateDemoCompatibilityDisplay(builder, context);
@@ -484,3 +484,4 @@ final class ScenarioDemographicMapIOHelper {
         }
     }
 }
+

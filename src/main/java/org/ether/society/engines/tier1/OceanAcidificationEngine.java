@@ -17,11 +17,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Ocean Acidification, Henry's Law COâ‚‚ Solubility & Marine Carbon Pump Engine.
+ * Ocean Acidification, Henry's Law COÃ¢â€šâ€š Solubility & Marine Carbon Pump Engine.
  * 
  * <h2>Fundamental Model Physics Equations</h2>
  * <ul>
- *   <li><b>Henry's Law for COâ‚‚ Gas Dissolution</b>:
+ *   <li><b>Henry's Law for COÃ¢â€šâ€š Gas Dissolution</b>:
  *       $$[\text{CO}_{2,\text{aq}}] = K_H(T) \cdot p_{\text{CO}_2}$$
  *       $$K_H(T) = K_0 \cdot \exp\left( \frac{-\Delta H_{\text{sol}}}{R} \left( \frac{1}{T_K} - \frac{1}{T_0} \right) \right)$$
  *   </li>
@@ -40,14 +40,14 @@ public class OceanAcidificationEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(OceanAcidificationEngine.class);
 
-    /** Reference Henry's constant for CO2 in seawater at 298.15 K (mol/(LÂ·atm)) */
+    /** Reference Henry's constant for CO2 in seawater at 298.15 K (mol/(LÃ‚Â·atm)) */
     public static final double HENRY_K0_CO2 = 0.034;
 
     /** Enthalpy of dissolution / R for CO2 in Kelvin */
     public static final double ENTHALPY_DISSOLUTION_OVER_R = 2400.0;
 
     /**
-     * Calculates Henry's solubility constant K_H(T) for CO2 in mol/(LÂ·atm).
+     * Calculates Henry's solubility constant K_H(T) for CO2 in mol/(LÃ‚Â·atm).
      * Cold waters absorb significantly more CO2 than warm tropical waters.
      */
     public static double calculateHenrySolubility(double tempCelsius) {
@@ -70,13 +70,13 @@ public class OceanAcidificationEngine extends AbstractSimulationEngine {
      * Executes one ocean acidification and Henry solubility pump tick.
      *
      * @param cells   List of H3 cells
-     * @param co2Ppm  Global atmospheric COâ‚‚ concentration in ppm
+     * @param co2Ppm  Global atmospheric COÃ¢â€šâ€š concentration in ppm
      */
     public static void processOceanAcidification(List<H3Cell> cells, double co2Ppm) {
 // Numerical integration step for OceanAcidificationEngine - verifies boundary conservation and updates local thermodynamic state
         if (cells == null || cells.isEmpty()) return;
 
-        // Baseline COâ‚‚ = 280 ppm. Acidification occurs when COâ‚‚ > 350 ppm
+        // Baseline COÃ¢a€ša€š = 280 ppm. Acidification occurs when COÃ¢a€ša€š > 350 ppm
         if (co2Ppm <= 350.0) return;
 
         double acidificationFactor = (co2Ppm - 350.0) / 650.0; // 0.0 to 1.0

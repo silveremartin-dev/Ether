@@ -87,86 +87,86 @@ public final class ScenarioEpochRegistry {
         String pName = planet != null ? planet.name().toLowerCase() : "";
         if (pName.contains("mars") || pName.contains("ares")) {
             return switch (tensorIdx) {
-                case 0 -> "🔴 Mars — Cartographie Linguistique Coloniale Martienne [Planétaire (Mars), +2060 AD à Futur]";
-                case 1 -> "🔴 Mars — Structures de Parenté & Cohortes Pionnières [Planétaire (Mars), +2050 AD à Futur]";
-                case 2 -> "🔴 Mars — Mythologie Martienne & Cultes de la Frontière [Planétaire (Mars), +2060 AD à Futur]";
-                case 3 -> "🔴 Mars — Juridictions Consulaires & Traités Martiens [Planétaire (Mars), +2060 AD à Futur]";
-                case 4 -> "🔴 Mars — Niveau Technologique Industriel & Robotique ISRU [Planétaire (Mars), +2050 AD à Futur]";
-                case 5 -> "🔴 Mars — Réseau Ferroviaire Maglev Sub-Surface [Planétaire (Mars), +2070 AD à Futur]";
-                case 6 -> "🔴 Mars — Conseil Spatial & Chartes Constitutionnelles [Planétaire (Mars), +2060 AD à Futur]";
-                case 7 -> "🔴 Mars — Bioregenerative Life Support (BLSS) & Dégradation [Planétaire (Mars), +2050 AD à Futur]";
-                case 8 -> "🔴 Mars — Microbiome Artificiel Confiné & Résistance [Planétaire (Mars), +2050 AD à Futur]";
+                case 0 -> "ðŸ”´ Mars â€” Cartographie Linguistique Coloniale Martienne [PlanÃ©taire (Mars), +2060 AD Ã  Futur]";
+                case 1 -> "ðŸ”´ Mars â€” Structures de ParentÃ© & Cohortes PionniÃ¨res [PlanÃ©taire (Mars), +2050 AD Ã  Futur]";
+                case 2 -> "ðŸ”´ Mars â€” Mythologie Martienne & Cultes de la FrontiÃ¨re [PlanÃ©taire (Mars), +2060 AD Ã  Futur]";
+                case 3 -> "ðŸ”´ Mars â€” Juridictions Consulaires & TraitÃ©s Martiens [PlanÃ©taire (Mars), +2060 AD Ã  Futur]";
+                case 4 -> "ðŸ”´ Mars â€” Niveau Technologique Industriel & Robotique ISRU [PlanÃ©taire (Mars), +2050 AD Ã  Futur]";
+                case 5 -> "ðŸ”´ Mars â€” RÃ©seau Ferroviaire Maglev Sub-Surface [PlanÃ©taire (Mars), +2070 AD Ã  Futur]";
+                case 6 -> "ðŸ”´ Mars â€” Conseil Spatial & Chartes Constitutionnelles [PlanÃ©taire (Mars), +2060 AD Ã  Futur]";
+                case 7 -> "ðŸ”´ Mars â€” Bioregenerative Life Support (BLSS) & DÃ©gradation [PlanÃ©taire (Mars), +2050 AD Ã  Futur]";
+                case 8 -> "ðŸ”´ Mars â€” Microbiome Artificiel ConfinÃ© & RÃ©sistance [PlanÃ©taire (Mars), +2050 AD Ã  Futur]";
                 default -> null;
             };
         }
-        if (pName.contains("vénus") || pName.contains("venus") || pName.contains("hesperos")) {
+        if (pName.contains("vÃ©nus") || pName.contains("venus") || pName.contains("hesperos")) {
             return switch (tensorIdx) {
-                case 0 -> "🟡 Vénus — Réseau Isogloss des Cités Aérostatiques [Planétaire (Vénus), +2120 AD à Futur]";
-                case 1 -> "🟡 Vénus — Guildes & Lignages Technologiques Flottants [Planétaire (Vénus), +2100 AD à Futur]";
-                case 2 -> "🟡 Vénus — Rituels Solaires & Cérémonies de Nuages [Planétaire (Vénus), +2120 AD à Futur]";
-                case 3 -> "🟡 Vénus — Fédération des Stations Stratosphériques [Planétaire (Vénus), +2110 AD à Futur]";
-                case 4 -> "🟡 Vénus — Synthèse Aérostatique & Ingénierie Acide [Planétaire (Vénus), +2100 AD à Futur]";
-                case 5 -> "🟡 Vénus — Navettes Stratosphériques Inter-Stations [Planétaire (Vénus), +2110 AD à Futur]";
-                case 6 -> "🟡 Vénus — Syndicats Flottants & Corporations Aérostats [Planétaire (Vénus), +2110 AD à Futur]";
-                case 7 -> "🟡 Vénus — Érosion Chimique & Recyclage Fermé [Planétaire (Vénus), +2100 AD à Futur]";
-                case 8 -> "🟡 Vénus — Immunologie en Atmosphère Confinée [Planétaire (Vénus), +2110 AD à Futur]";
+                case 0 -> "ðŸŸ¡ VÃ©nus â€” RÃ©seau Isogloss des CitÃ©s AÃ©rostatiques [PlanÃ©taire (VÃ©nus), +2120 AD Ã  Futur]";
+                case 1 -> "ðŸŸ¡ VÃ©nus â€” Guildes & Lignages Technologiques Flottants [PlanÃ©taire (VÃ©nus), +2100 AD Ã  Futur]";
+                case 2 -> "ðŸŸ¡ VÃ©nus â€” Rituels Solaires & CÃ©rÃ©monies de Nuages [PlanÃ©taire (VÃ©nus), +2120 AD Ã  Futur]";
+                case 3 -> "ðŸŸ¡ VÃ©nus â€” FÃ©dÃ©ration des Stations StratosphÃ©riques [PlanÃ©taire (VÃ©nus), +2110 AD Ã  Futur]";
+                case 4 -> "ðŸŸ¡ VÃ©nus â€” SynthÃ¨se AÃ©rostatique & IngÃ©nierie Acide [PlanÃ©taire (VÃ©nus), +2100 AD Ã  Futur]";
+                case 5 -> "ðŸŸ¡ VÃ©nus â€” Navettes StratosphÃ©riques Inter-Stations [PlanÃ©taire (VÃ©nus), +2110 AD Ã  Futur]";
+                case 6 -> "ðŸŸ¡ VÃ©nus â€” Syndicats Flottants & Corporations AÃ©rostats [PlanÃ©taire (VÃ©nus), +2110 AD Ã  Futur]";
+                case 7 -> "ðŸŸ¡ VÃ©nus â€” Ã‰rosion Chimique & Recyclage FermÃ© [PlanÃ©taire (VÃ©nus), +2100 AD Ã  Futur]";
+                case 8 -> "ðŸŸ¡ VÃ©nus â€” Immunologie en AtmosphÃ¨re ConfinÃ©e [PlanÃ©taire (VÃ©nus), +2110 AD Ã  Futur]";
                 default -> null;
             };
         }
         if (pName.contains("lune") || pName.contains("moon") || pName.contains("selene")) {
             return switch (tensorIdx) {
-                case 0 -> "⚪ Lune — Dialectes Sélénites des Stations Cratériques [Planétaire (Lune), +2050 AD à Futur]";
-                case 1 -> "⚪ Lune — Associations d'Équipages & Clans Sélénites [Planétaire (Lune), +2045 AD à Futur]";
-                case 2 -> "⚪ Lune — Philosophie Cosmique & Rituels du Clair de Terre [Planétaire (Lune), +2050 AD à Futur]";
-                case 3 -> "⚪ Lune — Secteurs Traité de l'Espace & Bases Nationales [Planétaire (Lune), +2050 AD à Futur]";
-                case 4 -> "⚪ Lune — Fonderies Régolithes & Extraction Sélénite [Planétaire (Lune), +2045 AD à Futur]";
-                case 5 -> "⚪ Lune — Tunnels de Transport Magnétique Sélénite [Planétaire (Lune), +2050 AD à Futur]";
-                case 6 -> "⚪ Lune — Protocoles Légaux des Habitats Sélénites [Planétaire (Lune), +2050 AD à Futur]";
-                case 7 -> "⚪ Lune — Épuisement des Volatils & Poussière Régolithe [Planétaire (Lune), +2045 AD à Futur]";
-                case 8 -> "⚪ Lune — Pathogènes d'Isolement & Régime Stérile [Planétaire (Lune), +2045 AD à Futur]";
+                case 0 -> "âšª Lune â€” Dialectes SÃ©lÃ©nites des Stations CratÃ©riques [PlanÃ©taire (Lune), +2050 AD Ã  Futur]";
+                case 1 -> "âšª Lune â€” Associations d'Ã‰quipages & Clans SÃ©lÃ©nites [PlanÃ©taire (Lune), +2045 AD Ã  Futur]";
+                case 2 -> "âšª Lune â€” Philosophie Cosmique & Rituels du Clair de Terre [PlanÃ©taire (Lune), +2050 AD Ã  Futur]";
+                case 3 -> "âšª Lune â€” Secteurs TraitÃ© de l'Espace & Bases Nationales [PlanÃ©taire (Lune), +2050 AD Ã  Futur]";
+                case 4 -> "âšª Lune â€” Fonderies RÃ©golithes & Extraction SÃ©lÃ©nite [PlanÃ©taire (Lune), +2045 AD Ã  Futur]";
+                case 5 -> "âšª Lune â€” Tunnels de Transport MagnÃ©tique SÃ©lÃ©nite [PlanÃ©taire (Lune), +2050 AD Ã  Futur]";
+                case 6 -> "âšª Lune â€” Protocoles LÃ©gaux des Habitats SÃ©lÃ©nites [PlanÃ©taire (Lune), +2050 AD Ã  Futur]";
+                case 7 -> "âšª Lune â€” Ã‰puisement des Volatils & PoussiÃ¨re RÃ©golithe [PlanÃ©taire (Lune), +2045 AD Ã  Futur]";
+                case 8 -> "âšª Lune â€” PathogÃ¨nes d'Isolement & RÃ©gime StÃ©rile [PlanÃ©taire (Lune), +2045 AD Ã  Futur]";
                 default -> null;
             };
         }
         if (pName.contains("mercure") || pName.contains("mercury") || pName.contains("hermes")) {
             return switch (tensorIdx) {
-                case 0 -> "⚪ Mercure — Protocoles Herméens & Terminologie d'Ombre [Planétaire (Mercure), +2160 AD à Futur]";
-                case 1 -> "⚪ Mercure — Confréries de Maintenance & Lignages Thermiques [Planétaire (Mercure), +2150 AD à Futur]";
-                case 2 -> "⚪ Mercure — Ordres d'Énergie & Croyances de Haute Radiation [Planétaire (Mercure), +2170 AD à Futur]";
-                case 3 -> "⚪ Mercure — Domaines Miniers & Enclaves Polaires [Planétaire (Mercure), +2150 AD à Futur]";
-                case 4 -> "⚪ Mercure — Collecteurs Haute Énergie & Fours Directs [Planétaire (Mercure), +2150 AD à Futur]";
-                case 5 -> "⚪ Mercure — Réseau de Convois Électromagnétiques [Planétaire (Mercure), +2160 AD à Futur]";
-                case 6 -> "⚪ Mercure — Administration Thermique & Urgences [Planétaire (Mercure), +2160 AD à Futur]";
-                case 7 -> "⚪ Mercure — Usure Thermique & Contraintes Matérielles [Planétaire (Mercure), +2150 AD à Futur]";
-                case 8 -> "⚪ Mercure — Filtrage Radiatif & Microbiote Synthétique [Planétaire (Mercure), +2160 AD à Futur]";
+                case 0 -> "âšª Mercure â€” Protocoles HermÃ©ens & Terminologie d'Ombre [PlanÃ©taire (Mercure), +2160 AD Ã  Futur]";
+                case 1 -> "âšª Mercure â€” ConfrÃ©ries de Maintenance & Lignages Thermiques [PlanÃ©taire (Mercure), +2150 AD Ã  Futur]";
+                case 2 -> "âšª Mercure â€” Ordres d'Ã‰nergie & Croyances de Haute Radiation [PlanÃ©taire (Mercure), +2170 AD Ã  Futur]";
+                case 3 -> "âšª Mercure â€” Domaines Miniers & Enclaves Polaires [PlanÃ©taire (Mercure), +2150 AD Ã  Futur]";
+                case 4 -> "âšª Mercure â€” Collecteurs Haute Ã‰nergie & Fours Directs [PlanÃ©taire (Mercure), +2150 AD Ã  Futur]";
+                case 5 -> "âšª Mercure â€” RÃ©seau de Convois Ã‰lectromagnÃ©tiques [PlanÃ©taire (Mercure), +2160 AD Ã  Futur]";
+                case 6 -> "âšª Mercure â€” Administration Thermique & Urgences [PlanÃ©taire (Mercure), +2160 AD Ã  Futur]";
+                case 7 -> "âšª Mercure â€” Usure Thermique & Contraintes MatÃ©rielles [PlanÃ©taire (Mercure), +2150 AD Ã  Futur]";
+                case 8 -> "âšª Mercure â€” Filtrage Radiatif & Microbiote SynthÃ©tique [PlanÃ©taire (Mercure), +2160 AD Ã  Futur]";
                 default -> null;
             };
         }
-        // Earth — pick based on epoch
+        // Earth a€” pick based on epoch
         if (startYear < -10000) {
             return switch (tensorIdx) {
-                case 0 -> "🌍 Terre — Automated Phonological Distance Model (ASJP) [Global, -10 000 BC à Actuel (Macro-Familles)]";
-                case 1 -> "🌍 Terre — Standard Cross-Cultural Sample (SCCS) [Global, -4000 BC à Actuel (186 Cultures)]";
-                case 2 -> "🌍 Terre — Turchin Asabiyyah Cohesion Metric (Cliodynamics) [Global, -3000 BC à +2000 AD]";
-                case 3 -> "🌍 Terre — GADM Administrative Sovereign Centers [Global, 1950 AD à Actuel]";
-                case 4 -> "🌍 Terre — Lithic-to-Metallurgy Technology Frontier Model [Global, -100 000 BC à +2000 AD]";
-                case 5 -> "🌍 Terre — Old World Overland Caravan Network [Sahara & Asie Centrale, -1000 BC à +1800 AD]";
-                case 6 -> "🌍 Terre — Historical Jurisprudence & Administration Matrix [Europe & Asie, -2000 BC à +1800 AD]";
-                case 7 -> "🌍 Terre — Malthusian Carrying Capacity Model [Global, -100 000 BC à +2100 AD]";
-                case 8 -> "🌍 Terre — Host-Pathogen Coevolution & Immunity Model [Global, -100 000 BC à +2100 AD]";
+                case 0 -> "ðŸŒ Terre â€” Automated Phonological Distance Model (ASJP) [Global, -10 000 BC Ã  Actuel (Macro-Familles)]";
+                case 1 -> "ðŸŒ Terre â€” Standard Cross-Cultural Sample (SCCS) [Global, -4000 BC Ã  Actuel (186 Cultures)]";
+                case 2 -> "ðŸŒ Terre â€” Turchin Asabiyyah Cohesion Metric (Cliodynamics) [Global, -3000 BC Ã  +2000 AD]";
+                case 3 -> "ðŸŒ Terre â€” GADM Administrative Sovereign Centers [Global, 1950 AD Ã  Actuel]";
+                case 4 -> "ðŸŒ Terre â€” Lithic-to-Metallurgy Technology Frontier Model [Global, -100 000 BC Ã  +2000 AD]";
+                case 5 -> "ðŸŒ Terre â€” Old World Overland Caravan Network [Sahara & Asie Centrale, -1000 BC Ã  +1800 AD]";
+                case 6 -> "ðŸŒ Terre â€” Historical Jurisprudence & Administration Matrix [Europe & Asie, -2000 BC Ã  +1800 AD]";
+                case 7 -> "ðŸŒ Terre â€” Malthusian Carrying Capacity Model [Global, -100 000 BC Ã  +2100 AD]";
+                case 8 -> "ðŸŒ Terre â€” Host-Pathogen Coevolution & Immunity Model [Global, -100 000 BC Ã  +2100 AD]";
                 default -> null;
             };
         }
         // Default Earth modern/historical: first real item per tensor
         return switch (tensorIdx) {
-            case 0 -> "🌍 Terre — Glottolog 4.8 / WALS Language Families [Global, -10 000 BC à Actuel (8 500+ Langues)]";
-            case 1 -> "🌍 Terre — Murdock Ethnographic Atlas (Kinship Systems) [Global, -4000 BC à Actuel (1 267 Sociétés)]";
-            case 2 -> "🌍 Terre — Seshat Global History Databank (Rituals & Sacred) [Global, -5000 BC à +1900 AD]";
-            case 3 -> "🌍 Terre — Centennia Historical Atlas (Sovereignty Boundaries) [Eurasie / Afrique / Amériques, -1000 BC à +2000 AD]";
-            case 4 -> "🌍 Terre — ArchaeoGLOBE Project (Land Use & Material Tools) [Global, -10 000 BC à +1850 AD]";
-            case 5 -> "🌍 Terre — ORBIS Stanford Geospatial Network (Trade Routes) [Bassin Méditerranéen & Proche-Orient, -300 BC à +500 AD]";
-            case 6 -> "🌍 Terre — Seshat Databank (Institutional Complexity & Law) [Global, -4000 BC à +1900 AD]";
-            case 7 -> "🌍 Terre — HYDE 3.4 Historical Land Use & Anthropogenic Stress [Global, -10 000 BC à +2023 AD]";
-            case 8 -> "🌍 Terre — GADM / Historical Pathogen Memory & Epidemics [Global, -3000 BC à +2023 AD]";
+            case 0 -> "ðŸŒ Terre â€” Glottolog 4.8 / WALS Language Families [Global, -10 000 BC Ã  Actuel (8 500+ Langues)]";
+            case 1 -> "ðŸŒ Terre â€” Murdock Ethnographic Atlas (Kinship Systems) [Global, -4000 BC Ã  Actuel (1 267 SociÃ©tÃ©s)]";
+            case 2 -> "ðŸŒ Terre â€” Seshat Global History Databank (Rituals & Sacred) [Global, -5000 BC Ã  +1900 AD]";
+            case 3 -> "ðŸŒ Terre â€” Centennia Historical Atlas (Sovereignty Boundaries) [Eurasie / Afrique / AmÃ©riques, -1000 BC Ã  +2000 AD]";
+            case 4 -> "ðŸŒ Terre â€” ArchaeoGLOBE Project (Land Use & Material Tools) [Global, -10 000 BC Ã  +1850 AD]";
+            case 5 -> "ðŸŒ Terre â€” ORBIS Stanford Geospatial Network (Trade Routes) [Bassin MÃ©diterranÃ©en & Proche-Orient, -300 BC Ã  +500 AD]";
+            case 6 -> "ðŸŒ Terre â€” Seshat Databank (Institutional Complexity & Law) [Global, -4000 BC Ã  +1900 AD]";
+            case 7 -> "ðŸŒ Terre â€” HYDE 3.4 Historical Land Use & Anthropogenic Stress [Global, -10 000 BC Ã  +2023 AD]";
+            case 8 -> "ðŸŒ Terre â€” GADM / Historical Pathogen Memory & Epidemics [Global, -3000 BC Ã  +2023 AD]";
             default -> null;
         };
     }

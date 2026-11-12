@@ -237,7 +237,7 @@ public class EmpiricalGeospatialDatasetIngestion {
                                 }
                                 list.add(new double[]{lon, lat, radius, weight});
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(EmpiricalGeospatialDatasetIngestion.class).debug("Non-fatal condition in EmpiricalGeospatialDatasetIngestion: {}", ignored.getMessage()); }
                     }
                 }
             }

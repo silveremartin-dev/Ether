@@ -155,7 +155,7 @@ public final class SimulationSaveIOHelper {
                                             endYear = sc.getEndDateYear();
                                             res = sc.getH3Resolution();
                                         }
-                                    } catch (Exception ignored) {}
+                                    } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(SimulationSaveIOHelper.class).debug("Non-fatal condition in SimulationSaveIOHelper: {}", ignored.getMessage()); }
                                 }
 
                                 if (Files.exists(historyFile)) {
@@ -164,14 +164,14 @@ public final class SimulationSaveIOHelper {
                                         if (snaps != null && !snaps.isEmpty()) {
                                             endYear = snaps.get(snaps.size() - 1).year();
                                         }
-                                    } catch (Exception ignored) {}
+                                    } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(SimulationSaveIOHelper.class).debug("Non-fatal condition in SimulationSaveIOHelper: {}", ignored.getMessage()); }
                                 }
 
                                 meta = new SaveMetadata(dirName, scName, endYear, 1, scName, cellCount, res);
                                 try {
-                                    EtherJsonUtil.writePrettyAtomic(metaFile, meta);
+                                    EtherJsonHelper.writePrettyAtomic(metaFile, meta);
                                     logger.info("Auto-repaired corrupted or missing metadata.json for save: {}", dirName);
-                                } catch (Exception ignored) {}
+                                } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(SimulationSaveIOHelper.class).debug("Non-fatal condition in SimulationSaveIOHelper: {}", ignored.getMessage()); }
                             }
                         }
 
@@ -189,3 +189,5 @@ public final class SimulationSaveIOHelper {
         return list;
     }
 }
+
+

@@ -128,8 +128,7 @@ public final class ClusterNodeSessionHandler {
             onTopologyChanged.run();
             try {
                 socket.close();
-            } catch (IOException ignored) {
-            }
+            } catch (IOException ignored) { org.slf4j.LoggerFactory.getLogger(ClusterNodeSessionHandler.class).debug("Non-fatal condition in ClusterNodeSessionHandler: {}", ignored.getMessage()); }
         }
     }
 
@@ -197,8 +196,7 @@ public final class ClusterNodeSessionHandler {
                         if (!payload.isEmpty()) {
                             try {
                                 WorldBufferWireCodec.decryptAndDecodeChunk(payload, wb, sec);
-                            } catch (Exception ignored) {
-                            }
+                            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(ClusterNodeSessionHandler.class).debug("Non-fatal condition in ClusterNodeSessionHandler: {}", ignored.getMessage()); }
                         }
                         Consumer<WorldBuffer> delegate = manager.getWorkerComputeDelegate();
                         if (delegate != null) {
@@ -219,9 +217,9 @@ public final class ClusterNodeSessionHandler {
                         retries, manager.getMasterHost(), manager.getPort(), e.getMessage());
                 try {
                     Thread.sleep(1000L);
-                } catch (InterruptedException ignored) {
-                }
+                } catch (InterruptedException ignored) { org.slf4j.LoggerFactory.getLogger(ClusterNodeSessionHandler.class).debug("Non-fatal condition in ClusterNodeSessionHandler: {}", ignored.getMessage()); }
             }
         }
     }
 }
+

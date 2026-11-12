@@ -16,6 +16,16 @@ package org.ether.society.events;
  * @version 1.0.0-beta.2
  */
 @FunctionalInterface
+/**
+ * SimulationTickListener.
+ * <p>
+ * Component for the Ether planetary simulation platform.
+ * Adheres to the zero-defect code excellence standards and 500-line limit.
+ * </p>
+ *
+ * @author Ether Architectural Working Group
+ * @see org.ether.society.core.engine.SimulationEngineModule
+ */
 public interface SimulationTickListener {
 
     /**

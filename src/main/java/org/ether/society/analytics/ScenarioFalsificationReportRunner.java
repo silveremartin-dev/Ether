@@ -7,7 +7,7 @@
 package org.ether.society.analytics;
 
 import org.ether.society.config.EtherPaths;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.ether.society.ui.analytics.ComparativeTelemetryDataLoader;
 
 import java.io.File;
@@ -87,9 +87,9 @@ public class ScenarioFalsificationReportRunner {
                 Path metaPath = d.resolve("metadata.json");
                 if (Files.exists(metaPath)) {
                     try {
-                        var node = EtherJsonUtil.getMapper().readTree(metaPath.toFile());
+                        var node = EtherJsonHelper.getMapper().readTree(metaPath.toFile());
                         if (node.has("scenarioName")) scName = node.get("scenarioName").asText();
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(ScenarioFalsificationReportRunner.class).debug("Non-fatal condition in ScenarioFalsificationReportRunner: {}", ignored.getMessage()); }
                 }
                 ComparativeTelemetryDataLoader.ensureHistoryLoadedForSave(dirName, scName, repo);
                 SimulationRunRecord run = repo.getRun(dirName);
@@ -98,7 +98,7 @@ public class ScenarioFalsificationReportRunner {
                         Path scenarioPath = d.resolve("scenario.json");
                         if (Files.exists(scenarioPath)) {
                             try {
-                                org.ether.society.model.Scenario sc = EtherJsonUtil.getMapper()
+                                org.ether.society.model.Scenario sc = EtherJsonHelper.getMapper()
                                         .readValue(scenarioPath.toFile(), org.ether.society.model.Scenario.class);
                                 EngineContributionReport contrib = Tier2EngineContributionAnalyzer.analyze(sc, true, run);
                                 if (contrib != null) {
@@ -147,3 +147,5 @@ public class ScenarioFalsificationReportRunner {
         }
     }
 }
+
+

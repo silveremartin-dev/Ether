@@ -8,7 +8,7 @@ package org.ether.society.analytics;
 
 import org.ether.society.config.EtherPaths;
 import org.ether.society.model.Scenario;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.ether.society.ui.analytics.ComparativeTelemetryDataLoader;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +54,7 @@ public class ScenarioFalsificationReportTest {
                     "Res 6", -1279, 0.4495, 0.5244, 0.4820, 18.42,
                     33.0, 35.2, 114.5,
                     "Levant Border Window Discontinuity",
-                    "The regional simulation bounding box of Ramesses II truncates at Lat 36°N, Lng 42°E. In historical empirical reality of the New Kingdom, Levantine vassal city-states (Byblos, Tyre, Ugarit) exhibited dense populations. In the simulation run, cohorts remain confined to the Nile Delta and alluvial valley, creating an artificial population drop along the Levantine coastline."
+                    "The regional simulation bounding box of Ramesses II truncates at Lat 36Â°N, Lng 42Â°E. In historical empirical reality of the New Kingdom, Levantine vassal city-states (Byblos, Tyre, Ugarit) exhibited dense populations. In the simulation run, cohorts remain confined to the Nile Delta and alluvial valley, creating an artificial population drop along the Levantine coastline."
             ),
             "black_death_1347", new SpatialFidelityMetric(
                     "Res 3", 1347, 0.3804, 0.6113, 0.5410, 21.15,
@@ -97,7 +97,7 @@ public class ScenarioFalsificationReportTest {
         Path savesDir = EtherPaths.getSavesDir();
 
         if (Boolean.getBoolean("fresh")) {
-            System.out.println("⚡ Executing fresh headless simulation runs for audited scenarios...");
+            System.out.println("âš¡ Executing fresh headless simulation runs for audited scenarios...");
             List<Scenario> builtIns = Scenario.getBuiltInScenarios();
             Map<String, Integer> targets = Map.of(
                     "world_wars_totalitarian_1914", 1925,
@@ -156,7 +156,7 @@ public class ScenarioFalsificationReportTest {
             Path metaPath = d.resolve("metadata.json");
             if (Files.exists(metaPath)) {
                 try {
-                    var node = EtherJsonUtil.getMapper().readTree(metaPath.toFile());
+                    var node = EtherJsonHelper.getMapper().readTree(metaPath.toFile());
                     if (node.has("scenarioName")) scName = node.get("scenarioName").asText();
                 } catch (Exception ignored) {}
             }
@@ -187,7 +187,7 @@ public class ScenarioFalsificationReportTest {
 
         // Construct 2D Spatial Cartographic Synthesis Section in English
         StringBuilder spatialSynthesis = new StringBuilder();
-        spatialSynthesis.append("\n## 🗺️ 4. 2D Cartographic Fidelity & Spatial Discrepancy Synthesis (Snapshots vs Ground Truth Rasters)\n\n");
+        spatialSynthesis.append("\n## ðŸ—ºï¸ 4. 2D Cartographic Fidelity & Spatial Discrepancy Synthesis (Snapshots vs Ground Truth Rasters)\n\n");
         spatialSynthesis.append("> Direct pixel-to-pixel evaluation between empirical reference rasters (NOAA ETOPO / HYDE 3.4 / Maddison) and projected simulation grids.\n\n");
         spatialSynthesis.append("| Scenario | Resolution | Historical Epoch | SSIM (Structure) | Pearson Spatial (r) | Jaccard IoU | Peak Delta Coordinates | Cartographic Anomaly Diagnostic |\n");
         spatialSynthesis.append("|---|:---:|:---:|:---:|:---:|:---:|:---:|---|\n");
@@ -197,7 +197,7 @@ public class ScenarioFalsificationReportTest {
             SpatialFidelityMetric sf = SPATIAL_BENCHMARKS.get(safeName);
             if (sf != null) {
                 spatialSynthesis.append(String.format(Locale.US,
-                        "| **%s** | %s | %d | **%.4f** | **%+.4f** | %.1f%% | %.1f°N, %.1f°E | %s |\n",
+                        "| **%s** | %s | %d | **%.4f** | **%+.4f** | %.1f%% | %.1fÂ°N, %.1fÂ°E | %s |\n",
                         item.getName(), sf.resolution(), sf.epochYear(), sf.ssim(), sf.pearsonR(),
                         sf.jaccardIoU() * 100.0, sf.maxDeltaLat(), sf.maxDeltaLng(), sf.spatialDiagnostic()
                 ));
@@ -228,23 +228,23 @@ public class ScenarioFalsificationReportTest {
             SpatialFidelityMetric sf = SPATIAL_BENCHMARKS.get(safeName);
 
             StringBuilder singleFullReport = new StringBuilder();
-            singleFullReport.append("# 📜 COMPLETE HISTORICAL FALSIFICATION & EPISTEMIC AUDIT REPORT\n\n");
+            singleFullReport.append("# ðŸ“œ COMPLETE HISTORICAL FALSIFICATION & EPISTEMIC AUDIT REPORT\n\n");
             singleFullReport.append("**Scenario**: `").append(item.getName()).append("`\n\n");
             singleFullReport.append("**Simulation Run Identifier**: `").append(item.getRunId()).append("`\n\n");
             singleFullReport.append("**Snapshots & Save Directory**: `saves/").append(item.getRunId()).append("/`\n\n");
             singleFullReport.append(singleAudit.reportMarkdown()).append("\n\n");
 
             if (sf != null) {
-                singleFullReport.append("## 🗺️ 2D Cartographic Fidelity & Spatial Discrepancy Assessment\n\n");
+                singleFullReport.append("## ðŸ—ºï¸ 2D Cartographic Fidelity & Spatial Discrepancy Assessment\n\n");
                 singleFullReport.append("Direct comparison between simulated 2D density snapshot and empirical ground truth raster (`earth_").append(sf.epochYear()).append("_density.png`):\n\n");
                 singleFullReport.append("| Cartographic Metric | Computed Value | Physical Threshold / Benchmark | Status |\n");
                 singleFullReport.append("|---|:---:|:---:|:---:|\n");
-                singleFullReport.append(String.format(Locale.US, "| **SSIM (Structural Similarity Index)** | **%.4f** | $\\ge 0.50$ (macro-spatial coherence) | %s |\n", sf.ssim(), sf.ssim() >= 0.50 ? "🟢 Conformant" : "🟡 Moderate Deviation"));
-                singleFullReport.append(String.format(Locale.US, "| **Pearson Spatial Correlation (r)** | **%+.4f** | $\\ge +0.60$ (gradient alignment) | %s |\n", sf.pearsonR(), sf.pearsonR() >= 0.60 ? "🟢 Conformant" : "🟡 Imperfect Gradient"));
-                singleFullReport.append(String.format(Locale.US, "| **Jaccard Ecumene Overlap (IoU)** | **%.2f%%** | $\\ge 50.0\\%%$ (inhabited surface area) | %s |\n", sf.jaccardIoU() * 100.0, sf.jaccardIoU() >= 0.50 ? "🟢 Conformant" : "🟡 Dispersed"));
-                singleFullReport.append(String.format(Locale.US, "| **RMSE (Spatial Pixel Residual Error)** | **%.2f** | $< 25.0$ | %s |\n", sf.rmse(), sf.rmse() < 25.0 ? "🟢 Conformant" : "🔴 Divergent"));
-                singleFullReport.append(String.format(Locale.US, "| **Peak Spatial Divergence (Δ_max)** | **%.2f** | `Lat: %.1f°N, Lng: %.1f°E` | 📍 Hotspot Anomaly |\n\n", sf.maxDeltaValue(), sf.maxDeltaLat(), sf.maxDeltaLng()));
-                singleFullReport.append("### 🔍 Detected Cartographic Anomaly Diagnostic\n");
+                singleFullReport.append(String.format(Locale.US, "| **SSIM (Structural Similarity Index)** | **%.4f** | $\\ge 0.50$ (macro-spatial coherence) | %s |\n", sf.ssim(), sf.ssim() >= 0.50 ? "ðŸŸ¢ Conformant" : "ðŸŸ¡ Moderate Deviation"));
+                singleFullReport.append(String.format(Locale.US, "| **Pearson Spatial Correlation (r)** | **%+.4f** | $\\ge +0.60$ (gradient alignment) | %s |\n", sf.pearsonR(), sf.pearsonR() >= 0.60 ? "ðŸŸ¢ Conformant" : "ðŸŸ¡ Imperfect Gradient"));
+                singleFullReport.append(String.format(Locale.US, "| **Jaccard Ecumene Overlap (IoU)** | **%.2f%%** | $\\ge 50.0\\%%$ (inhabited surface area) | %s |\n", sf.jaccardIoU() * 100.0, sf.jaccardIoU() >= 0.50 ? "ðŸŸ¢ Conformant" : "ðŸŸ¡ Dispersed"));
+                singleFullReport.append(String.format(Locale.US, "| **RMSE (Spatial Pixel Residual Error)** | **%.2f** | $< 25.0$ | %s |\n", sf.rmse(), sf.rmse() < 25.0 ? "ðŸŸ¢ Conformant" : "ðŸ”´ Divergent"));
+                singleFullReport.append(String.format(Locale.US, "| **Peak Spatial Divergence (Î”_max)** | **%.2f** | `Lat: %.1fÂ°N, Lng: %.1fÂ°E` | ðŸ“ Hotspot Anomaly |\n\n", sf.maxDeltaValue(), sf.maxDeltaLat(), sf.maxDeltaLng()));
+                singleFullReport.append("### ðŸ” Detected Cartographic Anomaly Diagnostic\n");
                 singleFullReport.append("- **Characterization**: `").append(sf.spatialDiagnostic()).append("`\n");
                 singleFullReport.append("- **Rupture Analysis**: ").append(sf.detailedAnomalyAnalysis()).append("\n\n");
             }
@@ -274,3 +274,4 @@ public class ScenarioFalsificationReportTest {
         return safeName;
     }
 }
+

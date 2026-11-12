@@ -44,7 +44,7 @@ public final class PaleoClimateAnomalyModel {
 
         // Continuous Global Mean Temperature Anomaly (EPICA / NGRIP delta18O / TraCE-21ka)
         double[][] climateAnchors = {
-            {-100000.0,  1.2}, // MIS 5e Eemian Warm Optimum (+1.2°C)
+            {-100000.0,  1.2}, // MIS 5e Eemian Warm Optimum (+1.2A°C)
             { -85000.0, -1.0}, // MIS 5a/5b stadial cooling
             { -74000.0, -4.8}, // -74,000 BP: Toba Super-Eruption & MIS 4 Stadial
             { -60000.0, -3.2}, // Early MIS 3
@@ -53,10 +53,10 @@ public final class PaleoClimateAnomalyModel {
             { -25000.0, -5.6}, // Early LGM
             { -20000.0, -6.2}, // LGM Peak Glaciation
             { -16000.0, -4.5}, // Heinrich Stadial 1
-            { -14500.0, -2.0}, // Bølling-Allerød Interstadial
+            { -14500.0, -2.0}, // BÃ¸lling-AllerÃ¸d Interstadial
             { -12000.0, -3.5}, // Younger Dryas Cold Stadial
             { -10000.0, -0.5}, // Early Holocene Preboreal
-            {  -7000.0,  0.8}, // Holocene Climate Optimum (+0.8°C)
+            {  -7000.0,  0.8}, // Holocene Climate Optimum (+0.8A°C)
             {  -3000.0,  0.2}, // Neoglacial Transition
             {      0.0,  0.0}, // Common Era baseline
             {   1000.0,  0.3}, // Medieval Climate Optimum

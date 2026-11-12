@@ -52,12 +52,12 @@ public final class PresetItemFormatter {
             var method = item.getClass().getMethod("name");
             Object val = method.invoke(item);
             if (val != null) return val.toString();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(PresetItemFormatter.class).debug("Non-fatal condition in PresetItemFormatter: {}", ignored.getMessage()); }
         try {
             var method = item.getClass().getMethod("getName");
             Object val = method.invoke(item);
             if (val != null) return val.toString();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(PresetItemFormatter.class).debug("Non-fatal condition in PresetItemFormatter: {}", ignored.getMessage()); }
         return item.toString();
     }
 
@@ -150,7 +150,7 @@ public final class PresetItemFormatter {
                     String dateText = getPresetDateText(item);
                     if (dateText != null && !dateText.isBlank()) {
                         nameLabel.setText(formattedName);
-                        dateLabel.setText("📅 " + dateText);
+                        dateLabel.setText("ðŸ“… " + dateText);
                         setGraphic(container);
                         setText(null);
                     } else {
@@ -171,3 +171,4 @@ public final class PresetItemFormatter {
         };
     }
 }
+

@@ -9,7 +9,7 @@ import org.ether.society.model.PhysicalConstants;
  * Models ecological biomass regeneration, agricultural yields, and natural resource decay
  * governed by smooth ($C^\infty$) differential equations anchored in Farquhar C3/C4 Photosynthesis
  * kinetics (FvCB), Priestley-Taylor Potential Evapotranspiration (PET), Lieth (1975) Miami NPP,
- * continuous topographic slope retention, and physical capital intensification ({@code AGENTS.md} §3, §10.1, §10.2).
+ * continuous topographic slope retention, and physical capital intensification ({@code AGENTS.md} Â§3, Â§10.1, Â§10.2).
  * </p>
  * <p>
  * Mathematically synchronized with {@code native/ether-core-native/src/environmental.rs}.
@@ -62,7 +62,7 @@ public class EnvironmentalKernel {
      * Evaluates photosynthetic assimilation factor via bilinear interpolation over the precomputed
      * Farquhar FvCB LUT for smooth $C^1$ temperature and $\text{CO}_2$ sensitivity.
      *
-     * @param tempC  surface air temperature (°C)
+     * @param tempC  surface air temperature (Â°C)
      * @param co2Ppm atmospheric $\text{CO}_2$ concentration (ppm)
      * @return normalized photosynthetic assimilation multiplier in $[0.05, 1.50]$
      */
@@ -96,7 +96,7 @@ public class EnvironmentalKernel {
 
     private static final int PET_LUT_MIN = -5;
     private static final int PET_LUT_MAX = 50;
-    private static final int PET_LUT_STEPS = (PET_LUT_MAX - PET_LUT_MIN) * 2 + 1; // 111 steps (0.5°C)
+    private static final int PET_LUT_STEPS = (PET_LUT_MAX - PET_LUT_MIN) * 2 + 1; // 111 steps (0.5A°C)
     private static final float[] PET_LUT = new float[PET_LUT_STEPS];
 
     static {
@@ -113,7 +113,7 @@ public class EnvironmentalKernel {
     /**
      * Calculates Priestley-Taylor Potential Evapotranspiration (PET in mm/year).
      *
-     * @param tempC surface air temperature (°C)
+     * @param tempC surface air temperature (Â°C)
      * @return annual potential evapotranspiration (mm/yr)
      */
     public static float calculatePriestleyTaylorPET(float tempC) {
@@ -251,7 +251,7 @@ public class EnvironmentalKernel {
      * analytically via the Lieth (1975) Miami Climate Model using soft-minimum coupling:
      * $$\text{NPP}(T, P) = \text{softmin}\!\left(\frac{3000}{1 + \exp(1.315 - 0.119\,T)},\; 3000\,(1 - \exp(-0.000664\,P))\right)$$
      *
-     * @param tempC             mean surface temperature (°C)
+     * @param tempC             mean surface temperature (Â°C)
      * @param effectivePrecipMm effective moisture / precipitation (mm/yr)
      * @return analytical NPP in metric tons of dry matter per $\text{km}^2$ per year
      */

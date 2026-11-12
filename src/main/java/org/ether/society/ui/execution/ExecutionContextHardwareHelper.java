@@ -99,7 +99,7 @@ public final class ExecutionContextHardwareHelper {
                 if (isModeSupported(mode)) {
                     return mode;
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(ExecutionContextHardwareHelper.class).debug("Non-fatal condition in ExecutionContextHardwareHelper: {}", ignored.getMessage()); }
         }
         return getRecommendedHardwareMode();
     }
@@ -185,8 +185,9 @@ public final class ExecutionContextHardwareHelper {
                     }
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(ExecutionContextHardwareHelper.class).debug("Non-fatal condition in ExecutionContextHardwareHelper: {}", ignored.getMessage()); }
         cachedGpuName = "Integrated Graphics (iGPU)";
         return cachedGpuName;
     }
 }
+

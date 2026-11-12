@@ -39,7 +39,7 @@ public final class SpatialTensorDiskRegistry {
                 for (File d : sub) {
                     try {
                         yrs.add(Integer.parseInt(d.getName()));
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(SpatialTensorDiskRegistry.class).debug("Non-fatal condition in SpatialTensorDiskRegistry: {}", ignored.getMessage()); }
                 }
                 Collections.sort(yrs);
                 AVAILABLE_EARTH_EPOCHS = yrs.stream().mapToInt(Integer::intValue).toArray();
@@ -82,21 +82,21 @@ public final class SpatialTensorDiskRegistry {
             }
         }
         String chLower = ch.toLowerCase(Locale.ROOT);
-        if (chLower.contains("technolog") || chLower.contains("outillage") || chLower.contains("ç§‘æŠ€")) return "technology";
-        if (chLower.contains("tempÃ©rat") || chLower.contains("temperat") || chLower.contains("climat") || chLower.contains("æ°”æ¸©")) return "temperature";
-        if (chLower.contains("aquif") || chLower.contains("eau") || chLower.contains("water") || chLower.contains("å«æ°´å±‚")) return "aquifers";
-        if (chLower.contains("biom") || chLower.contains("agricul") || chLower.contains("biomass") || chLower.contains("å†œä¸š")) return "biomes";
-        if (chLower.contains("souverain") || chLower.contains("sovereign") || chLower.contains("politi") || chLower.contains("fronti") || chLower.contains("border") || chLower.contains("ä¸»æƒ")) return "sovereignty";
-        if (chLower.contains("isogloss") || chLower.contains("linguist") || chLower.contains("lang") || chLower.contains("è¯­è¨€")) return "isogloss";
-        if (chLower.contains("parent") || chLower.contains("kinship") || chLower.contains("famill") || chLower.contains("äº²å±ž")) return "kinship";
-        if (chLower.contains("rituel") || chLower.contains("ritual") || chLower.contains("croyan") || chLower.contains("belief") || chLower.contains("ä¿¡ä»°")) return "rituals";
-        if (chLower.contains("commerc") || chLower.contains("trade") || chLower.contains("route") || chLower.contains("è´¸æ˜“")) return "tradenetwork";
-        if (chLower.contains("institut") || chLower.contains("seshat") || chLower.contains("åˆ¶åº¦")) return "institutional";
-        if (chLower.contains("Ã©colog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("ç”Ÿæ€")) return "ecological";
-        if (chLower.contains("pathog") || chLower.contains("sanit") || chLower.contains("immunit") || chLower.contains("health") || chLower.contains("zoonot") || chLower.contains("ç—…åŽŸ")) return "pathogen";
-        if (chLower.contains("prÃ©cipit") || chLower.contains("precipit") || chLower.contains("pluie") || chLower.contains("rainfall") || chLower.contains("é™æ°´")) return "precipitation";
-        if (chLower.contains("Ã©lÃ©vat") || chLower.contains("elevat") || chLower.contains("altitude") || chLower.contains("relief") || chLower.contains("æµ·æ‹”")) return "elevation";
-        if (chLower.contains("saison") || chLower.contains("season") || chLower.contains("å­£èŠ‚")) return "seasonality";
+        if (chLower.contains("technolog") || chLower.contains("outillage") || chLower.contains("Ã§Â§â€˜Ã¦Å â‚¬")) return "technology";
+        if (chLower.contains("tempÃƒÂ©rat") || chLower.contains("temperat") || chLower.contains("climat") || chLower.contains("Ã¦Â°â€Ã¦Â¸Â©")) return "temperature";
+        if (chLower.contains("aquif") || chLower.contains("eau") || chLower.contains("water") || chLower.contains("Ã¥ÂÂ«Ã¦Â°Â´Ã¥Â±â€š")) return "aquifers";
+        if (chLower.contains("biom") || chLower.contains("agricul") || chLower.contains("biomass") || chLower.contains("Ã¥â€ Å“Ã¤Â¸Å¡")) return "biomes";
+        if (chLower.contains("souverain") || chLower.contains("sovereign") || chLower.contains("politi") || chLower.contains("fronti") || chLower.contains("border") || chLower.contains("Ã¤Â¸Â»Ã¦ÂÆ’")) return "sovereignty";
+        if (chLower.contains("isogloss") || chLower.contains("linguist") || chLower.contains("lang") || chLower.contains("Ã¨Â¯Â­Ã¨Â¨â‚¬")) return "isogloss";
+        if (chLower.contains("parent") || chLower.contains("kinship") || chLower.contains("famill") || chLower.contains("Ã¤ÂºÂ²Ã¥Â±Å¾")) return "kinship";
+        if (chLower.contains("rituel") || chLower.contains("ritual") || chLower.contains("croyan") || chLower.contains("belief") || chLower.contains("Ã¤Â¿Â¡Ã¤Â»Â°")) return "rituals";
+        if (chLower.contains("commerc") || chLower.contains("trade") || chLower.contains("route") || chLower.contains("Ã¨Â´Â¸Ã¦Ëœâ€œ")) return "tradenetwork";
+        if (chLower.contains("institut") || chLower.contains("seshat") || chLower.contains("Ã¥Ë†Â¶Ã¥ÂºÂ¦")) return "institutional";
+        if (chLower.contains("ÃƒÂ©colog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("Ã§â€Å¸Ã¦â‚¬Â")) return "ecological";
+        if (chLower.contains("pathog") || chLower.contains("sanit") || chLower.contains("immunit") || chLower.contains("health") || chLower.contains("zoonot") || chLower.contains("Ã§â€”â€¦Ã¥Å½Å¸")) return "pathogen";
+        if (chLower.contains("prÃƒÂ©cipit") || chLower.contains("precipit") || chLower.contains("pluie") || chLower.contains("rainfall") || chLower.contains("Ã©â„¢ÂÃ¦Â°Â´")) return "precipitation";
+        if (chLower.contains("ÃƒÂ©lÃƒÂ©vat") || chLower.contains("elevat") || chLower.contains("altitude") || chLower.contains("relief") || chLower.contains("Ã¦ÂµÂ·Ã¦â€¹â€")) return "elevation";
+        if (chLower.contains("saison") || chLower.contains("season") || chLower.contains("Ã¥Â­Â£Ã¨Å â€š")) return "seasonality";
 
         String customSlug = chLower.replaceAll("[^a-z0-9_]+", "_").replaceAll("^_+|_+$", "");
         return customSlug.isBlank() ? "density" : customSlug;
@@ -170,15 +170,15 @@ public final class SpatialTensorDiskRegistry {
     public static String extractChannelBase64(Scenario sc, String channel) {
         if (sc == null || channel == null) return null;
         String chLower = channel.toLowerCase(Locale.ROOT);
-        if (chLower.contains("souverainetÃ©") || chLower.contains("sovereignty")) return sc.getCustomTensorMapBase64(3);
+        if (chLower.contains("souverainetÃƒÂ©") || chLower.contains("sovereignty")) return sc.getCustomTensorMapBase64(3);
         if (chLower.contains("isoglosses") || chLower.contains("linguistique") || chLower.contains("linguistic") || chLower.contains("langues")) return sc.getCustomTensorMapBase64(0);
-        if (chLower.contains("parentÃ©") || chLower.contains("kinship")) return sc.getCustomTensorMapBase64(1);
+        if (chLower.contains("parentÃƒÂ©") || chLower.contains("kinship")) return sc.getCustomTensorMapBase64(1);
         if (chLower.contains("rituels") || chLower.contains("rituals") || chLower.contains("croyances")) return sc.getCustomTensorMapBase64(2);
         if (chLower.contains("technologie") || chLower.contains("technology") || chLower.contains("artefacts") || chLower.contains("outillage")) return sc.getCustomTensorMapBase64(4);
         if (chLower.contains("commerce") || chLower.contains("trade") || chLower.contains("corridors")) return sc.getCustomTensorMapBase64(5);
         if (chLower.contains("institution") || chLower.contains("institutional") || chLower.contains("seshat")) return sc.getCustomTensorMapBase64(6);
-        if (chLower.contains("Ã©cologique") || chLower.contains("ecological") || chLower.contains("empreinte")) return sc.getCustomTensorMapBase64(7);
-        if (chLower.contains("pathogÃ¨ne") || chLower.contains("pathogen") || chLower.contains("immunitÃ©") || chLower.contains("santÃ©")) return sc.getCustomTensorMapBase64(8);
+        if (chLower.contains("ÃƒÂ©cologique") || chLower.contains("ecological") || chLower.contains("empreinte")) return sc.getCustomTensorMapBase64(7);
+        if (chLower.contains("pathogÃƒÂ¨ne") || chLower.contains("pathogen") || chLower.contains("immunitÃƒÂ©") || chLower.contains("santÃƒÂ©")) return sc.getCustomTensorMapBase64(8);
         return sc.getCustomDensityBase64();
     }
 
@@ -189,4 +189,5 @@ public final class SpatialTensorDiskRegistry {
         RASTER_IMAGE_CACHE.clear();
     }
 }
+
 

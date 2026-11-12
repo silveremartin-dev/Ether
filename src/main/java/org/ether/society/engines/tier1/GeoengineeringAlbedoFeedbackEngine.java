@@ -64,10 +64,10 @@ public class GeoengineeringAlbedoFeedbackEngine extends AbstractSimulationEngine
             }
         }
 
-        // Stratospheric Aerosol Injection threshold: High-tech industrial civilizations deploy SAI if global temp > 18°C
+        // Stratospheric Aerosol Injection threshold: High-tech industrial civilizations deploy SAI if global temp > 18A°C
         if (totalIndustrialSaiCapacity > 50.0) {
             globalSaiAerosolLoadingTg = Math.min(20.0, totalIndustrialSaiCapacity * 0.1);
-            // 5 Tg SO2 ~ -0.5°C cooling
+            // 5 Tg SO2 ~ -0.5A°C cooling
             globalCoolingEffectCelsius = globalSaiAerosolLoadingTg * 0.10;
         } else {
             globalSaiAerosolLoadingTg = Math.max(0.0, globalSaiAerosolLoadingTg - (1.0 * dtSafe)); // Aerosol decay ~1-2 yr lifetime

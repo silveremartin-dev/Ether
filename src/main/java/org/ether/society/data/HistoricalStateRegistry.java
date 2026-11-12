@@ -120,7 +120,7 @@ public class HistoricalStateRegistry {
     public static HistoricalEpoch getActiveEpoch(long year) {
         List<HistoricalEpoch> registry = getRegistry();
         if (registry.isEmpty()) {
-            throw new IllegalStateException("HistoricalStateRegistry: no epochs loaded — check " + PRIMARY_PATH);
+            throw new IllegalStateException("HistoricalStateRegistry: no epochs loaded Ã¢â‚¬â€ check " + PRIMARY_PATH);
         }
 
         // Binary search: find last epoch whose tStart <= year
@@ -138,7 +138,7 @@ public class HistoricalStateRegistry {
         HistoricalEpoch candidate = registry.get(best);
         // The candidate interval covers [tStart, tEnd): verify tEnd bound
         // If year >= tEnd, fall through to next (but due to binary search this should not happen
-        // unless data gaps exist — return candidate defensively).
+        // unless data gaps exist Ã¢a‚¬a€ return candidate defensively).
         return candidate;
     }
 
@@ -184,7 +184,7 @@ public class HistoricalStateRegistry {
         HistoricalEpoch epoch = getActiveEpoch(year);
         List<OrographicGlottologPropagator.CulturalSeed> seeds = new ArrayList<>();
         for (PolityState p : epoch.polities()) {
-            // expansionWeight proportional to radius — larger states propagate further
+            // expansionWeight proportional to radius Ã¢a‚¬a€ larger states propagate further
             double weight = p.radiusDeg() / 18.0;
             seeds.add(new OrographicGlottologPropagator.CulturalSeed(
                     p.coreLon(), p.coreLat(), p.colorRgb(), weight, p.name()
@@ -209,7 +209,7 @@ public class HistoricalStateRegistry {
     }
 
     private static List<HistoricalEpoch> loadRegistry() {
-        ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
+        ObjectMapper mapper = org.ether.society.persistence.EtherJsonHelper.getMapper();
         JsonNode root = null;
 
         // 1. Try filesystem path (runtime / Maven execution)
@@ -217,8 +217,7 @@ public class HistoricalStateRegistry {
         if (!Files.exists(fsPath)) {
             try {
                 fsPath = org.ether.society.config.EtherPaths.getEarthTreatiesDir().resolve("treaties_and_transitions.json");
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(HistoricalStateRegistry.class).debug("Non-fatal condition in HistoricalStateRegistry: {}", ignored.getMessage()); }
         }
         if (!Files.exists(fsPath)) {
             fsPath = Path.of(FALLBACK_PATH);
@@ -248,7 +247,7 @@ public class HistoricalStateRegistry {
         }
 
         if (root == null) {
-            logger.error("HistoricalStateRegistry: FATAL — could not load treaties_and_transitions.json from {} or classpath", PRIMARY_PATH);
+            logger.error("HistoricalStateRegistry: FATAL Ã¢â‚¬â€ could not load treaties_and_transitions.json from {} or classpath", PRIMARY_PATH);
             return List.of();
         }
 
@@ -298,7 +297,7 @@ public class HistoricalStateRegistry {
             HistoricalEpoch cur = epochs.get(i);
             HistoricalEpoch next = epochs.get(i + 1);
             if (cur.tEnd() > next.tStart()) {
-                // Overlap — clamp cur.tEnd to next.tStart
+                // Overlap Ã¢a‚¬a€ clamp cur.tEnd to next.tStart
                 epochs.set(i, new HistoricalEpoch(cur.id(), cur.tStart(), next.tStart(),
                         cur.label(), cur.triggerEvent(), cur.polities()));
             }
@@ -325,3 +324,5 @@ public class HistoricalStateRegistry {
         }
     }
 }
+
+

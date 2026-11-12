@@ -45,7 +45,7 @@ public class NordhausDiceHybridEngine extends AbstractSimulationEngine {
             if (cell == null || cell.getTemperature() == null) continue;
 
             double temp = cell.getTemperature();
-            double tempAnomaly = Math.max(0.0, temp - 15.0); // Anomaly relative to 15°C baseline
+            double tempAnomaly = Math.max(0.0, temp - 15.0); // Anomaly relative to 15A°C baseline
             double damageFraction = Math.min(0.50, 0.00236 * Math.pow(tempAnomaly, 2.0));
 
             double capital = cell.getResourceCapitalOr(0.0);

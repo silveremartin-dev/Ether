@@ -21,7 +21,7 @@ import org.ether.society.events.HistoricalIntervention;
 import org.ether.society.events.HistoricalInterventionRegistry;
 import org.ether.society.i18n.I18n;
 import org.ether.society.ui.ScenarioSetupPanel.ClimateEvent;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.ui.WindowHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,9 +75,9 @@ public class ScenarioEventsSectionBuilder {
     public VBox buildEventsSection(CheckBox randomBiophysicalCB, CheckBox randomPoliticalCB,
                                   java.util.function.Supplier<Integer> startYearSupplier) {
         this.randomBiophysicalEventsCheckBox = randomBiophysicalCB != null ? randomBiophysicalCB :
-                new CheckBox(I18n.getOrDefault("scenario.events.biophysical_enable", "🌋 Enable random planetary biophysical events (Volcanoes, Earthquakes, Epidemics)"));
+                new CheckBox(I18n.getOrDefault("scenario.events.biophysical_enable", "ðŸŒ‹ Enable random planetary biophysical events (Volcanoes, Earthquakes, Epidemics)"));
         this.randomPoliticalEventsCheckBox = randomPoliticalCB != null ? randomPoliticalCB :
-                new CheckBox(I18n.getOrDefault("scenario.events.political_enable", "👑 Enable random political & sociological interventions"));
+                new CheckBox(I18n.getOrDefault("scenario.events.political_enable", "ðŸ‘‘ Enable random political & sociological interventions"));
 
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
@@ -141,7 +141,7 @@ public class ScenarioEventsSectionBuilder {
             @Override
             public String toString(Integer val) {
                 if (val == null || val <= 0) {
-                    return I18n.getOrDefault("scenario.event.duration.permanent", "Permanent (∞)");
+                    return I18n.getOrDefault("scenario.event.duration.permanent", "Permanent (âˆž)");
                 }
                 return val + " " + I18n.getOrDefault("scenario.event.duration.days_suffix", "j");
             }
@@ -150,7 +150,7 @@ public class ScenarioEventsSectionBuilder {
             public Integer fromString(String string) {
                 if (string == null || string.isBlank()) return -1;
                 String trimmed = string.trim().toLowerCase(java.util.Locale.ROOT);
-                if (trimmed.contains("perm") || trimmed.contains("∞") || trimmed.equals("0") || trimmed.equals("-1")) {
+                if (trimmed.contains("perm") || trimmed.contains("âˆž") || trimmed.equals("0") || trimmed.equals("-1")) {
                     return -1;
                 }
                 String digits = trimmed.replaceAll("[^0-9-]", "");
@@ -163,7 +163,7 @@ public class ScenarioEventsSectionBuilder {
             }
         };
 
-        TableColumn<ClimateEvent, Integer> colDuration = new TableColumn<>(I18n.getOrDefault("scenario.col.duration", "Durée"));
+        TableColumn<ClimateEvent, Integer> colDuration = new TableColumn<>(I18n.getOrDefault("scenario.col.duration", "DurÃ©e"));
         colDuration.setCellValueFactory(cellData -> cellData.getValue().durationDaysProperty().asObject());
         colDuration.setCellFactory(TextFieldTableCell.forTableColumn(durationConverter));
         colDuration.setPrefWidth(110);
@@ -190,7 +190,7 @@ public class ScenarioEventsSectionBuilder {
 
         eventsTable.getColumns().setAll(colType, colName, colYear, colMonth, colDay, colDuration, colLat, colLon, colDepth, colMag);
 
-        addEventBtn = new Button(I18n.getOrDefault("scenario.btn.add_event", "➕ Add Event"));
+        addEventBtn = new Button(I18n.getOrDefault("scenario.btn.add_event", "âž• Add Event"));
         addEventBtn.getStyleClass().add("button-secondary");
         addEventBtn.setOnAction(e -> {
             int currentStartYear = startYearSupplier != null ? startYearSupplier.get() : -8000;
@@ -198,7 +198,7 @@ public class ScenarioEventsSectionBuilder {
             notifyChange();
         });
 
-        removeEventBtn = new Button(I18n.getOrDefault("scenario.btn.remove_event", "➖ Delete Selection"));
+        removeEventBtn = new Button(I18n.getOrDefault("scenario.btn.remove_event", "âž– Delete Selection"));
         removeEventBtn.getStyleClass().add("button-secondary");
         removeEventBtn.setOnAction(e -> {
             ClimateEvent selected = eventsTable.getSelectionModel().getSelectedItem();
@@ -208,7 +208,7 @@ public class ScenarioEventsSectionBuilder {
             }
         });
 
-        clearEventsBtn = new Button(I18n.getOrDefault("scenario.btn.clear_events", "🗑️ Clear All"));
+        clearEventsBtn = new Button(I18n.getOrDefault("scenario.btn.clear_events", "ðŸ—‘ï¸ Clear All"));
         clearEventsBtn.getStyleClass().add("button-secondary");
         clearEventsBtn.setOnAction(e -> {
             if (!eventsList.isEmpty()) {
@@ -217,14 +217,14 @@ public class ScenarioEventsSectionBuilder {
             }
         });
 
-        loadEarthEventsBtn = new Button(I18n.getOrDefault("scenario.btn.load_earth_events", "🌋 Load Terrestrial Disasters"));
+        loadEarthEventsBtn = new Button(I18n.getOrDefault("scenario.btn.load_earth_events", "ðŸŒ‹ Load Terrestrial Disasters"));
         loadEarthEventsBtn.getStyleClass().add("button-secondary");
         loadEarthEventsBtn.setOnAction(e -> {
             int yr = startYearSupplier != null ? startYearSupplier.get() : -8000;
             loadEarthBiophysicalEvents(yr, true);
         });
 
-        loadEarthLeadersBtn = new Button(I18n.getOrDefault("scenario.btn.load_historical_leaders", "👑 Load Great Historical Leaders"));
+        loadEarthLeadersBtn = new Button(I18n.getOrDefault("scenario.btn.load_historical_leaders", "ðŸ‘‘ Load Great Historical Leaders"));
         loadEarthLeadersBtn.getStyleClass().add("button-secondary");
         loadEarthLeadersBtn.setOnAction(e -> {
             int yr = startYearSupplier != null ? startYearSupplier.get() : -8000;
@@ -232,14 +232,14 @@ public class ScenarioEventsSectionBuilder {
         });
 
         Label randomEventsNote = new Label(I18n.getOrDefault("scenario.events.random_note",
-                "ℹ️ Modèles Déterministes & Aléatoires : Activez les cases ci-dessus pour laisser le moteur générer dynamiquement des chocs climatiques, pandémiques et politiques au cours des siècles selon les lois de Poisson et la théorie de la criticalité auto-organisée."));
+                "â„¹ï¸ ModÃ¨les DÃ©terministes & AlÃ©atoires : Activez les cases ci-dessus pour laisser le moteur gÃ©nÃ©rer dynamiquement des chocs climatiques, pandÃ©miques et politiques au cours des siÃ¨cles selon les lois de Poisson et la thÃ©orie de la criticalitÃ© auto-organisÃ©e."));
         randomEventsNote.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
         randomEventsNote.setWrapText(true);
 
         VBox randomEventsBox = new VBox(8, randomBiophysicalEventsCheckBox, randomPoliticalEventsCheckBox, randomEventsNote);
         randomEventsBox.setStyle("-fx-padding: 10 14; -fx-background-color: rgba(56, 189, 248, 0.06); -fx-background-radius: 6; -fx-border-color: rgba(56, 189, 248, 0.2); -fx-border-radius: 6;");
 
-        eventsCheckBox = new CheckBox(I18n.getOrDefault("scenario.events.enable", "📅 Planifier des événements datés dans le scénario (Calendrier d'événements)"));
+        eventsCheckBox = new CheckBox(I18n.getOrDefault("scenario.events.enable", "ðŸ“… Planifier des Ã©vÃ©nements datÃ©s dans le scÃ©nario (Calendrier d'Ã©vÃ©nements)"));
         eventsCheckBox.setStyle("-fx-font-weight: bold;");
 
         HBox btnBarRow1 = new HBox(8, addEventBtn, removeEventBtn, clearEventsBtn);
@@ -272,14 +272,14 @@ public class ScenarioEventsSectionBuilder {
 
         List<ClimateEvent> filtered = new ArrayList<>();
         // Canonical major biophysical events with exact historical dates
-        if (startYear <= -1600) filtered.add(new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 1, 1, 36.4, 25.4, 10.0, 0.95, 365));
-        if (startYear <= 79)    filtered.add(new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 8, 24, 40.8, 14.4, 8.0, 0.85, 365));
-        if (startYear <= 536)   filtered.add(new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 3, 1, 64.0, -18.0, 10.0, 0.90, 365));
-        if (startYear <= 1257)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, 5, 1, -8.4, 116.4, 12.0, 0.98, 365));
+        if (startYear <= -1600) filtered.add(new ClimateEvent("VOLCANO", "Ã‰ruption Minoenne de ThÃ©ra (Santorin)", -1610, 1, 1, 36.4, 25.4, 10.0, 0.95, 365));
+        if (startYear <= 79)    filtered.add(new ClimateEvent("VOLCANO", "Ã‰ruption du VÃ©suve (PompÃ©i & Herculanum)", 79, 8, 24, 40.8, 14.4, 8.0, 0.85, 365));
+        if (startYear <= 536)   filtered.add(new ClimateEvent("VOLCANO", "AnnÃ©e sans Ã©tÃ© (Ã‰ruption mystÃ¨re de 536)", 536, 3, 1, 64.0, -18.0, 10.0, 0.90, 365));
+        if (startYear <= 1257)  filtered.add(new ClimateEvent("VOLCANO", "Ã‰ruption du Samalas (Lombok, IndonÃ©sie)", 1257, 5, 1, -8.4, 116.4, 12.0, 0.98, 365));
         if (startYear <= 1347)  filtered.add(new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 10, 1, 45.0, 35.0, 0.0, 0.90, 730));
-        if (startYear <= 1783)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 6, 8, 64.0, -18.2, 8.0, 0.88, 365));
-        if (startYear <= 1815)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, 4, 10, -8.2, 118.0, 10.0, 0.95, 365));
-        if (startYear <= 1883)  filtered.add(new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, 8, 27, -6.1, 105.4, 10.0, 0.90, 365));
+        if (startYear <= 1783)  filtered.add(new ClimateEvent("VOLCANO", "Ã‰ruption du Laki (Islande)", 1783, 6, 8, 64.0, -18.2, 8.0, 0.88, 365));
+        if (startYear <= 1815)  filtered.add(new ClimateEvent("VOLCANO", "Ã‰ruption du Tambora (AnnÃ©e sans Ã©tÃ©)", 1815, 4, 10, -8.2, 118.0, 10.0, 0.95, 365));
+        if (startYear <= 1883)  filtered.add(new ClimateEvent("VOLCANO", "Explosion du Krakatoa (DÃ©troit de la Sonde)", 1883, 8, 27, -6.1, 105.4, 10.0, 0.90, 365));
         if (startYear <= 1918)  filtered.add(new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 3, 4, 39.0, -98.0, 0.0, 0.75, 730));
 
         if (replaceAll) {
@@ -326,17 +326,17 @@ public class ScenarioEventsSectionBuilder {
         if (!promptConfirmation || eventsList == null || eventsList.isEmpty()) return true;
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(I18n.getOrDefault(titleKey, "Catalogue d'Événements Historiques"));
-        alert.setHeaderText(I18n.getOrDefault("scenario.events.load.header", "Événements Existants Détectés"));
+        alert.setTitle(I18n.getOrDefault(titleKey, "Catalogue d'Ã‰vÃ©nements Historiques"));
+        alert.setHeaderText(I18n.getOrDefault("scenario.events.load.header", "Ã‰vÃ©nements Existants DÃ©tectÃ©s"));
         alert.setContentText(I18n.getOrDefault("scenario.events.load.content", 
-                "Des événements existent déjà dans votre tableau. Souhaitez-vous remplacer la liste existante ou fusionner les nouveaux événements ?"));
+                "Des Ã©vÃ©nements existent dÃ©jÃ  dans votre tableau. Souhaitez-vous remplacer la liste existante ou fusionner les nouveaux Ã©vÃ©nements ?"));
 
         ButtonType btnReplace = new ButtonType(I18n.getOrDefault("scenario.events.load.btn_replace", "Remplacer Tout"));
         ButtonType btnMerge = new ButtonType(I18n.getOrDefault("scenario.events.load.btn_merge", "Fusionner / Ajouter"));
         ButtonType btnCancel = new ButtonType(I18n.getOrDefault("scenario.events.load.btn_cancel", "Annuler"), ButtonBar.ButtonData.CANCEL_CLOSE);
 
         alert.getButtonTypes().setAll(btnReplace, btnMerge, btnCancel);
-        WindowUtils.applyWindowIcon(alert);
+        WindowHelper.applyWindowIcon(alert);
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isEmpty() || result.get() == btnCancel) {
@@ -357,40 +357,40 @@ public class ScenarioEventsSectionBuilder {
             public String toString(String val) {
                 if (val == null) return "";
                 return switch (val) {
-                    case "VOLCANO", "disaster_volcano", "volcano" -> "🌋 " + I18n.getOrDefault("godmode.type.volcano", "Volcano");
-                    case "EARTHQUAKE", "disaster_earthquake", "earthquake" -> "🌍 " + I18n.getOrDefault("godmode.type.earthquake", "Earthquake");
-                    case "TSUNAMI", "disaster_tsunami", "tsunami" -> "🌊 " + I18n.getOrDefault("godmode.type.tsunami", "Tsunami");
-                    case "FLOOD", "disaster_flood", "flood" -> "💧 " + I18n.getOrDefault("godmode.type.flood", "Flood");
-                    case "DROUGHT", "disaster_drought", "drought" -> "☀️ " + I18n.getOrDefault("godmode.type.drought", "Drought");
-                    case "PANDEMIC", "disaster_pandemic", "pandemic" -> "🦠 " + I18n.getOrDefault("godmode.type.pandemic", "Pandemic");
-                    case "HEATWAVE", "disaster_heatwave", "heatwave" -> "🌡️ " + I18n.getOrDefault("godmode.type.heatwave", "Heatwave");
-                    case "ICE_AGE", "disaster_ice_age", "ice_age" -> "❄️ " + I18n.getOrDefault("godmode.type.ice_age", "Ice Age");
-                    case "METEOR", "disaster_meteor", "meteor" -> "☄️ " + I18n.getOrDefault("godmode.type.meteor", "Meteor");
-                    case "SOLAR_EMP", "disaster_solar_emp", "solar_emp" -> "⚡ " + I18n.getOrDefault("godmode.type.solar_emp", "Solar EMP");
-                    case "NUCLEAR_STRIKE", "disaster_nuclear_strike", "nuclear_strike" -> "☢️ " + I18n.getOrDefault("godmode.type.nuclear_strike", "Nuclear Strike");
-                    case "NUCLEAR_WINTER", "disaster_nuclear_winter", "nuclear_winter" -> "❄️ " + I18n.getOrDefault("godmode.type.nuclear_winter", "Nuclear Winter");
-                    case "CYBER_ATTACK", "disaster_cyber_attack", "cyber_attack" -> "💻 " + I18n.getOrDefault("godmode.type.cyber_attack", "Cyber Attack");
-                    case "ECONOMIC_CRASH", "disaster_economic_crash", "economic_crash" -> "📉 " + I18n.getOrDefault("godmode.type.economic_crash", "Economic Crash");
-                    case "BIODIVERSITY_COLLAPSE", "disaster_biodiversity_collapse", "biodiversity_collapse" -> "🦋 " + I18n.getOrDefault("godmode.type.biodiversity_collapse", "Biodiversity Collapse");
-                    case "GEOENGINEERING", "disaster_geoengineering", "geoengineering" -> "🛰️ " + I18n.getOrDefault("godmode.type.geoengineering", "Geoengineering");
-                    case "RENAISSANCE_BOOM", "renaissance_boom" -> "💡 " + I18n.getOrDefault("godmode.type.renaissance_boom", "Renaissance Boom");
-                    case "TECH_SINGULARITY", "tech_singularity" -> "🔮 " + I18n.getOrDefault("godmode.type.tech_singularity", "Singularity");
-                    case "ALIEN_CONTACT", "disaster_alien_contact", "alien_contact" -> "🛸 " + I18n.getOrDefault("godmode.type.alien_contact", "Alien Contact");
-                    case "DOME_BREACH" -> "🪐 " + I18n.getOrDefault("godmode.type.dome_breach", "Dome Breach");
-                    case "ECLSS_FAILURE" -> "🫧 " + I18n.getOrDefault("godmode.type.eclss_failure", "ECLSS Failure");
-                    case "AEROSTAT_PUNCTURE" -> "🎈 " + I18n.getOrDefault("godmode.type.aerostat_puncture", "Aerostat Puncture");
-                    case "LAVA_TUBE_COLLAPSE" -> "🌋 " + I18n.getOrDefault("godmode.type.lava_tube_collapse", "Lava Tube Collapse");
-                    case "LEADER_MILITARY_CONQUEROR" -> "⚔️ " + I18n.getOrDefault("leader.archetype.military_conqueror", "Military Conqueror");
-                    case "LEADER_INFRASTRUCTURE_BUILDER" -> "🏛️ " + I18n.getOrDefault("leader.archetype.infrastructure_builder", "Infrastructure Builder");
-                    case "LEADER_INSTITUTIONAL_REFORMER" -> "📜 " + I18n.getOrDefault("leader.archetype.institutional_reformer", "Institutional Reformer");
-                    case "LEADER_HYDRAULIC_AGRARIAN_INNOVATOR" -> "🌾 " + I18n.getOrDefault("leader.archetype.hydraulic_agrarian_innovator", "Hydraulic/Agrarian Innovator");
-                    case "LEADER_MORAL_RELIGIOUS_SAGE" -> "🕊️ " + I18n.getOrDefault("leader.archetype.moral_religious_sage", "Moral/Religious Sage");
-                    case "LEADER_TOTALITARIAN_PURGER" -> "🛡️ " + I18n.getOrDefault("leader.archetype.totalitarian_purger", "Totalitarian Purger");
-                    case "milestone_archaeology", "milestone" -> "🏺 " + I18n.getOrDefault("scenario.event.milestone_archaeology", "Archéologie");
-                    case "milestone_polity", "historical" -> "🏛️ " + I18n.getOrDefault("scenario.event.milestone_polity", "État & Empire");
-                    case "milestone_technology" -> "🔬 " + I18n.getOrDefault("scenario.event.milestone_technology", "Technologie");
-                    case "milestone_golden_age" -> "🌟 " + I18n.getOrDefault("scenario.event.milestone_golden_age", "Âge d'Or");
-                    case "milestone_ethnography" -> "🗣️ " + I18n.getOrDefault("scenario.event.milestone_ethnography", "Ethnographie");
+                    case "VOLCANO", "disaster_volcano", "volcano" -> "ðŸŒ‹ " + I18n.getOrDefault("godmode.type.volcano", "Volcano");
+                    case "EARTHQUAKE", "disaster_earthquake", "earthquake" -> "ðŸŒ " + I18n.getOrDefault("godmode.type.earthquake", "Earthquake");
+                    case "TSUNAMI", "disaster_tsunami", "tsunami" -> "ðŸŒŠ " + I18n.getOrDefault("godmode.type.tsunami", "Tsunami");
+                    case "FLOOD", "disaster_flood", "flood" -> "ðŸ’§ " + I18n.getOrDefault("godmode.type.flood", "Flood");
+                    case "DROUGHT", "disaster_drought", "drought" -> "â˜€ï¸ " + I18n.getOrDefault("godmode.type.drought", "Drought");
+                    case "PANDEMIC", "disaster_pandemic", "pandemic" -> "ðŸ¦  " + I18n.getOrDefault("godmode.type.pandemic", "Pandemic");
+                    case "HEATWAVE", "disaster_heatwave", "heatwave" -> "ðŸŒ¡ï¸ " + I18n.getOrDefault("godmode.type.heatwave", "Heatwave");
+                    case "ICE_AGE", "disaster_ice_age", "ice_age" -> "â„ï¸ " + I18n.getOrDefault("godmode.type.ice_age", "Ice Age");
+                    case "METEOR", "disaster_meteor", "meteor" -> "â˜„ï¸ " + I18n.getOrDefault("godmode.type.meteor", "Meteor");
+                    case "SOLAR_EMP", "disaster_solar_emp", "solar_emp" -> "âš¡ " + I18n.getOrDefault("godmode.type.solar_emp", "Solar EMP");
+                    case "NUCLEAR_STRIKE", "disaster_nuclear_strike", "nuclear_strike" -> "â˜¢ï¸ " + I18n.getOrDefault("godmode.type.nuclear_strike", "Nuclear Strike");
+                    case "NUCLEAR_WINTER", "disaster_nuclear_winter", "nuclear_winter" -> "â„ï¸ " + I18n.getOrDefault("godmode.type.nuclear_winter", "Nuclear Winter");
+                    case "CYBER_ATTACK", "disaster_cyber_attack", "cyber_attack" -> "ðŸ’» " + I18n.getOrDefault("godmode.type.cyber_attack", "Cyber Attack");
+                    case "ECONOMIC_CRASH", "disaster_economic_crash", "economic_crash" -> "ðŸ“‰ " + I18n.getOrDefault("godmode.type.economic_crash", "Economic Crash");
+                    case "BIODIVERSITY_COLLAPSE", "disaster_biodiversity_collapse", "biodiversity_collapse" -> "ðŸ¦‹ " + I18n.getOrDefault("godmode.type.biodiversity_collapse", "Biodiversity Collapse");
+                    case "GEOENGINEERING", "disaster_geoengineering", "geoengineering" -> "ðŸ›°ï¸ " + I18n.getOrDefault("godmode.type.geoengineering", "Geoengineering");
+                    case "RENAISSANCE_BOOM", "renaissance_boom" -> "ðŸ’¡ " + I18n.getOrDefault("godmode.type.renaissance_boom", "Renaissance Boom");
+                    case "TECH_SINGULARITY", "tech_singularity" -> "ðŸ”® " + I18n.getOrDefault("godmode.type.tech_singularity", "Singularity");
+                    case "ALIEN_CONTACT", "disaster_alien_contact", "alien_contact" -> "ðŸ›¸ " + I18n.getOrDefault("godmode.type.alien_contact", "Alien Contact");
+                    case "DOME_BREACH" -> "ðŸª " + I18n.getOrDefault("godmode.type.dome_breach", "Dome Breach");
+                    case "ECLSS_FAILURE" -> "ðŸ«§ " + I18n.getOrDefault("godmode.type.eclss_failure", "ECLSS Failure");
+                    case "AEROSTAT_PUNCTURE" -> "ðŸŽˆ " + I18n.getOrDefault("godmode.type.aerostat_puncture", "Aerostat Puncture");
+                    case "LAVA_TUBE_COLLAPSE" -> "ðŸŒ‹ " + I18n.getOrDefault("godmode.type.lava_tube_collapse", "Lava Tube Collapse");
+                    case "LEADER_MILITARY_CONQUEROR" -> "âš”ï¸ " + I18n.getOrDefault("leader.archetype.military_conqueror", "Military Conqueror");
+                    case "LEADER_INFRASTRUCTURE_BUILDER" -> "ðŸ›ï¸ " + I18n.getOrDefault("leader.archetype.infrastructure_builder", "Infrastructure Builder");
+                    case "LEADER_INSTITUTIONAL_REFORMER" -> "ðŸ“œ " + I18n.getOrDefault("leader.archetype.institutional_reformer", "Institutional Reformer");
+                    case "LEADER_HYDRAULIC_AGRARIAN_INNOVATOR" -> "ðŸŒ¾ " + I18n.getOrDefault("leader.archetype.hydraulic_agrarian_innovator", "Hydraulic/Agrarian Innovator");
+                    case "LEADER_MORAL_RELIGIOUS_SAGE" -> "ðŸ•Šï¸ " + I18n.getOrDefault("leader.archetype.moral_religious_sage", "Moral/Religious Sage");
+                    case "LEADER_TOTALITARIAN_PURGER" -> "ðŸ›¡ï¸ " + I18n.getOrDefault("leader.archetype.totalitarian_purger", "Totalitarian Purger");
+                    case "milestone_archaeology", "milestone" -> "ðŸº " + I18n.getOrDefault("scenario.event.milestone_archaeology", "ArchÃ©ologie");
+                    case "milestone_polity", "historical" -> "ðŸ›ï¸ " + I18n.getOrDefault("scenario.event.milestone_polity", "Ã‰tat & Empire");
+                    case "milestone_technology" -> "ðŸ”¬ " + I18n.getOrDefault("scenario.event.milestone_technology", "Technologie");
+                    case "milestone_golden_age" -> "ðŸŒŸ " + I18n.getOrDefault("scenario.event.milestone_golden_age", "Ã‚ge d'Or");
+                    case "milestone_ethnography" -> "ðŸ—£ï¸ " + I18n.getOrDefault("scenario.event.milestone_ethnography", "Ethnographie");
                     default -> val;
                 };
             }
@@ -422,3 +422,4 @@ public class ScenarioEventsSectionBuilder {
         return randomPoliticalEventsCheckBox;
     }
 }
+

@@ -6,10 +6,10 @@ import org.ether.society.model.PhysicalConstants;
 /**
  * Data-Oriented Urban Agglomeration, Capital Accumulation &amp; Institutional Entropy Kernel.
  * <p>
- * Models urban emergence, Solow-Swan / Ayres-Kümmel physical capital accumulation ($K$),
+ * Models urban emergence, Solow-Swan / Ayres-KÃ¼mmel physical capital accumulation ($K$),
  * and Tainter's thermodynamic maintenance constraints ($C$) across all active cells using
  * strictly smooth ($C^\infty$) differential equations of conserved physical observables
- * ({@code AGENTS.md} §10.1, §10.2). Zero state-level {@code technologyLevel} reads or mutations.
+ * ({@code AGENTS.md} Â§10.1, Â§10.2). Zero state-level {@code technologyLevel} reads or mutations.
  * </p>
  * <p>
  * Mathematically synchronized with {@code native/ether-core-native/src/urban.rs}.
@@ -81,12 +81,12 @@ public class UrbanKernel {
                     + 580.0 * Math.tanh(SmoothMath.softplus(powerPerCapitaW - 348.0, 0.2) / 38.0)
                     + 62.0 * Math.pow(SmoothMath.softplus(powerPerCapitaW - 400.0, 0.1) / 100.0, 1.95);
 
-            // In mobile hunter-gatherer bands (low population p < 50), somatic transport bounds capital stock to portable tools (AGENTS.md §8)
+            // In mobile hunter-gatherer bands (low population p < 50), somatic transport bounds capital stock to portable tools (AGENTS.md A§8)
             double bandConstraint = SmoothMath.sigmoid(p, 50.0, 15.0);
             kStar = 5.0 * (1.0 - bandConstraint) + kStar * bandConstraint;
 
             // Sedentary infrastructure (mudbrick/masonry/granaries/plows) requires agricultural biomass
-            // or high-power industrial grids; mobile foraging bands cannot transport stationary infrastructure (AGENTS.md §8).
+            // or high-power industrial grids; mobile foraging bands cannot transport stationary infrastructure (AGENTS.md A§8).
             float[] agri = world.getBiomassAgriculture();
             float cellAgri = (agri != null && i < agri.length) ? agri[i] : 0.0f;
             double agriActivation = SmoothMath.sigmoid(cellAgri, 100.0, 30.0);

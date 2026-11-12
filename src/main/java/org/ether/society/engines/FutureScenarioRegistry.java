@@ -21,7 +21,7 @@ import java.util.List;
  * Deterministic Future Physical Scenario Registry.
  * Formalizes initial physical forcing terms for future projections:
  * <ol>
- *   <li><b>Business As Usual (SSP5-8.5)</b>: High CO2 emissions (+4.5°C), zero fusion, continuous NPK depletion.</li>
+ *   <li><b>Business As Usual (SSP5-8.5)</b>: High CO2 emissions (+4.5Â°C), zero fusion, continuous NPK depletion.</li>
  *   <li><b>Technological Singularity &amp; Fusion</b>: Breakthrough D-T Fusion (EROEI &gt;= 40:1), ASI throughput (&gt;= 10^16 bits/s).</li>
  *   <li><b>Nuclear Winter Catastrophe</b>: Stratospheric soot injection (&tau; = 1.5), solar attenuation ($S_0 \cdot e^{-\tau}$).</li>
  *   <li><b>AMOC Collapse &amp; Tipping Point</b>: Freshwater ice melt drops ocean salinity (&lt; 30 PSU), triggering AMOC shutdown.</li>
@@ -39,7 +39,7 @@ public class FutureScenarioRegistry {
 
     public static final PhysicalScenarioPreset SCENARIO_BAU = new PhysicalScenarioPreset(
             "BAU_SSP585", "Business As Usual (SSP5-8.5)",
-            "Continued high CO2 emissions (+4.5°C), fossil fuel dependence, and gradual agricultural NPK soil depletion.", 2026.0);
+            "Continued high CO2 emissions (+4.5Â°C), fossil fuel dependence, and gradual agricultural NPK soil depletion.", 2026.0);
 
     public static final PhysicalScenarioPreset SCENARIO_SINGULARITY = new PhysicalScenarioPreset(
             "TECH_SINGULARITY", "Technological Singularity & D-T Fusion",
@@ -47,7 +47,7 @@ public class FutureScenarioRegistry {
 
     public static final PhysicalScenarioPreset SCENARIO_NUCLEAR_WINTER = new PhysicalScenarioPreset(
             "NUCLEAR_WINTER", "Nuclear Winter & Stratospheric Soot",
-            "Massive stratospheric soot injection (tau = 1.5) causing severe global freeze (-15°C) and crop failures.", 2035.0);
+            "Massive stratospheric soot injection (tau = 1.5) causing severe global freeze (-15Â°C) and crop failures.", 2035.0);
 
     public static final PhysicalScenarioPreset SCENARIO_AMOC_COLLAPSE = new PhysicalScenarioPreset(
             "AMOC_COLLAPSE", "Thermohaline AMOC Circulation Collapse",
@@ -80,7 +80,7 @@ public class FutureScenarioRegistry {
         // Iterate over spatial cell domains and apply localized cellular state transformations
         for (H3Cell cell : cells) {
             if (preset.id().equals("BAU_SSP585")) {
-                // High CO2 greenhouse forcing (+4.5°C) & high initial pollution
+                // High CO2 greenhouse forcing (+4.5A°C) & high initial pollution
                 cell.setTemperature((cell.getTemperatureOr(15.0)) + 4.5);
                 cell.setPollutionLevel(2000.0);
             } else if (preset.id().equals("TECH_SINGULARITY")) {
@@ -90,7 +90,7 @@ public class FutureScenarioRegistry {
                 // Stratospheric soot injection
                 NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(1.5);
             } else if (preset.id().equals("AMOC_COLLAPSE")) {
-                // Ocean thermohaline collapse (-8°C cooling drop)
+                // Ocean thermohaline collapse (-8A°C cooling drop)
                 cell.setTemperature((cell.getTemperatureOr(15.0)) - 8.0);
             } else if (preset.id().equals("PEAK_PHOSPHORUS")) {
                 // Phosphate depletion
@@ -117,16 +117,16 @@ public class FutureScenarioRegistry {
         String name = scenario.getName() != null ? scenario.getName().toLowerCase() : "";
         String desc = scenario.getDescription() != null ? scenario.getDescription().toLowerCase() : "";
 
-        if (name.contains("sovereign") || name.contains("maître du monde") || name.contains("leviathan") || desc.contains("gouvernance ia")) {
+        if (name.contains("sovereign") || name.contains("maÃ®tre du monde") || name.contains("leviathan") || desc.contains("gouvernance ia")) {
             return name.contains("multipolar") || name.contains("guerre froide") ? SCENARIO_SOVEREIGN_AI_MULTIPOLAR : SCENARIO_SOVEREIGN_AI_SINGLE;
         }
         if (name.contains("business as usual") || name.contains("ssp5") || name.contains("bau") || name.contains("tendancielle biophysique")) {
             return SCENARIO_BAU;
         }
-        if (name.contains("hiver nucléaire") || name.contains("nuclear winter") || desc.contains("hiver nucléaire") || desc.contains("nuclear winter") || name.contains("guerre nucléaire")) {
+        if (name.contains("hiver nuclÃ©aire") || name.contains("nuclear winter") || desc.contains("hiver nuclÃ©aire") || desc.contains("nuclear winter") || name.contains("guerre nuclÃ©aire")) {
             return SCENARIO_NUCLEAR_WINTER;
         }
-        if (name.contains("singularité") || name.contains("singularity") || name.contains("asi")) {
+        if (name.contains("singularitÃ©") || name.contains("singularity") || name.contains("asi")) {
             return SCENARIO_SINGULARITY;
         }
         if (name.contains("amoc") || name.contains("thermohalin")) {

@@ -163,7 +163,7 @@ public class CellTooltip extends VBox {
         } else if (cell != null && cell.getTemperature() != null) {
             temp = cell.getTemperature();
         }
-        temperatureLabel.setText(String.format("%-14s %.1f°C", I18n.getOrDefault("ui.tooltip.temperature", "Temperature:"), temp));
+        temperatureLabel.setText(String.format("%-14s %.1fÂ°C", I18n.getOrDefault("ui.tooltip.temperature", "Temperature:"), temp));
 
         // Rainfall
         int rain = 800;
@@ -187,30 +187,30 @@ public class CellTooltip extends VBox {
             int diff = currentPop - prevPop;
             double pct = ((double) diff / prevPop) * 100.0;
             if (diff > 0) {
-                trendStr = String.format(" (🟢 ⬆ +%,d | +%.1f%%)", diff, pct);
+                trendStr = String.format(" (ðŸŸ¢ â¬† +%,d | +%.1f%%)", diff, pct);
             } else if (diff < 0) {
-                trendStr = String.format(" (🔴 ⬇ %,d | %.1f%%)", diff, pct);
+                trendStr = String.format(" (ðŸ”´ â¬‡ %,d | %.1f%%)", diff, pct);
             } else {
-                trendStr = " (⚪ ➡ 0.0%)";
+                trendStr = " (âšª âž¡ 0.0%)";
             }
         }
         popLabel.setText(String.format("%-14s %,d hab%s", "Population :", currentPop, trendStr));
 
-        // Density based on cell's effective surface area in km²
+        // Density based on cell's effective surface area in kmA²
         double cellArea = (cell != null) ? cell.getEffectiveSurfaceAreaKm2() : 12393.43;
         if (cellArea <= 0.0001) cellArea = 1.0;
         double density = currentPop / cellArea;
         String densityStr;
         if (density == 0.0) {
-            densityStr = "0.0 hab/km²";
+            densityStr = "0.0 hab/kmÂ²";
         } else if (density < 0.01) {
-            densityStr = String.format(java.util.Locale.ROOT, "%,.4f hab/km²", density);
+            densityStr = String.format(java.util.Locale.ROOT, "%,.4f hab/kmÂ²", density);
         } else if (density < 1.0) {
-            densityStr = String.format(java.util.Locale.ROOT, "%,.2f hab/km²", density);
+            densityStr = String.format(java.util.Locale.ROOT, "%,.2f hab/kmÂ²", density);
         } else {
-            densityStr = String.format(java.util.Locale.ROOT, "%,.1f hab/km²", density);
+            densityStr = String.format(java.util.Locale.ROOT, "%,.1f hab/kmÂ²", density);
         }
-        densityLabel.setText(String.format("%-14s %s", "Densité :", densityStr));
+        densityLabel.setText(String.format("%-14s %s", "DensitÃ© :", densityStr));
 
         // Resources
         double food = 0.0;
@@ -225,7 +225,7 @@ public class CellTooltip extends VBox {
         foodLabel.setText(String.format("%-14s %.1f t", "Alimentation :", food));
 
         double aquifer = cell != null && cell.getFreshwaterAquifer() != null ? cell.getFreshwaterAquifer() : 0.0;
-        waterLabel.setText(String.format("%-14s %.1f m³ (Aquifère: %.0f)", I18n.getOrDefault("tooltip.water_aquifer", "Eau / Aquifère:"), water, aquifer));
+        waterLabel.setText(String.format("%-14s %.1f mÂ³ (AquifÃ¨re: %.0f)", I18n.getOrDefault("tooltip.water_aquifer", "Eau / AquifÃ¨re:"), water, aquifer));
 
         // Tech Level (Emergent A Posteriori Diagnostic)
         double tech = 1.0;
@@ -243,19 +243,19 @@ public class CellTooltip extends VBox {
         // Carrying Capacity (K) & Malthusian Ratio
         double capK = computeCarryingCapacity(biome, elev, water, aquifer, tech);
         double ratio = capK > 0 ? ((double) currentPop / capK) * 100.0 : 0.0;
-        String malthusStatus = ratio > 150.0 ? "🚨 SURPOPULATION" : ratio > 100.0 ? "⚠️ TENSION" : "✅ SOUTENABLE";
-        malthusLabel.setText(String.format("%-14s %.0f hab (Charge: %.1f%% %s)", I18n.getOrDefault("tooltip.capacity_k", "Capacité K :"), capK, ratio, malthusStatus));
+        String malthusStatus = ratio > 150.0 ? "ðŸš¨ SURPOPULATION" : ratio > 100.0 ? "âš ï¸ TENSION" : "âœ… SOUTENABLE";
+        malthusLabel.setText(String.format("%-14s %.0f hab (Charge: %.1f%% %s)", I18n.getOrDefault("tooltip.capacity_k", "CapacitÃ© K :"), capK, ratio, malthusStatus));
 
         // Extraterrestrial Habitat & Pressurization
         if (cell != null && cell.getHabitatType() != null && cell.getHabitatType() != org.ether.society.model.HabitatType.NONE) {
             org.ether.society.model.HabitatType hType = cell.getHabitatType();
             double integrity = cell.getHabitatIntegrity() != null ? cell.getHabitatIntegrity() * 100.0 : 100.0;
-            String intStatus = integrity >= 80.0 ? "✅ Nominal" : integrity >= 40.0 ? "⚠️ Vétuste" : "🚨 Brèche Imminente";
+            String intStatus = integrity >= 80.0 ? "âœ… Nominal" : integrity >= 40.0 ? "âš ï¸ VÃ©tuste" : "ðŸš¨ BrÃ¨che Imminente";
             String habName = I18n.getOrDefault(hType.getI18nKey(), hType.name());
             double energyKw = cell.getHabitatEnergyKw() != null ? cell.getHabitatEnergyKw() : 0.0;
             double habCap = cell.getHabitatCapacity() != null ? cell.getHabitatCapacity() : 0.0;
 
-            habitatLabel.setText(String.format("🪐 Habitat : %s (T%d)\n   Intégrité : %.1f%% (%s) | Cap: %,.0f | ECLSS: %,.0f kW",
+            habitatLabel.setText(String.format("ðŸª Habitat : %s (T%d)\n   IntÃ©gritÃ© : %.1f%% (%s) | Cap: %,.0f | ECLSS: %,.0f kW",
                     habName, cell.getHabitatTier() != null ? cell.getHabitatTier() : 1, integrity, intStatus, habCap, energyKw));
             if (integrity < 40.0) {
                 habitatLabel.setStyle("-fx-text-fill: #f43f5e; -fx-font-size: 11px; -fx-font-weight: bold; -fx-font-family: 'Consolas', 'Monaco', monospace;");
@@ -295,7 +295,7 @@ public class CellTooltip extends VBox {
                 }
             }
             if (nearestEvt != null) {
-                eventLabel.setText(String.format("🚨 %s (Mag %.1f)", nearestEvt.getTitle(), nearestEvt.getMagnitude()));
+                eventLabel.setText(String.format("ðŸš¨ %s (Mag %.1f)", nearestEvt.getTitle(), nearestEvt.getMagnitude()));
                 eventLabel.setVisible(true);
                 eventLabel.setManaged(true);
             } else {
@@ -309,7 +309,7 @@ public class CellTooltip extends VBox {
 
         String latDir = lat >= 0 ? "N" : "S";
         String lngDir = lng >= 0 ? "E" : "W";
-        coordLabel.setText(String.format("%-14s %.4f°%s, %.4f°%s", I18n.getOrDefault("ui.tooltip.coords", "Coordonnées :"),
+        coordLabel.setText(String.format("%-14s %.4fÂ°%s, %.4fÂ°%s", I18n.getOrDefault("ui.tooltip.coords", "CoordonnÃ©es :"),
                 Math.abs(lat), latDir,
                 Math.abs(lng), lngDir));
 
@@ -362,16 +362,16 @@ public class CellTooltip extends VBox {
     }
 
     private String getBiomeIcon(Biome biome) {
-        if (biome == null) return "🌍";
+        if (biome == null) return "ðŸŒ";
         return switch (biome) {
-            case OCEAN -> "🌊";
-            case PLAINS -> "🌾";
-            case FOREST -> "🌲";
-            case DESERT -> "🏜️";
-            case SNOW, TUNDRA -> "❄️";
-            case JUNGLE -> "🌴";
-            case MOUNTAINS -> "⛰️";
-            default -> "🌍";
+            case OCEAN -> "ðŸŒŠ";
+            case PLAINS -> "ðŸŒ¾";
+            case FOREST -> "ðŸŒ²";
+            case DESERT -> "ðŸœï¸";
+            case SNOW, TUNDRA -> "â„ï¸";
+            case JUNGLE -> "ðŸŒ´";
+            case MOUNTAINS -> "â›°ï¸";
+            default -> "ðŸŒ";
         };
     }
 

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 Silvère Martin-Michiellot
+ * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
  */
 package org.ether.society.persistence;
 
@@ -44,13 +44,13 @@ import java.util.UUID;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public final class EtherJsonUtil {
-    private static final Logger logger = LoggerFactory.getLogger(EtherJsonUtil.class);
+public final class EtherJsonHelper {
+    private static final Logger logger = LoggerFactory.getLogger(EtherJsonHelper.class);
 
     private static final ObjectMapper MAPPER = createConfiguredMapper(false);
     private static final ObjectMapper PRETTY_MAPPER = createConfiguredMapper(true);
 
-    private EtherJsonUtil() {
+    private EtherJsonHelper() {
         // Utility class
     }
 
@@ -142,7 +142,7 @@ public final class EtherJsonUtil {
         } catch (Exception ex) {
             try {
                 Files.deleteIfExists(tmpPath);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(EtherJsonHelper.class).debug("Non-fatal condition in EtherJsonHelper: {}", ignored.getMessage()); }
             throw new IOException("Failed to atomically write JSON to " + targetPath + ": " + ex.getMessage(), ex);
         }
     }
@@ -189,3 +189,5 @@ public final class EtherJsonUtil {
         }
     }
 }
+
+

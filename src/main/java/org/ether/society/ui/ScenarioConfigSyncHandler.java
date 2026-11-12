@@ -172,13 +172,13 @@ public class ScenarioConfigSyncHandler {
         long seedVal = 12345L;
         try {
             if (panel.demoSeedField != null) seedVal = Long.parseLong(panel.demoSeedField.getText());
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(ScenarioConfigSyncHandler.class).debug("Non-fatal condition in ScenarioConfigSyncHandler: {}", ignored.getMessage()); }
         s.setSeed(seedVal);
 
         long cultSeedVal = 54321L;
         try {
             if (panel.cultSeedField != null) cultSeedVal = Long.parseLong(panel.cultSeedField.getText());
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(ScenarioConfigSyncHandler.class).debug("Non-fatal condition in ScenarioConfigSyncHandler: {}", ignored.getMessage()); }
         s.setCulturalSeed(cultSeedVal);
         s.setRandomEventsEnabled(panel.randomEventsCheckBox == null || panel.randomEventsCheckBox.isSelected());
         s.setEarthHistoricalLeadersEnabled(panel.earthLeadersCheckBox != null && panel.earthLeadersCheckBox.isSelected());
@@ -197,3 +197,4 @@ public class ScenarioConfigSyncHandler {
         return s;
     }
 }
+

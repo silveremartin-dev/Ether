@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 Silvère Martin-Michiellot
+ * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
  */
 package org.ether.society.persistence;
 
@@ -91,7 +91,7 @@ public final class PresetStorageService {
         return slug.isBlank() ? "preset_" + Math.abs(name.hashCode()) : slug;
     }
 
-    // ── Planetary Presets ─────────────────────────────────────────────────────
+    // a”€a”€ Planetary Presets a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
 
     /**
      * Load all planet presets.
@@ -147,7 +147,7 @@ public final class PresetStorageService {
         return new ArrayList<>(presets.values());
     }
 
-    // ── Ecology Presets ───────────────────────────────────────────────────────
+    // a”€a”€ Ecology Presets a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
 
     /**
      * Load all ecology presets.
@@ -185,7 +185,7 @@ public final class PresetStorageService {
         return new ArrayList<>(presets.values());
     }
 
-    // ── Scenario Presets ──────────────────────────────────────────────────────
+    // a”€a”€ Scenario Presets a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
 
     /**
      * Load all scenarios.
@@ -223,7 +223,14 @@ public final class PresetStorageService {
                         .forEach(p -> {
                             try {
                                 Scenario loaded = mapper.readValue(p.toFile(), Scenario.class);
-                                if (loaded != null && loaded.getName() != null) {
+                                if (loaded != null) {
+                                    String fileSlug = p.getFileName().toString().replaceFirst("\\.json$", "");
+                                    if (loaded.getName() == null || loaded.getName().isBlank()) {
+                                        loaded.setName(fileSlug);
+                                    }
+                                    if (loaded.getPresetKey() == null || loaded.getPresetKey().isBlank()) {
+                                        loaded.setPresetKey(fileSlug);
+                                    }
                                     scenarios.put(keyExtractor.apply(loaded), loaded);
                                 }
                             } catch (Exception e) {
@@ -272,7 +279,7 @@ public final class PresetStorageService {
         return result;
     }
 
-    // ── Factory Presets Disk Synchronization ─────────────────────────────────
+    // a”€a”€ Factory Presets Disk Synchronization a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€a”€
 
     /**
      * Exports all factory presets (planets, ecology, scenarios) to the project data/presets directory
@@ -317,12 +324,12 @@ public final class PresetStorageService {
             String pName = s.getPlanetPreset().name().toLowerCase(Locale.ROOT);
             if (pName.contains("super-terre") || pName.contains("super_earth") || pName.contains("gaia")) planetSlug = "super_earth";
             else if (pName.contains("mars") || pName.contains("ares")) planetSlug = "mars";
-            else if (pName.contains("venus") || pName.contains("vénus") || pName.contains("hesperos")) planetSlug = "venus";
+            else if (pName.contains("venus") || pName.contains("vÃ©nus") || pName.contains("hesperos")) planetSlug = "venus";
             else if (pName.contains("moon") || pName.contains("lune") || pName.contains("selene")) planetSlug = "moon";
             else if (pName.contains("mercury") || pName.contains("mercure") || pName.contains("hermes")) planetSlug = "mercury";
             else if (pName.contains("titan")) planetSlug = "titan";
             else if (pName.contains("synchrone") || pName.contains("eyeball")) planetSlug = "eyeball_world";
-            else if (pName.contains("ocean") || pName.contains("océan") || pName.contains("oceania")) planetSlug = "oceania";
+            else if (pName.contains("ocean") || pName.contains("ocÃ©an") || pName.contains("oceania")) planetSlug = "oceania";
             else if (pName.contains("boreas")) planetSlug = "boreas";
             else if (pName.contains("archipel") || pName.contains("archipelago")) planetSlug = "archipelago";
             else if (pName.contains("terre") || pName.contains("earth") || pName.contains("glaciaire") || pName.contains("interglaciaire")) planetSlug = "earth";
@@ -357,4 +364,5 @@ public final class PresetStorageService {
         }
     }
 }
+
 

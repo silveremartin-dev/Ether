@@ -42,7 +42,7 @@ final class GeologicalResourceProvincesRegistry {
         {123.9, 41.9, 30, 2.6},  // Fushun / Liaoning
         {-2.5, 51.3, 26, 2.3},   // Somerset / Camerton
         {-1.6, 54.9, 26, 2.3},   // Newcastle / Northumberland
-        {5.6, 50.6, 24, 2.2},    // Liège / Meuse Valley
+        {5.6, 50.6, 24, 2.2},    // LiÃƒA¨ge / Meuse Valley
         {7.0, 49.3, 24, 2.2},    // Sarre Basin
         {-79.5, 40.5, 36, 2.5},  // Appalachian Outcrops
         {7.2, 51.5, 32, 2.4}     // Ruhr Valley Outcrops
@@ -109,10 +109,10 @@ final class GeologicalResourceProvincesRegistry {
         {-105.0, 58.0, 38, 2.4},  // Athabasca Basin
         {136.9, -30.4, 36, 2.3},  // Olympic Dam
         {68.0, 44.0, 42, 2.5},    // Chu-Sarysu Basin
-        {7.4, 18.7, 34, 2.2},     // Arlit / Tim Mersoï Basin
+        {7.4, 18.7, 34, 2.2},     // Arlit / Tim MersoÃƒA¯ Basin
         {27.5, -26.2, 34, 2.2},   // Witwatersrand Basin
         {118.0, 50.0, 34, 2.2},   // Streltsovskoye Caldera
-        {15.0, -22.5, 32, 2.0},   // Rössing & Husab
+        {15.0, -22.5, 32, 2.0},   // RÃƒA¶ssing & Husab
         {-108.5, 35.5, 30, 2.0},  // Grants Mineral Belt
         {132.8, -12.7, 32, 2.1},  // Ranger / Jabiluka
         {119.5, -23.5, 30, 1.9}   // Yeelirrie
@@ -122,8 +122,8 @@ final class GeologicalResourceProvincesRegistry {
     static final double[][] MAJOR_IRON_COPPER_METALS = {
         {118.0, -22.5, 40, 2.2},  // Pilbara / Hamersley BIFs
         {120.5, -23.0, 36, 2.0},  // Mount Whaleback
-        {-50.0, -6.0, 42, 2.4},   // Carajás Iron Giant
-        {-43.5, -20.0, 36, 1.8},  // Quadrilátero Ferrífero
+        {-50.0, -6.0, 42, 2.4},   // CarajÃƒA¡s Iron Giant
+        {-43.5, -20.0, 36, 1.8},  // QuadrilÃƒA¡tero FerrÃƒA­fero
         {37.0, 51.5, 40, 2.2},    // Kursk Magnetic Anomaly
         {33.5, 48.0, 36, 2.0},    // Krivoy Rog
         {-91.5, 47.5, 36, 1.9},   // Mesabi Iron Range
@@ -153,18 +153,18 @@ final class GeologicalResourceProvincesRegistry {
 
     /** Global precious metal (Au, Ag, PGE) metallogenic provinces [lon, lat, radiusPx, intensity]. */
     static final double[][] PRECIOUS_METALS_PROVINCES = {
-        {-6.77, 42.46, 12.0, 4.2},  // Las Médulas
+        {-6.77, 42.46, 12.0, 4.2},  // Las MÃƒA©dulas
         {-6.50, 42.55, 9.0, 3.5},   // El Teleno
         {-8.10, 42.15, 8.0, 2.8},   // Galicia / Sil River
         {-6.56, 37.69, 14.0, 4.0},  // Rio Tinto
-        {-6.20, 37.75, 10.0, 3.2},  // Aznalcóllar
-        {-4.84, 38.77, 11.0, 3.6},  // Almadén
+        {-6.20, 37.75, 10.0, 3.2},  // AznalcÃƒA³llar
+        {-4.84, 38.77, 11.0, 3.6},  // AlmadÃƒA©n
         {-5.90, 38.30, 9.0, 3.0},   // Ossa Morena
         {-6.60, 40.20, 8.0, 2.6},   // Tagus Basin
         {24.06, 37.71, 12.0, 4.2},  // Laurion
         {24.20, 40.90, 11.0, 3.8},  // Mount Pangaeon
-        {23.13, 46.30, 14.0, 4.5},  // Roșia Montană
-        {22.85, 46.10, 10.0, 3.5},  // Brad / Săcărâmb
+        {23.13, 46.30, 14.0, 4.5},  // RoÃˆa„¢ia MontanÃ„Æ’
+        {22.85, 46.10, 10.0, 3.5},  // Brad / SÃ„Æ’cÃ„Æ’rÃƒA¢mb
         {21.43, 42.62, 11.0, 3.6},  // Novo Brdo
         {22.18, 42.08, 9.0, 3.0},   // Kratovo
         {24.70, 36.97, 7.0, 2.6},   // Siphnos
@@ -194,10 +194,10 @@ final class GeologicalResourceProvincesRegistry {
         {30.00, -20.00, 13.0, 3.8}, // Great Zimbabwe
         {27.00, -26.50, 22.0, 5.5}, // Witwatersrand
         {29.00, -24.50, 18.0, 4.8}, // Bushveld
-        {-76.60, 5.70, 14.0, 4.2},  // Chocó
+        {-76.60, 5.70, 14.0, 4.2},  // ChocÃƒA³
         {-79.50, -6.70, 12.0, 3.8}, // Lambayeque
         {-70.20, -14.20, 13.0, 4.0},// Carabaya
-        {-65.75, -19.58, 18.0, 5.2},// Cerro Rico / Potosí
+        {-65.75, -19.58, 18.0, 5.2},// Cerro Rico / PotosÃƒA­
         {-102.58, 22.77, 16.0, 4.6},// Zacatecas
         {-116.00, 40.80, 16.0, 4.5},// Carlin Trend
         {121.50, -30.75, 16.0, 4.5},// Kalgoorlie Golden Mile
@@ -218,11 +218,11 @@ final class GeologicalResourceProvincesRegistry {
         {34.6, 67.8, 40, 2.4},    // Lovozero
         {115.0, 25.5, 50, 2.8},   // Ganzhou
         {103.5, 22.4, 38, 2.3},   // Dong Pao
-        {-46.9, -19.6, 42, 2.5},  // Araxá
+        {-46.9, -19.6, 42, 2.5},  // AraxÃƒA¡
         {-67.5, -21.0, 52, 2.8},  // Salar de Atacama
         {-68.0, -23.5, 50, 2.7},  // Salar de Uyuni
         {116.0, -33.8, 42, 2.5},  // Greenbushes
-        {14.6, 58.1, 35, 2.2},    // Norra Kärr
+        {14.6, 58.1, 35, 2.2},    // Norra KÃƒA¤rr
         {20.2, 67.8, 38, 2.3},    // Kiruna / Per Geijer
         {-64.2, 56.3, 40, 2.4},   // Strange Lake
         {-112.6, 62.1, 38, 2.3}   // Nechalacho
@@ -262,14 +262,14 @@ final class GeologicalResourceProvincesRegistry {
                             int gy = (int) Math.clamp(Math.floor((90.0 - lat) / 2.0), 0, 89);
                             grid[gy][gx] = (float) val;
                             filled[gy][gx] = true;
-                        } catch (NumberFormatException ignored) {}
+                        } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(GeologicalResourceProvincesRegistry.class).debug("Non-fatal condition in GeologicalResourceProvincesRegistry: {}", ignored.getMessage()); }
                     }
                 }
 
                 for (int gy = 0; gy < 90; gy++) {
                     for (int gx = 0; gx < 180; gx++) {
                         if (!filled[gy][gx] || grid[gy][gx] <= 0) {
-                            grid[gy][gx] = 65.0f; // Global mean continental heat flow baseline (mW/m²)
+                            grid[gy][gx] = 65.0f; // Global mean continental heat flow baseline (mW/mÃ‚A²)
                         }
                     }
                 }
@@ -321,3 +321,4 @@ final class GeologicalResourceProvincesRegistry {
         return img;
     }
 }
+

@@ -80,7 +80,7 @@ public final class ResourceGeologyProceduralRasterizer {
         if (tensorSeeds.containsKey(layerIdx) && tensorSeeds.get(layerIdx) != null) {
             try {
                 seed = Long.parseLong(tensorSeeds.get(layerIdx).getText().trim());
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(ResourceGeologyProceduralRasterizer.class).debug("Non-fatal condition in ResourceGeologyProceduralRasterizer: {}", ignored.getMessage()); }
         }
 
         double latR = Math.toRadians(lat);
@@ -258,3 +258,4 @@ public final class ResourceGeologyProceduralRasterizer {
         return fxImg;
     }
 }
+

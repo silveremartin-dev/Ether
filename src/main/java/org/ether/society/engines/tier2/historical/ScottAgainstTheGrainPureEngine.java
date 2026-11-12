@@ -44,7 +44,7 @@ public class ScottAgainstTheGrainPureEngine extends AbstractSimulationEngine {
         if (cells == null || cells.isEmpty() || deltaYears <= 0.0) return;
 
         // Iterate over spatial cell domains and apply localized cellular state transformations
-        // grounded strictly in conserved physical observables (AGENTS.md §10.1, §10.2).
+        // grounded strictly in conserved physical observables (AGENTS.md A§10.1, A§10.2).
         for (H3Cell cell : cells) {
             if (cell == null) continue;
 

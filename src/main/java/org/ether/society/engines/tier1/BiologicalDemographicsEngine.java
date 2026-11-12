@@ -19,7 +19,7 @@ import java.util.List;
  * <p>
  * Models actuarial cellular senescence ($\alpha e^{\beta x}$) and smooth ($C^\infty$) environmental
  * physiological hazards (high-altitude hypobaric hypoxia and extreme thermal cold stress), updating
- * Lotka age pyramids directly from conserved demographic observables ({@code AGENTS.md} §10.1, §10.2).
+ * Lotka age pyramids directly from conserved demographic observables ({@code AGENTS.md} Â§10.1, Â§10.2).
  * </p>
  *
  * @author Silvere Martin-Michiellot
@@ -72,7 +72,7 @@ public class BiologicalDemographicsEngine extends AbstractSimulationEngine {
             double altitudeVulnerability = Math.max(0.10, 1.0 - epas1Adaptation * 0.85);
             double hypoxiaHazard = excessElevKm * 0.08 * altitudeVulnerability;
 
-            // Extreme Cold Hazard (hypothermia / frostbite below -10°C, mitigated by shelter capital)
+            // Extreme Cold Hazard (hypothermia / frostbite below -10A°C, mitigated by shelter capital)
             double capPerCap = cell.getResourceCapitalOr(0.0) / Math.max(1.0, pop);
             double shelterProtection = 1.0 - 0.70 * Math.tanh(capPerCap / 150.0);
             double subZeroExcess = Math.max(0.0, -10.0 - tempC);

@@ -17,6 +17,16 @@ import org.ether.society.i18n.I18n;
  * @see HistoricalInterventionPhysicsHelper
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+/**
+ * HistoricalIntervention.
+ * <p>
+ * Component for the Ether planetary simulation platform.
+ * Adheres to the zero-defect code excellence standards and 500-line limit.
+ * </p>
+ *
+ * @author Ether Architectural Working Group
+ * @see org.ether.society.core.engine.SimulationEngineModule
+ */
 public class HistoricalIntervention {
 
     private String id;

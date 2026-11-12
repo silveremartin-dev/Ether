@@ -472,7 +472,7 @@ public final class HistoricalLinguisticAndKinshipRasterizer {
                 double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
                 double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
                 if (lat < -60.0 || occWeight <= 0.001) {
-                    // Antarctica and uninhabited land → neutral gray (not ocean black)
+                    // Antarctica and uninhabited land a†’ neutral gray (not ocean black)
                     kinImg.setRGB(x, y, 0x2D3748);
                 }
             }

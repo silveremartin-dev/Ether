@@ -126,7 +126,7 @@ public class DynamicEngineCompiler {
             // 1. Static Security Validation
             String securityViolation = validateSourceCodeSecurity(sourceCode);
             if (securityViolation != null) {
-                logger.warn("🛑 Rejected untrusted engine file '{}': {}", fileName, securityViolation);
+                logger.warn("ðŸ›‘ Rejected untrusted engine file '{}': {}", fileName, securityViolation);
                 return new CompilationResult(false, fileName, "Security Error: " + securityViolation, null);
             }
 
@@ -161,7 +161,7 @@ public class DynamicEngineCompiler {
             if (persistentClassLoader != null) {
                 try {
                     persistentClassLoader.close();
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(DynamicEngineCompiler.class).debug("Non-fatal condition in DynamicEngineCompiler: {}", ignored.getMessage()); }
             }
             persistentClassLoader = new URLClassLoader(urls, DynamicEngineCompiler.class.getClassLoader());
 
@@ -178,7 +178,7 @@ public class DynamicEngineCompiler {
             SimulationEngineRegistry.getInstance().register(pluginInstance);
 
             EtherSecurityAuditLogger.logAuditEvent("ENGINE_LOADED", "DynamicEngineCompiler", "Loaded custom engine: " + fullClassName);
-            logger.info("⚡ Custom Engine '{}' successfully verified, compiled & registered into SimulationEngineRegistry!", fullClassName);
+            logger.info("âš¡ Custom Engine '{}' successfully verified, compiled & registered into SimulationEngineRegistry!", fullClassName);
             return new CompilationResult(true, simpleClassName, 
                     I18n.getOrDefault("dynamic_engine.status.success", "Engine compiled and registered successfully!"), pluginInstance);
 
@@ -231,6 +231,7 @@ import org.ether.society.core.engine.EngineTier;
             """, engineName);
     }
 }
+
 
 
 

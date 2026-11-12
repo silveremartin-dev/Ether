@@ -185,7 +185,7 @@ public final class EmpiricalGeospatialFormatReaders {
                             try {
                                 int idx = Integer.parseInt(val);
                                 if (idx >= 0 && idx < sst.size()) val = sst.get(idx);
-                            } catch (Exception ignored) {}
+                            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(EmpiricalGeospatialFormatReaders.class).debug("Non-fatal condition in EmpiricalGeospatialFormatReaders: {}", ignored.getMessage()); }
                         }
                         rowValues.put(curCol, val);
                         cellVal = null;
@@ -219,7 +219,7 @@ public final class EmpiricalGeospatialFormatReaders {
                                         }
                                         if (match) out.add(new double[]{lon, lat, 1.0});
                                     }
-                                } catch (Exception ignored) {}
+                                } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(EmpiricalGeospatialFormatReaders.class).debug("Non-fatal condition in EmpiricalGeospatialFormatReaders: {}", ignored.getMessage()); }
                             }
                         }
                     }
@@ -263,3 +263,4 @@ public final class EmpiricalGeospatialFormatReaders {
         return list;
     }
 }
+

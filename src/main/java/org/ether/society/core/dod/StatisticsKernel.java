@@ -312,12 +312,12 @@ public class StatisticsKernel {
             double kpc = (cap != null && cap[i] > 0.0f) ? (cap[i] / p) : 0.0;
             double w = (water != null && water[i] > 0.0f) ? water[i] : 10.0;
             double waterFactor = 0.92 + 0.08 * (w / (10.0 + w));
-            // Preston (1975), Omran (1971) & Riley (2005) epidemiological transition:
-            // Pre-industrial baseline: 29.0 yrs (foraging) to 35.0 yrs (classical/medieval agrarian granaries & shelter)
-            // Sanitary & modern epidemiological transition (+46 yrs) emerges smoothly with municipal water/medical grids (k_pc >= 2200)
-            double agrarianMod = 6.5 * Math.tanh(kpc / 350.0);
-            double sanitaryMod = 46.0 * SmoothMath.sigmoid(kpc, 2200.0, 650.0);
-            double prestonYears = 29.0 + agrarianMod + sanitaryMod;
+            // Preston (1975) & Omran (1971) universal epidemiological transition:
+            // Logarithmic returns of material capital on survival e_0 = e_floor + alpha * ln(1 + k_pc / k_0)
+            // Sanitary & modern municipal public health grid (+22 yrs) emerges with high capital infrastructure (k_pc >= 15000)
+            double prestonLogYears = 26.0 + 6.2 * Math.log1p(kpc / 120.0);
+            double sanitaryGridMod = 22.0 * SmoothMath.sigmoid(kpc, 15000.0, 4000.0);
+            double prestonYears = prestonLogYears + sanitaryGridMod;
             double effectiveCellE0 = prestonYears * waterFactor;
             weightedLifespan += p * effectiveCellE0;
             totalPop += p;

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
+ * Copyright (c) 2024-2026 SilvÃƒÂ¨re Martin-Michiellot
  */
 package org.ether.society.data.sync;
 
@@ -67,7 +67,7 @@ public final class GitHubContentSyncService {
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
-    private static final ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper().enable(SerializationFeature.INDENT_OUTPUT);
+    private static final ObjectMapper mapper = org.ether.society.persistence.EtherJsonHelper.getMapper().enable(SerializationFeature.INDENT_OUTPUT);
     private static final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "Ether-GitHubContentSyncThread");
         t.setDaemon(true);
@@ -450,4 +450,5 @@ public final class GitHubContentSyncService {
      */
     public record ManifestEntry(String sha256, String remoteSha, String syncedAt, long sizeBytes) {}
 }
+
 

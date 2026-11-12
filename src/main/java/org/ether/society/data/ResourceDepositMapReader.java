@@ -149,7 +149,7 @@ public class ResourceDepositMapReader {
         }
 
         try {
-            com.fasterxml.jackson.databind.ObjectMapper mapper = org.ether.society.persistence.EtherJsonUtil.getMapper();
+            com.fasterxml.jackson.databind.ObjectMapper mapper = org.ether.society.persistence.EtherJsonHelper.getMapper();
             com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(geoJsonFile);
             com.fasterxml.jackson.databind.JsonNode features = root.get("features");
 
@@ -268,5 +268,6 @@ public class ResourceDepositMapReader {
         return img;
     }
 }
+
 
 

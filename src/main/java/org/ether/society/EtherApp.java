@@ -75,7 +75,7 @@ public class EtherApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         try {
             this.primaryStage = primaryStage;
-            org.ether.society.ui.WindowUtils.applyWindowIcon(primaryStage);
+            org.ether.society.ui.WindowHelper.applyWindowIcon(primaryStage);
             logger.info("Starting Ether Application with Splash Screen...");
 
             org.ether.society.ui.SplashScreen splash = new org.ether.society.ui.SplashScreen();
@@ -140,7 +140,7 @@ public class EtherApp extends Application {
                     primaryStage.setScene(scene);
                     Theme.applyCurrentTheme(scene);
                     updateTexts();
-                    org.ether.society.ui.WindowUtils.applyWindowIcon(primaryStage);
+                    org.ether.society.ui.WindowHelper.applyWindowIcon(primaryStage);
 
                     I18n.languageProperty().addListener((obs, old, val) -> updateTexts());
 
@@ -275,6 +275,7 @@ public class EtherApp extends Application {
     }
 
     private void updateTexts() {
-        primaryStage.setTitle(I18n.get("app.title") + " — " + org.ether.society.config.AppVersion.getFullDisplayVersion());
+        primaryStage.setTitle(I18n.get("app.title") + " â€” " + org.ether.society.config.AppVersion.getFullDisplayVersion());
     }
 }
+

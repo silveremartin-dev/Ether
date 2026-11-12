@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.ether.society.model.AutoEpochScenarioHelper;
 import org.ether.society.model.Scenario;
-import org.ether.society.persistence.EtherJsonUtil;
+import org.ether.society.persistence.EtherJsonHelper;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -32,7 +32,7 @@ public class StandardScenarioPresetsEnricherTest {
                 Paths.get("src/main/resources/data/presets/scenarios")
         );
 
-        ObjectMapper mapper = EtherJsonUtil.getMapper().copy()
+        ObjectMapper mapper = EtherJsonHelper.getMapper().copy()
                 .enable(SerializationFeature.INDENT_OUTPUT);
         DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
         printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
@@ -95,3 +95,4 @@ public class StandardScenarioPresetsEnricherTest {
         }
     }
 }
+

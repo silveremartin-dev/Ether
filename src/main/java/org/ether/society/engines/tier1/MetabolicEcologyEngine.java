@@ -131,7 +131,7 @@ public class MetabolicEcologyEngine extends AbstractSimulationEngine {
             case VASCULAR_PLANT -> B0_PLANT;
         };
 
-        // Endotherms regulate internal core temperature ~310.15 K (37°C)
+        // Endotherms regulate internal core temperature ~310.15 K (37A°C)
         double operativeTemp = (guild == TaxonGuild.ENDOTHERM_MAMMAL) ? 310.15 : tempKelvin;
         double boltzmann = calculateBoltzmannFactor(operativeTemp);
 

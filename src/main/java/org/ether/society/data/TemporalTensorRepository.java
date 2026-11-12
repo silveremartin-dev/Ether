@@ -30,9 +30,9 @@ public class TemporalTensorRepository {
      * Data resolution & fallback strategy when exact empirical measurements for a target date are missing.
      */
     public enum DataFallbackStrategy {
-        CONTINUOUS_INTERPOLATION("scenario.fallback.interpolation", "ðŸ”„ Interpolation temporelle continue (Fondu barycentrique)"),
-        PREVIOUS_EARLIER_EPOCH("scenario.fallback.earlier_epoch", "â®ï¸ Repli conservateur sur l'Ã©poque antÃ©rieure connue (Ã‰vite tout anachronisme)"),
-        CLOSEST_ANCHOR_EPOCH("scenario.fallback.closest_anchor", "ðŸŽ¯ Jalon Ã©talonnÃ© le plus proche (Distance chronologique minimale)");
+        CONTINUOUS_INTERPOLATION("scenario.fallback.interpolation", "Ã°Å¸â€â€ž Interpolation temporelle continue (Fondu barycentrique)"),
+        PREVIOUS_EARLIER_EPOCH("scenario.fallback.earlier_epoch", "Ã¢ÂÂ®Ã¯Â¸Â Repli conservateur sur l'ÃƒÂ©poque antÃƒÂ©rieure connue (Ãƒâ€°vite tout anachronisme)"),
+        CLOSEST_ANCHOR_EPOCH("scenario.fallback.closest_anchor", "Ã°Å¸Å½Â¯ Jalon ÃƒÂ©talonnÃƒÂ© le plus proche (Distance chronologique minimale)");
 
         /** Internal state: i18n key (String). */
         private final String i18nKey;
@@ -158,7 +158,7 @@ public class TemporalTensorRepository {
                 try {
                     long y = Long.parseLong(d.getName());
                     years.add(y);
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) { org.slf4j.LoggerFactory.getLogger(TemporalTensorRepository.class).debug("Non-fatal condition in TemporalTensorRepository: {}", ignored.getMessage()); }
             }
         }
         Collections.sort(years);
@@ -496,4 +496,5 @@ public class TemporalTensorRepository {
         }
     }
 }
+
 

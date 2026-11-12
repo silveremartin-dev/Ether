@@ -16,7 +16,7 @@ import org.ether.society.generation.PlanetPreset;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
 import org.ether.society.ui.CulturalAffinityMatrixDialog;
-import org.ether.society.ui.WindowUtils;
+import org.ether.society.ui.WindowHelper;
 import org.ether.society.ui.util.DataSourceUIHelper;
 
 import java.util.HashMap;
@@ -112,7 +112,7 @@ public class ScenarioCulturalSectionBuilder {
         VBox section = new VBox(10);
         section.getStyleClass().add("card-section");
 
-        cultureHeader = new Label(I18n.getOrDefault("scenario.culture_section", "🏛 3. CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));
+        cultureHeader = new Label(I18n.getOrDefault("scenario.culture_section", "ðŸ› 3. CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));
         cultureHeader.getStyleClass().add("label-section-header");
 
         Label desc = new Label(I18n.getOrDefault("scenario.header.cultural_tensor",
@@ -128,7 +128,7 @@ public class ScenarioCulturalSectionBuilder {
         layersPanel.getStyleClass().add("layers-panel-card");
 
         Label layerTitle = new Label(I18n.getOrDefault("scenario.header.tensor_subblocks",
-                "🗺 3.2 Cartographic Sub-Blocks per Tensor (Procedural Generation / Imported Maps)"));
+                "ðŸ—º 3.2 Cartographic Sub-Blocks per Tensor (Procedural Generation / Imported Maps)"));
         layerTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
         layerTitle.setWrapText(true);
 
@@ -173,7 +173,7 @@ public class ScenarioCulturalSectionBuilder {
         Tooltip.install(cultureVectorDimSpinner, new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_dim",
                 "Nombre de composantes N-dimensionnelles du vecteur d'information culturelle (ex: 9D, 16D, 32D).")));
 
-        Label diffLbl = new Label(I18n.getOrDefault("scenario.label.cultural_diffusion", "Cultural Diffusion Conductivity (α):"));
+        Label diffLbl = new Label(I18n.getOrDefault("scenario.label.cultural_diffusion", "Cultural Diffusion Conductivity (Î±):"));
         diffLbl.getStyleClass().add("control-label");
         culturalDiffusionRateSpinner = new Spinner<>(0.001, 0.50, 0.05, 0.01);
         culturalDiffusionRateSpinner.setEditable(true);
@@ -182,7 +182,7 @@ public class ScenarioCulturalSectionBuilder {
         Tooltip.install(culturalDiffusionRateSpinner, new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_diffusion",
                 "Diffusion rate of association energy between neighboring H3 hexagons.")));
 
-        Label mutLbl = new Label(I18n.getOrDefault("scenario.label.cultural_mutation", "Mutation / Drift Noise (1/√sN):"));
+        Label mutLbl = new Label(I18n.getOrDefault("scenario.label.cultural_mutation", "Mutation / Drift Noise (1/âˆšsN):"));
         mutLbl.getStyleClass().add("control-label");
         culturalMutationRateSpinner = new Spinner<>(0.001, 0.10, 0.01, 0.005);
         culturalMutationRateSpinner.setEditable(true);
@@ -198,12 +198,12 @@ public class ScenarioCulturalSectionBuilder {
     }
 
     private VBox buildSeedAndActionBox() {
-        btnGenerateProceduralTensorsSection = new Button(I18n.getOrDefault("scenario.btn.regen_tensors", "⚡ Régénérer les Tenseurs"));
+        btnGenerateProceduralTensorsSection = new Button(I18n.getOrDefault("scenario.btn.regen_tensors", "âš¡ RÃ©gÃ©nÃ©rer les Tenseurs"));
         btnGenerateProceduralTensorsSection.getStyleClass().add("button");
         btnGenerateProceduralTensorsSection.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnGenerateProceduralTensorsSection.setMinWidth(Region.USE_PREF_SIZE);
         btnGenerateProceduralTensorsSection.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.regen_tensors",
-                "Bascule tous les tenseurs en mode procédural et régénère les cartes selon les paramètres et la graine stochastique.")));
+                "Bascule tous les tenseurs en mode procÃ©dural et rÃ©gÃ©nÃ¨re les cartes selon les paramÃ¨tres et la graine stochastique.")));
         btnGenerateProceduralTensorsSection.setOnAction(e -> generateProceduralCulturalTensors());
 
         cultSeedField = new TextField("54321");
@@ -211,18 +211,18 @@ public class ScenarioCulturalSectionBuilder {
         cultSeedField.setStyle("-fx-font-size: 11px;");
         cultSeedField.textProperty().addListener((obs, oldV, newV) -> context.notifyParamChange());
 
-        Button cultRandSeedBtn = new Button("🎲");
+        Button cultRandSeedBtn = new Button("ðŸŽ²");
         cultRandSeedBtn.getStyleClass().add("button-secondary");
         cultRandSeedBtn.setStyle("-fx-font-size: 11px;");
         cultRandSeedBtn.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.random_tensor_seed",
-                "Tirer une nouvelle graine stochastique aléatoire pour les tenseurs culturels (sans affecter la densité de population).")));
+                "Tirer une nouvelle graine stochastique alÃ©atoire pour les tenseurs culturels (sans affecter la densitÃ© de population).")));
         cultRandSeedBtn.setOnAction(e -> {
             context.notifyParamChange();
             cultSeedField.setText(String.valueOf(new Random().nextLong(1000000)));
             generateProceduralCulturalTensors();
         });
 
-        culturalHelpBtn = new Button(I18n.getOrDefault("scenario.btn.cultural_format_help", "ℹ Format Calques"));
+        culturalHelpBtn = new Button(I18n.getOrDefault("scenario.btn.cultural_format_help", "â„¹ Format Calques"));
         culturalHelpBtn.getStyleClass().add("button-secondary");
         culturalHelpBtn.setStyle("-fx-font-size: 11px;");
         culturalHelpBtn.setMinWidth(Region.USE_PREF_SIZE);
@@ -230,14 +230,14 @@ public class ScenarioCulturalSectionBuilder {
                 "Specifications of image formats and cartographic data for cultural and geopolitical layer import.")));
         culturalHelpBtn.setOnAction(e -> ScenarioGisExporter.showCulturalImportFormatHelp(context.getWindow()));
 
-        HBox cultSeedBox = new HBox(4, new Label(I18n.getOrDefault("scenario.label.cultural_seed", "Graine :")), new Label("🎲"), cultSeedField, cultRandSeedBtn);
+        HBox cultSeedBox = new HBox(4, new Label(I18n.getOrDefault("scenario.label.cultural_seed", "Graine :")), new Label("ðŸŽ²"), cultSeedField, cultRandSeedBtn);
         cultSeedBox.setAlignment(Pos.CENTER_LEFT);
 
         HBox seedRow = new HBox(8, cultSeedBox, btnGenerateProceduralTensorsSection);
         seedRow.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(btnGenerateProceduralTensorsSection, Priority.ALWAYS);
 
-        Button btnExportGisMultiFormat = new Button(I18n.getOrDefault("scenario.btn.export_gis", "🗺 Export SIG Multi-Format"));
+        Button btnExportGisMultiFormat = new Button(I18n.getOrDefault("scenario.btn.export_gis", "ðŸ—º Export SIG Multi-Format"));
         btnExportGisMultiFormat.getStyleClass().add("button-secondary");
         btnExportGisMultiFormat.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnExportGisMultiFormat.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_gis",
@@ -245,7 +245,7 @@ public class ScenarioCulturalSectionBuilder {
         btnExportGisMultiFormat.setOnAction(e -> ScenarioGisExporter.exportGisMultiFormat(
                 context.getWindow(), context.getScenarioDescription(), context.getStartYear(), getCultureVectorDimensions()));
 
-        Button btnExportProvenanceManifest = new Button(I18n.getOrDefault("scenario.btn.provenance_manifest", "📜 Manifeste Provenance SHA-256"));
+        Button btnExportProvenanceManifest = new Button(I18n.getOrDefault("scenario.btn.provenance_manifest", "ðŸ“œ Manifeste Provenance SHA-256"));
         btnExportProvenanceManifest.getStyleClass().add("button-secondary");
         btnExportProvenanceManifest.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnExportProvenanceManifest.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.gen_provenance",
@@ -253,11 +253,11 @@ public class ScenarioCulturalSectionBuilder {
         btnExportProvenanceManifest.setOnAction(e -> ScenarioGisExporter.exportProvenanceManifest(
                 context.getWindow(), context.getStartYear(), cultSeedField != null ? cultSeedField.getText() : "54321"));
 
-        Button btnCulturalMatrix = new Button(I18n.getOrDefault("scenario.btn.cultural_matrix_inspect", "🧬 Inspecteur des Affinités Culturelles"));
+        Button btnCulturalMatrix = new Button(I18n.getOrDefault("scenario.btn.cultural_matrix_inspect", "ðŸ§¬ Inspecteur des AffinitÃ©s Culturelles"));
         btnCulturalMatrix.getStyleClass().add("button-secondary");
         btnCulturalMatrix.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         btnCulturalMatrix.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.cultural_matrix",
-                "Inspect the N × N Pairwise Cultural Affinity and Distance Heatmap Matrix.")));
+                "Inspect the N Ã— N Pairwise Cultural Affinity and Distance Heatmap Matrix.")));
         btnCulturalMatrix.setOnAction(e -> new CulturalAffinityMatrixDialog(context.getStartYear(), context.getScenario()).show());
 
         HBox actionButtonsRow = new HBox(8, culturalHelpBtn, btnExportGisMultiFormat, btnExportProvenanceManifest);
@@ -265,10 +265,10 @@ public class ScenarioCulturalSectionBuilder {
 
         VBox matrixCard = new VBox(4);
         matrixCard.setStyle("-fx-padding: 8px 10px; -fx-background-color: rgba(30, 41, 59, 0.65); -fx-background-radius: 6px; -fx-border-color: rgba(56, 189, 248, 0.3); -fx-border-radius: 6px; -fx-border-width: 1px;");
-        Label matrixTitle = new Label(I18n.getOrDefault("scenario.cultural_matrix.title", "Matrice d'Affinité & Distances Culturelles"));
+        Label matrixTitle = new Label(I18n.getOrDefault("scenario.cultural_matrix.title", "Matrice d'AffinitÃ© & Distances Culturelles"));
         matrixTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #f8fafc;");
         Label matrixDesc = new Label(I18n.getOrDefault("scenario.cultural_matrix.desc",
-                "Inspecter et éditer la matrice N×N des distances de Mahalanobis et coefficients d'assimilation entre entités culturelles."));
+                "Inspecter et Ã©diter la matrice NÃ—N des distances de Mahalanobis et coefficients d'assimilation entre entitÃ©s culturelles."));
         matrixDesc.setStyle("-fx-font-size: 10px; -fx-text-fill: #cbd5e1;");
         matrixDesc.setWrapText(true);
         matrixCard.getChildren().addAll(matrixTitle, matrixDesc, btnCulturalMatrix);
@@ -350,7 +350,7 @@ public class ScenarioCulturalSectionBuilder {
         }
         String defaultName = "cultural_tensor_" + (tensorIdx + 1) + ".png";
         String title = I18n.getOrDefault("scenario.title.export_tensor_dialog", "Export Cultural Tensor " + (tensorIdx + 1));
-        WindowUtils.exportImageWithChooser(context.getWindow(), img, defaultName, title);
+        WindowHelper.exportImageWithChooser(context.getWindow(), img, defaultName, title);
     }
 
     public Image generateProceduralTensorRasterImage(int tensorIdx, int w, int h) {
@@ -373,7 +373,7 @@ public class ScenarioCulturalSectionBuilder {
 
     public void updateTexts() {
         if (cultureHeader != null) {
-            cultureHeader.setText(I18n.getOrDefault("scenario.culture_section", "🎭 CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));
+            cultureHeader.setText(I18n.getOrDefault("scenario.culture_section", "ðŸŽ­ CULTURAL VECTOR DIMENSION & MULTI-FIELD LAYERS"));
         }
         updateCulturalTensorSubBlockTexts();
     }
@@ -429,7 +429,7 @@ public class ScenarioCulturalSectionBuilder {
 
     public long getTensorSeed(int index) {
         if (tensorSeedFields.containsKey(index)) {
-            try { return Long.parseLong(tensorSeedFields.get(index).getText().trim()); } catch (Exception ignored) {}
+            try { return Long.parseLong(tensorSeedFields.get(index).getText().trim()); } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(ScenarioCulturalSectionBuilder.class).debug("Non-fatal condition in ScenarioCulturalSectionBuilder: {}", ignored.getMessage()); }
         }
         return 11235L + index * 11111L;
     }
@@ -449,3 +449,5 @@ public class ScenarioCulturalSectionBuilder {
     public Map<Integer, ComboBox<String>> getTensorSourceCombos() { return tensorSourceCombos; }
     public Map<Integer, Button> getTensorLoadBtns() { return tensorLoadBtns; }
 }
+
+

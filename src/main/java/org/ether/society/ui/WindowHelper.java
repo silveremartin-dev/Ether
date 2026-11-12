@@ -24,8 +24,8 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  */
-public class WindowUtils {
-    private static final Logger logger = LoggerFactory.getLogger(WindowUtils.class);
+public class WindowHelper {
+    private static final Logger logger = LoggerFactory.getLogger(WindowHelper.class);
     private static final List<Image> cachedIcons = new ArrayList<>();
     /** Internal state: taskbar icon set (boolean). */
     private static boolean taskbarIconSet = false;
@@ -43,7 +43,7 @@ public class WindowUtils {
             setWindowsAppUserModelID("Ether.SocietySimulation.App");
 
             if (cachedIcons.isEmpty()) {
-                try (InputStream iconStream = WindowUtils.class.getResourceAsStream("/icons/icon.png")) {
+                try (InputStream iconStream = WindowHelper.class.getResourceAsStream("/icons/icon.png")) {
                     if (iconStream != null) {
                         Image mainImg = new Image(iconStream);
                         if (!mainImg.isError()) {
@@ -66,7 +66,7 @@ public class WindowUtils {
                         if (java.awt.Taskbar.isTaskbarSupported()) {
                             var taskbar = java.awt.Taskbar.getTaskbar();
                             if (taskbar.isSupported(java.awt.Taskbar.Feature.ICON_IMAGE)) {
-                                try (InputStream awtStream = WindowUtils.class.getResourceAsStream("/icons/icon.png")) {
+                                try (InputStream awtStream = WindowHelper.class.getResourceAsStream("/icons/icon.png")) {
                                     if (awtStream != null) {
                                         java.awt.Image awtImage = javax.imageio.ImageIO.read(awtStream);
                                         if (awtImage != null) {
@@ -113,7 +113,7 @@ public class WindowUtils {
         if (pane == null) return;
         try {
             String activeCss = Theme.getCurrentTheme().getStylesheetPath();
-            var activeRes = WindowUtils.class.getResource(activeCss);
+            var activeRes = WindowHelper.class.getResource(activeCss);
             if (activeRes != null) {
                 String cssForm = activeRes.toExternalForm();
                 pane.getStylesheets().clear();
@@ -189,7 +189,7 @@ public class WindowUtils {
                 } else {
                     node.setCursor(busy ? javafx.scene.Cursor.WAIT : javafx.scene.Cursor.DEFAULT);
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(WindowHelper.class).debug("Non-fatal condition in WindowHelper: {}", ignored.getMessage()); }
         });
     }
 
@@ -204,7 +204,7 @@ public class WindowUtils {
         javafx.application.Platform.runLater(() -> {
             try {
                 scene.setCursor(busy ? javafx.scene.Cursor.WAIT : javafx.scene.Cursor.DEFAULT);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(WindowHelper.class).debug("Non-fatal condition in WindowHelper: {}", ignored.getMessage()); }
         });
     }
 
@@ -447,4 +447,6 @@ public class WindowUtils {
         }
     }
 }
+
+
 

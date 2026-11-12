@@ -29,12 +29,12 @@ import java.util.List;
  *
  * <p>where:
  * <ul>
- *   <li>$T_p, S_p$: Subpolar North Atlantic polar box temperature (°C) and salinity (PSU).</li>
+ *   <li>$T_p, S_p$: Subpolar North Atlantic polar box temperature (Â°C) and salinity (PSU).</li>
  *   <li>$T_e, S_e$: Equatorial / Tropical Atlantic box temperature ($28.0^\circ\text{C}$) and salinity ($36.5\text{ PSU}$).</li>
  *   <li>$\tau_T \approx 20\text{ years}$: Fast atmospheric thermal relaxation timescale.</li>
  *   <li>$\tau_S \approx 300\text{ years}$: Slow haline diffusion timescale providing multi-centennial memory.</li>
  *   <li>$q$: Volume overturning flux in Sverdrups ($10^6\,\text{m}^3/\text{s}$), $q = C (\alpha \Delta T - \beta \Delta S)$.</li>
- *   <li>$F_{\text{melt}}$: Freshwater meltwater discharge flux (Sv), driven by Milankovitch orbital insolation at 65°N and greenhouse anomalies.</li>
+ *   <li>$F_{\text{melt}}$: Freshwater meltwater discharge flux (Sv), driven by Milankovitch orbital insolation at 65Â°N and greenhouse anomalies.</li>
  * </ul>
  * </p>
  *
@@ -92,14 +92,14 @@ public class ThermohalineStommelAMOCEngine extends AbstractSimulationEngine {
      * Thermohaline overturning state record.
      *
      * @param amocFlowSv                 overturning volume flux in Sverdrups ($10^6\,\text{m}^3/\text{s}$)
-     * @param northAtlanticCoolingShiftC smooth high-latitude thermal anomaly (°C)
-     * @param southernOceanWarmingShiftC bipolar seesaw southern anomaly (°C)
+     * @param northAtlanticCoolingShiftC smooth high-latitude thermal anomaly (Â°C)
+     * @param southernOceanWarmingShiftC bipolar seesaw southern anomaly (Â°C)
      * @param isCollapsed                diagnostic flag indicating $q_{\text{AMOC}} < 8.0\,\text{Sv}$
      */
     public record StommelState(double amocFlowSv, double northAtlanticCoolingShiftC, double southernOceanWarmingShiftC, boolean isCollapsed) {}
 
     /**
-     * Calculates seawater density ($\text{kg/m}^3$) from temperature (°C) and practical salinity (PSU).
+     * Calculates seawater density ($\text{kg/m}^3$) from temperature (Â°C) and practical salinity (PSU).
      */
     public static double calculateSeawaterDensity(double tempC, double salinityPsu) {
         double deltaT = tempC - 15.0;
@@ -110,8 +110,8 @@ public class ThermohalineStommelAMOCEngine extends AbstractSimulationEngine {
     /**
      * Evaluates the instantaneous Stommel overturning flow rate $q$ (Sv).
      *
-     * @param tEquatorC    Equatorial temperature (°C)
-     * @param tPoleC       Polar temperature (°C)
+     * @param tEquatorC    Equatorial temperature (Â°C)
+     * @param tPoleC       Polar temperature (Â°C)
      * @param sEquatorPsu  Equatorial salinity (PSU)
      * @param sPolePsu     Polar salinity (PSU)
      * @return overturning flux in Sv
@@ -126,8 +126,8 @@ public class ThermohalineStommelAMOCEngine extends AbstractSimulationEngine {
     /**
      * Evaluates the instantaneous Stommel overturning state from prescribed box states.
      *
-     * @param tempEquatorC    Equatorial temperature (°C)
-     * @param tempPoleC       Polar temperature (°C)
+     * @param tempEquatorC    Equatorial temperature (Â°C)
+     * @param tempPoleC       Polar temperature (Â°C)
      * @param salinityEquatorPsu Equatorial salinity (PSU)
      * @param salinityPolePsu    Polar salinity (PSU)
      * @return StommelState instance
@@ -187,12 +187,12 @@ public class ThermohalineStommelAMOCEngine extends AbstractSimulationEngine {
         currentAmocFlowSv = q;
         boolean isCollapsed = (q < 8.0);
 
-        // Smooth C^1 cooling response curve: from minor weakening to deep convective shutdown (-8.0°C)
+        // Smooth C^1 cooling response curve: from minor weakening to deep convective shutdown (-8.0A°C)
         double collapseFraction = 1.0 / (1.0 + Math.exp((q - 8.0) / 1.5));
         double linearWeakening = -SmoothMath.softplus(BASELINE_AMOC_SV - q, 1.5) * 0.35;
         double northAtlanticCooling = (1.0 - collapseFraction) * linearWeakening + collapseFraction * (-8.0);
 
-        // Bipolar seesaw: South Atlantic / Southern Ocean heat accumulation (+2.0°C max)
+        // Bipolar seesaw: South Atlantic / Southern Ocean heat accumulation (+2.0A°C max)
         double southernOceanWarming = -0.22 * northAtlanticCooling;
 
         currentCoolingShiftC = northAtlanticCooling;
@@ -204,15 +204,15 @@ public class ThermohalineStommelAMOCEngine extends AbstractSimulationEngine {
      * Calculates the orbital and climatological freshwater meltwater flux $F_{\text{melt}}$ (Sv).
      *
      * @param currentYear Current simulation calendar year (negative for BCE/BP)
-     * @param globalTempAnomalyC Global surface temperature anomaly relative to pre-industrial (°C)
+     * @param globalTempAnomalyC Global surface temperature anomaly relative to pre-industrial (Â°C)
      * @return estimated freshwater discharge in Sverdrups
      */
     public static double calculateMeltwaterAnomalySv(double currentYear, double globalTempAnomalyC) {
-        // 1. Orbital forcing component from 65°N summer solstice insolation
+        // 1. Orbital forcing component from 65A°N summer solstice insolation
         MilankovitchOrbitalEngine.MilankovitchParameters orbital = MilankovitchOrbitalEngine.computeOrbitalParameters(currentYear);
         double summerInsolation65N = MilankovitchOrbitalEngine.calculateDailyInsolation(65.0, 172, orbital);
 
-        // Baseline summer insolation at 65°N is ~480 W/m². High insolation (>485 W/m²) triggers ice sheet ablation
+        // Baseline summer insolation at 65A°N is ~480 W/mA². High insolation (>485 W/mA²) triggers ice sheet ablation
         double insolationExcess = Math.max(0.0, summerInsolation65N - 485.0);
         double orbitalMeltSv = (insolationExcess / 45.0) * 0.25;
 
@@ -273,12 +273,12 @@ public class ThermohalineStommelAMOCEngine extends AbstractSimulationEngine {
             double lat = cell.getLatitudeOr(0.0);
             double lng = cell.getLongitudeOr(0.0);
 
-            // 1. North Atlantic & Western European Spatial Envelope (40°N-75°N, -65°E to +35°E)
+            // 1. North Atlantic & Western European Spatial Envelope (40A°N-75A°N, -65A°E to +35A°E)
             double northLatWeight = SmoothMath.sigmoid(lat, 40.0, 4.0) * (1.0 - SmoothMath.sigmoid(lat, 75.0, 4.0));
             double northLonWeight = SmoothMath.sigmoid(lng, -65.0, 8.0) * (1.0 - SmoothMath.sigmoid(lng, 35.0, 8.0));
             double northEnvelope = northLatWeight * northLonWeight;
 
-            // 2. Southern Ocean / South Atlantic Bipolar Seesaw Envelope (-70°S to -30°S, -60°E to +30°E)
+            // 2. Southern Ocean / South Atlantic Bipolar Seesaw Envelope (-70A°S to -30A°S, -60A°E to +30A°E)
             double southLatWeight = SmoothMath.sigmoid(lat, -70.0, 5.0) * (1.0 - SmoothMath.sigmoid(lat, -30.0, 5.0));
             double southLonWeight = SmoothMath.sigmoid(lng, -60.0, 10.0) * (1.0 - SmoothMath.sigmoid(lng, 30.0, 10.0));
             double southEnvelope = southLatWeight * southLonWeight;

@@ -67,8 +67,8 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         logger.info("=========================================================================================");
         int passCount = 0;
         for (BenchmarkResult r : results) {
-            String status = r.passed() ? "✅ PASSED" : "❌ FAILED";
-            logger.info(String.format("• %-36s | %-16s | Res %d | Δt %3.0fd | r: %6.4f | MAPE: %5.2f%% | ΔR: %5.1f km | %s",
+            String status = r.passed() ? "Ã¢Å“â€¦ PASSED" : "Ã¢ÂÅ’ FAILED";
+            logger.info(String.format("Ã¢â‚¬Â¢ %-36s | %-16s | Res %d | ÃŽâ€t %3.0fd | r: %6.4f | MAPE: %5.2f%% | ÃŽâ€R: %5.1f km | %s",
                     r.scenarioName(), r.boundaryMode(), r.spatialResolution(), r.timeStepDays(),
                     r.pearsonCorrelation(), r.coreMAPE() * 100, r.centroidShiftKm(), status));
             if (r.passed()) passCount++;
@@ -99,39 +99,39 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     public static List<BenchmarkResult> runFullValidationCampaign() {
         List<BenchmarkResult> results = new ArrayList<>();
 
-        // ── 1. Boundary Mode Triad Sweep (Fertile Crescent / East-Med -8000 to -7970 BP) ──
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 1. Boundary Mode Triad Sweep (Fertile Crescent / East-Med -8000 to -7970 BP) Ã¢a€a‚¬Ã¢a€a‚¬
         logger.info(">>> Running Benchmark 1: Boundary Mode Comparison Triad (Reservoir vs Closed vs Toroidal)...");
         results.addAll(runBoundaryModeTriadBenchmark());
 
-        // ── 2. Spatial Resolution Sweep (H3 Res 3 to Res 6 Global/Window, and Res 7 Regional Window) ──
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 2. Spatial Resolution Sweep (H3 Res 3 to Res 6 Global/Window, and Res 7 Regional Window) Ã¢a€a‚¬Ã¢a€a‚¬
         logger.info(">>> Running Benchmark 2: Multi-Resolution Spatial Convergence Sweep (Res 3 to 7)...");
         results.addAll(runSpatialResolutionSweepBenchmark());
 
-        // ── 3. Temporal Resolution Sweep (Daily 1d, Weekly 7d, Monthly 30d, Quarterly 90d, Annual 365d) ──
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 3. Temporal Resolution Sweep (Daily 1d, Weekly 7d, Monthly 30d, Quarterly 90d, Annual 365d) Ã¢a€a‚¬Ã¢a€a‚¬
         logger.info(">>> Running Benchmark 3: Temporal Step Discretization Sweep (1d to 365d)...");
         results.addAll(runTemporalStepSweepBenchmark());
 
-        // ── 4. Pre-Columbian Americas (1000 AD to 1491 AD) Continental Isolation ──
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 4. Pre-Columbian Americas (1000 AD to 1491 AD) Continental Isolation Ã¢a€a‚¬Ã¢a€a‚¬
         logger.info(">>> Running Benchmark 4: Pre-Columbian Americas (1000-1491 AD) Continental Isolation...");
         results.add(runAmericas1491IsolationBenchmark());
 
-        // ── 5. Madagascar Island (500 AD to 1000 AD) Maritime vs Insular Isolation ──
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 5. Madagascar Island (500 AD to 1000 AD) Maritime vs Insular Isolation Ã¢a€a‚¬Ã¢a€a‚¬
         logger.info(">>> Running Benchmark 5: Madagascar Island (500-1000 AD) Maritime Network Isolation...");
         results.add(runMadagascarIslandBenchmark());
 
-        // ── 6. Tasmania Island (-10,000 BP to 1800 AD) Extreme Isolation & Technological Threshold ──
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 6. Tasmania Island (-10,000 BP to 1800 AD) Extreme Isolation & Technological Threshold Ã¢a€a‚¬Ã¢a€a‚¬
         logger.info(">>> Running Benchmark 6: Tasmania Insular Isolation & Tech Dynamics...");
         results.add(runTasmaniaIsolationBenchmark());
 
-        // ── 7. Easter Island / Rapa Nui (1200 AD to 1722 AD) Ecological Carrying Capacity Overshoot ──
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 7. Easter Island / Rapa Nui (1200 AD to 1722 AD) Ecological Carrying Capacity Overshoot Ã¢a€a‚¬Ã¢a€a‚¬
         logger.info(">>> Running Benchmark 7: Easter Island (Rapa Nui) Ecological Overshoot...");
         results.add(runEasterIslandBenchmark());
 
-        // ── 8. Medieval Iceland (880 AD to 1400 AD) Subarctic Agricultural Margin & Maritime Connectivity ──
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 8. Medieval Iceland (880 AD to 1400 AD) Subarctic Agricultural Margin & Maritime Connectivity Ã¢a€a‚¬Ã¢a€a‚¬
         logger.info(">>> Running Benchmark 8: Medieval Iceland Subarctic Margin & Connectivity...");
         results.add(runIcelandBenchmark());
 
-        // ── 9. Tokugawa Japan (1639 AD to 1669 AD) Insular Archipelago Sakoku Isolation ──
+        // Ã¢a€a‚¬Ã¢a€a‚¬ 9. Tokugawa Japan (1639 AD to 1669 AD) Insular Archipelago Sakoku Isolation Ã¢a€a‚¬Ã¢a€a‚¬
         logger.info(">>> Running Benchmark 9: Tokugawa Japan Sakoku Maritime Isolation...");
         results.add(runTokugawaSakoku1639IsolationBenchmark());
 
@@ -320,8 +320,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         com.uber.h3core.H3Core h3Core = null;
         try {
             h3Core = com.uber.h3core.H3Core.newInstance();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(WindowedVsGlobalSpatialFalsificationHarness.class).debug("Non-fatal condition in WindowedVsGlobalSpatialFalsificationHarness: {}", ignored.getMessage()); }
 
         for (int res : new int[] { 5, 6, 7 }) {
             Scenario winHigh = new Scenario();
@@ -383,7 +382,7 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
     public static List<BenchmarkResult> runTemporalStepSweepBenchmark() {
         List<BenchmarkResult> list = new ArrayList<>();
 
-        // Baseline reference: Monthly Δt = 30d at Resolution 4
+        // Baseline reference: Monthly ÃŽa€t = 30d at Resolution 4
         Scenario refSc = new Scenario();
         refSc.setName("Temporal_Ref_30d");
         refSc.setStartDateYear(-2000);
@@ -496,3 +495,4 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         return SpatialFalsificationReportGenerator.generateAcademicMarkdownReport(results);
     }
 }
+

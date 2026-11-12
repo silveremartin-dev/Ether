@@ -53,23 +53,23 @@ public record HistorySnapshot(
     public double getMetricValue(String metric) {
         if (metric == null) return totalPopulation;
         return switch (metric) {
-            case "Human Population", "Population Humaine", "population" -> totalPopulation;
+            case "Human Population", "Population Humaine", "population", "worldPopulation" -> totalPopulation;
             case "Food Stock per Capita", "Nourriture / Individu", "Nourriture", "foodPerCapita" -> totalFood;
-            case "Captured Primary Energy", "Énergie Captée", "Énergie Captée (MW)", "energyCaptured" -> energyCaptured;
+            case "Captured Primary Energy", "Énergie Captée", "Énergie Captée (MW)", "energyCaptured", "primaryEnergy" -> energyCaptured;
             case "Kardashev Scale", "Échelle de Kardashev", "Échelle de Kardashev (Type K)", "kardashevScale", "kardashev" -> kardashevScale;
-            case "Gini Inequality Index", "Indice de Gini (Inégalité)", "Indice de Gini (Inégalités)", "giniIndex", "gini" -> globalGini;
+            case "Gini Inequality Index", "Indice de Gini (Inégalité)", "Indice de Gini (Inégalités)", "giniIndex", "gini", "giniInequality" -> globalGini;
             case "Happiness Index", "Indice de Bonheur", "Indice de Bonheur (%)", "happinessIndex", "happiness" -> happinessIndex;
-            case "Conflict & Warfare Intensity", "Taux de Conflits", "Taux de Conflits (%)", "conflictLevel", "conflict" -> conflictLevel;
-            case "Gross World Product (GDP)", "PIB Global (GDP)", "gdpTotal", "gdp" -> gdpTotal;
-            case "Life Expectancy at Birth", "Espérance de Vie", "Espérance de Vie (ans)", "lifeExpectancy" -> avgLifespan;
+            case "Conflict & Warfare Intensity", "Taux de Conflits", "Taux de Conflits (%)", "conflictLevel", "conflict", "sociopoliticalInstability" -> conflictLevel;
+            case "Gross World Product (GDP)", "PIB Global (GDP)", "gdpTotal", "gdp", "grossWorldProduct" -> gdpTotal;
+            case "Life Expectancy at Birth", "Espérance de Vie", "Espérance de Vie (ans)", "lifeExpectancy", "lifeExpectancyAtBirth" -> avgLifespan;
             case "Division of Labor", "Division du Travail", "Division du Travail & Spécialisation", "divisionLabor" -> divisionLabor;
             case "Systemic Complexity", "Complexité Systémique", "Interdépendance & Complexité Systémique", "systemComplexity" -> systemComplexity;
             case "Collective Memory Stock", "Stock Mémoire Collective", "Stock de Mémoire Collective (TB)", "collectiveMemory" -> collectiveMemory;
-            case "Carbon Footprint", "Empreinte Carbone", "Empreinte Carbone (GtCO2)", "carbonFootprint" -> carbonFootprint;
+            case "Carbon Footprint", "Empreinte Carbone", "Empreinte Carbone (GtCO2)", "carbonFootprint", "co2Concentration" -> carbonFootprint;
             case "Systemic Collapse Risk", "Risque d'Effondrement", "Risque d'Effondrement Systémique (%)", "collapseVulnerability" -> collapseVulnerability;
-            case "Average Technological Level", "Niveau Technologique Moyen", "Niveau Technologique", "avgTechLevel" -> avgTechnology;
+            case "Average Technological Level", "Niveau Technologique Moyen", "Niveau Technologique", "avgTechLevel", "technology" -> avgTechnology;
             case "Built Capital & Tooling", "Capital Bâti & Outillage", "Matière Déplacée & Capital Bâti", "builtCapital" -> totalWealth;
-            case "Elite Overproduction", "Surproduction Élitaire (Turchin)", "Pression Élitaire (Indice Turchin)", "eliteOverproduction" -> eliteOverproduction;
+            case "Elite Overproduction", "Surproduction Élitaire (Turchin)", "Pression Élitaire (Indice Turchin)", "eliteOverproduction", "eliteOverproductionIndex" -> eliteOverproduction;
             case "Simulation Frequency (TPS)", "TPS (Images/s)", "engineTPS", "Fréquence de Calcul (Ticks/s)", "Fréquence de Calcul (ticks/sec)", "TPS", "tps" -> tps;
             case "Resource Depletion Rate", "Déplétion des Ressources", "resourceDepletion" -> resourceDepletion;
             case "Natural Biomass", "Biomasse Naturelle", "biomassNatural" -> naturalBiomass;

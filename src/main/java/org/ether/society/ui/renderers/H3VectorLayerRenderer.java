@@ -112,7 +112,7 @@ public class H3VectorLayerRenderer {
         double cRightLng = Math.min(180.0, Math.max(-180.0, viewRightLng));
 
         String coordsText = String.format(
-            "📍 Center: %.2f°N, %.2f°E | Bounds: [%.2f°N, %.2f°E] → [%.2f°N, %.2f°E] | Zoom: %.1fx",
+            "ðŸ“ Center: %.2fÂ°N, %.2fÂ°E | Bounds: [%.2fÂ°N, %.2fÂ°E] â†’ [%.2fÂ°N, %.2fÂ°E] | Zoom: %.1fx",
             centerLat, centerLng, cTopLat, cLeftLng, cBotLat, cRightLng, zoomFactor
         );
 
@@ -207,8 +207,7 @@ public class H3VectorLayerRenderer {
                         }
                     }
                 }
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { org.slf4j.LoggerFactory.getLogger(H3VectorLayerRenderer.class).debug("Non-fatal condition in H3VectorLayerRenderer: {}", ignored.getMessage()); }
         }
     }
 
@@ -387,7 +386,7 @@ public class H3VectorLayerRenderer {
 
         gc.setFill(Color.rgb(56, 189, 248));
         gc.setFont(Font.font("Segoe UI", FontWeight.BOLD, 11));
-        gc.fillText(I18n.getOrDefault("sim.legend.title", "LEGEND — ") + primaryMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
+        gc.fillText(I18n.getOrDefault("sim.legend.title", "LEGEND â€” ") + primaryMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
 
         double minVal = Double.MAX_VALUE;
         double maxVal = -Double.MAX_VALUE;
@@ -469,13 +468,14 @@ public class H3VectorLayerRenderer {
         gc.fillText(String.format("Min: %.1f", minVal), barX, ly + 88);
 
         gc.setFill(Color.rgb(56, 189, 248));
-        gc.fillText(String.format("μ: %.1f", meanVal), barX + barWidth * 0.28, ly + 88);
+        gc.fillText(String.format("Î¼: %.1f", meanVal), barX + barWidth * 0.28, ly + 88);
 
         gc.setFill(Color.rgb(245, 158, 11));
-        gc.fillText(String.format("x̃: %.1f", medianVal), barX + barWidth * 0.54, ly + 88);
+        gc.fillText(String.format("xÌƒ: %.1f", medianVal), barX + barWidth * 0.54, ly + 88);
 
         gc.setFill(Color.rgb(248, 113, 113));
         String maxStr = String.format("Max: %.1f", maxVal);
         gc.fillText(maxStr, barX + barWidth - (maxStr.length() * 5.8), ly + 88);
     }
 }
+
