@@ -362,8 +362,10 @@ public final class CliodynamicAnalyticalFormulasCatalog {
      */
     public static double computeFossilSharePrimaryEnergy(double phiExergy) {
         // Fossil fuel share in primary energy (Smil 2017; Ritchie 2020; Wrigley 2010)
-        // Industrial substitution takes off at phi >= 2.2; pre-industrial organic economies stay strictly ~0%
-        double share = 85.0 / (1.0 + Math.exp(-(phiExergy - 2.80) / 0.25));
+        // Industrial substitution takes off gradually: ~6-14% at phi ~ 2.5-2.8 (1800-1820),
+        // reaching ~50% at phi ~ 4.2 (1900), and ~80% in high-power 20th century regimes.
+        if (phiExergy <= 1.20) return 0.0;
+        double share = 85.0 / (1.0 + Math.exp(-(phiExergy - 4.20) / 0.85));
         return Math.clamp(share, 0.0, 95.0);
     }
 

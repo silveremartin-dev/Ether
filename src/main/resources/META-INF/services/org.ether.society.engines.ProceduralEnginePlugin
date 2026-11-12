@@ -1,4 +1,3 @@
-org.ether.society.engines.tier2.theories.SovereignAIGovernanceEngine
 org.ether.society.engines.tier2.theories.ArthurCombinatorialTechnologyEngine
 org.ether.society.engines.tier2.theories.AcemogluRobinsonInstitutionsEngine
 org.ether.society.engines.tier2.theories.HotellingResourceDepletionEngine
@@ -29,3 +28,9 @@ org.ether.society.engines.tier2.theories.RicardoDifferentialLandRentEngine
 org.ether.society.engines.tier2.theories.LewisDualSectorTurningPointEngine
 org.ether.society.engines.tier2.theories.KondratievSchumpeterLongWaveEngine
 org.ether.society.engines.tier2.theories.PomeranzGreatDivergenceEngine
+org.ether.society.engines.tier2.theories.NavalHydrodynamicsFreightEngine
+org.ether.society.engines.tier2.theories.PhysicalMediaPrintingEngine
+org.ether.society.engines.tier2.theories.SoilSalinizationHydrologyEngine
+org.ether.society.engines.tier2.theories.SovereignTreasuryBondEngine
+org.ether.society.engines.tier2.theories.VonThunenAgriculturalRingsEngine
+org.ether.society.engines.tier1.ThermodynamicPrimeMoversEngine

@@ -89,10 +89,19 @@ final class TelemetryDagNodeEvaluator {
                 yield Math.clamp(spatialUrbanPct, 0.0, 95.0);
             }
             case "literacyRate" -> {
-                double phi = m.getOrDefault("avgTechLevel", c.phiExergy());
-                double act = SmoothMath.sigmoid(phi, 0.96, 0.025);
-                double rate = 99.0 * SmoothMath.sigmoid(phi, 1.85, 0.35);
-                yield Math.clamp(act * rate, 0.0, 99.5);
+                // Canonical endogenous multi-tier literacy emergence (Jack Goody, Graff 1987, Buringh 2009)
+                // Driven continuously by accumulated capital per capita kpc and power per capita, matching CulturalKnowledgeMetricsCalculator
+                double kpc = c.kpc();
+                double powerW = c.powerWattsPerCapita();
+                if (kpc <= 30.0 && powerW <= 350.0) {
+                    yield 0.0;
+                }
+                double cellI = 0.12 * Math.pow(Math.max(0.0, kpc - 30.0), 1.35)
+                        + 0.08 * Math.pow(Math.max(0.0, powerW - 350.0), 1.45);
+                double scribal = 3.8 * Math.tanh(Math.max(0.0, cellI - 25.0) / 350.0);
+                double vernacular = 14.0 * Math.tanh(Math.max(0.0, cellI - 550.0) / 19000.0);
+                double massEdu = 81.7 * Math.tanh(Math.max(0.0, cellI - 30000.0) / 220000.0);
+                yield Math.clamp(scribal + vernacular + massEdu, 0.0, 99.5);
             }
             case "asabiyyah" -> {
                 if (c.polityCount > 0) yield c.avgAsabiyyahPct;
@@ -105,9 +114,10 @@ final class TelemetryDagNodeEvaluator {
                 yield CliodynamicAnalyticalFormulasCatalog.computeCurrencyDebasement(c.phiExergy(), stab);
             }
             case "eliteOverproduction" -> {
-                if (c.polityCount > 0) yield c.meanEliteOverprodPolity;
-                double stab = m.getOrDefault("asabiyyah", 70.0);
-                yield CliodynamicAnalyticalFormulasCatalog.computeEliteOverproductionIndex(c.phiExergy(), stab);
+                if (c.polityCount > 0 && c.meanEliteOverprodPolity > 0.0) yield c.meanEliteOverprodPolity;
+                // Turchin EMP (Ages of Discord) derived directly from observed spatial wealth inequality (Gini)
+                double emp = Math.max(0.2, Math.pow(Math.max(0.0, c.gini - 0.25) / 0.20, 2.0));
+                yield Math.clamp(emp, 0.2, 4.5);
             }
             case "realUnskilledWage" -> CliodynamicAnalyticalFormulasCatalog.computeRealUnskilledWageIndex(c.phiExergy());
             case "politicalStressIndex" -> {

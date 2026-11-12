@@ -166,7 +166,7 @@ public class SimulationPipeline {
 
         boolean runTier2 = perfConfig == null || perfConfig.isEnableTier2Cliodynamics();
         if (runTier2 && engine != null && engine.getWorldBuffer() != null) {
-            typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), dtYears, dtMonthly, activeScenario, compiledKernel);
+            typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), cells, dtYears, dtMonthly, activeScenario, compiledKernel);
         }
 
         profiler.endPhase("4_ProceduralEngines");

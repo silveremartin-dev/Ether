@@ -97,6 +97,26 @@ public final class TypeBEnginePassRunner {
                                           double dtMonthly,
                                           Scenario scenario,
                                           CompiledEngineKernel compiledKernel) {
+        executeActiveTypeBEngines(worldBuffer, null, dtYears, dtMonthly, scenario, compiledKernel);
+    }
+
+    /**
+     * Executes active Tier 2 cliodynamic theories directly over the Data-Oriented WorldBuffer
+     * and active cells using Single-Pass Cellular Kernel Fusion for maximal CPU cache locality.
+     *
+     * @param worldBuffer    contiguous world buffer
+     * @param cells          optional H3 cell list for legacy or hybrid plugin passes
+     * @param dtYears        time step in Julian years
+     * @param dtMonthly      monthly-scaled year fraction
+     * @param scenario       active scenario configuration
+     * @param compiledKernel optional JIT-compiled symbolic kernel
+     */
+    public void executeActiveTypeBEngines(WorldBuffer worldBuffer,
+                                          List<org.ether.society.database.H3Cell> cells,
+                                          double dtYears,
+                                          double dtMonthly,
+                                          Scenario scenario,
+                                          CompiledEngineKernel compiledKernel) {
         if (worldBuffer == null) return;
 
         List<SimulationEngineModule> activeTier2 = SimulationEngineRegistry.getInstance().getActiveTier2Engines(scenario);
@@ -143,6 +163,9 @@ public final class TypeBEnginePassRunner {
         // --- WHOLE BUFFER / STENCIL PASSES (DIFFUSION, WATER GRID, ETC.) ---
         for (SimulationEngineModule engine : bufferEngines) {
             engine.tick(worldBuffer, dtYears, dtMonthly);
+            if (engine instanceof org.ether.society.core.engine.ProceduralPluginEngineAdapter adapter && cells != null) {
+                adapter.processCells(cells, dtYears);
+            }
         }
     }
 }

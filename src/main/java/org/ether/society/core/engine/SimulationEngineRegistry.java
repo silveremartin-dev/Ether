@@ -4,6 +4,7 @@
  */
 package org.ether.society.core.engine;
 
+import org.ether.society.engines.ProceduralEnginePlugin;
 import org.ether.society.engines.tier2.theories.*;
 import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.model.Scenario;
@@ -61,13 +62,25 @@ public final class SimulationEngineRegistry {
     }
 
     /**
-     * Retrieves an engine module by its unique identifier.
+     * Retrieves an engine module by its unique identifier, dynamically resolving and adapting
+     * any existing class if not yet formally registered.
      *
      * @param id engine ID
      * @return module instance, or {@code null}
      */
-    public SimulationEngineModule getEngine(String id) {
-        return enginesById.get(id);
+    public synchronized SimulationEngineModule getEngine(String id) {
+        if (id == null) return null;
+        SimulationEngineModule engine = enginesById.get(id);
+        if (engine != null) return engine;
+
+        // Dynamic automatic resolution: if an engine is declared or requested by a scenario,
+        // resolve it from known packages and adapt it seamlessly!
+        engine = attemptDynamicEngineResolution(id);
+        if (engine != null) {
+            register(engine);
+            return engine;
+        }
+        return null;
     }
 
     /**
@@ -75,8 +88,8 @@ public final class SimulationEngineRegistry {
      *
      * @return list of all engines
      */
-    public List<SimulationEngineModule> getAllEngines() {
-        return Collections.unmodifiableList(allEngines);
+    public synchronized List<SimulationEngineModule> getAllEngines() {
+        return Collections.unmodifiableList(new ArrayList<>(allEngines));
     }
 
     /**
@@ -84,8 +97,8 @@ public final class SimulationEngineRegistry {
      *
      * @return list of Tier 1 engines
      */
-    public List<SimulationEngineModule> getTier1Engines() {
-        return Collections.unmodifiableList(tier1Engines);
+    public synchronized List<SimulationEngineModule> getTier1Engines() {
+        return Collections.unmodifiableList(new ArrayList<>(tier1Engines));
     }
 
     /**
@@ -93,8 +106,8 @@ public final class SimulationEngineRegistry {
      *
      * @return list of Tier 2 engines
      */
-    public List<SimulationEngineModule> getTier2Engines() {
-        return Collections.unmodifiableList(tier2Engines);
+    public synchronized List<SimulationEngineModule> getTier2Engines() {
+        return Collections.unmodifiableList(new ArrayList<>(tier2Engines));
     }
 
     /**
@@ -103,7 +116,14 @@ public final class SimulationEngineRegistry {
      * @param scenario active scenario
      * @return list of active Tier 2 engines
      */
-    public List<SimulationEngineModule> getActiveTier2Engines(Scenario scenario) {
+    public synchronized List<SimulationEngineModule> getActiveTier2Engines(Scenario scenario) {
+        if (scenario != null && scenario.getTypeBEngineStates() != null) {
+            for (Map.Entry<String, Boolean> entry : scenario.getTypeBEngineStates().entrySet()) {
+                if (Boolean.TRUE.equals(entry.getValue())) {
+                    getEngine(entry.getKey());
+                }
+            }
+        }
         List<SimulationEngineModule> active = new ArrayList<>();
         for (SimulationEngineModule e : tier2Engines) {
             if (e.isEnabled(scenario)) {
@@ -111,6 +131,73 @@ public final class SimulationEngineRegistry {
             }
         }
         return active;
+    }
+
+    /**
+     * Attempts to dynamically discover, instantiate, or adapt any engine class by ID.
+     */
+    private SimulationEngineModule attemptDynamicEngineResolution(String id) {
+        String[] searchPackages = {
+                "org.ether.society.engines.tier2.theories.",
+                "org.ether.society.engines.tier2.historical.",
+                "org.ether.society.engines.tier1.",
+                "org.ether.society.engines.",
+                "org.ether.society.core.engine.",
+                "org.ether.society.core."
+        };
+
+        for (String pkg : searchPackages) {
+            try {
+                Class<?> clazz = Class.forName(pkg + id);
+                if (SimulationEngineModule.class.isAssignableFrom(clazz)) {
+                    return (SimulationEngineModule) clazz.getDeclaredConstructor().newInstance();
+                } else if (ProceduralEnginePlugin.class.isAssignableFrom(clazz)) {
+                    ProceduralEnginePlugin plugin = (ProceduralEnginePlugin) clazz.getDeclaredConstructor().newInstance();
+                    return new ProceduralPluginEngineAdapter(plugin);
+                } else {
+                    // Check for static processHybrid / process method
+                    java.lang.reflect.Method m = null;
+                    try {
+                        m = clazz.getMethod("processHybrid", List.class, double.class);
+                    } catch (NoSuchMethodException ignored) {
+                        try {
+                            m = clazz.getMethod("process", List.class, double.class);
+                        } catch (NoSuchMethodException ignored2) {}
+                    }
+                    if (m != null && java.lang.reflect.Modifier.isStatic(m.getModifiers())) {
+                        final java.lang.reflect.Method targetMethod = m;
+                        ProceduralEnginePlugin reflectivePlugin = new ProceduralEnginePlugin() {
+                            @Override
+                            public void process(List<org.ether.society.database.H3Cell> cells, double deltaYears) {
+                                try {
+                                    targetMethod.invoke(null, cells, deltaYears);
+                                } catch (Throwable t) {
+                                    logger.error("Error executing reflective static engine '{}': {}", id, t.getMessage());
+                                }
+                            }
+
+                            @Override
+                            public String getName() {
+                                return id;
+                            }
+                        };
+                        return new ProceduralPluginEngineAdapter(reflectivePlugin);
+                    }
+                }
+            } catch (ClassNotFoundException ignored) {
+                // Continue searching candidate packages
+            } catch (Throwable t) {
+                logger.warn("Could not dynamically instantiate engine '{}': {}", id, t.getMessage());
+            }
+        }
+
+        // Return a named virtual engine fallback for descriptive scenario metadata tags
+        return new AbstractSimulationEngine(id, id, EngineTier.TIER_2_CLIODYNAMIC) {
+            @Override
+            public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
+                // Descriptive or composite scenario meta-tag pass
+            }
+        };
     }
 
     /**
@@ -165,5 +252,26 @@ public final class SimulationEngineRegistry {
         register(new RomanImperialCliodynamicEngine());
         register(new EdoJapanIsolationEngine());
         register(new BoserupAgriculturalIntensificationEngine());
+        register(new SpatialMetapopulationSEIREngine());
+
+        // --- Discover and register all SPI ProceduralEnginePlugin modules automatically ---
+        try {
+            ServiceLoader<ProceduralEnginePlugin> loader = ServiceLoader.load(ProceduralEnginePlugin.class);
+            var it = loader.iterator();
+            while (it.hasNext()) {
+                try {
+                    ProceduralEnginePlugin plugin = it.next();
+                    if (plugin instanceof SimulationEngineModule sem) {
+                        register(sem);
+                    } else {
+                        register(new ProceduralPluginEngineAdapter(plugin));
+                    }
+                } catch (Throwable t) {
+                    logger.warn("Skipping unresolvable SPI plugin: {}", t.getMessage());
+                }
+            }
+        } catch (Throwable t) {
+            logger.warn("Could not discover SPI plugins into SimulationEngineRegistry: {}", t.getMessage());
+        }
     }
 }
