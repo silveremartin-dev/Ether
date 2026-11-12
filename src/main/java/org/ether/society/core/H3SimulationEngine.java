@@ -342,27 +342,10 @@ public final class H3SimulationEngine implements ISimulationEngine {
     }
 
     @Override
-    public void stepBackward(int ticks) {
-        pause();
-        if (historyManager == null || cells == null || cells.isEmpty()) return;
-        long currentTicks = timeManager.getTotalTicks();
-        seekToTick(Math.max(0, currentTicks - ticks));
-    }
+    public void stepBackward(int ticks) { H3EngineLifecycleAndTickCoordinator.stepBackward(this, ticks); }
 
     @Override
-    public void seekToEnd() {
-        pause();
-        if (historyManager != null && !historyManager.getWorldSnapshots().isEmpty()) {
-            seekToTick(historyManager.getWorldSnapshots().lastKey());
-        } else if (currentScenario != null) {
-            long initialYear = currentScenario.getStartDateYear();
-            long endYear = currentScenario.getEndDateYear();
-            int stepDaysVal = (currentScenario.getTemporalResolutionDays() > 0)
-                    ? (int) Math.round(currentScenario.getTemporalResolutionDays()) : 1;
-            long totalDays = Math.max(0, (endYear - initialYear) * 365L);
-            seekToTick(totalDays / stepDaysVal);
-        }
-    }
+    public void seekToEnd() { H3EngineLifecycleAndTickCoordinator.seekToEnd(this); }
 
     /**
      * Seeks simulation state and world snapshots to the specified tick index.
@@ -391,30 +374,23 @@ public final class H3SimulationEngine implements ISimulationEngine {
     public long getTotalPopulation() {
         if (lastCacheTick == tickCounter && cachedTotalPopulation >= 0) return cachedTotalPopulation;
         if (worldBuffer == null) return 0;
-        double total = 0.0;
-        float[] pop = worldBuffer.getBiomassHuman();
-        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
-            if (pop[i] > 0.0f) total += pop[i];
-        }
+        double total = 0.0; float[] pop = worldBuffer.getBiomassHuman();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) { if (pop[i] > 0.0f) total += pop[i]; }
         return Math.round(total);
     }
 
     public double getTotalFood() {
         if (lastCacheTick == tickCounter && cachedTotalFood >= 0) return cachedTotalFood;
         if (worldBuffer == null) return 0;
-        double total = 0;
-        float[] food = worldBuffer.getFoodResource();
+        double total = 0; float[] food = worldBuffer.getFoodResource();
         for (int i = 0; i < worldBuffer.getCapacity(); i++) total += food[i];
         return total;
     }
 
     public long getPopulatedCellCount() {
         if (worldBuffer == null) return 0;
-        long count = 0;
-        float[] pop = worldBuffer.getBiomassHuman();
-        for (int i = 0; i < worldBuffer.getCapacity(); i++) {
-            if (pop[i] > 0.1f) count++;
-        }
+        long count = 0; float[] pop = worldBuffer.getBiomassHuman();
+        for (int i = 0; i < worldBuffer.getCapacity(); i++) { if (pop[i] > 0.1f) count++; }
         return count;
     }
 
@@ -425,17 +401,13 @@ public final class H3SimulationEngine implements ISimulationEngine {
     public float getTotalBiomassNatural() {
         if (lastCacheTick == tickCounter && cachedBiomassNatural >= 0) return cachedBiomassNatural;
         if (worldBuffer == null) return 0;
-        float total = 0;
-        float[] bio = worldBuffer.getBiomassNatural();
+        float total = 0; float[] bio = worldBuffer.getBiomassNatural();
         for (int i = 0; i < worldBuffer.getCapacity(); i++) total += bio[i];
         return total;
     }
 
     public float getAverageTechnology() {
-        if (metricsAggregator != null) {
-            return (float) metricsAggregator.getEmergentTechnologyLevel();
-        }
-        return 1.0f;
+        return metricsAggregator != null ? (float) metricsAggregator.getEmergentTechnologyLevel() : 1.0f;
     }
 
     public float getCurrentGini() { return currentGini; }
@@ -445,128 +417,58 @@ public final class H3SimulationEngine implements ISimulationEngine {
     public float getCurrentFertility() { return currentFertility; }
 
     // --- EXTENDED CLIODYNAMIC & PHYSICAL METRICS (Delegated to SimulationMetricsAggregator) ---
-    public double getEnergyCaptured() { return metricsAggregator.getEnergyCaptured(); } public double getResourceDepletionRate() { return metricsAggregator.getResourceDepletionRate(); }
-    public double getEnergyPerCapita() { return metricsAggregator.getEnergyPerCapita(); } public double getFoodPerCapita() { return metricsAggregator.getFoodPerCapita(); }
-    public double getBiomassDomesticated() { return metricsAggregator.getBiomassDomesticated(); } public double getPotableWaterTotal() { return metricsAggregator.getPotableWaterTotal(); }
-    public double getRemainingResourcesRatio() { return metricsAggregator.getRemainingResourcesRatio(); } public double getSystemicEntropy() { return metricsAggregator.getSystemicEntropy(); }
-    public double getPollutionLevel() { return metricsAggregator.getPollutionLevel(); } public double getOccupiedTerritoryArea() { return metricsAggregator.getOccupiedTerritoryArea(); }
-    public double getOffspringPercentage() { return metricsAggregator.getOffspringPercentage(); } public double getAgeAtFirstChild() { return metricsAggregator.getAgeAtFirstChild(); }
-    public double getImmigrationRate() { return metricsAggregator.getImmigrationRate(); } public double getEducationLevel() { return metricsAggregator.getEducationLevel(); }
-    public double getHappinessIndex() { return metricsAggregator.getHappinessIndex(); } public double getConflictLevel() { return metricsAggregator.getConflictLevel(); }
-    public int getCityStatesCount() { return metricsAggregator.getCityStatesCount(); } public double getInstitutionalMaturity() { return metricsAggregator.getInstitutionalMaturity(); }
-    public double getDivisionOfLaborIndex() { return metricsAggregator.getDivisionOfLaborIndex(); } public double getEroiAlimentaire() { return metricsAggregator.getEroiAlimentaire(); }
-    public double getNetSurplusFraction() { return metricsAggregator.getNetSurplusFraction(); } public double getTrophicMultiplier() { return metricsAggregator.getTrophicMultiplier(); }
-    public double getBiomassMobilizedPerCapitaKg() { return metricsAggregator.getBiomassMobilizedPerCapitaKg(); } public int getMaxHierarchyLevel() { return metricsAggregator.getMaxHierarchyLevel(); }
-    public long getLargestCulturalUnitSize() { return metricsAggregator.getLargestCulturalUnitSize(); } public double getLargestOrganizationComplexity() { return metricsAggregator.getLargestOrganizationComplexity(); }
-    public double getLargestOrganizationEntropy() { return metricsAggregator.getLargestOrganizationEntropy(); } public double getKardashevScale() { return metricsAggregator.getKardashevScale(); }
-    public double getBuiltCapitalTotal() { return metricsAggregator.getBuiltCapitalTotal(); } public double getEliteFormationRatio() { return metricsAggregator.getEliteFormationRatio(); }
-    public double getElderCapitalShare() { return metricsAggregator.getElderCapitalShare(); } public double getLandRentIndex() { return metricsAggregator.getLandRentIndex(); }
-    public long getToolsCount() { return metricsAggregator.getToolsCount(); } public long getProductsCount() { return metricsAggregator.getProductsCount(); }
-    public double getSystemComplexityIndex() { return metricsAggregator.getSystemComplexityIndex(); } public double getReconstructionCapabilityIndex() { return metricsAggregator.getReconstructionCapabilityIndex(); }
-    public double getSystemInterdependenceIndex() { return metricsAggregator.getSystemInterdependenceIndex(); } public int[] getAgePyramid() { return metricsAggregator.getAgePyramid(); }
-    public double getShannonBandwidth() { return metricsAggregator.getShannonBandwidth(); } public double getCollectiveMemoryStock() { return metricsAggregator.getCollectiveMemoryStock(); }
-    public double getInnovationDiffusionSpeed() { return metricsAggregator.getInnovationDiffusionSpeed(); } public double getKnowledgeDecayRate() { return metricsAggregator.getKnowledgeDecayRate(); }
-    public double getSoilNPKQuality() { return metricsAggregator.getSoilNPKQuality(); } public double getCarbonFootprint() { return metricsAggregator.getCarbonFootprint(); }
-    public double getWildBiodiversityIndex() { return metricsAggregator.getWildBiodiversityIndex(); } public double getWetBulbSafetyMargin() { return metricsAggregator.getWetBulbSafetyMargin(); }
-    public double getEliteOverproductionIndex() { return metricsAggregator.getEliteOverproductionIndex(); } public double getFiscalStressIndex() { return metricsAggregator.getFiscalStressIndex(); }
-    public double getGeopoliticalTension() { return metricsAggregator.getGeopoliticalTension(); } public double getCollapseVulnerability() { return metricsAggregator.getCollapseVulnerability(); }
-    public double getAverageAsabiyyah() { return metricsAggregator.getAverageAsabiyyah(); } public double getPopulationSurvivalRate() { return metricsAggregator.getPopulationSurvivalRate(); }
-    public double getUrbanizationRate() { return metricsAggregator.getUrbanizationRate(); } public double getLiteracyRate() { return metricsAggregator.getLiteracyRate(); }
+    public double getEnergyCaptured() { return metricsAggregator.getEnergyCaptured(); } public double getResourceDepletionRate() { return metricsAggregator.getResourceDepletionRate(); } public double getEnergyPerCapita() { return metricsAggregator.getEnergyPerCapita(); }
+    public double getFoodPerCapita() { return metricsAggregator.getFoodPerCapita(); } public double getBiomassDomesticated() { return metricsAggregator.getBiomassDomesticated(); } public double getPotableWaterTotal() { return metricsAggregator.getPotableWaterTotal(); }
+    public double getRemainingResourcesRatio() { return metricsAggregator.getRemainingResourcesRatio(); } public double getSystemicEntropy() { return metricsAggregator.getSystemicEntropy(); } public double getPollutionLevel() { return metricsAggregator.getPollutionLevel(); }
+    public double getOccupiedTerritoryArea() { return metricsAggregator.getOccupiedTerritoryArea(); } public double getOffspringPercentage() { return metricsAggregator.getOffspringPercentage(); } public double getAgeAtFirstChild() { return metricsAggregator.getAgeAtFirstChild(); }
+    public double getImmigrationRate() { return metricsAggregator.getImmigrationRate(); } public double getEducationLevel() { return metricsAggregator.getEducationLevel(); } public double getHappinessIndex() { return metricsAggregator.getHappinessIndex(); }
+    public double getConflictLevel() { return metricsAggregator.getConflictLevel(); } public int getCityStatesCount() { return metricsAggregator.getCityStatesCount(); } public double getInstitutionalMaturity() { return metricsAggregator.getInstitutionalMaturity(); }
+    public double getDivisionOfLaborIndex() { return metricsAggregator.getDivisionOfLaborIndex(); } public double getEroiAlimentaire() { return metricsAggregator.getEroiAlimentaire(); } public double getNetSurplusFraction() { return metricsAggregator.getNetSurplusFraction(); }
+    public double getTrophicMultiplier() { return metricsAggregator.getTrophicMultiplier(); } public double getBiomassMobilizedPerCapitaKg() { return metricsAggregator.getBiomassMobilizedPerCapitaKg(); } public int getMaxHierarchyLevel() { return metricsAggregator.getMaxHierarchyLevel(); }
+    public long getLargestCulturalUnitSize() { return metricsAggregator.getLargestCulturalUnitSize(); } public double getLargestOrganizationComplexity() { return metricsAggregator.getLargestOrganizationComplexity(); } public double getLargestOrganizationEntropy() { return metricsAggregator.getLargestOrganizationEntropy(); }
+    public double getKardashevScale() { return metricsAggregator.getKardashevScale(); } public double getBuiltCapitalTotal() { return metricsAggregator.getBuiltCapitalTotal(); } public double getEliteFormationRatio() { return metricsAggregator.getEliteFormationRatio(); }
+    public double getElderCapitalShare() { return metricsAggregator.getElderCapitalShare(); } public double getLandRentIndex() { return metricsAggregator.getLandRentIndex(); } public long getToolsCount() { return metricsAggregator.getToolsCount(); }
+    public long getProductsCount() { return metricsAggregator.getProductsCount(); } public double getSystemComplexityIndex() { return metricsAggregator.getSystemComplexityIndex(); } public double getReconstructionCapabilityIndex() { return metricsAggregator.getReconstructionCapabilityIndex(); }
+    public double getSystemInterdependenceIndex() { return metricsAggregator.getSystemInterdependenceIndex(); } public int[] getAgePyramid() { return metricsAggregator.getAgePyramid(); } public double getShannonBandwidth() { return metricsAggregator.getShannonBandwidth(); }
+    public double getCollectiveMemoryStock() { return metricsAggregator.getCollectiveMemoryStock(); } public double getInnovationDiffusionSpeed() { return metricsAggregator.getInnovationDiffusionSpeed(); } public double getKnowledgeDecayRate() { return metricsAggregator.getKnowledgeDecayRate(); }
+    public double getSoilNPKQuality() { return metricsAggregator.getSoilNPKQuality(); } public double getCarbonFootprint() { return metricsAggregator.getCarbonFootprint(); } public double getWildBiodiversityIndex() { return metricsAggregator.getWildBiodiversityIndex(); }
+    public double getWetBulbSafetyMargin() { return metricsAggregator.getWetBulbSafetyMargin(); } public double getEliteOverproductionIndex() { return metricsAggregator.getEliteOverproductionIndex(); } public double getFiscalStressIndex() { return metricsAggregator.getFiscalStressIndex(); }
+    public double getGeopoliticalTension() { return metricsAggregator.getGeopoliticalTension(); } public double getCollapseVulnerability() { return metricsAggregator.getCollapseVulnerability(); } public double getAverageAsabiyyah() { return metricsAggregator.getAverageAsabiyyah(); }
+    public double getPopulationSurvivalRate() { return metricsAggregator.getPopulationSurvivalRate(); } public double getUrbanizationRate() { return metricsAggregator.getUrbanizationRate(); } public double getLiteracyRate() { return metricsAggregator.getLiteracyRate(); }
     public double getAtmosphericCO2Ppm() { return metricsAggregator.getAtmosphericCO2Ppm(); } public double getTemperatureAnomaly() { return metricsAggregator.getTemperatureAnomaly(); }
 
-    private boolean headlessTelemetrySubscribed = false;
-    private TelemetrySubscription telemetrySubscription = TelemetrySubscription.NONE;
-    private CompiledTelemetryPlan compiledTelemetryPlan = CompiledTelemetryPlan.NO_OP;
-    private TelemetryEvaluationResult cachedTelemetryResult = TelemetryEvaluationResult.EMPTY;
-    private long lastTelemetryTick = -1L;
+    private final H3SimulationTelemetryCoordinator telemetryCoordinator = new H3SimulationTelemetryCoordinator();
     long initialPopulationBaseline = -1L;
     double initialCo2Baseline = 280.0;
 
     /** @return {@code true} if headless or GUI telemetry subscription is active */
-    public boolean isHeadlessTelemetrySubscribed() { return headlessTelemetrySubscribed; }
-
-    /**
-     * Enables or disables headless telemetry using canonical benchmark variables when enabling
-     * from an empty subscription, or clearing to {@link TelemetrySubscription#NONE} when disabling.
-     *
-     * @param subscribed enable or disable telemetry evaluation
-     */
-    public void setHeadlessTelemetrySubscribed(boolean subscribed) {
-        if (subscribed) {
-            if (this.telemetrySubscription.isEmpty()) {
-                setTelemetrySubscription(TelemetrySubscription.allCanonicalBenchmarks(1));
-            } else {
-                this.headlessTelemetrySubscribed = true;
-            }
-        } else {
-            setTelemetrySubscription(TelemetrySubscription.NONE);
-        }
-    }
+    public boolean isHeadlessTelemetrySubscribed() { return telemetryCoordinator.isHeadlessTelemetrySubscribed(); }
+    public void setHeadlessTelemetrySubscribed(boolean subscribed) { telemetryCoordinator.setHeadlessTelemetrySubscribed(subscribed); }
 
     /** @return immutable active telemetry subscription */
-    public TelemetrySubscription getTelemetrySubscription() {
-        return telemetrySubscription;
-    }
-
-    /**
-     * Replaces the active telemetry subscription and compiles a minimal DAG execution plan.
-     * Passing {@code null} or an empty subscription sets zero-cost {@link TelemetrySubscription#NONE}.
-     *
-     * @param subscription metric and spatial query contract
-     */
-    public void setTelemetrySubscription(TelemetrySubscription subscription) {
-        this.telemetrySubscription = (subscription != null) ? subscription : TelemetrySubscription.NONE;
-        this.compiledTelemetryPlan = TelemetryAstCompiler.compile(this.telemetrySubscription);
-        this.headlessTelemetrySubscribed = !this.telemetrySubscription.isEmpty();
-        this.lastTelemetryTick = -1L;
-        if (this.telemetrySubscription.isEmpty()) {
-            this.cachedTelemetryResult = TelemetryEvaluationResult.EMPTY;
-        }
-    }
+    public TelemetrySubscription getTelemetrySubscription() { return telemetryCoordinator.getTelemetrySubscription(); }
+    public void setTelemetrySubscription(TelemetrySubscription subscription) { telemetryCoordinator.setTelemetrySubscription(subscription); }
 
     /** @return pre-compiled topological DAG evaluation plan */
     public CompiledTelemetryPlan getCompiledTelemetryPlan() {
-        return compiledTelemetryPlan;
+        return telemetryCoordinator.getCompiledTelemetryPlan();
     }
 
     /** @return most recent memoized telemetry evaluation output (or {@link TelemetryEvaluationResult#EMPTY}) */
     public TelemetryEvaluationResult getCachedTelemetryResult() {
-        return cachedTelemetryResult;
+        return telemetryCoordinator.getCachedTelemetryResult();
     }
 
     /** @return simulation tick index at which {@link #cachedTelemetryResult} was last evaluated */
     public long getLastTelemetryTick() {
-        return lastTelemetryTick;
+        return telemetryCoordinator.getLastTelemetryTick();
     }
 
-    /**
-     * Evaluates the currently compiled {@link CompiledTelemetryPlan} once against the current engine state
-     * and memoizes scalar and kernel outputs for instant reuse across UI cards and benchmark exporters.
-     *
-     * @return immutable evaluated telemetry result
-     */
     public TelemetryEvaluationResult evaluateTelemetryNow() {
-        if (compiledTelemetryPlan.isNoOp() || (worldBuffer == null && compiledTelemetryPlan.getInputMask() != 0)) {
-            return TelemetryEvaluationResult.EMPTY;
-        }
-        long startYr = currentScenario != null ? currentScenario.getStartDateYear() : timeManager.getCurrentYear();
-        long curYr = timeManager.getCurrentYear();
-        double elapsedYrs = Math.max(0.0, (double) (curYr - startYr));
-        TelemetryEvaluationResult res = compiledTelemetryPlan.execute(
-                worldBuffer,
-                agentBuffer,
-                cells,
-                nations,
-                statisticsKernel,
-                tickCounter,
-                curYr,
-                initialPopulationBaseline,
-                initialCo2Baseline,
-                elapsedYrs,
-                currentTPS);
+        TelemetryEvaluationResult res = telemetryCoordinator.evaluateTelemetryNow(
+                worldBuffer, agentBuffer, cells, nations, statisticsKernel,
+                tickCounter, currentScenario, timeManager, initialPopulationBaseline, initialCo2Baseline, currentTPS);
 
-        this.cachedTelemetryResult = res;
-        this.lastTelemetryTick = tickCounter;
         this.lastCacheTick = tickCounter;
         this.cachedTotalPopulation = res.getTotalPopulation();
         this.cachedTotalFood = res.getTotalFood();

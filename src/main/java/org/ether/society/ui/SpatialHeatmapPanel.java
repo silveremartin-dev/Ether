@@ -402,19 +402,9 @@ public class SpatialHeatmapPanel extends VBox {
     private void exportVideo() {
         SpatialHeatmapExporter.exportVideo(
                 getScene() != null ? getScene().getWindow() : null,
-                historyManager,
-                activeLayers,
-                getEffectiveStartIndex(),
-                getEffectiveEndIndex(),
-                playbackDelayMs,
-                () -> {
-                    btnExportVideo.setDisable(true);
-                    btnExportVideo.setText("⏳ " + I18n.getOrDefault("heatmap.export.exporting", "Export en cours..."));
-                },
-                () -> {
-                    btnExportVideo.setDisable(false);
-                    btnExportVideo.setText("🎥 " + I18n.getOrDefault("heatmap.btn.export_video", "Exporter Vidéo"));
-                }
+                historyManager, activeLayers, getEffectiveStartIndex(), getEffectiveEndIndex(), playbackDelayMs,
+                () -> { btnExportVideo.setDisable(true); btnExportVideo.setText("⏳ " + I18n.getOrDefault("heatmap.export.exporting", "Export en cours...")); },
+                () -> { btnExportVideo.setDisable(false); btnExportVideo.setText("🎥 " + I18n.getOrDefault("heatmap.btn.export_video", "Exporter Vidéo")); }
         );
     }
 
@@ -469,12 +459,8 @@ public class SpatialHeatmapPanel extends VBox {
             int endIdx = getEffectiveEndIndex();
 
             if (currentSnapshotIndex < startIdx || currentSnapshotIndex >= endIdx) {
-                if (loopCheckBox.isSelected()) {
-                    currentSnapshotIndex = startIdx;
-                } else {
-                    toggleAnimation();
-                    return;
-                }
+                if (!loopCheckBox.isSelected()) { toggleAnimation(); return; }
+                currentSnapshotIndex = startIdx;
             } else {
                 currentSnapshotIndex++;
             }
@@ -485,31 +471,30 @@ public class SpatialHeatmapPanel extends VBox {
     }
 
     private void pauseAnimation() {
-        if (isPlayingAnimation) {
-            animationTimeline.pause();
-            isPlayingAnimation = false;
-            playPauseBtn.setText("▶");
-            playPauseBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 6;");
-            playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.play", "Lancer la séquence temporelle (2D+1D)")));
-        }
+        if (!isPlayingAnimation) return;
+        animationTimeline.pause();
+        isPlayingAnimation = false;
+        playPauseBtn.setText("▶");
+        playPauseBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 6;");
+        playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.play", "Lancer la séquence temporelle (2D+1D)")));
     }
 
     private void toggleAnimation() {
         if (isPlayingAnimation) {
             pauseAnimation();
-        } else {
-            if (historyManager != null && !historyManager.getWorldSnapshots().isEmpty()) {
-                if (currentSnapshotIndex >= getEffectiveEndIndex()) {
-                    currentSnapshotIndex = getEffectiveStartIndex();
-                }
-                animationTimeline.play();
-                isPlayingAnimation = true;
-                playPauseBtn.setText("⏸");
-                playPauseBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 6;");
-                playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.pause", "Mettre en pause")));
-            } else {
-                lblMoranI.setText(I18n.getOrDefault("heatmap.no_snapshot", "Veuillez lancer la simulation pour animer la séquence temporelle."));
-            }
+            return;
         }
+        if (historyManager == null || historyManager.getWorldSnapshots().isEmpty()) {
+            lblMoranI.setText(I18n.getOrDefault("heatmap.no_snapshot", "Veuillez lancer la simulation pour animer la séquence temporelle."));
+            return;
+        }
+        if (currentSnapshotIndex >= getEffectiveEndIndex()) {
+            currentSnapshotIndex = getEffectiveStartIndex();
+        }
+        animationTimeline.play();
+        isPlayingAnimation = true;
+        playPauseBtn.setText("⏸");
+        playPauseBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 6;");
+        playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.pause", "Mettre en pause")));
     }
 }

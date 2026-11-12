@@ -478,4 +478,21 @@ final class H3EngineLifecycleAndTickCoordinator {
         engine.cachedResourceCapital = sumRes;
         engine.lastCacheTick = engine.tickCounter;
     }
+
+    static void stepBackward(H3SimulationEngine engine, int ticks) {
+        engine.pause();
+        if (engine.historyManager == null || engine.cells == null || engine.cells.isEmpty()) return;
+        seekToTick(engine, Math.max(0, engine.timeManager.getTotalTicks() - ticks));
+    }
+
+    static void seekToEnd(H3SimulationEngine engine) {
+        engine.pause();
+        if (engine.historyManager != null && !engine.historyManager.getWorldSnapshots().isEmpty()) {
+            seekToTick(engine, engine.historyManager.getWorldSnapshots().lastKey());
+        } else if (engine.currentScenario != null) {
+            long totalDays = Math.max(0, (engine.currentScenario.getEndDateYear() - engine.currentScenario.getStartDateYear()) * 365L);
+            int stepDays = Math.max(1, (int) Math.round(engine.currentScenario.getTemporalResolutionDays()));
+            seekToTick(engine, totalDays / stepDays);
+        }
+    }
 }

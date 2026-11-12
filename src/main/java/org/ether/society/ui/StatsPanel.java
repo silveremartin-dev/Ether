@@ -435,7 +435,6 @@ public class StatsPanel extends VBox {
     private void filterMetrics() {
         String catFilter = categoryFilterCombo.getValue();
         String searchText = searchField.getText() != null ? searchField.getText().toLowerCase().trim() : "";
-
         metricsContainer.getChildren().clear();
         String currentCat = "";
 
@@ -481,10 +480,7 @@ public class StatsPanel extends VBox {
         if (tickCounter % samplingIntervalTicks != 0) return;
 
         long nowNanos = System.nanoTime();
-        if (nowNanos - lastStatsUiUpdateNanos.get() < 100_000_000L) {
-            return;
-        }
-        if (!statsUpdatePending.compareAndSet(false, true)) {
+        if (nowNanos - lastStatsUiUpdateNanos.get() < 100_000_000L || !statsUpdatePending.compareAndSet(false, true)) {
             return;
         }
         lastStatsUiUpdateNanos.set(nowNanos);

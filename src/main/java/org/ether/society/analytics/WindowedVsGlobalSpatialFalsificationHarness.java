@@ -488,10 +488,6 @@ public class WindowedVsGlobalSpatialFalsificationHarness {
         return SpatialFalsificationMetrics.computeBoundaryReflectionIndex(mapGlobal, mapWindow, cellsRef);
     }
 
-    public static double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2, double radiusKm) {
-        return SpatialFalsificationMetrics.calculateHaversineDistance(lat1, lon1, lat2, lon2, radiusKm);
-    }
-
     public static Scenario cloneScenario(Scenario s) {
         return SpatialFalsificationMetrics.cloneScenario(s);
     }
