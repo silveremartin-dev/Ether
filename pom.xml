@@ -55,6 +55,7 @@
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <jacoco.skip>true</jacoco.skip>
         <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
+        <exec.commandlineArgs>--headless --ticks 300</exec.commandlineArgs>
     </properties>
 
     <repositories>
@@ -344,7 +345,7 @@
                 <version>3.1.0</version>
                 <configuration>
                     <mainClass>org.ether.society.Main</mainClass>
-                    <commandlineArgs>--headless --ticks 300</commandlineArgs>
+                    <commandlineArgs>${exec.commandlineArgs}</commandlineArgs>
                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
                     <arguments>
                         <argument>--add-modules</argument>

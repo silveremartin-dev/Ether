@@ -114,6 +114,7 @@ public final class HeadlessScenarioResolver {
             logger.info("Custom Scenario Name: '{}' (Using default start parameters)", scenarioName);
         }
 
+        if (opts.h3Resolution >= 0) scenario.setH3Resolution(opts.h3Resolution);
         if (opts.overrideStartYear != null) scenario.setStartDateYear(opts.overrideStartYear);
         if (opts.overrideEndYear != null) scenario.setEndDateYear(opts.overrideEndYear);
         if (opts.overrideDt != null) scenario.setTemporalResolutionDays(opts.overrideDt);
