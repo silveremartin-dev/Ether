@@ -34,14 +34,14 @@ import java.util.*;
  */
 public class ResourceGeologySectionBuilder {
 
-    public static class TensorSliderMeta extends ResourceGeologyDepositCatalog.TensorSliderMeta {
+    public static class TensorSliderMeta extends ResourceGeologyDepositRegistry.TensorSliderMeta {
         public TensorSliderMeta(String labelKey, String defaultLabel, String tooltipKey, String defaultTooltip,
                                 double min, double max, double defaultValue, String unit, String formatPattern) {
             super(labelKey, defaultLabel, tooltipKey, defaultTooltip, min, max, defaultValue, unit, formatPattern);
         }
     }
 
-    public static final ResourceGeologyDepositCatalog.TensorSliderMeta[][] GEOLOGY_SLIDER_SPECS = ResourceGeologyDepositCatalog.GEOLOGY_SLIDER_SPECS;
+    public static final ResourceGeologyDepositRegistry.TensorSliderMeta[][] GEOLOGY_SLIDER_SPECS = ResourceGeologyDepositRegistry.GEOLOGY_SLIDER_SPECS;
 
     /**
      * Interface providing host context properties and callbacks to {@code ResourceDistributionPanel}.
@@ -292,7 +292,7 @@ public class ResourceGeologySectionBuilder {
         VBox slidersContainer = new VBox(4);
         List<Label> sliderTitles = new ArrayList<>();
         for (int s = 0; s < 4; s++) {
-            ResourceGeologyDepositCatalog.TensorSliderMeta meta = GEOLOGY_SLIDER_SPECS[layerIdx][s];
+            ResourceGeologyDepositRegistry.TensorSliderMeta meta = GEOLOGY_SLIDER_SPECS[layerIdx][s];
             Label titleLabel = new Label(I18n.getOrDefault(meta.labelKey, meta.defaultLabel));
             titleLabel.setStyle("-fx-font-size: 10px; -fx-font-weight: bold;");
             sliderTitles.add(titleLabel);
@@ -401,10 +401,10 @@ public class ResourceGeologySectionBuilder {
                 I18n.getOrDefault("resource.dialog.export_geology_tensor_title", "Export Geology Tensor Map (PNG / JPEG)"));
     }
 
-    public String getGeologyTensorTitle(int index) { return ResourceGeologyDepositCatalog.getGeologyTensorTitle(index); }
-    public String getGeologyTensorTooltip(int index) { return ResourceGeologyDepositCatalog.getGeologyTensorTooltip(index); }
-    public String getGeologyBaselineName(int index, String planetKey) { return ResourceGeologyDepositCatalog.getGeologyBaselineName(index, planetKey); }
-    public String getGeologyFormatHint(int index) { return ResourceGeologyDepositCatalog.getGeologyFormatHint(index); }
+    public String getGeologyTensorTitle(int index) { return ResourceGeologyDepositRegistry.getGeologyTensorTitle(index); }
+    public String getGeologyTensorTooltip(int index) { return ResourceGeologyDepositRegistry.getGeologyTensorTooltip(index); }
+    public String getGeologyBaselineName(int index, String planetKey) { return ResourceGeologyDepositRegistry.getGeologyBaselineName(index, planetKey); }
+    public String getGeologyFormatHint(int index) { return ResourceGeologyDepositRegistry.getGeologyFormatHint(index); }
 
     public void updateTexts() {
         ResourceGeologyLayerImportHelper.updateTexts(this);

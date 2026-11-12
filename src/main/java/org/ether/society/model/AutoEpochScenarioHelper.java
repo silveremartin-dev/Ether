@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
- * @see org.ether.society.ui.scenario.ScenarioEngineCatalog
+ * @see org.ether.society.ui.scenario.ScenarioEngineRegistry
  */
 public final class AutoEpochScenarioHelper {
 

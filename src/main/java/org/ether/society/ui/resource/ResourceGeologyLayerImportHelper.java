@@ -277,7 +277,7 @@ final class ResourceGeologyLayerImportHelper {
             List<Label> titles = b.geologySliderTitleLabels.get(i);
             if (titles != null) {
                 for (int s = 0; s < titles.size() && s < 4; s++) {
-                    ResourceGeologyDepositCatalog.TensorSliderMeta meta = ResourceGeologySectionBuilder.GEOLOGY_SLIDER_SPECS[i][s];
+                    ResourceGeologyDepositRegistry.TensorSliderMeta meta = ResourceGeologySectionBuilder.GEOLOGY_SLIDER_SPECS[i][s];
                     titles.get(s).setText(I18n.getOrDefault(meta.labelKey, meta.defaultLabel));
                     Tooltip.install(titles.get(s), new Tooltip(I18n.getOrDefault(meta.tooltipKey, meta.defaultTooltip)));
                 }

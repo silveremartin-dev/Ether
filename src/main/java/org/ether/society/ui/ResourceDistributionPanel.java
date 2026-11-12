@@ -31,7 +31,7 @@ import org.ether.society.ui.resource.ResourceGeologySectionBuilder;
 import org.ether.society.ui.resource.ResourceHydroSectionBuilder;
 import org.ether.society.ui.resource.ResourceMapExportHandler;
 import org.ether.society.ui.resource.ResourcePlanetSectionBuilder;
-import org.ether.society.ui.resource.ResourcePresetManager;
+import org.ether.society.ui.resource.ResourcePresetRepository;
 import org.ether.society.ui.resource.ResourcePreviewCanvasBuilder;
 import org.ether.society.ui.resource.ResourceSimulationCoupler;
 import org.ether.society.ui.resource.ResourceValidationHelper;
@@ -71,7 +71,7 @@ public class ResourceDistributionPanel extends BorderPane {
     private final ResourceBiomeSectionBuilder biomeSectionBuilder;
     private final ResourceClimateSectionBuilder climateSectionBuilder;
     private final ResourcePreviewCanvasBuilder previewCanvasBuilder;
-    private final ResourcePresetManager presetManager;
+    private final ResourcePresetRepository presetManager;
     private final ResourcePlanetSectionBuilder planetSectionBuilder;
     private final ResourceMapExportHandler mapExportHandler;
 
@@ -133,7 +133,7 @@ public class ResourceDistributionPanel extends BorderPane {
                 ResourceHostContextFactory.createClimateContext(this, notifyDirty, effectivePreset, this::isUpdatingFromPresetInternal, onlineMapService));
         this.previewCanvasBuilder = new ResourcePreviewCanvasBuilder(
                 ResourceHostContextFactory.createPreviewCanvasContext(this, effectivePreset, () -> seismicActivitySlider, () -> volcanicActivitySlider, () -> geologySectionBuilder, generator, mapLoader));
-        this.presetManager = new ResourcePresetManager(
+        this.presetManager = new ResourcePresetRepository(
                 ResourceHostContextFactory.createPresetManagerContext(
                         this, effectivePreset, p -> this.activePlanetPreset = p,
                         () -> planetPresetSupplier, () -> planetPresetApplyCallback,

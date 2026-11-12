@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
-import org.ether.society.ui.scenario.ScenarioEngineCatalog.EngineMeta;
+import org.ether.society.ui.scenario.ScenarioEngineRegistry.EngineMeta;
 import org.ether.society.ui.scenario.ScenarioEngineParamControlsHelper.CoreEngineRow;
 import org.ether.society.ui.scenario.ScenarioEngineParamControlsHelper.OptionalEngineMeta;
 
@@ -198,7 +198,7 @@ public class ScenarioEngineConfigSectionBuilder {
         sortBar.setStyle("-fx-padding: 4 0 8 0;");
         typeBBoxContainer.getChildren().add(sortBar);
 
-        List<EngineMeta> optionalEngines = ScenarioEngineCatalog.getOptionalEngines();
+        List<EngineMeta> optionalEngines = ScenarioEngineRegistry.getOptionalEngines();
         typeBCheckBoxMap.clear();
         typeBParamSpinnersMap.clear();
         optionalEngineMetas.clear();
@@ -277,7 +277,7 @@ public class ScenarioEngineConfigSectionBuilder {
             if (state != null) {
                 entry.getValue().setSelected(state);
             } else {
-                long appYear = ScenarioEngineCatalog.getEngineApparitionYear(entry.getKey());
+                long appYear = ScenarioEngineRegistry.getEngineApparitionYear(entry.getKey());
                 entry.getValue().setSelected(year >= appYear);
             }
         }

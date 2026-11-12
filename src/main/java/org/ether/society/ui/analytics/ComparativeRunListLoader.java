@@ -14,7 +14,7 @@ import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
 import org.ether.society.persistence.SaveMetadata;
 import org.ether.society.persistence.ScenarioRepository;
-import org.ether.society.persistence.SimulationSaveManager;
+import org.ether.society.persistence.SimulationPersistenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public final class ComparativeRunListLoader {
     public static void refreshRunList(
             ObservableList<ScenarioSelectableItem> scenarioList,
             ScenarioRepository scenarioRepository,
-            SimulationSaveManager saveManager,
+            SimulationPersistenceService saveManager,
             SimulationRunRepository runRepository,
             Supplier<H3SimulationEngine> engineSupplier,
             Consumer<ScenarioSelectableItem> itemSelectionListener

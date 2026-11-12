@@ -21,7 +21,7 @@ import java.util.SortedMap;
 
 /**
  * Virtual {@link NavigableMap} facade backed by on-disk {@code .bin.gz} snapshot archives
- * and bounded LRU heap cache inside {@link HistoryManager}.
+ * and bounded LRU heap cache inside {@link SimulationHistoryCoordinator}.
  *
  * <p>Implements the complete {@link NavigableMap} contract so timeline scrubbers, replay engines,
  * and counterfactual branchers can query arbitrary simulation ticks without retaining all
@@ -29,19 +29,19 @@ import java.util.SortedMap;
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
- * @see HistoryManager
+ * @see SimulationHistoryCoordinator
  */
 final class VirtualSnapshotNavigableMap extends AbstractMap<Long, List<H3Cell>> implements NavigableMap<Long, List<H3Cell>> {
 
     /** Owning history manager managing the LRU RAM cache and persistent disk index. */
-    private final HistoryManager owner;
+    private final SimulationHistoryCoordinator owner;
 
     /**
-     * Constructs a virtual snapshot map facade bound to the specified {@link HistoryManager}.
+     * Constructs a virtual snapshot map facade bound to the specified {@link SimulationHistoryCoordinator}.
      *
-     * @param owner owning {@link HistoryManager} instance
+     * @param owner owning {@link SimulationHistoryCoordinator} instance
      */
-    VirtualSnapshotNavigableMap(HistoryManager owner) {
+    VirtualSnapshotNavigableMap(SimulationHistoryCoordinator owner) {
         this.owner = owner;
     }
 

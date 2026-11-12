@@ -25,8 +25,8 @@ import org.ether.society.engines.tier1.NuclearWarfareClimateEngine;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.ScenarioTimeline;
 import org.ether.society.ui.godmode.GodModeDisasterExecutor;
-import org.ether.society.ui.godmode.GodModeEventCatalog;
-import org.ether.society.ui.godmode.GodModeEventCatalog.EventTypeItem;
+import org.ether.society.ui.godmode.GodModeEventRegistry;
+import org.ether.society.ui.godmode.GodModeEventRegistry.EventTypeItem;
 import org.ether.society.ui.godmode.GodModeInterventionCoordinator;
 import org.ether.society.ui.godmode.GodModeUiConfigurator;
 
@@ -47,7 +47,7 @@ import java.util.Locale;
 public class GodModePanel extends VBox {
 
     /** Canonical catalog of available God Mode physical and climatic event types. */
-    public static final List<EventTypeItem> EVENT_TYPES = GodModeEventCatalog.EVENT_TYPES;
+    public static final List<EventTypeItem> EVENT_TYPES = GodModeEventRegistry.EVENT_TYPES;
 
     private final H3SimulationEngine engine;
     private final ScenarioTimeline timeline;

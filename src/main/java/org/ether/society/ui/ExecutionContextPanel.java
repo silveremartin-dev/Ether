@@ -18,7 +18,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.ether.society.i18n.I18n;
-import org.ether.society.network.ClusterManager;
+import org.ether.society.network.ClusterCoordinator;
 import org.ether.society.ui.execution.ExecutionContextClusterSection;
 import org.ether.society.ui.execution.ExecutionContextHardwareHelper;
 import org.ether.society.ui.execution.ExecutionContextI18nHelper;
@@ -213,7 +213,7 @@ public class ExecutionContextPanel extends BorderPane {
         sidebar.updateRightSummary(hw, top, ren, isMaster, isConnected, targetYear, nodes);
     }
 
-    public ClusterManager getClusterManager() {
+    public ClusterCoordinator getClusterManager() {
         return clusterSection != null ? clusterSection.getClusterManager() : null;
     }
 

@@ -153,7 +153,7 @@ public class Scenario extends AbstractScenarioTensorAndEngineConfig {
     }
 
     public static List<Scenario> getBuiltInScenarios() {
-        return FutureAndExoplanetScenarioCatalog.getBuiltInScenarios();
+        return FutureAndExoplanetScenarioRegistry.getBuiltInScenarios();
     }
 
     public String resolvePresetKey() {

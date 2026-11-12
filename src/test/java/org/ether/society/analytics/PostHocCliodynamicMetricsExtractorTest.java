@@ -106,7 +106,7 @@ public class PostHocCliodynamicMetricsExtractorTest {
     }
 
     @Test
-    @DisplayName("Debug live urbanization rate from DemographicMetricsCalculator")
+    @DisplayName("Debug live urbanization rate from DemographicMetricsHelper")
     public void testLiveUrbanizationCalculation() {
         org.ether.society.model.Scenario scenario = new org.ether.society.model.Scenario();
         scenario.setName("Test 1914");

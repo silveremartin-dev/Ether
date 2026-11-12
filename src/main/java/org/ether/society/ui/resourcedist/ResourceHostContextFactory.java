@@ -28,7 +28,7 @@ import org.ether.society.ui.resource.ResourceGeologySectionBuilder;
 import org.ether.society.ui.resource.ResourceHydroSectionBuilder;
 import org.ether.society.ui.resource.ResourceMapExportHandler;
 import org.ether.society.ui.resource.ResourcePlanetSectionBuilder;
-import org.ether.society.ui.resource.ResourcePresetManager;
+import org.ether.society.ui.resource.ResourcePresetRepository;
 import org.ether.society.ui.resource.ResourcePreviewCanvasBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,7 +217,7 @@ public final class ResourceHostContextFactory {
     }
 
     /**
-     * Creates the {@link ResourcePresetManager.HostContext} bridge.
+     * Creates the {@link ResourcePresetRepository.HostContext} bridge.
      *
      * @param panel                     host panel
      * @param effectivePreset           supplier resolving active {@link PlanetPreset}
@@ -234,7 +234,7 @@ public final class ResourceHostContextFactory {
      * @param updateSummary             callback refreshing summary label
      * @return configured preset manager host context
      */
-    public static ResourcePresetManager.HostContext createPresetManagerContext(
+    public static ResourcePresetRepository.HostContext createPresetManagerContext(
             ResourceDistributionPanel panel,
             Supplier<PlanetPreset> effectivePreset,
             Consumer<PlanetPreset> rawPresetSetter,
@@ -248,7 +248,7 @@ public final class ResourceHostContextFactory {
             Consumer<Image> customResImgSetter,
             Consumer<String> resFileLabelSetter,
             Runnable updateSummary) {
-        return new ResourcePresetManager.HostContext() {
+        return new ResourcePresetRepository.HostContext() {
             @Override public PlanetPreset getActivePlanetPreset() { return effectivePreset.get(); }
             @Override public void setActivePlanetPreset(PlanetPreset p) { rawPresetSetter.accept(p); }
             @Override public ComboBox<PlanetPreset> getPlanetPresetCombo() { return panel.getPlanetPresetCombo(); }
@@ -299,7 +299,7 @@ public final class ResourceHostContextFactory {
             ResourceDistributionPanel panel,
             Supplier<PlanetPreset> rawPresetGetter,
             Consumer<PlanetPreset> rawPresetSetter,
-            Supplier<ResourcePresetManager> presetManager,
+            Supplier<ResourcePresetRepository> presetManager,
             Supplier<ResourceGeologySectionBuilder> geologySupplier,
             Supplier<Slider> crustalSlider,
             Supplier<Slider> preciousSlider,

@@ -26,8 +26,8 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @see CliopatriaGeoJsonStreamingParser
- * @see CliopatriaCulturalTaxonomyCatalog
- * @see CliopatriaSubregionalCentersCatalog
+ * @see CliopatriaCulturalTaxonomyRegistry
+ * @see CliopatriaSubregionalCentersRegistry
  */
 public class CliopatriaPolityVectorReader {
     private static final Logger logger = LoggerFactory.getLogger(CliopatriaPolityVectorReader.class);
@@ -73,7 +73,7 @@ public class CliopatriaPolityVectorReader {
         }
 
         if (targetYear >= -500L && targetYear <= 500L) {
-            CliopatriaSubregionalCentersCatalog.renderClassicalAntiquityEnclaves(g, width, height);
+            CliopatriaSubregionalCentersRegistry.renderClassicalAntiquityEnclaves(g, width, height);
         }
 
         g.dispose();
@@ -207,14 +207,14 @@ public class CliopatriaPolityVectorReader {
         }
         g.dispose();
 
-        double[][] linguisticCenters = CliopatriaSubregionalCentersCatalog.getSubregionalLinguisticCenters(targetYear);
+        double[][] linguisticCenters = CliopatriaSubregionalCentersRegistry.getSubregionalLinguisticCenters(targetYear);
         List<OrographicGlottologPropagator.CulturalSeed> isoglossSeeds = new ArrayList<>();
         for (double[] lc : linguisticCenters) {
             isoglossSeeds.add(new OrographicGlottologPropagator.CulturalSeed(lc[0], lc[1], (int) lc[2], lc[3] / 18.0, "Isogloss"));
         }
         BufferedImage isoglossBg = OrographicGlottologPropagator.propagateCulturalSeeds(isoglossSeeds, width, height, elevationMask);
 
-        CliopatriaSubregionalCentersCatalog.applyOrographicFallbackAndCoastlineMask(img, isoglossBg, elevationMask, targetYear, 0x2563EB);
+        CliopatriaSubregionalCentersRegistry.applyOrographicFallbackAndCoastlineMask(img, isoglossBg, elevationMask, targetYear, 0x2563EB);
         logger.info("Successfully rasterized authentic high-precision Isogloss tensor map for year {} ({}x{}).", targetYear, width, height);
         return img;
     }
@@ -249,14 +249,14 @@ public class CliopatriaPolityVectorReader {
         }
         g.dispose();
 
-        double[][] kinshipCenters = CliopatriaSubregionalCentersCatalog.getSubregionalKinshipCenters(targetYear);
+        double[][] kinshipCenters = CliopatriaSubregionalCentersRegistry.getSubregionalKinshipCenters(targetYear);
         List<OrographicGlottologPropagator.CulturalSeed> kinshipSeeds = new ArrayList<>();
         for (double[] kc : kinshipCenters) {
             kinshipSeeds.add(new OrographicGlottologPropagator.CulturalSeed(kc[0], kc[1], (int) kc[2], kc[3] / 18.0, "Kinship"));
         }
         BufferedImage kinshipBg = OrographicGlottologPropagator.propagateCulturalSeeds(kinshipSeeds, width, height, elevationMask);
 
-        CliopatriaSubregionalCentersCatalog.applyOrographicFallbackAndCoastlineMask(img, kinshipBg, elevationMask, targetYear, 0x8B5CF6);
+        CliopatriaSubregionalCentersRegistry.applyOrographicFallbackAndCoastlineMask(img, kinshipBg, elevationMask, targetYear, 0x8B5CF6);
         logger.info("Successfully rasterized authentic high-precision Kinship tensor map for year {} ({}x{}).", targetYear, width, height);
         return img;
     }
@@ -268,7 +268,7 @@ public class CliopatriaPolityVectorReader {
      * @return normalized string
      */
     public static String normalize(String s) {
-        return CliopatriaCulturalTaxonomyCatalog.normalize(s);
+        return CliopatriaCulturalTaxonomyRegistry.normalize(s);
     }
 
     /**
@@ -279,7 +279,7 @@ public class CliopatriaPolityVectorReader {
      * @return isogloss color
      */
     public static Color getPolityIsoglossColor(String name, String seshatId) {
-        return CliopatriaCulturalTaxonomyCatalog.getPolityIsoglossColor(name, seshatId);
+        return CliopatriaCulturalTaxonomyRegistry.getPolityIsoglossColor(name, seshatId);
     }
 
     /**
@@ -290,7 +290,7 @@ public class CliopatriaPolityVectorReader {
      * @return kinship color
      */
     public static Color getPolityKinshipColor(String name, String seshatId) {
-        return CliopatriaCulturalTaxonomyCatalog.getPolityKinshipColor(name, seshatId);
+        return CliopatriaCulturalTaxonomyRegistry.getPolityKinshipColor(name, seshatId);
     }
 
     /**
@@ -301,7 +301,7 @@ public class CliopatriaPolityVectorReader {
      * @return polity sovereign color
      */
     public static Color getPolityColor(String name, String seshatId) {
-        return CliopatriaCulturalTaxonomyCatalog.getPolityColor(name, seshatId);
+        return CliopatriaCulturalTaxonomyRegistry.getPolityColor(name, seshatId);
     }
 
     /**
@@ -313,7 +313,7 @@ public class CliopatriaPolityVectorReader {
      * @return 4D trait vector
      */
     public static double[] computePolityTraits(String name, String seshatId, long targetYear) {
-        return CliopatriaCulturalTaxonomyCatalog.computePolityTraits(name, seshatId, targetYear);
+        return CliopatriaCulturalTaxonomyRegistry.computePolityTraits(name, seshatId, targetYear);
     }
 
     /**

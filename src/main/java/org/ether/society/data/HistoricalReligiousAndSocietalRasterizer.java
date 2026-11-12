@@ -345,7 +345,7 @@ public final class HistoricalReligiousAndSocietalRasterizer {
                 double lat = 90.0 - (py + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
                 for (int px = minX; px <= maxX; px++) {
                     double lon = -180.0 + (px + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
-                    double d2 = HistoricalScenarioFeaturesCatalog.distSq(lon, lat, cp.lon(), cp.lat());
+                    double d2 = HistoricalScenarioFeaturesRegistry.distSq(lon, lat, cp.lon(), cp.lat());
                     if (d2 <= r2) {
                         int mx = Math.clamp((int) ((px + 0.5) * (mask != null ? mask.getWidth() : HistoricalMapGenerator.WIDTH) / HistoricalMapGenerator.WIDTH), 0, (mask != null ? mask.getWidth() : HistoricalMapGenerator.WIDTH) - 1);
                         int my = Math.clamp((int) ((py + 0.5) * (mask != null ? mask.getHeight() : HistoricalMapGenerator.HEIGHT) / HistoricalMapGenerator.HEIGHT), 0, (mask != null ? mask.getHeight() : HistoricalMapGenerator.HEIGHT) - 1);

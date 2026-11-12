@@ -20,7 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import org.ether.society.ui.godmode.GodModeEventCatalog.EventTypeItem;
+import org.ether.society.ui.godmode.GodModeEventRegistry.EventTypeItem;
 
 import java.util.List;
 

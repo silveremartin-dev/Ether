@@ -6,7 +6,7 @@
  */
 package org.ether.society.core;
 
-import org.ether.society.analytics.HistoryManager;
+import org.ether.society.analytics.SimulationHistoryCoordinator;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.core.dod.AgentBuffer;
 import org.ether.society.core.dod.WorldBuffer;
@@ -168,7 +168,7 @@ public final class H3BufferAndEventCoordinator {
      */
     public static void checkScenarioClimateEvents(
             Scenario currentScenario,
-            TimeManager timeManager,
+            SimulationTimeCoordinator timeManager,
             long tickCounter,
             Set<String> firedScenarioEventKeys,
             EventSystem eventSystem,
@@ -252,7 +252,7 @@ public final class H3BufferAndEventCoordinator {
      * @param targetTicks    target simulation tick
      */
     public static void restoreWorldSnapshotAtTick(
-            HistoryManager historyManager,
+            SimulationHistoryCoordinator historyManager,
             List<H3Cell> cells,
             WorldBuffer worldBuffer,
             long targetTicks) {

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ClusterDistributionTest {
 
-    private ClusterManager masterManager;
+    private ClusterCoordinator masterManager;
     private static final int TEST_PORT = 9890;
     private static final String TEST_SECRET = "TestClusterSecret2026";
 
@@ -32,7 +32,7 @@ public class ClusterDistributionTest {
      *
      */
     public void setUp() throws IOException {
-        masterManager = new ClusterManager(ClusterManager.ClusterRole.MASTER, "127.0.0.1", TEST_PORT, TEST_SECRET);
+        masterManager = new ClusterCoordinator(ClusterCoordinator.ClusterRole.MASTER, "127.0.0.1", TEST_PORT, TEST_SECRET);
         masterManager.setTotalGridCellCount(10000);
         masterManager.start();
     }
@@ -63,12 +63,12 @@ public class ClusterDistributionTest {
      *
      */
     public void testMasterInitialization() {
-        ConcurrentHashMap<String, ClusterManager.ClusterNodeRecord> registry = masterManager.getNodeRegistry();
+        ConcurrentHashMap<String, ClusterCoordinator.ClusterNodeRecord> registry = masterManager.getNodeRegistry();
         assertFalse(registry.isEmpty(), "Node registry should contain local master node");
 
-        ClusterManager.ClusterNodeRecord masterRecord = registry.get("master-local");
+        ClusterCoordinator.ClusterNodeRecord masterRecord = registry.get("master-local");
         assertNotNull(masterRecord, "Master local record should exist");
-        assertEquals(ClusterManager.ClusterRole.MASTER, masterRecord.getRole());
+        assertEquals(ClusterCoordinator.ClusterRole.MASTER, masterRecord.getRole());
         assertEquals(0, masterRecord.getAssignedChunkStart());
         assertEquals(9999, masterRecord.getAssignedChunkEnd());
     }
@@ -84,19 +84,19 @@ public class ClusterDistributionTest {
      *
      */
     public void testWorkerRegistrationAndChunkRebalancing() throws Exception {
-        ClusterManager workerManager = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);
+        ClusterCoordinator workerManager = new ClusterCoordinator(ClusterCoordinator.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);
         workerManager.start();
 
         // Allow network handshake time
         Thread.sleep(1200);
 
-        ConcurrentHashMap<String, ClusterManager.ClusterNodeRecord> registry = masterManager.getNodeRegistry();
+        ConcurrentHashMap<String, ClusterCoordinator.ClusterNodeRecord> registry = masterManager.getNodeRegistry();
         assertTrue(registry.size() >= 2, "Registry should contain master and newly connected worker node");
 
         // Verify spatial partitioning split 10,000 cells into ~5,000 per node
         int totalCoveredCells = 0;
-        for (ClusterManager.ClusterNodeRecord node : registry.values()) {
-            if (node.getStatus() == ClusterManager.NodeStatus.ACTIVE || node.getStatus() == ClusterManager.NodeStatus.CONNECTED) {
+        for (ClusterCoordinator.ClusterNodeRecord node : registry.values()) {
+            if (node.getStatus() == ClusterCoordinator.NodeStatus.ACTIVE || node.getStatus() == ClusterCoordinator.NodeStatus.CONNECTED) {
                 int count = (node.getAssignedChunkEnd() - node.getAssignedChunkStart()) + 1;
                 totalCoveredCells += count;
             }
@@ -118,7 +118,7 @@ public class ClusterDistributionTest {
      *
      */
     public void testResilienceOnNodeDisconnect() throws Exception {
-        ClusterManager workerManager = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);
+        ClusterCoordinator workerManager = new ClusterCoordinator(ClusterCoordinator.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);
         workerManager.start();
         Thread.sleep(1000);
 
@@ -126,14 +126,14 @@ public class ClusterDistributionTest {
 
         // Stop worker suddenly and mark status on master
         workerManager.stop();
-        for (ClusterManager.ClusterNodeRecord record : masterManager.getNodeRegistry().values()) {
-            if (record.getRole() == ClusterManager.ClusterRole.WORKER) {
-                record.setStatus(ClusterManager.NodeStatus.DISCONNECTED);
+        for (ClusterCoordinator.ClusterNodeRecord record : masterManager.getNodeRegistry().values()) {
+            if (record.getRole() == ClusterCoordinator.ClusterRole.WORKER) {
+                record.setStatus(ClusterCoordinator.NodeStatus.DISCONNECTED);
             }
         }
         masterManager.rebalanceSpatialChunks();
 
-        ClusterManager.ClusterNodeRecord masterRecord = masterManager.getNodeRegistry().get("master-local");
+        ClusterCoordinator.ClusterNodeRecord masterRecord = masterManager.getNodeRegistry().get("master-local");
         assertNotNull(masterRecord);
         assertEquals(0, masterRecord.getAssignedChunkStart());
         assertEquals(9999, masterRecord.getAssignedChunkEnd(), "Master should reclaim full grid after worker drop");
@@ -151,15 +151,15 @@ public class ClusterDistributionTest {
      */
     public void testLateJoiningNodeSync() throws Exception {
         // Late-join 2 workers sequentially
-        ClusterManager worker1 = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);
+        ClusterCoordinator worker1 = new ClusterCoordinator(ClusterCoordinator.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);
         worker1.start();
         Thread.sleep(800);
 
-        ClusterManager worker2 = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);
+        ClusterCoordinator worker2 = new ClusterCoordinator(ClusterCoordinator.ClusterRole.WORKER, "127.0.0.1", TEST_PORT, TEST_SECRET);
         worker2.start();
         Thread.sleep(800);
 
-        ConcurrentHashMap<String, ClusterManager.ClusterNodeRecord> registry = masterManager.getNodeRegistry();
+        ConcurrentHashMap<String, ClusterCoordinator.ClusterNodeRecord> registry = masterManager.getNodeRegistry();
         assertTrue(registry.size() >= 3, "Master should register 3 active nodes (1 Master + 2 Workers)");
 
         worker1.stop();

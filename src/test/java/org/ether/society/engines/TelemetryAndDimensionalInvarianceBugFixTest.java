@@ -5,7 +5,7 @@
  */
 package org.ether.society.engines;
 
-import org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog;
+import org.ether.society.analytics.CliodynamicFormulasRegistry;
 import org.ether.society.config.Configuration;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.core.SimulationMetricsAggregator;
@@ -122,15 +122,15 @@ public class TelemetryAndDimensionalInvarianceBugFixTest {
     public void testShippingFreightCostAndTradeVolumeSignBugFix() {
         // In Classical Antiquity (Phi_exergy ~ 0.96 - 1.02), maritime freight cost must be near its archaic ceiling (~1415),
         // never multiplied by 0 and clamped to 15.0 (modern container ship floor)
-        double freightAntiquity = CliodynamicAnalyticalFormulasCatalog.computeShippingFreightCostIndex(0.96);
-        double freightModern = CliodynamicAnalyticalFormulasCatalog.computeShippingFreightCostIndex(2.20);
+        double freightAntiquity = CliodynamicFormulasRegistry.computeShippingFreightCostIndex(0.96);
+        double freightModern = CliodynamicFormulasRegistry.computeShippingFreightCostIndex(2.20);
 
         assertTrue(freightAntiquity >= 1400.0,
                 "Archaic/Classical shipping freight cost index must be >= 1400.0, got: " + freightAntiquity);
         assertTrue(freightModern < 50.0,
                 "Modern container shipping freight cost index must be < 50.0, got: " + freightModern);
 
-        double tradeAntiquity = CliodynamicAnalyticalFormulasCatalog.computeGlobalTradeVolume(0.96);
+        double tradeAntiquity = CliodynamicFormulasRegistry.computeGlobalTradeVolume(0.96);
         assertTrue(tradeAntiquity < 1.0,
                 "Classical global trade volume index (100 = 1913) must be < 1.0 at Phi=0.96, got: " + tradeAntiquity);
     }
@@ -139,7 +139,7 @@ public class TelemetryAndDimensionalInvarianceBugFixTest {
     @DisplayName("5. Information Speed & Urbanization: Scale Consistency Across Res 4 WorldBuffer and H3Cells")
     public void testInformationSpeedAndUrbanizationConsistency() throws Exception {
         // At Phi_exergy = 0.96 (165 CE), courier speed must be ~30-45 km/day without 20,000 km/day telecom leakage
-        double speed165CE = CliodynamicAnalyticalFormulasCatalog.computeInformationTravelSpeed(0.96);
+        double speed165CE = CliodynamicFormulasRegistry.computeInformationTravelSpeed(0.96);
         assertTrue(speed165CE >= 25.0 && speed165CE <= 60.0,
                 "Information travel speed in 165 CE (Phi=0.96) must be courier speed (~30-45 km/day), got: " + speed165CE);
 

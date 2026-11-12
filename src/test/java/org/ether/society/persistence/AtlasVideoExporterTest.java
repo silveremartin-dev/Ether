@@ -1,6 +1,6 @@
 package org.ether.society.persistence;
 
-import org.ether.society.analytics.HistoryManager;
+import org.ether.society.analytics.SimulationHistoryCoordinator;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.ether.society.ui.DisplayMode;
@@ -55,7 +55,7 @@ class AtlasVideoExporterTest {
 
     @Test
     void testExportVideoAsyncCreatesValidGif() throws Exception {
-        HistoryManager historyManager = new HistoryManager();
+        SimulationHistoryCoordinator historyManager = new SimulationHistoryCoordinator();
 
         // Add 5 snapshots
         for (long tick = 10; tick <= 50; tick += 10) {

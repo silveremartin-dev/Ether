@@ -18,8 +18,8 @@ import org.ether.society.generation.PlanetPreset;
 import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
-import org.ether.society.network.ClusterManager;
-import org.ether.society.network.cluster.ClusterSnapshotManager;
+import org.ether.society.network.ClusterCoordinator;
+import org.ether.society.network.cluster.ClusterSnapshotService;
 import org.ether.society.network.cluster.WorkerGPUOffloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,8 +91,8 @@ public class HeadlessRunner {
         configureRuntimePreferences(opts);
 
         try {
-            ClusterManager clusterManager = startClusterIfEnabled(opts);
-            if (opts.isClusterMode && opts.clusterRole == ClusterManager.ClusterRole.WORKER) {
+            ClusterCoordinator clusterManager = startClusterIfEnabled(opts);
+            if (opts.isClusterMode && opts.clusterRole == ClusterCoordinator.ClusterRole.WORKER) {
                 runWorkerNodeBlocking(clusterManager);
                 return;
             }
@@ -186,9 +186,9 @@ public class HeadlessRunner {
         execPrefs.put("ether_hardware_mode", hwMode);
     }
 
-    private static ClusterManager startClusterIfEnabled(HeadlessCliOptions opts) throws Exception {
+    private static ClusterCoordinator startClusterIfEnabled(HeadlessCliOptions opts) throws Exception {
         if (!opts.isClusterMode) return null;
-        ClusterManager cm = new ClusterManager(opts.clusterRole, opts.masterHost, opts.port, opts.secretToken);
+        ClusterCoordinator cm = new ClusterCoordinator(opts.clusterRole, opts.masterHost, opts.port, opts.secretToken);
         cm.setPartitionStrategy(opts.partitionStrategy);
         cm.setBarrierTimeoutMs(opts.barrierTimeoutMs);
         cm.setSyncInterval(opts.syncInterval);
@@ -197,8 +197,8 @@ public class HeadlessRunner {
         cm.setHaloExchangeEnabled(opts.haloExchangeEnabled);
         if (opts.workerNodeId != null && !opts.workerNodeId.isBlank()) cm.setCustomWorkerId(opts.workerNodeId);
         if (opts.workerCapacity != null && !opts.workerCapacity.isBlank()) cm.setCustomWorkerCapacity(opts.workerCapacity);
-        if (opts.snapshotsEnabled && opts.clusterRole == ClusterManager.ClusterRole.MASTER) {
-            ClusterSnapshotManager snapMgr = new ClusterSnapshotManager(Paths.get(opts.snapshotDir), opts.maxSnapshots);
+        if (opts.snapshotsEnabled && opts.clusterRole == ClusterCoordinator.ClusterRole.MASTER) {
+            ClusterSnapshotService snapMgr = new ClusterSnapshotService(Paths.get(opts.snapshotDir), opts.maxSnapshots);
             cm.setSnapshotManager(snapMgr);
             cm.setSnapshotIntervalTicks(opts.snapshotIntervalTicks > 0 ? opts.snapshotIntervalTicks : 50);
         }
@@ -207,7 +207,7 @@ public class HeadlessRunner {
         return cm;
     }
 
-    private static void runWorkerNodeBlocking(ClusterManager clusterManager) throws InterruptedException {
+    private static void runWorkerNodeBlocking(ClusterCoordinator clusterManager) throws InterruptedException {
         final WorkerGPUOffloader gpuOffloader = new WorkerGPUOffloader();
         clusterManager.setWorkerComputeDelegate(buf -> gpuOffloader.computeChunk(buf, 86400f));
         System.out.println("Worker node listening for remote compute tasks from Master... (Press Ctrl+C to terminate)");

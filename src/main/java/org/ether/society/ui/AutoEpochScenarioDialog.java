@@ -14,7 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.ether.society.data.TemporalMapTensorManager;
+import org.ether.society.data.TemporalTensorRepository;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.AutoEpochScenarioGenerator;
 import org.ether.society.model.Scenario;
@@ -42,7 +42,7 @@ public class AutoEpochScenarioDialog extends Stage {
     private static final Logger logger = LoggerFactory.getLogger(AutoEpochScenarioDialog.class);
 
     private final ComboBox<String> planetSelector = new ComboBox<>();
-    private final ComboBox<TemporalMapTensorManager.DataFallbackStrategy> fallbackSelector = new ComboBox<>();
+    private final ComboBox<TemporalTensorRepository.DataFallbackStrategy> fallbackSelector = new ComboBox<>();
     private final Spinner<Integer> yearSpinner = new Spinner<>(-100000, 2060, -8000, 100);
     private final Slider yearSlider = new Slider(-100000, 2060, -8000);
     private final FlowPane chipsPane = new FlowPane(6, 6);
@@ -126,7 +126,7 @@ public class AutoEpochScenarioDialog extends Stage {
         if (planetSelector.getItems().isEmpty()) {
             planetSelector.getItems().addAll("earth", "mars", "moon", "venus", "mercury", "titan", "super_earth", "eyeball_world", "oceania", "boreas", "archipelago");
         }
-        String pNorm = TemporalMapTensorManager.normalizePlanet(initialPlanetKey);
+        String pNorm = TemporalTensorRepository.normalizePlanet(initialPlanetKey);
         planetSelector.setValue(planetSelector.getItems().contains(pNorm) ? pNorm : "earth");
         planetSelector.setCellFactory(lv -> new ListCell<>() {
             @Override
@@ -210,11 +210,11 @@ public class AutoEpochScenarioDialog extends Stage {
         lblFallback.getStyleClass().add("control-label");
         lblFallback.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
-        fallbackSelector.getItems().addAll(TemporalMapTensorManager.DataFallbackStrategy.values());
-        fallbackSelector.setValue(TemporalMapTensorManager.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH);
+        fallbackSelector.getItems().addAll(TemporalTensorRepository.DataFallbackStrategy.values());
+        fallbackSelector.setValue(TemporalTensorRepository.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH);
         fallbackSelector.setCellFactory(lv -> new ListCell<>() {
             @Override
-            protected void updateItem(TemporalMapTensorManager.DataFallbackStrategy item, boolean empty) {
+            protected void updateItem(TemporalTensorRepository.DataFallbackStrategy item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText("");
@@ -353,7 +353,7 @@ public class AutoEpochScenarioDialog extends Stage {
     private void rebuildMilestoneChips() {
         chipsPane.getChildren().clear();
         String planet = planetSelector.getValue() != null ? planetSelector.getValue() : "earth";
-        boolean isEarth = "earth".equalsIgnoreCase(TemporalMapTensorManager.normalizePlanet(planet));
+        boolean isEarth = "earth".equalsIgnoreCase(TemporalTensorRepository.normalizePlanet(planet));
 
         if (isEarth) {
             for (AutoEpochScenarioGenerator.EpochMilestone m : AutoEpochScenarioGenerator.EARTH_KEY_MILESTONES) {
@@ -385,9 +385,9 @@ public class AutoEpochScenarioDialog extends Stage {
         String planet = planetSelector.getValue() != null ? planetSelector.getValue() : "earth";
         int year = yearSpinner.getValue() != null ? yearSpinner.getValue() : -8000;
         boolean forceRegen = cbRegenerateSpecificMaps.isSelected();
-        TemporalMapTensorManager.DataFallbackStrategy strat = fallbackSelector.getValue() != null 
+        TemporalTensorRepository.DataFallbackStrategy strat = fallbackSelector.getValue() != null 
                 ? fallbackSelector.getValue() 
-                : TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION;
+                : TemporalTensorRepository.DataFallbackStrategy.CONTINUOUS_INTERPOLATION;
 
         btnApply.setDisable(true);
         btnCancel.setDisable(true);
@@ -432,21 +432,21 @@ public class AutoEpochScenarioDialog extends Stage {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         String planet = planetSelector.getValue() != null ? planetSelector.getValue() : "earth";
         int year = yearSpinner.getValue() != null ? yearSpinner.getValue() : -8000;
-        boolean isEarth = "earth".equalsIgnoreCase(TemporalMapTensorManager.normalizePlanet(planet));
+        boolean isEarth = "earth".equalsIgnoreCase(TemporalTensorRepository.normalizePlanet(planet));
 
         String formattedYear = AutoEpochScenarioGenerator.formatEpochName(year);
         milestoneTitleLabel.setText("📍 " + formattedYear);
 
         // Update strategy explanation
-        TemporalMapTensorManager.DataFallbackStrategy strat = fallbackSelector.getValue() != null 
+        TemporalTensorRepository.DataFallbackStrategy strat = fallbackSelector.getValue() != null 
                 ? fallbackSelector.getValue() 
-                : TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION;
+                : TemporalTensorRepository.DataFallbackStrategy.CONTINUOUS_INTERPOLATION;
 
         strategyExplanationLabel.setText(AutoEpochDialogPresenter.getStrategyExplanation(strat));
 
         // Match description
         String milestoneDesc = isEarth 
-                ? I18n.getOrDefault("scenario.autodialog.interpolated_epoch", "Époque continue interpolée via TemporalMapTensorManager.")
+                ? I18n.getOrDefault("scenario.autodialog.interpolated_epoch", "Époque continue interpolée via TemporalTensorRepository.")
                 : String.format(Locale.ROOT, "Contexte planétaire & colonisation extraterrestre pour %s (%s).", AutoEpochDialogPresenter.getLocalizedPlanetName(planet), formattedYear);
 
         if (isEarth) {
@@ -459,7 +459,7 @@ public class AutoEpochScenarioDialog extends Stage {
         }
         milestoneDescLabel.setText("📜 " + milestoneDesc);
 
-        List<Long> availableEpochs = TemporalMapTensorManager.getAvailableEpochYears(planet);
+        List<Long> availableEpochs = TemporalTensorRepository.getAvailableEpochYears(planet);
         String rasterFormat = I18n.getOrDefault("scenario.autodialog.raster_preview", 
                 "🗺️ Onglets 1 & 2 (Cartographie & Ressources) : 25 calques résolus [%s] (%s, %d époques empiriques). Topographie, biomes, nappes & minerais.");
         rasterPreviewLabel.setText(String.format(Locale.ROOT, rasterFormat,

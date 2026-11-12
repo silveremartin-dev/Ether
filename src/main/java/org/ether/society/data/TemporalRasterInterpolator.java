@@ -19,7 +19,7 @@ import java.util.Locale;
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
- * @see TemporalMapTensorManager
+ * @see TemporalTensorRepository
  */
 public final class TemporalRasterInterpolator {
 

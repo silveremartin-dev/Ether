@@ -7,7 +7,7 @@
 package org.ether.society.network.codec;
 
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.network.EtherSecurityManager;
+import org.ether.society.network.EtherSecurityService;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -203,7 +203,7 @@ public class WorldBufferWireCodec {
     /**
      * Encodes and encrypts a chunk into a Base64 string.
      */
-    public static String encodeAndEncryptChunk(WorldBuffer buffer, int start, int count, long tickId, EtherSecurityManager security) throws Exception {
+    public static String encodeAndEncryptChunk(WorldBuffer buffer, int start, int count, long tickId, EtherSecurityService security) throws Exception {
         byte[] raw = encodeChunk(buffer, start, count, tickId);
         String rawBase64 = Base64.getEncoder().encodeToString(raw);
         return security != null ? security.encrypt(rawBase64) : rawBase64;
@@ -212,7 +212,7 @@ public class WorldBufferWireCodec {
     /**
      * Decrypts and decodes a Base64 chunk string into the target buffer.
      */
-    public static ChunkPayload decryptAndDecodeChunk(String payload, WorldBuffer targetBuffer, EtherSecurityManager security) throws Exception {
+    public static ChunkPayload decryptAndDecodeChunk(String payload, WorldBuffer targetBuffer, EtherSecurityService security) throws Exception {
         String decrypted = (security != null) ? security.decrypt(payload) : payload;
         byte[] rawBytes = Base64.getDecoder().decode(decrypted);
         return decodeChunkInto(rawBytes, targetBuffer);

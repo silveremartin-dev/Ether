@@ -10,7 +10,7 @@ import org.ether.society.generation.PlanetPreset;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.Scenario;
-import org.ether.society.ui.scenario.ScenarioDefaultValueManager;
+import org.ether.society.ui.scenario.ScenarioDefaultValueService;
 import org.ether.society.ui.scenario.ScenarioSanityValidator;
 import org.ether.society.ui.scenario.ScenarioValidationHelper;
 import org.slf4j.Logger;
@@ -42,23 +42,23 @@ final class ScenarioSetupDiagnosticHelper {
      */
     static void updateDefaultValueIndicators(ScenarioSetupPanel panel) {
         if (panel.isUpdatingFromPreset) return;
-        ScenarioDefaultValueManager.highlightControlIfModified(panel.startYearSpinner, false);
-        ScenarioDefaultValueManager.highlightControlIfModified(panel.endYearSpinner, false);
-        ScenarioDefaultValueManager.highlightControlIfModified(panel.targetCohortSizeSpinner, false);
-        ScenarioDefaultValueManager.highlightControlIfModified(panel.temporalResolutionCombo, false);
+        ScenarioDefaultValueService.highlightControlIfModified(panel.startYearSpinner, false);
+        ScenarioDefaultValueService.highlightControlIfModified(panel.endYearSpinner, false);
+        ScenarioDefaultValueService.highlightControlIfModified(panel.targetCohortSizeSpinner, false);
+        ScenarioDefaultValueService.highlightControlIfModified(panel.temporalResolutionCombo, false);
         if (panel.demographicSectionBuilder != null) {
-            ScenarioDefaultValueManager.highlightControlIfModified(
+            ScenarioDefaultValueService.highlightControlIfModified(
                     panel.demographicSectionBuilder.getInitialHumanCountSpinner(), false);
         }
         if (panel.culturalSectionBuilder != null) {
             var dimSp = panel.culturalSectionBuilder.getCultureVectorDimSpinner();
-            ScenarioDefaultValueManager.highlightControlIfModified(
+            ScenarioDefaultValueService.highlightControlIfModified(
                     dimSp, dimSp != null && dimSp.getValue() != null && dimSp.getValue() != 9);
             var diffSp = panel.culturalSectionBuilder.getCulturalDiffusionRateSpinner();
-            ScenarioDefaultValueManager.highlightControlIfModified(
+            ScenarioDefaultValueService.highlightControlIfModified(
                     diffSp, diffSp != null && diffSp.getValue() != null && Math.abs(diffSp.getValue() - 0.05) > 0.001);
             var mutSp = panel.culturalSectionBuilder.getCulturalMutationRateSpinner();
-            ScenarioDefaultValueManager.highlightControlIfModified(
+            ScenarioDefaultValueService.highlightControlIfModified(
                     mutSp, mutSp != null && mutSp.getValue() != null && Math.abs(mutSp.getValue() - 0.01) > 0.001);
         }
     }

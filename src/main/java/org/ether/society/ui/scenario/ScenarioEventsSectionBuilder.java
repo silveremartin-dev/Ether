@@ -18,7 +18,7 @@ import javafx.util.StringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import org.ether.society.events.HistoricalIntervention;
-import org.ether.society.events.HistoricalInterventionCatalog;
+import org.ether.society.events.HistoricalInterventionRegistry;
 import org.ether.society.i18n.I18n;
 import org.ether.society.ui.ScenarioSetupPanel.ClimateEvent;
 import org.ether.society.ui.WindowUtils;
@@ -300,7 +300,7 @@ public class ScenarioEventsSectionBuilder {
         boolean replaceAll = promptEventLoadConfirmation(promptConfirmation, "scenario.events.load.leaders_title");
 
         List<ClimateEvent> filtered = new ArrayList<>();
-        List<HistoricalIntervention> allLeaders = HistoricalInterventionCatalog.getInstance().getInterventions();
+        List<HistoricalIntervention> allLeaders = HistoricalInterventionRegistry.getInstance().getInterventions();
         for (HistoricalIntervention hi : allLeaders) {
             if (hi.getYearStart() >= startYear) {
                 String type = hi.getArchetype() != null ? "LEADER_" + hi.getArchetype().name() : "LEADER_INSTITUTIONAL_REFORMER";

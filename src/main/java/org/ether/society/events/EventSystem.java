@@ -42,9 +42,9 @@ public class EventSystem {
     private boolean enableChronicleSingularityObserver = false;
 
     // Catalogs and Generators
-    private final HistoricalInterventionCatalog historicalCatalog = HistoricalInterventionCatalog.getInstance();
+    private final HistoricalInterventionRegistry historicalCatalog = HistoricalInterventionRegistry.getInstance();
     private final ProceduralLeaderGenerator proceduralLeaderGenerator = new ProceduralLeaderGenerator();
-    private final NaturalDisasterEvaluator naturalDisasterEvaluator = new NaturalDisasterEvaluator(this, random);
+    private final NaturalDisasterHelper naturalDisasterEvaluator = new NaturalDisasterHelper(this, random);
     private final SpatialPhaseTransitionChronicleObserver phaseTransitionObserver = new SpatialPhaseTransitionChronicleObserver();
     private final List<HistoricalIntervention> activeInterventions = new CopyOnWriteArrayList<>();
     private final java.util.Set<String> firedInterventionIds = new java.util.HashSet<>();
@@ -119,7 +119,7 @@ public class EventSystem {
     }
 
     private void initializeHistoricalEvents() {
-        historicalEvents.addAll(DefaultHistoricalEventsCatalog.getCanonicalEvents());
+        historicalEvents.addAll(DefaultHistoricalEventsRegistry.getCanonicalEvents());
     }
 
     /**

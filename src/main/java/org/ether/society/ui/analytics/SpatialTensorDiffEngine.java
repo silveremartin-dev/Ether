@@ -114,7 +114,7 @@ public final class SpatialTensorDiffEngine {
                 // 1. Channel A Raster Extraction with In-Memory Cache
                 bufA = rasterImageCache.get(cacheKeyA);
                 if (bufA == null) {
-                    File diskRasterA = SpatialTensorDiskCatalog.getDiskRasterForChannel(targetYear, channelKey);
+                    File diskRasterA = SpatialTensorDiskRegistry.getDiskRasterForChannel(targetYear, channelKey);
                     if ("HISTORICAL_GROUND_TRUTH".equals(runIdA) && diskRasterA != null && diskRasterA.exists()) {
                         String filePathKey = "FILE_" + diskRasterA.getAbsolutePath();
                         bufA = rasterImageCache.get(filePathKey);
@@ -135,7 +135,7 @@ public final class SpatialTensorDiffEngine {
                         bufA = HistoricalMapGenerator.rasterizeDensityMapForYear(scA.getPopulationDensityType(), scA, targetYear);
                     } else if (scA != null) {
                         HistoricalMapGenerator.populateScenarioHistoricalMaps(scA);
-                        bufA = SpatialTensorRasterRenderer.base64ToBufferedImage(SpatialTensorDiskCatalog.extractChannelBase64(scA, channelKey));
+                        bufA = SpatialTensorRasterRenderer.base64ToBufferedImage(SpatialTensorDiskRegistry.extractChannelBase64(scA, channelKey));
                     }
                     if (bufA != null) {
                         rasterImageCache.put(cacheKeyA, bufA);
@@ -148,7 +148,7 @@ public final class SpatialTensorDiffEngine {
                 } else {
                     bufB = rasterImageCache.get(cacheKeyB);
                     if (bufB == null) {
-                        File diskRasterB = SpatialTensorDiskCatalog.getDiskRasterForChannel(targetYear, channelKey);
+                        File diskRasterB = SpatialTensorDiskRegistry.getDiskRasterForChannel(targetYear, channelKey);
                         if ("HISTORICAL_GROUND_TRUTH".equals(runIdB) && diskRasterB != null && diskRasterB.exists()) {
                             String filePathKey = "FILE_" + diskRasterB.getAbsolutePath();
                             bufB = rasterImageCache.get(filePathKey);
@@ -170,7 +170,7 @@ public final class SpatialTensorDiffEngine {
                             bufB = HistoricalMapGenerator.rasterizeDensityMapForYear(scB.getPopulationDensityType(), scB, targetYear);
                         } else if (scB != null) {
                             HistoricalMapGenerator.populateScenarioHistoricalMaps(scB);
-                            bufB = SpatialTensorRasterRenderer.base64ToBufferedImage(SpatialTensorDiskCatalog.extractChannelBase64(scB, channelKey));
+                            bufB = SpatialTensorRasterRenderer.base64ToBufferedImage(SpatialTensorDiskRegistry.extractChannelBase64(scB, channelKey));
                         }
                         if (bufB != null) {
                             rasterImageCache.put(cacheKeyB, bufB);

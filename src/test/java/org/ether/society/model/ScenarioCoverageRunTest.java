@@ -7,7 +7,7 @@ package org.ether.society.model;
 
 import org.ether.society.persistence.PresetStorageService;
 import org.ether.society.persistence.SaveMetadata;
-import org.ether.society.persistence.SimulationSaveManager;
+import org.ether.society.persistence.SimulationPersistenceService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class ScenarioCoverageRunTest {
     @Test
     @DisplayName("Verify that scenario presets and canonical simulation saves are correctly indexed")
     public void testPresetScenariosAndCanonicalSaveIndex() {
-        SimulationSaveManager saveMgr = new SimulationSaveManager();
+        SimulationPersistenceService saveMgr = new SimulationPersistenceService();
         List<SaveMetadata> existingSaves = saveMgr.listSaves();
         logger.info("Found {} canonical save(s) on disk.", existingSaves.size());
 

@@ -8,11 +8,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TimeManagerTest {
 
-    private TimeManager timeManager;
+    private SimulationTimeCoordinator timeManager;
 
     @BeforeEach
     void setUp() {
-        timeManager = new TimeManager(-20000); // 20000 BC
+        timeManager = new SimulationTimeCoordinator(-20000); // 20000 BC
     }
 
     @Test

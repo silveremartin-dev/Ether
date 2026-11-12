@@ -5,7 +5,7 @@
  */
 package org.ether.society.core.telemetry;
 
-import org.ether.society.analytics.CliodynamicAnalyticalFormulasCatalog;
+import org.ether.society.analytics.CliodynamicFormulasRegistry;
 import org.ether.society.core.dod.AgentBuffer;
 import org.ether.society.core.dod.StatisticsKernel;
 import org.ether.society.core.dod.WorldBuffer;
@@ -393,7 +393,7 @@ public final class CompiledTelemetryPlan {
 
         Map<String, Double> memo = new LinkedHashMap<>(topologicalOrder.size() * 2);
         for (String nodeId : topologicalOrder) {
-            double val = TelemetryDagNodeEvaluator.evalNode(nodeId, ctx, memo);
+            double val = TelemetryDagNodeHelper.evalNode(nodeId, ctx, memo);
             memo.put(nodeId, val);
         }
 
@@ -419,7 +419,7 @@ public final class CompiledTelemetryPlan {
         } else {
             spatialOut = new LinkedHashMap<>();
             for (TelemetrySubscription.SpatialRasterQuery q : subscription.getSpatialQueries()) {
-                spatialOut.put(q.queryId(), TelemetrySpatialQueryEvaluator.evaluate(q, world, cells));
+                spatialOut.put(q.queryId(), TelemetrySpatialQueryHelper.evaluate(q, world, cells));
             }
         }
 
@@ -428,7 +428,7 @@ public final class CompiledTelemetryPlan {
         // -----------------------------------------------------------------
         TelemetryEvaluationResult.CulturalMatrixResult culturalOut = null;
         if (subscription.isCulturalMatrixSubscribed()) {
-            culturalOut = TelemetryCulturalMatrixEvaluator.evaluate(subscription.getCulturalMatrixQuery(), year);
+            culturalOut = TelemetryCulturalMatrixHelper.evaluate(subscription.getCulturalMatrixQuery(), year);
         }
 
         double avgTechOut = memo.getOrDefault("avgTechLevel", ctx.phiExergy());

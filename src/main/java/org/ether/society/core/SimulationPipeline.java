@@ -166,13 +166,7 @@ public class SimulationPipeline {
 
         boolean runTier2 = perfConfig == null || perfConfig.isEnableTier2Cliodynamics();
         if (runTier2 && engine != null && engine.getWorldBuffer() != null) {
-            if (cells != null && !cells.isEmpty()) {
-                H3BufferSyncHelper.syncBufferToCells(engine.getWorldBuffer(), cells, perfConfig);
-            }
-            typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), cells, dtYears, dtMonthly, activeScenario, compiledKernel);
-            if (cells != null && !cells.isEmpty()) {
-                H3BufferSyncHelper.syncCellsToBuffer(engine.getWorldBuffer(), agentBuffer, cells, perfConfig);
-            }
+            typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), dtYears, dtMonthly, activeScenario, compiledKernel);
         }
 
         profiler.endPhase("4_ProceduralEngines");

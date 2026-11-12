@@ -1,7 +1,7 @@
 package org.ether.society.data;
 
 import java.awt.image.BufferedImage;
-import static org.ether.society.data.PaleoGeographyCoordinatesCatalog.*;
+import static org.ether.society.data.PaleoGeographyCoordinatesRegistry.*;
 
 /**
  * Generates high-fidelity archaeological and paleolithic synthetic population density fields
@@ -75,7 +75,7 @@ public final class PaleolithicDensityGenerator {
                     continue;
                 }
 
-                double dens = PaleolithicEpochDensityEvaluator.computeDensity(lng, lat, year);
+                double dens = PaleolithicEpochDensityHelper.computeDensity(lng, lat, year);
                 dens *= weight;
                 if (dens > 0.0005) {
                     double logNorm = Math.log1p(2.5 * dens) / Math.log1p(2.5 * 35.0); // reference 35.0 hab/km2

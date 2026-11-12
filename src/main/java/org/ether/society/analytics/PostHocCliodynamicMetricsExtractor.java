@@ -54,7 +54,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return atmospheric CO2 concentration in ppm
      */
     public static double computeCo2Concentration(double tech, int year) {
-        return CliodynamicAnalyticalFormulasCatalog.computeCo2Concentration(tech, year);
+        return CliodynamicFormulasRegistry.computeCo2Concentration(tech, year);
     }
 
     /**
@@ -64,7 +64,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return temperature anomaly in degrees Celsius (°C)
      */
     public static double computeTemperatureAnomaly(int year) {
-        return CliodynamicAnalyticalFormulasCatalog.computeTemperatureAnomaly(year);
+        return CliodynamicFormulasRegistry.computeTemperatureAnomaly(year);
     }
 
     /**
@@ -74,7 +74,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return normalized containment score [0.0..100.0]
      */
     public static double computeZeroContainmentScore(int year) {
-        return CliodynamicAnalyticalFormulasCatalog.computeZeroContainmentScore(year);
+        return CliodynamicFormulasRegistry.computeZeroContainmentScore(year);
     }
 
     /**
@@ -85,7 +85,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return Gross World Product in billion USD (constant 2011)
      */
     public static double computeGrossWorldProduct(long pop, double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeGrossWorldProduct(pop, tech);
+        return CliodynamicFormulasRegistry.computeGrossWorldProduct(pop, tech);
     }
 
     /**
@@ -96,7 +96,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return global primary energy consumption in EJ/yr
      */
     public static double computePrimaryEnergyEJ(long pop, double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computePrimaryEnergyEJ(pop, tech);
+        return CliodynamicFormulasRegistry.computePrimaryEnergyEJ(pop, tech);
     }
 
 
@@ -109,7 +109,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return debasement percentage [0.0..100.0]
      */
     public static double computeCurrencyDebasement(double tech, double stability) {
-        return CliodynamicAnalyticalFormulasCatalog.computeCurrencyDebasement(tech, stability);
+        return CliodynamicFormulasRegistry.computeCurrencyDebasement(tech, stability);
     }
 
     /**
@@ -120,7 +120,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return elite overproduction index
      */
     public static double computeEliteOverproductionIndex(double tech, double stability) {
-        return CliodynamicAnalyticalFormulasCatalog.computeEliteOverproductionIndex(tech, stability);
+        return CliodynamicFormulasRegistry.computeEliteOverproductionIndex(tech, stability);
     }
 
     /**
@@ -130,7 +130,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return real wage index (1900 baseline = 100.0)
      */
     public static double computeRealUnskilledWageIndex(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeRealUnskilledWageIndex(tech);
+        return CliodynamicFormulasRegistry.computeRealUnskilledWageIndex(tech);
     }
 
     /**
@@ -141,7 +141,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return political stress index
      */
     public static double computePoliticalStressIndex(double tech, double stability) {
-        return CliodynamicAnalyticalFormulasCatalog.computePoliticalStressIndex(tech, stability);
+        return CliodynamicFormulasRegistry.computePoliticalStressIndex(tech, stability);
     }
 
     /**
@@ -152,7 +152,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return social cohesion index [0.0..100.0]
      */
     public static double computeAsabiyyahSocialCohesion(double tech, double stability) {
-        return CliodynamicAnalyticalFormulasCatalog.computeAsabiyyahSocialCohesion(tech, stability);
+        return CliodynamicFormulasRegistry.computeAsabiyyahSocialCohesion(tech, stability);
     }
 
     /**
@@ -163,7 +163,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return sociopolitical instability index
      */
     public static double computeSociopoliticalInstability(double tech, double stability) {
-        return CliodynamicAnalyticalFormulasCatalog.computeSociopoliticalInstability(tech, stability);
+        return CliodynamicFormulasRegistry.computeSociopoliticalInstability(tech, stability);
     }
 
 
@@ -178,7 +178,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return sovereign debt percentage (% of GWP)
      */
     public static double computeSovereignDebtBurden(double tradeVolume, double literacy, double stability, double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeSovereignDebtBurden(tradeVolume, literacy, stability, tech);
+        return CliodynamicFormulasRegistry.computeSovereignDebtBurden(tradeVolume, literacy, stability, tech);
     }
 
     /**
@@ -188,7 +188,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return trade volume index
      */
     public static double computeGlobalTradeVolume(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeGlobalTradeVolume(tech);
+        return CliodynamicFormulasRegistry.computeGlobalTradeVolume(tech);
     }
 
     /**
@@ -198,7 +198,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return soil erosion loss in metric tons per hectare per year (t/ha/yr)
      */
     public static double computeTopsoilErosionLoss(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeTopsoilErosionLoss(tech);
+        return CliodynamicFormulasRegistry.computeTopsoilErosionLoss(tech);
     }
 
     /**
@@ -208,7 +208,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return dimensionless EROEI ratio
      */
     public static double computeAgriculturalEroei(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeAgriculturalEroei(tech);
+        return CliodynamicFormulasRegistry.computeAgriculturalEroei(tech);
     }
 
     /**
@@ -218,7 +218,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return remaining forest cover percentage (%)
      */
     public static double computeForestCoverRemaining(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeForestCoverRemaining(tech);
+        return CliodynamicFormulasRegistry.computeForestCoverRemaining(tech);
     }
 
     /**
@@ -228,7 +228,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return travel speed in kilometers per day (km/day)
      */
     public static double computeInformationTravelSpeed(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeInformationTravelSpeed(tech);
+        return CliodynamicFormulasRegistry.computeInformationTravelSpeed(tech);
     }
 
     /**
@@ -238,7 +238,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return annual smelted metal in kilograms per capita per year (kg/cap/yr)
      */
     public static double computeMetalSmeltingPerCapita(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeMetalSmeltingPerCapita(tech);
+        return CliodynamicFormulasRegistry.computeMetalSmeltingPerCapita(tech);
     }
 
     /**
@@ -248,7 +248,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return fossil energy share in percent (%)
      */
     public static double computeFossilSharePrimaryEnergy(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeFossilSharePrimaryEnergy(tech);
+        return CliodynamicFormulasRegistry.computeFossilSharePrimaryEnergy(tech);
     }
 
     /**
@@ -258,7 +258,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return freight cost index (1913 baseline = 100.0)
      */
     public static double computeShippingFreightCostIndex(double tech) {
-        return CliodynamicAnalyticalFormulasCatalog.computeShippingFreightCostIndex(tech);
+        return CliodynamicFormulasRegistry.computeShippingFreightCostIndex(tech);
     }
 
     /**
@@ -269,7 +269,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return life expectancy in years (yr)
      */
     public static double computeLifeExpectancy(double tech, double food) {
-        return CliodynamicAnalyticalFormulasCatalog.computeLifeExpectancy(tech, food);
+        return CliodynamicFormulasRegistry.computeLifeExpectancy(tech, food);
     }
 
     /**
@@ -280,7 +280,7 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return continuous Kardashev scale index
      */
     public static double computeKardashevScale(double powerWattsPerCapita, long population) {
-        return CliodynamicAnalyticalFormulasCatalog.computeKardashevScale(powerWattsPerCapita, population);
+        return CliodynamicFormulasRegistry.computeKardashevScale(powerWattsPerCapita, population);
     }
 
     /**
@@ -291,6 +291,6 @@ public final class PostHocCliodynamicMetricsExtractor {
      * @return emergent technological index bounded in [0.0..10.0]
      */
     public static double computeEmergentTechnologyLevel(double powerWattsPerCapita, double capitalPerCapita) {
-        return CliodynamicAnalyticalFormulasCatalog.computeEmergentTechnologyLevel(powerWattsPerCapita, capitalPerCapita);
+        return CliodynamicFormulasRegistry.computeEmergentTechnologyLevel(powerWattsPerCapita, capitalPerCapita);
     }
 }

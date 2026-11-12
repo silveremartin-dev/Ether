@@ -59,7 +59,7 @@ public class HistoricalLeaderBifurcationTest {
     @Test
     @DisplayName("Catalog: Earth Historical Leaders Catalog is loaded and contains 6 Archetypes")
     void testHistoricalCatalogLoading() {
-        HistoricalInterventionCatalog catalog = HistoricalInterventionCatalog.getInstance();
+        HistoricalInterventionRegistry catalog = HistoricalInterventionRegistry.getInstance();
         assertNotNull(catalog);
         List<HistoricalIntervention> list = catalog.getInterventions();
         assertFalse(list.isEmpty(), "Historical interventions catalog should not be empty");

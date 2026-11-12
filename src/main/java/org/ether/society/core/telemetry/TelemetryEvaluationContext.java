@@ -16,7 +16,7 @@ import org.ether.society.database.H3CellPhysicsAndStateHelper;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @see CompiledTelemetryPlan
- * @see TelemetryDagNodeEvaluator
+ * @see TelemetryDagNodeHelper
  */
 public final class TelemetryEvaluationContext {
 

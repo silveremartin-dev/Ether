@@ -271,6 +271,6 @@ public class WikidataEventsFetcher {
     }
 
     private static List<ClimateEvent> getCoreMilestones() {
-        return DefaultHistoricalMilestonesCatalog.buildComprehensiveCatalog();
+        return DefaultHistoricalMilestonesRegistry.buildComprehensiveCatalog();
     }
 }

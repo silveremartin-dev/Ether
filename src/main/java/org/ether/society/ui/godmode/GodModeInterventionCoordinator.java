@@ -63,7 +63,7 @@ public final class GodModeInterventionCoordinator {
      */
     public static void scheduleOrExecuteEvent(
             boolean immediate,
-            GodModeEventCatalog.EventTypeItem item,
+            GodModeEventRegistry.EventTypeItem item,
             String rawEventName,
             int spinnerTargetYear,
             int spinnerTargetMonth,
@@ -142,7 +142,7 @@ public final class GodModeInterventionCoordinator {
      */
     public static void scheduleOrExecuteEvent(
             boolean immediate,
-            GodModeEventCatalog.EventTypeItem item,
+            GodModeEventRegistry.EventTypeItem item,
             String rawEventName,
             int spinnerTargetYear,
             double lat,

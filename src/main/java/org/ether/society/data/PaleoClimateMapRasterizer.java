@@ -131,10 +131,10 @@ public final class PaleoClimateMapRasterizer {
 
         // Glacial Cold Dome
         if (year <= -18000L) {
-            double dLaurentide = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_LAURENTIDE_LGM);
-            double dFenno = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_LGM);
-            double dAlps = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_ALPS_LGM);
-            double dPatagonia = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_PATAGONIA_LGM);
+            double dLaurentide = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_LAURENTIDE_LGM);
+            double dFenno = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_LGM);
+            double dAlps = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_ALPS_LGM);
+            double dPatagonia = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_PATAGONIA_LGM);
 
             double coolLaurentide = 16.0 / (1.0 + Math.exp(dLaurentide / 2.5));
             double coolFenno = 14.0 / (1.0 + Math.exp(dFenno / 2.0));
@@ -142,14 +142,14 @@ public final class PaleoClimateMapRasterizer {
             double coolPatagonia = 8.0 / (1.0 + Math.exp(dPatagonia / 1.5));
             tempC -= (coolLaurentide + coolFenno + coolAlps + coolPatagonia);
         } else if (year <= -40000L) {
-            double dLaurentide = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_LAURENTIDE_MIS3);
-            double dFenno = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_MIS3);
+            double dLaurentide = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_LAURENTIDE_MIS3);
+            double dFenno = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_MIS3);
             double coolLaurentide = 11.0 / (1.0 + Math.exp(dLaurentide / 2.5));
             double coolFenno = 10.0 / (1.0 + Math.exp(dFenno / 2.0));
             tempC -= (coolLaurentide + coolFenno);
         } else if (year <= -10500L) {
-            double dLaurentide = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_LAURENTIDE_YD);
-            double dFenno = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_YD);
+            double dLaurentide = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_LAURENTIDE_YD);
+            double dFenno = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_YD);
             double coolLaurentide = 12.0 / (1.0 + Math.exp(dLaurentide / 2.5));
             double coolFenno = 11.0 / (1.0 + Math.exp(dFenno / 2.0));
             double amocPlume = Math.exp(-(Math.pow(lat - 56.0, 2) + Math.pow(lon - (-15.0), 2)) / 250.0);

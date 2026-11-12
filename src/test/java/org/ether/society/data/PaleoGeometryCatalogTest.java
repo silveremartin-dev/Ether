@@ -11,13 +11,13 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit test for PaleoGeometryCatalog externalized geometry loading.
+ * Unit test for PaleoGeometryRegistry externalized geometry loading.
  */
 public class PaleoGeometryCatalogTest {
 
     @Test
     public void testLoadIceSheets() {
-        Map<String, double[][]> iceSheets = PaleoGeometryCatalog.loadIceSheets();
+        Map<String, double[][]> iceSheets = PaleoGeometryRegistry.loadIceSheets();
         assertNotNull(iceSheets, "Ice sheets map must not be null");
         assertFalse(iceSheets.isEmpty(), "Ice sheets map must contain entries");
         assertTrue(iceSheets.containsKey("POLY_FENNOSCANDIA_LGM"), "Must contain Fennoscandia polygon");
@@ -27,7 +27,7 @@ public class PaleoGeometryCatalogTest {
 
     @Test
     public void testLoadHomininHearths() {
-        Map<String, double[][]> hearths = PaleoGeometryCatalog.loadHomininHearths();
+        Map<String, double[][]> hearths = PaleoGeometryRegistry.loadHomininHearths();
         assertNotNull(hearths, "Hominin hearths map must not be null");
         assertTrue(hearths.containsKey("HEARTHS_SAPIENS_AFRICA"), "Must contain Sapiens hearths");
         assertTrue(hearths.containsKey("HEARTHS_NEANDERTHAL_WEST"), "Must contain Neanderthal hearths");
@@ -36,7 +36,7 @@ public class PaleoGeometryCatalogTest {
 
     @Test
     public void testLoadMigrationRoutes() {
-        Map<String, double[][]> routes = PaleoGeometryCatalog.loadMigrationRoutes();
+        Map<String, double[][]> routes = PaleoGeometryRegistry.loadMigrationRoutes();
         assertNotNull(routes, "Migration routes map must not be null");
         assertTrue(routes.containsKey("ROUTE_PACIFIC_KELP_HIGHWAY"), "Must contain Kelp Highway route");
         assertTrue(routes.containsKey("ROUTE_ICE_FREE_CORRIDOR"), "Must contain Ice Free Corridor route");
@@ -49,11 +49,11 @@ public class PaleoGeometryCatalogTest {
 
     @Test
     public void testDelegationThroughPaleoGeographyCoordinatesCatalog() {
-        assertNotNull(PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_LGM);
-        assertTrue(PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_LGM.length > 0);
-        assertNotNull(PaleoGeographyCoordinatesCatalog.HEARTHS_SAPIENS_AFRICA);
-        assertTrue(PaleoGeographyCoordinatesCatalog.HEARTHS_SAPIENS_AFRICA.length > 0);
-        assertNotNull(PaleoGeographyCoordinatesCatalog.ROUTE_PACIFIC_KELP_HIGHWAY);
-        assertTrue(PaleoGeographyCoordinatesCatalog.ROUTE_PACIFIC_KELP_HIGHWAY.length > 0);
+        assertNotNull(PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_LGM);
+        assertTrue(PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_LGM.length > 0);
+        assertNotNull(PaleoGeographyCoordinatesRegistry.HEARTHS_SAPIENS_AFRICA);
+        assertTrue(PaleoGeographyCoordinatesRegistry.HEARTHS_SAPIENS_AFRICA.length > 0);
+        assertNotNull(PaleoGeographyCoordinatesRegistry.ROUTE_PACIFIC_KELP_HIGHWAY);
+        assertTrue(PaleoGeographyCoordinatesRegistry.ROUTE_PACIFIC_KELP_HIGHWAY.length > 0);
     }
 }

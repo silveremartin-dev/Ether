@@ -1,6 +1,6 @@
 package org.ether.society.ui.export;
 
-import org.ether.society.analytics.HistoryManager;
+import org.ether.society.analytics.SimulationHistoryCoordinator;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
 import org.slf4j.Logger;
@@ -57,7 +57,7 @@ public class VideoExportService {
             return future;
         }
 
-        HistoryManager historyManager = engine.getHistoryManager();
+        SimulationHistoryCoordinator historyManager = engine.getHistoryManager();
         NavigableMap<Long, List<H3Cell>> snapshots = historyManager.getWorldSnapshots();
 
         if (snapshots.isEmpty()) {

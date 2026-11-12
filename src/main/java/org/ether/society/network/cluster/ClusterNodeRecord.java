@@ -6,8 +6,8 @@
  */
 package org.ether.society.network.cluster;
 
-import org.ether.society.network.ClusterManager.ClusterRole;
-import org.ether.society.network.ClusterManager.NodeStatus;
+import org.ether.society.network.ClusterCoordinator.ClusterRole;
+import org.ether.society.network.ClusterCoordinator.NodeStatus;
 
 import java.util.concurrent.atomic.AtomicLong;
 

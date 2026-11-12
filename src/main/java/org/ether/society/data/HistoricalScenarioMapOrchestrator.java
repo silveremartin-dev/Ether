@@ -30,7 +30,7 @@ import java.util.Random;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @see HistoricalMapGenerator
- * @see HistoricalMapDiskCacheManager
+ * @see HistoricalMapRasterRepository
  */
 final class HistoricalScenarioMapOrchestrator {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalScenarioMapOrchestrator.class);
@@ -239,7 +239,7 @@ final class HistoricalScenarioMapOrchestrator {
             double lat = 90.0 - (y / (double) height) * 180.0;
             for (int x = 0; x < width; x++) {
                 double lon = -180.0 + (x / (double) width) * 360.0;
-                if (!HistoricalLandGeometryCatalog.isLand(lon, lat)) {
+                if (!HistoricalLandGeometryRegistry.isLand(lon, lat)) {
                     img.setRGB(x, y, 0x0F172A);
                     continue;
                 }
@@ -265,19 +265,19 @@ final class HistoricalScenarioMapOrchestrator {
     static void populateScenarioHistoricalMaps(Scenario scenario) {
         if (scenario == null) return;
         try {
-            if (HistoricalMapDiskCacheManager.loadFromYearDirectory(scenario)) return;
+            if (HistoricalMapRasterRepository.loadFromYearDirectory(scenario)) return;
 
             String safeName = scenario.getName().replaceAll("[^a-zA-Z0-9_\\-]", "_").toLowerCase(Locale.ROOT);
             Path cacheDir = Paths.get("data", "cache");
 
-            if (HistoricalMapDiskCacheManager.loadFromDiskCache(scenario, cacheDir, safeName)) {
+            if (HistoricalMapRasterRepository.loadFromDiskCache(scenario, cacheDir, safeName)) {
                 logger.info("Successfully loaded scenario '{}' cartographic tensors from disk cache.", scenario.getName());
                 return;
             }
 
             String presetKey = scenario.getPresetKey();
             if (presetKey != null && !presetKey.isEmpty() && !presetKey.equals(safeName)) {
-                if (HistoricalMapDiskCacheManager.loadFromDiskCache(scenario, cacheDir, presetKey)) return;
+                if (HistoricalMapRasterRepository.loadFromDiskCache(scenario, cacheDir, presetKey)) return;
             }
 
             String type = scenario.getPopulationDensityType();
@@ -290,84 +290,84 @@ final class HistoricalScenarioMapOrchestrator {
             }
 
             BufferedImage imgDensity = resolveScenarioDensityImage(scenario, safeName, type, neResult);
-            scenario.setCustomDensityBase64(HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgDensity));
+            scenario.setCustomDensityBase64(HistoricalMapRasterRepository.bufferedImageToBase64Png(imgDensity));
 
             BufferedImage imgIsogloss = (neResult != null && neResult.isoglossImage != null) ? neResult.isoglossImage : HistoricalCulturalTensorRasterizer.rasterizeIsoglossMap(type, scenario);
-            scenario.setCustomTensorMapBase64(0, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgIsogloss));
+            scenario.setCustomTensorMapBase64(0, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgIsogloss));
 
             BufferedImage imgKinship = (neResult != null && neResult.kinshipImage != null) ? neResult.kinshipImage : HistoricalCulturalTensorRasterizer.rasterizeKinshipMap(type, scenario);
-            scenario.setCustomTensorMapBase64(1, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgKinship));
+            scenario.setCustomTensorMapBase64(1, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgKinship));
 
             BufferedImage imgRituals = (neResult != null && neResult.ritualsImage != null) ? neResult.ritualsImage : HistoricalCulturalTensorRasterizer.rasterizeRitualsMap(type, scenario);
-            scenario.setCustomTensorMapBase64(2, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgRituals));
+            scenario.setCustomTensorMapBase64(2, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgRituals));
 
             BufferedImage imgSovereignty = (neResult != null && neResult.sovereigntyImage != null) ? neResult.sovereigntyImage : HistoricalCulturalTensorRasterizer.rasterizeSovereigntyMap(type, scenario);
-            scenario.setCustomTensorMapBase64(3, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgSovereignty));
+            scenario.setCustomTensorMapBase64(3, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgSovereignty));
 
             BufferedImage imgTechnology = HistoricalCulturalTensorRasterizer.rasterizeTechnologyMap(type, scenario);
-            scenario.setCustomTensorMapBase64(4, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgTechnology));
+            scenario.setCustomTensorMapBase64(4, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgTechnology));
 
             BufferedImage imgTrade = HistoricalCulturalTensorRasterizer.rasterizeTradeNetworkMap(type, scenario);
-            scenario.setCustomTensorMapBase64(5, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgTrade));
+            scenario.setCustomTensorMapBase64(5, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgTrade));
 
             BufferedImage imgInstitutional = HistoricalCulturalTensorRasterizer.rasterizeInstitutionalComplexityMap(type, scenario);
-            scenario.setCustomTensorMapBase64(6, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgInstitutional));
+            scenario.setCustomTensorMapBase64(6, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgInstitutional));
 
             BufferedImage imgEcological = HistoricalCulturalTensorRasterizer.rasterizeEcologicalFootprintMap(type, scenario);
-            scenario.setCustomTensorMapBase64(7, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgEcological));
+            scenario.setCustomTensorMapBase64(7, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgEcological));
 
             BufferedImage imgPathogen = HistoricalCulturalTensorRasterizer.rasterizePathogenImmunityMap(type, scenario);
-            scenario.setCustomTensorMapBase64(8, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgPathogen));
+            scenario.setCustomTensorMapBase64(8, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgPathogen));
 
             int dims = scenario.getCultureVectorDimensions();
             if (dims > 9) {
                 for (int i = 9; i < dims; i++) {
                     BufferedImage imgExt = rasterizeExtensibleTensorMap(i, type, scenario);
-                    scenario.setCustomTensorMapBase64(i, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgExt));
+                    scenario.setCustomTensorMapBase64(i, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgExt));
                 }
             }
 
             BufferedImage imgCoal = GeologicalResourceMapRasterizer.rasterizeCoalMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(0, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgCoal));
+            scenario.setCustomGeologyTensorMapBase64(0, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgCoal));
 
             BufferedImage imgOil = GeologicalResourceMapRasterizer.rasterizeOilMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(1, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgOil));
+            scenario.setCustomGeologyTensorMapBase64(1, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgOil));
 
             BufferedImage imgGas = GeologicalResourceMapRasterizer.rasterizeGasMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(2, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgGas));
+            scenario.setCustomGeologyTensorMapBase64(2, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgGas));
 
             BufferedImage imgUranium = GeologicalResourceMapRasterizer.rasterizeUraniumMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(3, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgUranium));
+            scenario.setCustomGeologyTensorMapBase64(3, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgUranium));
 
             BufferedImage imgHe3 = GeologicalResourceMapRasterizer.rasterizeHelium3Map(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(4, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgHe3));
+            scenario.setCustomGeologyTensorMapBase64(4, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgHe3));
 
             BufferedImage imgIronCopper = GeologicalResourceMapRasterizer.rasterizeIronCopperMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(5, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgIronCopper));
+            scenario.setCustomGeologyTensorMapBase64(5, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgIronCopper));
 
             BufferedImage imgPreciousMetals = GeologicalResourceMapRasterizer.rasterizePreciousMetalsMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(6, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgPreciousMetals));
+            scenario.setCustomGeologyTensorMapBase64(6, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgPreciousMetals));
 
             BufferedImage imgRareEarths = GeologicalResourceMapRasterizer.rasterizeRareEarthsMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(7, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgRareEarths));
+            scenario.setCustomGeologyTensorMapBase64(7, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgRareEarths));
 
             BufferedImage imgMantleHeat = GeologicalResourceMapRasterizer.rasterizeMantleHeatMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(8, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgMantleHeat));
+            scenario.setCustomGeologyTensorMapBase64(8, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgMantleHeat));
 
             BufferedImage imgAquifer = GeologicalResourceMapRasterizer.rasterizeAquiferMap(type, scenario);
-            scenario.setCustomGeologyTensorMapBase64(9, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgAquifer));
+            scenario.setCustomGeologyTensorMapBase64(9, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgAquifer));
 
             int resDims = scenario.getResourceVectorDimensions();
             if (resDims > 10) {
                 for (int i = 10; i < resDims; i++) {
                     BufferedImage imgExtRes = GeologicalResourceMapRasterizer.rasterizeExtensibleResourceTensorMap(i, type, scenario);
-                    scenario.setCustomGeologyTensorMapBase64(i, HistoricalMapDiskCacheManager.bufferedImageToBase64Png(imgExtRes));
+                    scenario.setCustomGeologyTensorMapBase64(i, HistoricalMapRasterRepository.bufferedImageToBase64Png(imgExtRes));
                 }
             }
 
-            HistoricalMapDiskCacheManager.saveImagesToYearDirectory(scenario.getStartDateYear(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
-            HistoricalMapDiskCacheManager.saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
-            HistoricalMapDiskCacheManager.saveGeologyTensorsToDiskCache(scenario.getName(), imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
+            HistoricalMapRasterRepository.saveImagesToYearDirectory(scenario.getStartDateYear(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
+            HistoricalMapRasterRepository.saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
+            HistoricalMapRasterRepository.saveGeologyTensorsToDiskCache(scenario.getName(), imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
 
         } catch (Exception e) {
             logger.error("Failed to generate historical maps for scenario {}", scenario.getName(), e);
@@ -422,11 +422,11 @@ final class HistoricalScenarioMapOrchestrator {
             BufferedImage imgPathogen = HistoricalCulturalTensorRasterizer.rasterizePathogenImmunityMap(type, scenario);
             BufferedImage imgAquifer = GeologicalResourceMapRasterizer.rasterizeAquiferMap(type, scenario);
 
-            HistoricalMapDiskCacheManager.saveImagesToYearDirectory(year, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology,
+            HistoricalMapRasterRepository.saveImagesToYearDirectory(year, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology,
                     imgTrade, imgInstitutional, imgEcological, imgPathogen, null, null, null, null,
                     null, null, null, null, null, imgAquifer);
 
-            HistoricalMapDiskCacheManager.saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
+            HistoricalMapRasterRepository.saveImagesToDiskCache(scenario.getName(), imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTechnology, imgTrade, imgInstitutional, imgEcological, imgPathogen);
             logger.info("Successfully regenerated and persisted the COMPLETE 25-raster suite for scenario '{}' (Year {}).", scenario.getName(), year);
         } catch (Exception e) {
             logger.error("Failed to generate complete raster suite for scenario {}", scenario.getName(), e);

@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
-import static org.ether.society.ui.analytics.SpatialTensorDiskCatalog.RASTER_IMAGE_CACHE;
+import static org.ether.society.ui.analytics.SpatialTensorDiskRegistry.RASTER_IMAGE_CACHE;
 
 /**
  * <h1>Spatial Tensor Multi-Scenario Renderer</h1>

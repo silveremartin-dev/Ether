@@ -6,12 +6,12 @@
  */
 package org.ether.society.core;
 
-import org.ether.society.core.metrics.CliodynamicMetricsCalculator;
-import org.ether.society.core.metrics.CulturalKnowledgeMetricsCalculator;
-import org.ether.society.core.metrics.DemographicMetricsCalculator;
-import org.ether.society.core.metrics.EnvironmentalMetricsCalculator;
-import org.ether.society.core.metrics.MacroeconomicMetricsCalculator;
-import org.ether.society.core.metrics.ThermodynamicMetricsCalculator;
+import org.ether.society.core.metrics.CliodynamicMetricsHelper;
+import org.ether.society.core.metrics.CulturalKnowledgeMetricsHelper;
+import org.ether.society.core.metrics.DemographicMetricsHelper;
+import org.ether.society.core.metrics.EnvironmentalMetricsHelper;
+import org.ether.society.core.metrics.MacroeconomicMetricsHelper;
+import org.ether.society.core.metrics.ThermodynamicMetricsHelper;
 
 import java.util.Objects;
 
@@ -20,10 +20,10 @@ import java.util.Objects;
  * <p>
  * Aggregates and coordinates macroscopic, cliodynamic, thermodynamic, ecological,
  * and demographic metrics for the planetary simulation engine.<br>
- * Delegates domain-specific closed-form equations to {@link ThermodynamicMetricsCalculator},
- * {@link DemographicMetricsCalculator}, {@link EnvironmentalMetricsCalculator},
- * {@link CliodynamicMetricsCalculator}, {@link MacroeconomicMetricsCalculator}, and
- * {@link CulturalKnowledgeMetricsCalculator}.
+ * Delegates domain-specific closed-form equations to {@link ThermodynamicMetricsHelper},
+ * {@link DemographicMetricsHelper}, {@link EnvironmentalMetricsHelper},
+ * {@link CliodynamicMetricsHelper}, {@link MacroeconomicMetricsHelper}, and
+ * {@link CulturalKnowledgeMetricsHelper}.
  * </p>
  *
  * @author Silvere Martin-Michiellot
@@ -35,17 +35,17 @@ public final class SimulationMetricsAggregator {
     /** Owning H3 simulation engine reference. */
     private final H3SimulationEngine engine;
     /** Bioenergetic and thermodynamic calculator (Leslie White, Boltzmann-Shannon, EROI). */
-    private final ThermodynamicMetricsCalculator thermodynamicCalculator;
+    private final ThermodynamicMetricsHelper thermodynamicCalculator;
     /** Demographic, migration, urbanization, and age-pyramid calculator. */
-    private final DemographicMetricsCalculator demographicCalculator;
+    private final DemographicMetricsHelper demographicCalculator;
     /** Earth-system, soil stoichiometry, wet-bulb, and radiative calculator. */
-    private final EnvironmentalMetricsCalculator environmentalCalculator;
+    private final EnvironmentalMetricsHelper environmentalCalculator;
     /** Structural-Demographic Theory (Turchin SDT), Asabiyyah, and hierarchy calculator. */
-    private final CliodynamicMetricsCalculator cliodynamicCalculator;
+    private final CliodynamicMetricsHelper cliodynamicCalculator;
     /** Macroeconomic capital, wage, coinage purity, debt, and trade calculator. */
-    private final MacroeconomicMetricsCalculator macroeconomicCalculator;
+    private final MacroeconomicMetricsHelper macroeconomicCalculator;
     /** Cultural complexity, literacy, Shannon bandwidth, and ORBIS speed calculator. */
-    private final CulturalKnowledgeMetricsCalculator culturalKnowledgeCalculator;
+    private final CulturalKnowledgeMetricsHelper culturalKnowledgeCalculator;
 
     /**
      * Constructs a new {@link SimulationMetricsAggregator} bound to the specified engine instance.
@@ -54,12 +54,12 @@ public final class SimulationMetricsAggregator {
      */
     public SimulationMetricsAggregator(H3SimulationEngine engine) {
         this.engine = Objects.requireNonNull(engine, "engine must not be null");
-        this.thermodynamicCalculator = new ThermodynamicMetricsCalculator(this, engine);
-        this.demographicCalculator = new DemographicMetricsCalculator(this, engine);
-        this.environmentalCalculator = new EnvironmentalMetricsCalculator(this, engine);
-        this.cliodynamicCalculator = new CliodynamicMetricsCalculator(this, engine);
-        this.macroeconomicCalculator = new MacroeconomicMetricsCalculator(this, engine);
-        this.culturalKnowledgeCalculator = new CulturalKnowledgeMetricsCalculator(this, engine);
+        this.thermodynamicCalculator = new ThermodynamicMetricsHelper(this, engine);
+        this.demographicCalculator = new DemographicMetricsHelper(this, engine);
+        this.environmentalCalculator = new EnvironmentalMetricsHelper(this, engine);
+        this.cliodynamicCalculator = new CliodynamicMetricsHelper(this, engine);
+        this.macroeconomicCalculator = new MacroeconomicMetricsHelper(this, engine);
+        this.culturalKnowledgeCalculator = new CulturalKnowledgeMetricsHelper(this, engine);
     }
 
     /** @return underlying {@link H3SimulationEngine} instance */

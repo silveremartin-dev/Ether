@@ -5,7 +5,7 @@
  */
 package org.ether.society.core;
 
-import org.ether.society.analytics.HistoryManager;
+import org.ether.society.analytics.SimulationHistoryCoordinator;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.core.dod.AgentBuffer;
 import org.ether.society.core.dod.WorldBuffer;
@@ -44,7 +44,7 @@ final class H3BufferSyncHelper {
      * @param targetTicks    target simulation tick
      */
     static void restoreWorldSnapshotAtTick(
-            HistoryManager historyManager,
+            SimulationHistoryCoordinator historyManager,
             List<H3Cell> cells,
             WorldBuffer worldBuffer,
             long targetTicks) {

@@ -85,7 +85,7 @@ final class H3SimulationTelemetryCoordinator {
             StatisticsKernel statisticsKernel,
             long tickCounter,
             Scenario currentScenario,
-            TimeManager timeManager,
+            SimulationTimeCoordinator timeManager,
             long initialPopulationBaseline,
             double initialCo2Baseline,
             double currentTPS) {

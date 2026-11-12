@@ -29,7 +29,7 @@ public class EtherNetworkClient {
     private final String host;
     /** Internal state: port (int). */
     private final int port;
-    private final EtherSecurityManager securityManager;
+    private final EtherSecurityService securityManager;
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
@@ -51,9 +51,9 @@ public class EtherNetworkClient {
      *
      * @param host the host parameter (String)
      * @param port the port parameter (int)
-     * @param securityManager the security manager parameter (EtherSecurityManager)
+     * @param securityManager the security manager parameter (EtherSecurityService)
      */
-    public EtherNetworkClient(String host, int port, EtherSecurityManager securityManager) {
+    public EtherNetworkClient(String host, int port, EtherSecurityService securityManager) {
         this.host = host;
         this.port = port;
         this.securityManager = securityManager;

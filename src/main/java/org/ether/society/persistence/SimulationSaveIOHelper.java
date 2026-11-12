@@ -26,7 +26,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * File I/O and disk compression helper for {@link SimulationSaveManager}.
+ * File I/O and disk compression helper for {@link SimulationPersistenceService}.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2

@@ -5,8 +5,8 @@
  */
 package org.ether.society.model;
 
-import org.ether.society.ui.scenario.ScenarioEngineCatalog;
-import org.ether.society.ui.scenario.ScenarioEngineCatalog.EngineMeta;
+import org.ether.society.ui.scenario.ScenarioEngineRegistry;
+import org.ether.society.ui.scenario.ScenarioEngineRegistry.EngineMeta;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -212,7 +212,7 @@ class AutoEpochScenarioTest {
     @Test
     @DisplayName("Verify Strict 1-to-1 Bijection Between UI Checkboxes, AutoEpochScenarioHelper, and Java Engine Classes")
     void testStrictBijectionBetweenCatalogCheckboxesAndExecutableJavaClasses() {
-        List<EngineMeta> uiCatalog = ScenarioEngineCatalog.getOptionalEngines();
+        List<EngineMeta> uiCatalog = ScenarioEngineRegistry.getOptionalEngines();
         Map<String, Boolean> calibrated = AutoEpochScenarioHelper.calibrateTypeBEngines("earth", 1800L);
 
         assertEquals(86, uiCatalog.size(), "UI Optional Engines Catalog must contain the exact 86 verified Type B engines");
@@ -273,17 +273,17 @@ class AutoEpochScenarioTest {
     @DisplayName("Verify DataFallbackStrategy options in scenario generation")
     void testFallbackStrategies() {
         Scenario sInterp = AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", 1450L, false,
-                org.ether.society.data.TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
+                org.ether.society.data.TemporalTensorRepository.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
         assertNotNull(sInterp);
         assertEquals(1450L, sInterp.getStartDateYear());
 
         Scenario sEarlier = AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", 1450L, false,
-                org.ether.society.data.TemporalMapTensorManager.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH);
+                org.ether.society.data.TemporalTensorRepository.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH);
         assertNotNull(sEarlier);
         assertEquals(1450L, sEarlier.getStartDateYear());
 
         Scenario sClosest = AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", 1450L, false,
-                org.ether.society.data.TemporalMapTensorManager.DataFallbackStrategy.CLOSEST_ANCHOR_EPOCH);
+                org.ether.society.data.TemporalTensorRepository.DataFallbackStrategy.CLOSEST_ANCHOR_EPOCH);
         assertNotNull(sClosest);
         assertEquals(1450L, sClosest.getStartDateYear());
     }

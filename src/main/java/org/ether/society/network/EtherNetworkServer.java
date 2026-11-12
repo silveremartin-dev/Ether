@@ -35,7 +35,7 @@ public class EtherNetworkServer {
 
     /** Internal state: port (int). */
     private final int port;
-    private final EtherSecurityManager securityManager;
+    private final EtherSecurityService securityManager;
     private final String serverSecretKey;
     public static final String DEFAULT_SERVER_SECRET = "EtherSecureClusterKey_2026";
     private ServerSocket serverSocket;
@@ -53,7 +53,7 @@ public class EtherNetworkServer {
      * @param port listening TCP port
      */
     public EtherNetworkServer(int port) {
-        this(port, new EtherSecurityManager(), DEFAULT_SERVER_SECRET);
+        this(port, new EtherSecurityService(), DEFAULT_SERVER_SECRET);
     }
 
     /**
@@ -62,7 +62,7 @@ public class EtherNetworkServer {
      * @param port listening TCP port
      * @param securityManager AES-256 GCM security manager
      */
-    public EtherNetworkServer(int port, EtherSecurityManager securityManager) {
+    public EtherNetworkServer(int port, EtherSecurityService securityManager) {
         this(port, securityManager, DEFAULT_SERVER_SECRET);
     }
 
@@ -73,7 +73,7 @@ public class EtherNetworkServer {
      * @param securityManager AES-256 GCM security manager
      * @param serverSecretKey cluster authentication secret key
      */
-    public EtherNetworkServer(int port, EtherSecurityManager securityManager, String serverSecretKey) {
+    public EtherNetworkServer(int port, EtherSecurityService securityManager, String serverSecretKey) {
         this.port = port;
         this.securityManager = securityManager;
         this.serverSecretKey = serverSecretKey != null && !serverSecretKey.isBlank() ? serverSecretKey : DEFAULT_SERVER_SECRET;
@@ -81,9 +81,9 @@ public class EtherNetworkServer {
 
     /**
      * Returns the active security manager instance.
-     * @return EtherSecurityManager instance
+     * @return EtherSecurityService instance
      */
-    public EtherSecurityManager getSecurityManager() {
+    public EtherSecurityService getSecurityManager() {
         return securityManager;
     }
 

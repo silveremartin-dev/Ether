@@ -412,7 +412,7 @@ public class ScenarioPreviewPaneBuilder {
     public Color getPreviewColorForCell(H3Cell c) {
         int idx = previewModeCombo != null ? previewModeCombo.getSelectionModel().getSelectedIndex() : 0;
         String mode = previewModeCombo != null && previewModeCombo.getValue() != null ? previewModeCombo.getValue().toLowerCase() : "";
-        return ScenarioPreviewCellColorEvaluator.getPreviewColorForCell(c, idx, mode, context);
+        return ScenarioPreviewCellColorHelper.getPreviewColorForCell(c, idx, mode, context);
     }
 
     public Color sampleImageColorAtLatLon(Image img, double lat, double lon) {
@@ -444,7 +444,7 @@ public class ScenarioPreviewPaneBuilder {
         boolean isReliefActive = btnReliefOverlay != null && btnReliefOverlay.isSelected();
 
         if (currentPreviewCells != null && !currentPreviewCells.isEmpty()) {
-            ScenarioPreviewCellColorEvaluator.drawCellMesh(
+            ScenarioPreviewCellColorHelper.drawCellMesh(
                     gc, w, h, scale, offX, offY, zoomFactor, currentPreviewCells, idx, mode, isReliefActive, context);
         } else {
             ScenarioPreviewRasterRenderer.drawInstant2DDensityPreview(
@@ -471,7 +471,7 @@ public class ScenarioPreviewPaneBuilder {
             gc.setFill(Color.rgb(56, 189, 248, 0.18)); gc.fillRect(rx, ry, rw, rh);
         }
 
-        ScenarioPreviewCellColorEvaluator.updatePreviewDiagnostics(
+        ScenarioPreviewCellColorHelper.updatePreviewDiagnostics(
                 previewStatusLabel, currentPreviewCells, idx, rawLayer, context);
     }
 

@@ -304,7 +304,7 @@ public class ImageMapLoader {
 
     /**
      * Loads a map image prioritizing the single canonical location {@code data/ether/<planet>/<year>/}
-     * using {@link TemporalMapTensorManager} with automatic epoch fallback and continuous interpolation.
+     * using {@link TemporalTensorRepository} with automatic epoch fallback and continuous interpolation.
      *
      * @param mapFileName the file name or layer tag
      * @return the resolved JavaFX Image, or null
@@ -323,7 +323,7 @@ public class ImageMapLoader {
      */
     public static Image loadMapImage(String planet, long year, String mapFileName) {
         if (mapFileName == null || mapFileName.isBlank()) return null;
-        return TemporalMapTensorManager.loadTemporalMapImage(planet, year, mapFileName);
+        return TemporalTensorRepository.loadTemporalMapImage(planet, year, mapFileName);
     }
 
     /**
@@ -346,7 +346,7 @@ public class ImageMapLoader {
      */
     public static BufferedImage loadMapBufferedImage(String planet, long year, String mapFileName) {
         if (mapFileName == null || mapFileName.isBlank()) return null;
-        return TemporalMapTensorManager.loadTemporalMapBufferedImage(planet, year, mapFileName);
+        return TemporalTensorRepository.loadTemporalMapBufferedImage(planet, year, mapFileName);
     }
 
     /**

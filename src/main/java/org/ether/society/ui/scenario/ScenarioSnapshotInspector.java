@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 import org.ether.society.i18n.I18n;
 import org.ether.society.persistence.SaveMetadata;
-import org.ether.society.persistence.SimulationSaveManager;
+import org.ether.society.persistence.SimulationPersistenceService;
 import org.ether.society.ui.SnapshotExplanationDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class ScenarioSnapshotInspector {
     private static final Logger logger = LoggerFactory.getLogger(ScenarioSnapshotInspector.class);
 
     private final Consumer<SaveMetadata> onSnapshotSelectedCallback;
-    private final SimulationSaveManager saveManager = new SimulationSaveManager();
+    private final SimulationPersistenceService saveManager = new SimulationPersistenceService();
 
     private Label snapshotHeader;
     private Label snapshotSubtitle;

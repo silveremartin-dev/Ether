@@ -33,7 +33,7 @@ import java.util.TreeMap;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @see TelemetryAstCompiler
- * @see HistoryManager
+ * @see SimulationHistoryCoordinator
  */
 public final class SnapshotTelemetryExtractor {
 
@@ -126,7 +126,7 @@ public final class SnapshotTelemetryExtractor {
     }
 
     /**
-     * Streams every chronological world snapshot stored in {@link HistoryManager} through a single
+     * Streams every chronological world snapshot stored in {@link SimulationHistoryCoordinator} through a single
      * compiled {@link CompiledTelemetryPlan}, returning an ordered timeline of extracted results
      * without re-running the simulation engine.
      *
@@ -137,7 +137,7 @@ public final class SnapshotTelemetryExtractor {
      * @return chronologically ordered map of {@code tick -> TelemetryEvaluationResult}
      */
     public static NavigableMap<Long, TelemetryEvaluationResult> extractTimeline(
-            HistoryManager historyManager,
+            SimulationHistoryCoordinator historyManager,
             TelemetrySubscription subscription,
             long startYear,
             double ticksPerYear) {

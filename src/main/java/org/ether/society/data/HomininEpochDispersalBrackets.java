@@ -16,8 +16,8 @@ package org.ether.society.data;
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
- * @see HomininPaleoOccupancyCalculator
- * @see PaleoGeographyCoordinatesCatalog
+ * @see HomininPaleoOccupancyHelper
+ * @see PaleoGeographyCoordinatesRegistry
  */
 final class HomininEpochDispersalBrackets {
 
@@ -138,7 +138,7 @@ final class HomininEpochDispersalBrackets {
             // -100,000 BP (MIS 5e Eemian Interglacial): Confined to Africa & Eurasia, Sahul & Americas strictly 0
             if (lon < -25.0 && lon > -170.0) return 0.0;
             if (lon > 110.0 && lat < -5.0) return 0.0;
-            int species = HomininPaleoOccupancyCalculator.getHomininSpeciesType(lon, lat);
+            int species = HomininPaleoOccupancyHelper.getHomininSpeciesType(lon, lat);
             if (species == 0) return 0.0;
             double maxLat = 56.0 + 3.0 * Math.sin((lon - 10.0) * Math.PI / 90.0) - (lon > 60.0 ? (lon - 60.0) * 0.05 : 0.0);
             maxLat = Math.clamp(maxLat, 48.0, 58.5);
@@ -172,11 +172,11 @@ final class HomininEpochDispersalBrackets {
             return evaluateDeglaciationPacificRoute(lon, lat);
         } else if (year <= -10500L) {
             // -13,500 to -10,500 BP (Younger Dryas, Ice-Free Corridor Open, Clovis/Folsom)
-            double dLaur = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_LAURENTIDE_YD);
+            double dLaur = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_LAURENTIDE_YD);
             if (dLaur <= 0) return 0.0;
             double wLaur = 1.0 / (1.0 + Math.exp(-dLaur / 1.5));
 
-            double dFenno = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_YD);
+            double dFenno = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_YD);
             if (dFenno <= 0) return 0.0;
             double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
 
@@ -184,7 +184,7 @@ final class HomininEpochDispersalBrackets {
             return Math.min(wLaur, wFenno);
         } else if (year <= -8000L) {
             // -10,500 to -8,000 BP (Early Holocene Deglaciation / Maglemosian / PPNA)
-            double dFenno = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_EARLY_HOLOCENE);
+            double dFenno = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_EARLY_HOLOCENE);
             if (dFenno <= 0) return 0.0;
             if (lat > 60.0 && lon > -55.0 && lon < -18.0) return 0.0;
             if (lat > 75.0) return 0.0;
@@ -200,10 +200,10 @@ final class HomininEpochDispersalBrackets {
         if ((lon < -25.0 && lon > -170.0) || (lon > 110.0 && lat < -5.0)) {
             return 0.0;
         }
-        int species = HomininPaleoOccupancyCalculator.getHomininSpeciesType(lon, lat);
+        int species = HomininPaleoOccupancyHelper.getHomininSpeciesType(lon, lat);
         if (species == 0) return 0.0;
 
-        double dFenno = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_MIS3);
+        double dFenno = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_MIS3);
         if (dFenno <= 0) return 0.0;
         double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
 
@@ -222,8 +222,8 @@ final class HomininEpochDispersalBrackets {
         if (lon < -25.0 && lon > -170.0) return 0.0;
         if (lon > 110.0 && lat < -5.0) {
             if (lat < -20.0) return 0.0;
-            double dMadj = Math.sqrt(HistoricalScenarioFeaturesCatalog.distSq(lon, lat, 132.9, -12.5));
-            double dKimb = Math.sqrt(HistoricalScenarioFeaturesCatalog.distSq(lon, lat, 125.0, -16.0));
+            double dMadj = Math.sqrt(HistoricalScenarioFeaturesRegistry.distSq(lon, lat, 132.9, -12.5));
+            double dKimb = Math.sqrt(HistoricalScenarioFeaturesRegistry.distSq(lon, lat, 125.0, -16.0));
             if (dMadj <= 5.0 || dKimb <= 5.0) return 0.65;
             return 0.15;
         }
@@ -231,7 +231,7 @@ final class HomininEpochDispersalBrackets {
     }
 
     private static double evaluateFennoscandiaMis3Margin(double lon, double lat, double fadeLat, double maxLat) {
-        double dFenno = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_MIS3);
+        double dFenno = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_MIS3);
         if (dFenno <= 0) return 0.0;
         double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
         if (lat >= maxLat) return 0.0;
@@ -243,25 +243,25 @@ final class HomininEpochDispersalBrackets {
     }
 
     private static double evaluatePreLgmBeringiaAndAmericas(double lon, double lat) {
-        double dLaur = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_LAURENTIDE_MIS3);
+        double dLaur = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_LAURENTIDE_MIS3);
         if (dLaur <= 0) return 0.0;
         double wLaur = 1.0 / (1.0 + Math.exp(-dLaur / 1.5));
 
-        double dFenno = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_MIS3);
+        double dFenno = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_MIS3);
         if (dFenno <= 0) return 0.0;
         double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
 
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_BERINGIA_STEPPE_CORRIDOR) <= 5.5) {
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_BERINGIA_STEPPE_CORRIDOR) <= 5.5) {
             return Math.min(wLaur, 0.85);
         }
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_PACIFIC_KELP_HIGHWAY) <= 4.0) {
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_PACIFIC_KELP_HIGHWAY) <= 4.0) {
             return 0.50 * wLaur;
         }
 
-        double dWhiteSands = Math.sqrt(HistoricalScenarioFeaturesCatalog.distSq(lon, lat, -106.3, 32.8));
-        double dChiquihuite = Math.sqrt(HistoricalScenarioFeaturesCatalog.distSq(lon, lat, -103.5, 24.2));
-        double dMeadowcroft = Math.sqrt(HistoricalScenarioFeaturesCatalog.distSq(lon, lat, -80.4, 40.3));
-        double dFurada = Math.sqrt(HistoricalScenarioFeaturesCatalog.distSq(lon, lat, -42.5, -9.3));
+        double dWhiteSands = Math.sqrt(HistoricalScenarioFeaturesRegistry.distSq(lon, lat, -106.3, 32.8));
+        double dChiquihuite = Math.sqrt(HistoricalScenarioFeaturesRegistry.distSq(lon, lat, -103.5, 24.2));
+        double dMeadowcroft = Math.sqrt(HistoricalScenarioFeaturesRegistry.distSq(lon, lat, -80.4, 40.3));
+        double dFurada = Math.sqrt(HistoricalScenarioFeaturesRegistry.distSq(lon, lat, -42.5, -9.3));
         if (dWhiteSands <= 6.0 || dChiquihuite <= 6.0 || dMeadowcroft <= 5.0 || dFurada <= 6.0) {
             return 0.35 * wLaur;
         }
@@ -279,30 +279,30 @@ final class HomininEpochDispersalBrackets {
     }
 
     private static double evaluateLgmPeakOccupancy(double lon, double lat) {
-        double dLaurentide = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_LAURENTIDE_LGM);
+        double dLaurentide = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_LAURENTIDE_LGM);
         if (dLaurentide <= 0) return 0.0;
         double wLaur = 1.0 / (1.0 + Math.exp(-dLaurentide / 1.5));
 
-        double dFenno = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_LGM);
+        double dFenno = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_LGM);
         if (dFenno <= 0) return 0.0;
         double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
 
-        if (HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_ALPS_LGM) <= 0) return 0.0;
-        if (HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_PATAGONIA_LGM) <= 0) return 0.0;
+        if (HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_ALPS_LGM) <= 0) return 0.0;
+        if (HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_PATAGONIA_LGM) <= 0) return 0.0;
 
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_BERINGIA_STEPPE_CORRIDOR) <= 6.0) {
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_BERINGIA_STEPPE_CORRIDOR) <= 6.0) {
             return Math.min(wLaur, 0.85);
         }
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_PACIFIC_KELP_HIGHWAY) <= 4.5) {
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_PACIFIC_KELP_HIGHWAY) <= 4.5) {
             return 0.70 * wLaur;
         }
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_ANDES_CORRIDOR) <= 4.0) return 0.55;
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_AMAZON_MAINSTEM) <= 4.0) return 0.45;
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_BRAZIL_SAVANNA) <= 4.0) return 0.50;
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_ANDES_CORRIDOR) <= 4.0) return 0.55;
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_AMAZON_MAINSTEM) <= 4.0) return 0.45;
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_BRAZIL_SAVANNA) <= 4.0) return 0.50;
 
-        double dWhiteSands = Math.sqrt(HistoricalScenarioFeaturesCatalog.distSq(lon, lat, -106.3, 32.8));
-        double dCactus = Math.sqrt(HistoricalScenarioFeaturesCatalog.distSq(lon, lat, -77.3, 36.8));
-        double dPageLadson = Math.sqrt(HistoricalScenarioFeaturesCatalog.distSq(lon, lat, -83.9, 30.1));
+        double dWhiteSands = Math.sqrt(HistoricalScenarioFeaturesRegistry.distSq(lon, lat, -106.3, 32.8));
+        double dCactus = Math.sqrt(HistoricalScenarioFeaturesRegistry.distSq(lon, lat, -77.3, 36.8));
+        double dPageLadson = Math.sqrt(HistoricalScenarioFeaturesRegistry.distSq(lon, lat, -83.9, 30.1));
         if (dWhiteSands <= 6.5 || dCactus <= 5.5 || dPageLadson <= 5.5) {
             return 0.45 * wLaur;
         }
@@ -321,23 +321,23 @@ final class HomininEpochDispersalBrackets {
     }
 
     private static double evaluateDeglaciationPacificRoute(double lon, double lat) {
-        double dLaurentide = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_LAURENTIDE_LGM);
+        double dLaurentide = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_LAURENTIDE_LGM);
         if (dLaurentide <= 0) return 0.0;
         double wLaur = 1.0 / (1.0 + Math.exp(-dLaurentide / 1.5));
 
-        double dFenno = HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_LGM);
+        double dFenno = HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_LGM);
         if (dFenno <= 0) return 0.0;
         double wFenno = 1.0 / (1.0 + Math.exp(-dFenno / 1.5));
 
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_BERINGIA_STEPPE_CORRIDOR) <= 6.0) {
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_BERINGIA_STEPPE_CORRIDOR) <= 6.0) {
             return Math.min(wLaur, 0.90);
         }
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_PACIFIC_KELP_HIGHWAY) <= 5.5) {
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_PACIFIC_KELP_HIGHWAY) <= 5.5) {
             return 0.85 * wLaur;
         }
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_ANDES_CORRIDOR) <= 4.0) return 0.65;
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_AMAZON_MAINSTEM) <= 4.0) return 0.55;
-        if (HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, PaleoGeographyCoordinatesCatalog.ROUTE_BRAZIL_SAVANNA) <= 4.0) return 0.60;
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_ANDES_CORRIDOR) <= 4.0) return 0.65;
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_AMAZON_MAINSTEM) <= 4.0) return 0.55;
+        if (HomininPaleoOccupancyHelper.distToPolyline(lon, lat, PaleoGeographyCoordinatesRegistry.ROUTE_BRAZIL_SAVANNA) <= 4.0) return 0.60;
 
         if (lon >= -135.0 && lon <= -30.0) {
             return (lat <= 44.0 && lat >= -54.0) ? 0.35 * wLaur : 0.0;

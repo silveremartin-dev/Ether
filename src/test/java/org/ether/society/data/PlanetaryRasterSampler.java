@@ -260,7 +260,7 @@ public class PlanetaryRasterSampler {
         try {
             File etherSubDir = new File("data/maps/ether/" + canonicalPreset + "/" + year);
             etherSubDir.mkdirs();
-            String stdFileName = TemporalMapTensorManager.buildStandardFilename(canonicalPreset, year, baseName);
+            String stdFileName = TemporalTensorRepository.buildStandardFilename(canonicalPreset, year, baseName);
             File fEtherSub = new File(etherSubDir, stdFileName);
             ImageIO.write(img, "PNG", fEtherSub);
             logger.info("Saved {} into data/ether/{}/{}/", stdFileName, canonicalPreset, year);
@@ -296,11 +296,11 @@ public class PlanetaryRasterSampler {
         generateVenusMaps();
         generateMercuryMaps();
         logger.info("--- ALL PLANETARY CARTOGRAPHIC DATED TENSORS SUCCESSFULLY GENERATED ---");
-        assertTrue(TemporalMapTensorManager.STANDARD_EARTH_EPOCHS.length > 0, "Standard Earth epochs array must not be empty");
+        assertTrue(TemporalTensorRepository.STANDARD_EARTH_EPOCHS.length > 0, "Standard Earth epochs array must not be empty");
     }
 
     private void generateAllEarthEpochs() {
-        for (long epoch : TemporalMapTensorManager.STANDARD_EARTH_EPOCHS) {
+        for (long epoch : TemporalTensorRepository.STANDARD_EARTH_EPOCHS) {
             logger.info(">>> Generating Earth Cartographic Tensors for Epoch: {} AD/BC <<<", epoch);
             EarthClimateEpochRasterSampler.generateEarthMapsForEpoch(epoch);
             EarthGeologicalEpochRasterSampler.generateEarthResourcesForEpoch(epoch);

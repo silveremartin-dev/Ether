@@ -277,35 +277,35 @@ public class ScenarioCulturalSectionBuilder {
     }
 
     public String getDefaultTensorName(int index) {
-        return ScenarioCulturalTensorCatalog.getDefaultTensorName(index);
+        return ScenarioCulturalTensorRegistry.getDefaultTensorName(index);
     }
 
     public String getCulturalTensorTitle(int index) {
-        return ScenarioCulturalTensorCatalog.getCulturalTensorTitle(index, customTensorNames);
+        return ScenarioCulturalTensorRegistry.getCulturalTensorTitle(index, customTensorNames);
     }
 
     public String getCulturalTensorTooltip(int index) {
-        return ScenarioCulturalTensorCatalog.getCulturalTensorTooltip(index);
+        return ScenarioCulturalTensorRegistry.getCulturalTensorTooltip(index);
     }
 
     public String getCulturalTensorPreviewName(int index) {
-        return ScenarioCulturalTensorCatalog.getCulturalTensorPreviewName(index, customTensorNames);
+        return ScenarioCulturalTensorRegistry.getCulturalTensorPreviewName(index, customTensorNames);
     }
 
     public String getCulturalBaselineName(int index) {
-        return ScenarioCulturalTensorCatalog.getCulturalBaselineName(index);
+        return ScenarioCulturalTensorRegistry.getCulturalBaselineName(index);
     }
 
     public String getCulturalFormatHint(int index) {
-        return ScenarioCulturalTensorCatalog.getCulturalFormatHint(index);
+        return ScenarioCulturalTensorRegistry.getCulturalFormatHint(index);
     }
 
     public String pickCulturalSourceForEpoch(int tensorIdx, long startYear, PlanetPreset planet) {
-        return ScenarioCulturalTensorCatalog.pickCulturalSourceForEpoch(tensorIdx, startYear, planet);
+        return ScenarioCulturalTensorRegistry.pickCulturalSourceForEpoch(tensorIdx, startYear, planet);
     }
 
     public ComboBox<String> buildCulturalSourceCombo(int tensorIdx) {
-        ComboBox<String> combo = ScenarioCulturalTensorCatalog.buildCulturalSourceCombo(tensorIdx);
+        ComboBox<String> combo = ScenarioCulturalTensorRegistry.buildCulturalSourceCombo(tensorIdx);
         String autoSrc = pickCulturalSourceForEpoch(tensorIdx, context.getStartYear(), context.getActivePlanetPreset());
         DataSourceUIHelper.selectBestSource(combo, autoSrc, "Terre");
         combo.setOnAction(e -> {
@@ -322,20 +322,20 @@ public class ScenarioCulturalSectionBuilder {
         return combo;
     }
 
-    public ScenarioCulturalTensorCatalog.TensorParamDescriptor getTensorParam1Descriptor(int tensorIdx) {
-        return ScenarioCulturalTensorCatalog.getTensorParam1Descriptor(tensorIdx);
+    public ScenarioCulturalTensorRegistry.TensorParamDescriptor getTensorParam1Descriptor(int tensorIdx) {
+        return ScenarioCulturalTensorRegistry.getTensorParam1Descriptor(tensorIdx);
     }
 
-    public ScenarioCulturalTensorCatalog.TensorParamDescriptor getTensorParam2Descriptor(int tensorIdx) {
-        return ScenarioCulturalTensorCatalog.getTensorParam2Descriptor(tensorIdx);
+    public ScenarioCulturalTensorRegistry.TensorParamDescriptor getTensorParam2Descriptor(int tensorIdx) {
+        return ScenarioCulturalTensorRegistry.getTensorParam2Descriptor(tensorIdx);
     }
 
-    public ScenarioCulturalTensorCatalog.TensorParamDescriptor getTensorParam3Descriptor(int tensorIdx) {
-        return ScenarioCulturalTensorCatalog.getTensorParam3Descriptor(tensorIdx);
+    public ScenarioCulturalTensorRegistry.TensorParamDescriptor getTensorParam3Descriptor(int tensorIdx) {
+        return ScenarioCulturalTensorRegistry.getTensorParam3Descriptor(tensorIdx);
     }
 
     public String getDefaultTensorSeed(int tensorIdx) {
-        return ScenarioCulturalTensorCatalog.getDefaultTensorSeed(tensorIdx);
+        return ScenarioCulturalTensorRegistry.getDefaultTensorSeed(tensorIdx);
     }
 
     public void updateTensorFileLabel(int tensorIdx) {

@@ -123,7 +123,7 @@ public final class CliopatriaGeoJsonStreamingParser {
             f.seshatId = seshatId;
             f.wikipedia = wiki;
             f.paths = paths;
-            f.color = CliopatriaCulturalTaxonomyCatalog.getPolityColor(name, seshatId);
+            f.color = CliopatriaCulturalTaxonomyRegistry.getPolityColor(name, seshatId);
             matched.add(f);
         }
     }

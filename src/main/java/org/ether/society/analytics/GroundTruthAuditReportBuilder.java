@@ -46,7 +46,7 @@ final class GroundTruthAuditReportBuilder {
      * Builds the ordered map of display labels to canonical 27-variable benchmark keys.
      */
     public static Map<String, String> buildCanonicalBenchmarkKeyMap() {
-        return BenchmarkCanonicalKeyCatalog.getCanonicalBenchmarkKeyMap();
+        return BenchmarkCanonicalKeyRegistry.getCanonicalBenchmarkKeyMap();
     }
 
     static record ComparableTrajectory(

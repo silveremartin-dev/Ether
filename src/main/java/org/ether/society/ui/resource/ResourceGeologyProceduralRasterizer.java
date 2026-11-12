@@ -68,13 +68,13 @@ public final class ResourceGeologyProceduralRasterizer {
             Map<Integer, Slider> param4Sliders,
             Map<Integer, TextField> tensorSeeds) {
 
-        double p1 = abundanceSliders.containsKey(layerIdx) ? abundanceSliders.get(layerIdx).getValue() : ResourceGeologyDepositCatalog.GEOLOGY_SLIDER_SPECS[layerIdx][0].defaultValue;
-        double p2 = thresholdSliders.containsKey(layerIdx) ? thresholdSliders.get(layerIdx).getValue() : ResourceGeologyDepositCatalog.GEOLOGY_SLIDER_SPECS[layerIdx][1].defaultValue;
-        double p3 = param3Sliders.containsKey(layerIdx) ? param3Sliders.get(layerIdx).getValue() : ResourceGeologyDepositCatalog.GEOLOGY_SLIDER_SPECS[layerIdx][2].defaultValue;
-        double p4 = param4Sliders.containsKey(layerIdx) ? param4Sliders.get(layerIdx).getValue() : ResourceGeologyDepositCatalog.GEOLOGY_SLIDER_SPECS[layerIdx][3].defaultValue;
+        double p1 = abundanceSliders.containsKey(layerIdx) ? abundanceSliders.get(layerIdx).getValue() : ResourceGeologyDepositRegistry.GEOLOGY_SLIDER_SPECS[layerIdx][0].defaultValue;
+        double p2 = thresholdSliders.containsKey(layerIdx) ? thresholdSliders.get(layerIdx).getValue() : ResourceGeologyDepositRegistry.GEOLOGY_SLIDER_SPECS[layerIdx][1].defaultValue;
+        double p3 = param3Sliders.containsKey(layerIdx) ? param3Sliders.get(layerIdx).getValue() : ResourceGeologyDepositRegistry.GEOLOGY_SLIDER_SPECS[layerIdx][2].defaultValue;
+        double p4 = param4Sliders.containsKey(layerIdx) ? param4Sliders.get(layerIdx).getValue() : ResourceGeologyDepositRegistry.GEOLOGY_SLIDER_SPECS[layerIdx][3].defaultValue;
 
-        double[][] baseHotspots = ResourceGeologyDepositCatalog.getHotspotsForLayer(layerIdx);
-        double baseVal = ResourceGeologyDepositCatalog.sampleHotspotVal(lon, lat, baseHotspots);
+        double[][] baseHotspots = ResourceGeologyDepositRegistry.getHotspotsForLayer(layerIdx);
+        double baseVal = ResourceGeologyDepositRegistry.sampleHotspotVal(lon, lat, baseHotspots);
 
         long seed = 12345L + (layerIdx + 1) * 9876543L;
         if (tensorSeeds.containsKey(layerIdx) && tensorSeeds.get(layerIdx) != null) {

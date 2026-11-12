@@ -294,7 +294,7 @@ public class ScenarioCulturalSubBlockBuilder {
         }
     }
 
-    private HBox createTensorParamRow(ScenarioCulturalTensorCatalog.TensorParamDescriptor desc, Slider slider, Label valueLabel, Runnable onChange) {
+    private HBox createTensorParamRow(ScenarioCulturalTensorRegistry.TensorParamDescriptor desc, Slider slider, Label valueLabel, Runnable onChange) {
         Label label = new Label(I18n.getOrDefault(desc.labelKey, desc.defaultLabel));
         label.getStyleClass().add("control-label");
         label.setStyle("-fx-font-size: 10px;");

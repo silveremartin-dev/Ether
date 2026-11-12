@@ -66,19 +66,19 @@ public final class PostHocCliodynamicMetricDispatcher {
             }
             case "grossWorldProduct", "gdp" -> {
                 if (snap.hasValue("gdp")) return snap.getValue("gdp");
-                return CliodynamicAnalyticalFormulasCatalog.computeGrossWorldProduct(pop, tech);
+                return CliodynamicFormulasRegistry.computeGrossWorldProduct(pop, tech);
             }
             case "primaryEnergy" -> {
-                return CliodynamicAnalyticalFormulasCatalog.computePrimaryEnergyEJ(pop, tech);
+                return CliodynamicFormulasRegistry.computePrimaryEnergyEJ(pop, tech);
             }
             case "kardashev" -> {
-                return CliodynamicAnalyticalFormulasCatalog.computeKardashevScale(tech, pop);
+                return CliodynamicFormulasRegistry.computeKardashevScale(tech, pop);
             }
             case "co2Concentration" -> {
-                return CliodynamicAnalyticalFormulasCatalog.computeCo2Concentration(tech, year);
+                return CliodynamicFormulasRegistry.computeCo2Concentration(tech, year);
             }
             case "temperatureAnomaly" -> {
-                return CliodynamicAnalyticalFormulasCatalog.computeTemperatureAnomaly(year);
+                return CliodynamicFormulasRegistry.computeTemperatureAnomaly(year);
             }
             case "milankovitchInsolation" -> {
                 return ProceduralPopulationEngine.calculateMilankovitchSummerInsolation65N(year);
@@ -88,7 +88,7 @@ public final class PostHocCliodynamicMetricDispatcher {
             }
             case "zeroContainmentScore" -> {
                 double trade = snap.hasValue("globalTradeVolume") ? snap.getValue("globalTradeVolume") : 0.0;
-                return CliodynamicAnalyticalFormulasCatalog.computeZeroContainmentScoreFromTrade(trade);
+                return CliodynamicFormulasRegistry.computeZeroContainmentScoreFromTrade(trade);
             }
             default -> {
                 // Ground-truth invariant: unsimulated or unrecorded metrics default to 0.0 (AGENTS.md §8 & §10)

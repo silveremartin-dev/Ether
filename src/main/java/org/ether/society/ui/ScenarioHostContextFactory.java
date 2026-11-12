@@ -15,11 +15,11 @@ import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.Scenario;
 import org.ether.society.persistence.SaveMetadata;
 import org.ether.society.persistence.ScenarioRepository;
-import org.ether.society.ui.scenario.ScenarioBundleManager;
+import org.ether.society.ui.scenario.ScenarioBundleService;
 import org.ether.society.ui.scenario.ScenarioCulturalSectionBuilder;
 import org.ether.society.ui.scenario.ScenarioDemographicSectionBuilder;
-import org.ether.society.ui.scenario.ScenarioPlanetSyncManager;
-import org.ether.society.ui.scenario.ScenarioPresetManager;
+import org.ether.society.ui.scenario.ScenarioPlanetSyncService;
+import org.ether.society.ui.scenario.ScenarioPresetRepository;
 import org.ether.society.ui.scenario.ScenarioPreviewPaneBuilder;
 import org.ether.society.ui.scenario.ScenarioSimulationLauncher;
 import org.ether.society.ui.scenario.ScenarioSpatialBoundsSectionBuilder;
@@ -47,13 +47,13 @@ final class ScenarioHostContextFactory {
     }
 
     /**
-     * Creates host context for {@link ScenarioPlanetSyncManager}.
+     * Creates host context for {@link ScenarioPlanetSyncService}.
      *
      * @param panel the hosting scenario setup panel
      * @return initialized host context
      */
-    static ScenarioPlanetSyncManager.HostContext createPlanetSyncHostContext(ScenarioSetupPanel panel) {
-        return new ScenarioPlanetSyncManager.HostContext() {
+    static ScenarioPlanetSyncService.HostContext createPlanetSyncHostContext(ScenarioSetupPanel panel) {
+        return new ScenarioPlanetSyncService.HostContext() {
             @Override public void notifyParamChange() { panel.notifyParamChange(); }
             @Override public void generatePreview() { panel.generatePreview(); }
             @Override public void drawPreview() { panel.drawPreview(); }
@@ -95,13 +95,13 @@ final class ScenarioHostContextFactory {
     }
 
     /**
-     * Creates host context for {@link ScenarioBundleManager}.
+     * Creates host context for {@link ScenarioBundleService}.
      *
      * @param panel the hosting scenario setup panel
      * @return initialized host context
      */
-    static ScenarioBundleManager.HostContext createBundleHostContext(ScenarioSetupPanel panel) {
-        return new ScenarioBundleManager.HostContext() {
+    static ScenarioBundleService.HostContext createBundleHostContext(ScenarioSetupPanel panel) {
+        return new ScenarioBundleService.HostContext() {
             @Override public Window getWindow() { return panel.getScene() != null ? panel.getScene().getWindow() : null; }
             @Override public PlanetPreset getActivePlanetPreset() {
                 return panel.activePlanetPreset != null ? panel.activePlanetPreset : (panel.planetPresetCombo != null ? panel.planetPresetCombo.getValue() : null);
@@ -340,14 +340,14 @@ final class ScenarioHostContextFactory {
     }
 
     /**
-     * Creates host context and initializes {@link ScenarioPresetManager}.
+     * Creates host context and initializes {@link ScenarioPresetRepository}.
      *
      * @param panel the hosting scenario setup panel
      * @param scenarioRepo scenario persistence repository
      * @return initialized preset manager
      */
-    static ScenarioPresetManager createPresetManager(ScenarioSetupPanel panel, ScenarioRepository scenarioRepo) {
-        return new ScenarioPresetManager(new ScenarioPresetManager.HostContext() {
+    static ScenarioPresetRepository createPresetManager(ScenarioSetupPanel panel, ScenarioRepository scenarioRepo) {
+        return new ScenarioPresetRepository(new ScenarioPresetRepository.HostContext() {
             @Override public Window getWindow() { return panel.getScene() != null ? panel.getScene().getWindow() : null; }
             @Override public boolean validateScenarioSetup() { return panel.validateScenarioSetup(); }
             @Override public Scenario getScenario() { return panel.getScenario(); }

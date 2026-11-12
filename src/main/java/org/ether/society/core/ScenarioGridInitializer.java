@@ -7,7 +7,7 @@ package org.ether.society.core;
 
 import org.ether.society.data.ImageMapLoader;
 import org.ether.society.database.H3Cell;
-import org.ether.society.generation.PlanetHydrographyFlowCalculator;
+import org.ether.society.generation.PlanetHydrographyFlowHelper;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.generation.ProceduralGenerator;
 import org.ether.society.h3.H3Service;
@@ -153,7 +153,7 @@ public final class ScenarioGridInitializer {
         if (progressCallback != null) progressCallback.accept(9, 10);
 
         // 4. Compute deterministic hydrography flow & basin accumulation
-        PlanetHydrographyFlowCalculator.accumulateHydrographyFlow(cells, effectivePreset, cancelSupplier);
+        PlanetHydrographyFlowHelper.accumulateHydrographyFlow(cells, effectivePreset, cancelSupplier);
 
         if (progressCallback != null) progressCallback.accept(10, 10);
         return cells;

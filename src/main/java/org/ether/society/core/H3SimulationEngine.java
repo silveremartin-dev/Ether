@@ -6,7 +6,7 @@
  */
 package org.ether.society.core;
 
-import org.ether.society.analytics.HistoryManager;
+import org.ether.society.analytics.SimulationHistoryCoordinator;
 import org.ether.society.config.Configuration;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.ether.society.core.dod.AgentBuffer;
@@ -28,8 +28,8 @@ import org.ether.society.events.EventSystem;
 import org.ether.society.events.SimulationTickListener;
 import org.ether.society.model.Scenario;
 import org.ether.society.model.ScenarioTimeline;
-import org.ether.society.network.ClusterManager;
-import org.ether.society.persistence.SimulationSaveManager;
+import org.ether.society.network.ClusterCoordinator;
+import org.ether.society.persistence.SimulationPersistenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +70,11 @@ public final class H3SimulationEngine implements ISimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(H3SimulationEngine.class);
 
     final Configuration config;
-    final TimeManager timeManager;
+    final SimulationTimeCoordinator timeManager;
     final EventSystem eventSystem;
-    final HistoryManager historyManager;
+    final SimulationHistoryCoordinator historyManager;
     final List<Polity> nations = new CopyOnWriteArrayList<>();
-    final SimulationSaveManager simulationSaveManager;
+    final SimulationPersistenceService simulationSaveManager;
 
     // DOD Layer
     final SimulationProfiler profiler = new SimulationProfiler();
@@ -110,7 +110,7 @@ public final class H3SimulationEngine implements ISimulationEngine {
     Scenario currentScenario;
     final Set<String> firedScenarioEventKeys = new HashSet<>();
     SimulationPerformanceConfig performanceConfig = new SimulationPerformanceConfig(true);
-    ClusterManager clusterManager;
+    ClusterCoordinator clusterManager;
     private ScheduledExecutorService executorService;
     final AtomicBoolean running = new AtomicBoolean(false);
     final AtomicBoolean pauseAtNextEvent = new AtomicBoolean(false);
@@ -135,10 +135,10 @@ public final class H3SimulationEngine implements ISimulationEngine {
      */
     public H3SimulationEngine(Configuration config) {
         this.config = config;
-        this.timeManager = new TimeManager(config.simulation().startYear());
+        this.timeManager = new SimulationTimeCoordinator(config.simulation().startYear());
         this.eventSystem = new EventSystem();
-        this.historyManager = new HistoryManager();
-        this.simulationSaveManager = new SimulationSaveManager();
+        this.historyManager = new SimulationHistoryCoordinator();
+        this.simulationSaveManager = new SimulationPersistenceService();
         this.demographicKernel = new DemographicKernel();
         this.urbanKernel = new UrbanKernel();
         this.cultureKernel = new CultureKernel();
@@ -235,7 +235,7 @@ public final class H3SimulationEngine implements ISimulationEngine {
     public double getSpeedMultiplier() { return speedMultiplier; }
 
     @Override
-    public TimeManager getTimeManager() { return timeManager; }
+    public SimulationTimeCoordinator getTimeManager() { return timeManager; }
 
     public long getCurrentYear() { return timeManager != null ? timeManager.getCurrentYear() : 0; }
 
@@ -299,14 +299,14 @@ public final class H3SimulationEngine implements ISimulationEngine {
         }
     }
 
-    public void setClusterManager(ClusterManager clusterManager) {
+    public void setClusterManager(ClusterCoordinator clusterManager) {
         this.clusterManager = clusterManager;
         if (this.clusterManager != null && this.worldBuffer != null) {
             this.clusterManager.setWorldBuffer(this.worldBuffer);
         }
     }
 
-    public ClusterManager getClusterManager() { return clusterManager; }
+    public ClusterCoordinator getClusterManager() { return clusterManager; }
     public void setOnTickCallback(Runnable callback) { this.onTickCallback = callback; }
 
     public void addTickListener(SimulationTickListener listener) {
@@ -395,7 +395,7 @@ public final class H3SimulationEngine implements ISimulationEngine {
     }
 
     public List<Polity> getNations() { return nations; }
-    public HistoryManager getHistoryManager() { return historyManager; }
+    public SimulationHistoryCoordinator getHistoryManager() { return historyManager; }
     public double getCurrentTPS() { return currentTPS; }
 
     public float getTotalBiomassNatural() {
@@ -487,7 +487,7 @@ public final class H3SimulationEngine implements ISimulationEngine {
     public WorldBuffer getWorldBuffer() { return worldBuffer; }
     public void setWorldBuffer(WorldBuffer worldBuffer) { this.worldBuffer = worldBuffer; }
     public AgentBuffer getAgentBuffer() { return agentBuffer; }
-    public SimulationSaveManager getSimulationSaveManager() { return simulationSaveManager; }
+    public SimulationPersistenceService getSimulationSaveManager() { return simulationSaveManager; }
     public FluxKernel getFluxKernel() { return fluxKernel; }
 
     public long getLastCacheTick() { return lastCacheTick; }

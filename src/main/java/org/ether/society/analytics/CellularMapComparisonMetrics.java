@@ -358,7 +358,7 @@ public final class CellularMapComparisonMetrics {
             double lat = c.getLatitude();
             double lng = c.getLongitude();
             if (windowed && (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng)) continue;
-            double v = CellularSoftSpatialProximityEvaluator.extractCulturalCellValue(c, chLower);
+            double v = CellularSpatialProximityHelper.extractCulturalCellValue(c, chLower);
             if (v > maxSim) maxSim = v;
         }
 
@@ -382,7 +382,7 @@ public final class CellularMapComparisonMetrics {
             double lng = c.getLongitude();
             if (windowed && (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng)) continue;
 
-            double simVal = CellularSoftSpatialProximityEvaluator.extractCulturalCellValue(c, chLower);
+            double simVal = CellularSpatialProximityHelper.extractCulturalCellValue(c, chLower);
             double simNorm = Math.clamp(simVal / maxSim * 255.0, 0.0, 255.0);
 
             double obsVal = obsMeans[idx];
@@ -418,10 +418,10 @@ public final class CellularMapComparisonMetrics {
         double rmse = Math.sqrt(sumSqErr / validCount);
         double jaccardIndex = (unionCount > 0) ? (double) matchCount / unionCount : 1.0;
         double diceCoeff = (unionCount > 0) ? (2.0 * matchCount) / (matchCount + unionCount) : 1.0;
-        if (CellularSoftSpatialProximityEvaluator.isSporadicChannel(chLower)) {
-            double[] softOverlap = CellularSoftSpatialProximityEvaluator.computeSoftSpatialProximityOverlap(
+        if (CellularSpatialProximityHelper.isSporadicChannel(chLower)) {
+            double[] softOverlap = CellularSpatialProximityHelper.computeSoftSpatialProximityOverlap(
                     cells, windowed, minLat, maxLat, minLng, maxLng, chLower, groundTruthRaster,
-                    CellularSoftSpatialProximityEvaluator::extractCulturalCellValue);
+                    CellularSpatialProximityHelper::extractCulturalCellValue);
             jaccardIndex = Math.max(jaccardIndex, softOverlap[0]);
             diceCoeff = Math.max(diceCoeff, softOverlap[1]);
         }

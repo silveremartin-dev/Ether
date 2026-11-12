@@ -185,16 +185,16 @@ final class HistoricalCalibrationSimulationExecutor {
         populateFinalTelemetryAndMetrics(def, result, endYear, simulatedPop, popTarget, tech);
 
         // Evaluate dense intermediate checkpoints & Empire Spatial Localization
-        HistoricalCalibrationSpatialEvaluator.evaluateDenseIntermediateCheckpoints(def, result, targetEpochs, logisticGrowthRate);
+        HistoricalCalibrationSpatialHelper.evaluateDenseIntermediateCheckpoints(def, result, targetEpochs, logisticGrowthRate);
 
         // Spatial Before-After Tensor Evaluation
-        HistoricalCalibrationSpatialEvaluator.evaluateSpatialMaps(def, result);
+        HistoricalCalibrationSpatialHelper.evaluateSpatialMaps(def, result);
 
         // Root Cause Drift Diagnosis and Parameter Tuning Recommendations
-        HistoricalCalibrationSpatialEvaluator.diagnoseRootCausesAndProposeRemediations(def, result);
+        HistoricalCalibrationSpatialHelper.diagnoseRootCausesAndProposeRemediations(def, result);
 
         // Persist to SimulationRunRepository and saves directory with complete spatial 3D hex tensors
-        HistoricalCalibrationPersistenceManager.persistResultToDiskAndRepository(def, result, h3Cells, world, checkpointSnapshots);
+        CalibrationPersistenceService.persistResultToDiskAndRepository(def, result, h3Cells, world, checkpointSnapshots);
 
         return result;
     }

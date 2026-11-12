@@ -23,7 +23,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 import javafx.util.Duration;
-import org.ether.society.analytics.HistoryManager;
+import org.ether.society.analytics.SimulationHistoryCoordinator;
 import org.ether.society.database.H3Cell;
 import org.ether.society.i18n.I18n;
 import org.ether.society.ui.heatmap.SpatialHeatmapCanvasRenderer;
@@ -88,7 +88,7 @@ public class SpatialHeatmapPanel extends VBox {
     private final Canvas popupCanvas = new Canvas(560, 280);
 
     private List<H3Cell> currentCells = new ArrayList<>();
-    private HistoryManager historyManager;
+    private SimulationHistoryCoordinator historyManager;
     private Timeline animationTimeline;
     /** Internal state: is playing animation (boolean). */
     private boolean isPlayingAnimation = false;
@@ -311,7 +311,7 @@ public class SpatialHeatmapPanel extends VBox {
      *
      * @param historyManager simulation history manager
      */
-    public void setHistoryManager(HistoryManager historyManager) {
+    public void setHistoryManager(SimulationHistoryCoordinator historyManager) {
         this.historyManager = historyManager;
         updateSliderRange();
     }

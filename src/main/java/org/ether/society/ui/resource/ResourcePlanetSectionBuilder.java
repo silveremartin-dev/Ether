@@ -271,13 +271,13 @@ public class ResourcePlanetSectionBuilder {
         if (planetContextLabel == null) return;
         PlanetPreset preset = host.getActivePlanetPreset() != null ? host.getActivePlanetPreset() : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
         int cellCount = host.getActiveCellCount();
-        planetContextLabel.setText(ResourcePlanetSyncManager.buildPlanetContextText(preset, cellCount));
+        planetContextLabel.setText(ResourcePlanetSyncService.buildPlanetContextText(preset, cellCount));
         updateThermodynamicSynthesisBadge(preset);
     }
 
     private void updateThermodynamicSynthesisBadge(PlanetPreset p) {
         if (thermoSynthesisBadge == null) return;
-        thermoSynthesisBadge.setText(ResourcePlanetSyncManager.buildThermodynamicSynthesisText(p));
+        thermoSynthesisBadge.setText(ResourcePlanetSyncService.buildThermodynamicSynthesisText(p));
     }
 
     public void adaptResourceSlidersToPlanet(PlanetPreset p) {
@@ -285,7 +285,7 @@ public class ResourcePlanetSectionBuilder {
         boolean oldState = host.isUpdatingFromPreset();
         host.setUpdatingFromPreset(true);
         try {
-            ResourcePlanetSyncManager.adaptResourceSlidersToPlanet(
+            ResourcePlanetSyncService.adaptResourceSlidersToPlanet(
                     p, host.getBiomeSectionBuilder(), host.getHydroSectionBuilder(), host.getCrustalMetalSlider(),
                     host.getPreciousMetalSlider(), host.getMantleHeatSlider(), host.getSeismicActivitySlider(), host.getVolcanicActivitySlider()
             );
@@ -364,7 +364,7 @@ public class ResourcePlanetSectionBuilder {
     public boolean validateTerrainMapCompatibility(String sourceKey) {
         if ("none".equals(sourceKey) || sourceKey == null) return true;
         PlanetPreset activePreset = host.getActivePlanetPreset() != null ? host.getActivePlanetPreset() : (planetPresetCombo != null ? planetPresetCombo.getValue() : PlanetPreset.EARTH_LIKE);
-        boolean isCompatible = ResourcePlanetSyncManager.isTerrainMapCompatible(sourceKey, activePreset);
+        boolean isCompatible = ResourcePlanetSyncService.isTerrainMapCompatible(sourceKey, activePreset);
         Label ecoCompatibilityLabel = host.getEcoCompatibilityLabel();
         if (!isCompatible) {
             String activeDisplayName = activePreset != null ? activePreset.name() : "Standard";

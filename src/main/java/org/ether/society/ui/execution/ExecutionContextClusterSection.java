@@ -14,7 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.ether.society.i18n.I18n;
-import org.ether.society.network.ClusterManager;
+import org.ether.society.network.ClusterCoordinator;
 import org.ether.society.ui.ExecutionContextPanel.ClusterNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class ExecutionContextClusterSection extends VBox {
 
     private final Runnable onClusterStateChanged;
 
-    private ClusterManager clusterManager;
+    private ClusterCoordinator clusterManager;
     private boolean isMasterRunning = false;
     private boolean isConnectedCluster = false;
 
@@ -199,7 +199,7 @@ public class ExecutionContextClusterSection extends VBox {
                 int port = Integer.parseInt(pStr);
                 String secret = (secretField != null && secretField.getText() != null && !secretField.getText().isBlank()) ? secretField.getText().trim() : "EtherCluster2026";
 
-                clusterManager = new ClusterManager(ClusterManager.ClusterRole.MASTER, "127.0.0.1", port, secret);
+                clusterManager = new ClusterCoordinator(ClusterCoordinator.ClusterRole.MASTER, "127.0.0.1", port, secret);
                 clusterManager.start();
 
                 isMasterRunning = true;
@@ -262,7 +262,7 @@ public class ExecutionContextClusterSection extends VBox {
             if (clusterManager != null) {
                 clusterManager.stop();
             }
-            clusterManager = new ClusterManager(ClusterManager.ClusterRole.WORKER, host, port, secret);
+            clusterManager = new ClusterCoordinator(ClusterCoordinator.ClusterRole.WORKER, host, port, secret);
             clusterManager.start();
             isConnectedCluster = true;
             logger.info("Successfully connected worker to cluster at {}:{}", host, port);
@@ -302,7 +302,7 @@ public class ExecutionContextClusterSection extends VBox {
             for (var rec : clusterManager.getNodeRegistry().values()) {
                 String id = rec.getId();
                 String host = rec.getHost() + ":" + rec.getPort();
-                String role = rec.getRole() == ClusterManager.ClusterRole.MASTER ? I18n.getOrDefault("exec.cluster.role_master_active", "Master (Active)") : I18n.getOrDefault("exec.cluster.role_worker", "Worker");
+                String role = rec.getRole() == ClusterCoordinator.ClusterRole.MASTER ? I18n.getOrDefault("exec.cluster.role_master_active", "Master (Active)") : I18n.getOrDefault("exec.cluster.role_worker", "Worker");
                 String status = "🟢 " + rec.getStatus().name();
                 String cap = rec.getCapacity();
                 String chunks = "H3 Zone " + rec.getAssignedChunkStart() + "-" + rec.getAssignedChunkEnd();
@@ -406,7 +406,7 @@ public class ExecutionContextClusterSection extends VBox {
         }
     }
 
-    public ClusterManager getClusterManager() {
+    public ClusterCoordinator getClusterManager() {
         return clusterManager;
     }
 

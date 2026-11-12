@@ -5,7 +5,7 @@
  */
 package org.ether.society.ui;
 
-import org.ether.society.data.TemporalMapTensorManager;
+import org.ether.society.data.TemporalTensorRepository;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.AutoEpochScenarioGenerator;
 
@@ -25,9 +25,9 @@ public final class AutoEpochDialogPresenter {
      * @param strategy the fallback strategy
      * @return localized description
      */
-    public static String getStrategyExplanation(TemporalMapTensorManager.DataFallbackStrategy strategy) {
+    public static String getStrategyExplanation(TemporalTensorRepository.DataFallbackStrategy strategy) {
         if (strategy == null) {
-            strategy = TemporalMapTensorManager.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH;
+            strategy = TemporalTensorRepository.DataFallbackStrategy.PREVIOUS_EARLIER_EPOCH;
         }
         String note = " " + I18n.getOrDefault("scenario.autodialog.tab3_scope_note",
                 "💡 Remarque : Ce réglage s'applique spécifiquement aux calques de l'Onglet 3 (données démographiques initiales et tenseurs culturels).");

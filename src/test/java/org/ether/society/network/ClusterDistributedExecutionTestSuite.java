@@ -21,8 +21,8 @@ public class ClusterDistributedExecutionTestSuite {
 
     private static final String SECRET = "TestClusterToken2026";
 
-    private ClusterManager master;
-    private ClusterManager worker;
+    private ClusterCoordinator master;
+    private ClusterCoordinator worker;
 
     private static int findFreePort() {
         try (java.net.ServerSocket socket = new java.net.ServerSocket(0)) {
@@ -36,11 +36,11 @@ public class ClusterDistributedExecutionTestSuite {
     @BeforeEach
     public void setup() throws IOException, InterruptedException {
         int testPort = findFreePort();
-        master = new ClusterManager(ClusterManager.ClusterRole.MASTER, "127.0.0.1", testPort, SECRET);
+        master = new ClusterCoordinator(ClusterCoordinator.ClusterRole.MASTER, "127.0.0.1", testPort, SECRET);
         master.setTotalGridCellCount(200);
         master.start();
 
-        worker = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", testPort, SECRET);
+        worker = new ClusterCoordinator(ClusterCoordinator.ClusterRole.WORKER, "127.0.0.1", testPort, SECRET);
         worker.start();
 
         // Dynamically wait up to 3 seconds for worker registration
@@ -76,13 +76,13 @@ public class ClusterDistributedExecutionTestSuite {
     public void testWorkerRegistrationAndSpatialChunkRebalancing() {
         assertEquals(2, master.getNodeRegistry().size(), "Master should have 2 nodes (master-local + worker)");
 
-        ClusterManager.ClusterNodeRecord masterRecord = master.getNodeRegistry().get("master-local");
+        ClusterCoordinator.ClusterNodeRecord masterRecord = master.getNodeRegistry().get("master-local");
         assertNotNull(masterRecord);
         assertEquals(0, masterRecord.getAssignedChunkStart());
         assertEquals(99, masterRecord.getAssignedChunkEnd());
 
         boolean hasWorker = master.getNodeRegistry().values().stream()
-                .anyMatch(n -> n.getRole() == ClusterManager.ClusterRole.WORKER && n.getAssignedChunkStart() == 100 && n.getAssignedChunkEnd() == 199);
+                .anyMatch(n -> n.getRole() == ClusterCoordinator.ClusterRole.WORKER && n.getAssignedChunkStart() == 100 && n.getAssignedChunkEnd() == 199);
         assertTrue(hasWorker, "Worker should be assigned chunk 100..199");
     }
 

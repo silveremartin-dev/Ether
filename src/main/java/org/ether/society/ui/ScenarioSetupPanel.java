@@ -14,16 +14,16 @@ import org.ether.society.generation.PlanetPreset;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.Scenario;
-import org.ether.society.ui.scenario.ScenarioBundleManager;
+import org.ether.society.ui.scenario.ScenarioBundleService;
 import org.ether.society.ui.scenario.ScenarioClimateEventModel;
 import org.ether.society.ui.scenario.ScenarioCulturalSectionBuilder;
-import org.ether.society.ui.scenario.ScenarioDefaultValueManager;
+import org.ether.society.ui.scenario.ScenarioDefaultValueService;
 import org.ether.society.ui.scenario.ScenarioDemographicSectionBuilder;
 import org.ether.society.ui.scenario.ScenarioEngineConfigSectionBuilder;
 import org.ether.society.ui.scenario.ScenarioEventsSectionBuilder;
 import org.ether.society.ui.scenario.ScenarioLiveDiagnosticSection;
-import org.ether.society.ui.scenario.ScenarioPlanetSyncManager;
-import org.ether.society.ui.scenario.ScenarioPresetManager;
+import org.ether.society.ui.scenario.ScenarioPlanetSyncService;
+import org.ether.society.ui.scenario.ScenarioPresetRepository;
 import org.ether.society.ui.scenario.ScenarioPreviewPaneBuilder;
 import org.ether.society.ui.scenario.ScenarioSimulationLauncher;
 import org.ether.society.ui.scenario.ScenarioSnapshotInspector;
@@ -74,16 +74,16 @@ public class ScenarioSetupPanel extends BorderPane {
     boolean isUpdatingFromPreset = false;
 
     // Delegated Section Builders and Managers
-    final ScenarioPlanetSyncManager planetSyncManager = new ScenarioPlanetSyncManager(ScenarioHostContextFactory.createPlanetSyncHostContext(this));
+    final ScenarioPlanetSyncService planetSyncManager = new ScenarioPlanetSyncService(ScenarioHostContextFactory.createPlanetSyncHostContext(this));
     final ScenarioSpatiotemporalSectionBuilder spatiotemporalSectionBuilder = new ScenarioSpatiotemporalSectionBuilder(ScenarioHostContextFactory.createSpatiotemporalHostContext(this));
     final ScenarioSpatialBoundsSectionBuilder spatialBoundsBuilder = new ScenarioSpatialBoundsSectionBuilder(ScenarioHostContextFactory.createSpatialBoundsHostContext(this));
-    final ScenarioBundleManager bundleManager = new ScenarioBundleManager(ScenarioHostContextFactory.createBundleHostContext(this));
+    final ScenarioBundleService bundleManager = new ScenarioBundleService(ScenarioHostContextFactory.createBundleHostContext(this));
     final ScenarioDemographicSectionBuilder demographicSectionBuilder = new ScenarioDemographicSectionBuilder(ScenarioHostContextFactory.createDemographicHostContext(this));
     final ScenarioCulturalSectionBuilder culturalSectionBuilder = new ScenarioCulturalSectionBuilder(ScenarioHostContextFactory.createCulturalHostContext(this));
     final ScenarioPreviewPaneBuilder previewPaneBuilder = new ScenarioPreviewPaneBuilder(ScenarioHostContextFactory.createPreviewPaneHostContext(this));
     ScenarioEngineConfigSectionBuilder engineConfigSectionBuilder;
     final ScenarioSimulationLauncher simulationLauncher;
-    final ScenarioPresetManager presetManager;
+    final ScenarioPresetRepository presetManager;
     final ScenarioConfigSyncHandler configSyncHandler = new ScenarioConfigSyncHandler(this);
     final ScenarioLiveDiagnosticSection liveDiagnosticSection = new ScenarioLiveDiagnosticSection();
     final ScenarioSnapshotInspector snapshotInspector = new ScenarioSnapshotInspector(meta -> {
@@ -197,7 +197,7 @@ public class ScenarioSetupPanel extends BorderPane {
     }
 
     <T> void attachDefaultValueHandling(Control control, T defaultValue, Runnable resetAction) {
-        ScenarioDefaultValueManager.attachDefaultValueHandling(control, defaultValue, resetAction, this::notifyParamChange);
+        ScenarioDefaultValueService.attachDefaultValueHandling(control, defaultValue, resetAction, this::notifyParamChange);
     }
 
     private void updateDefaultValueIndicators() {

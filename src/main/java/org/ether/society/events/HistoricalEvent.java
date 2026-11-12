@@ -61,7 +61,7 @@ public record HistoricalEvent(int year, int month, int day, String title, String
         if (this.year != currentYear) {
             return false;
         }
-        // Normalize simulation month: TimeManager uses 0-11, calendar uses 1-12
+        // Normalize simulation month: SimulationTimeCoordinator uses 0-11, calendar uses 1-12
         int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
         return this.month == normSimMonth && (this.day == currentDay || currentDay <= 0);
     }

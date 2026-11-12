@@ -1,6 +1,6 @@
 package org.ether.society.ui.export;
 
-import org.ether.society.analytics.HistoryManager;
+import org.ether.society.analytics.SimulationHistoryCoordinator;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Biome;
 import org.ether.society.ui.DisplayMode;
@@ -58,7 +58,7 @@ public class AtlasVideoExporter {
      * @return CompletableFuture completing with the generated video File
      */
     public static CompletableFuture<File> exportVideoAsync(
-            HistoryManager historyManager,
+            SimulationHistoryCoordinator historyManager,
             Set<DisplayMode> activeLayers,
             int startIndex,
             int endIndex,

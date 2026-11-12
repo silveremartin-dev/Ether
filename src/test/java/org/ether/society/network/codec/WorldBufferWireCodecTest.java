@@ -7,7 +7,7 @@
 package org.ether.society.network.codec;
 
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.network.EtherSecurityManager;
+import org.ether.society.network.EtherSecurityService;
 import org.ether.society.network.cluster.H3HaloBoundaryExchanger;
 import org.junit.jupiter.api.Test;
 
@@ -71,7 +71,7 @@ public class WorldBufferWireCodecTest {
      *
      */
     public void testEncryptedChunkSerialization() throws Exception {
-        EtherSecurityManager sec = new EtherSecurityManager();
+        EtherSecurityService sec = new EtherSecurityService();
         WorldBuffer source = new WorldBuffer(20);
         source.getBiomassHuman()[2] = 99999.0f;
 

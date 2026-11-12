@@ -6,7 +6,7 @@
  */
 package org.ether.society.network.codec;
 
-import org.ether.society.network.EtherSecurityManager;
+import org.ether.society.network.EtherSecurityService;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -36,7 +36,7 @@ public final class ClusterWireCodec {
      * @param sec       security manager providing cryptographic keys
      * @throws IOException if encryption or socket write fails
      */
-    public static void writeEncryptedFrame(DataOutputStream out, String plainText, EtherSecurityManager sec) throws IOException {
+    public static void writeEncryptedFrame(DataOutputStream out, String plainText, EtherSecurityService sec) throws IOException {
         try {
             String encrypted = sec.encrypt(plainText);
             byte[] bytes = encrypted.getBytes(StandardCharsets.UTF_8);
@@ -56,7 +56,7 @@ public final class ClusterWireCodec {
      * @return decrypted plaintext payload
      * @throws IOException if socket read or decryption fails
      */
-    public static String readEncryptedFrame(DataInputStream in, EtherSecurityManager sec) throws IOException {
+    public static String readEncryptedFrame(DataInputStream in, EtherSecurityService sec) throws IOException {
         int length = in.readInt();
         byte[] bytes = new byte[length];
         in.readFully(bytes);

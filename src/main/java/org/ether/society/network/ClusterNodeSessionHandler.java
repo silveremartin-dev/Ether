@@ -5,9 +5,9 @@
 package org.ether.society.network;
 
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.network.ClusterManager.ClusterNodeRecord;
-import org.ether.society.network.ClusterManager.ClusterRole;
-import org.ether.society.network.ClusterManager.NodeStatus;
+import org.ether.society.network.ClusterCoordinator.ClusterNodeRecord;
+import org.ether.society.network.ClusterCoordinator.ClusterRole;
+import org.ether.society.network.ClusterCoordinator.NodeStatus;
 import org.ether.society.network.cluster.ClusterClockBarrier;
 import org.ether.society.network.codec.ClusterWireCodec;
 import org.ether.society.network.codec.WorldBufferWireCodec;
@@ -27,11 +27,11 @@ import java.util.function.Supplier;
 
 /**
  * Handles encrypted TCP socket handshakes, heartbeat exchanges, and remote {@link WorldBuffer}
- * chunk execution frames for both Master and Worker roles in {@link ClusterManager}.
+ * chunk execution frames for both Master and Worker roles in {@link ClusterCoordinator}.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
- * @see ClusterManager
+ * @see ClusterCoordinator
  */
 public final class ClusterNodeSessionHandler {
 
@@ -55,7 +55,7 @@ public final class ClusterNodeSessionHandler {
      */
     public static void handleWorkerHandshake(Socket socket,
                                              AtomicBoolean running,
-                                             EtherSecurityManager securityManager,
+                                             EtherSecurityService securityManager,
                                              ConcurrentHashMap<String, ClusterNodeRecord> nodeRegistry,
                                              ConcurrentHashMap<String, DataOutputStream> workerSocketsOut,
                                              ClusterClockBarrier clockBarrier,
@@ -136,10 +136,10 @@ public final class ClusterNodeSessionHandler {
     /**
      * Runs the Worker-side connection, registration, heartbeat, and chunk execution loop.
      *
-     * @param manager owning {@link ClusterManager} instance
+     * @param manager owning {@link ClusterCoordinator} instance
      * @param running cluster active flag
      */
-    public static void runWorkerConnectionLoop(ClusterManager manager, AtomicBoolean running) {
+    public static void runWorkerConnectionLoop(ClusterCoordinator manager, AtomicBoolean running) {
         int retries = 0;
         while (running.get()) {
             try {
@@ -149,7 +149,7 @@ public final class ClusterNodeSessionHandler {
 
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                 DataInputStream in = new DataInputStream(socket.getInputStream());
-                EtherSecurityManager sec = manager.getSecurityManager();
+                EtherSecurityService sec = manager.getSecurityManager();
 
                 String workerId = (manager.getCustomWorkerId() != null && !manager.getCustomWorkerId().isBlank())
                         ? manager.getCustomWorkerId()

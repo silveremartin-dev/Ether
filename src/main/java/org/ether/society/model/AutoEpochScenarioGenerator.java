@@ -6,7 +6,7 @@
 package org.ether.society.model;
 
 import org.ether.society.data.ImageMapLoader;
-import org.ether.society.data.TemporalMapTensorManager;
+import org.ether.society.data.TemporalTensorRepository;
 import org.ether.society.generation.PlanetPreset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class AutoEpochScenarioGenerator {
      * Synthesizes an automatic scenario for a specified planet and target epoch date.
      */
     public static Scenario generateScenarioForEpoch(String planetKey, long targetYear) {
-        return generateScenarioForEpoch(planetKey, targetYear, true, TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
+        return generateScenarioForEpoch(planetKey, targetYear, true, TemporalTensorRepository.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
     }
 
     /**
@@ -46,7 +46,7 @@ public class AutoEpochScenarioGenerator {
      * and optional dedicated raster generation from raw empirical datasets.
      */
     public static Scenario generateScenarioForEpoch(String planetKey, long targetYear, boolean forceRegenerateMaps) {
-        return generateScenarioForEpoch(planetKey, targetYear, forceRegenerateMaps, TemporalMapTensorManager.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
+        return generateScenarioForEpoch(planetKey, targetYear, forceRegenerateMaps, TemporalTensorRepository.DataFallbackStrategy.CONTINUOUS_INTERPOLATION);
     }
 
     /**
@@ -54,8 +54,8 @@ public class AutoEpochScenarioGenerator {
      * optional dedicated raster generation, and explicit data fallback strategy.
      */
     public static Scenario generateScenarioForEpoch(String planetKey, long targetYear, boolean forceRegenerateMaps, 
-                                                    TemporalMapTensorManager.DataFallbackStrategy fallbackStrategy) {
-        String pKey = TemporalMapTensorManager.normalizePlanet(planetKey);
+                                                    TemporalTensorRepository.DataFallbackStrategy fallbackStrategy) {
+        String pKey = TemporalTensorRepository.normalizePlanet(planetKey);
         boolean isEarth = "earth".equalsIgnoreCase(pKey);
         Scenario s = new Scenario();
 
@@ -140,7 +140,7 @@ public class AutoEpochScenarioGenerator {
         // 7. Cartographic Raster Bases
         if (isEarth) {
             try {
-                var densityImg = TemporalMapTensorManager.loadTemporalMapImage(pKey, targetYear, "density", fallbackStrategy);
+                var densityImg = TemporalTensorRepository.loadTemporalMapImage(pKey, targetYear, "density", fallbackStrategy);
                 if (densityImg != null) {
                     String b64 = ImageMapLoader.imageToBase64Png(densityImg);
                     s.setCustomDensityBase64(b64);
@@ -159,7 +159,7 @@ public class AutoEpochScenarioGenerator {
         } else {
             // For non-Earth: check if planetary elevation / density image exists
             try {
-                var elevImg = TemporalMapTensorManager.loadTemporalMapImage(pKey, targetYear, "elevation", fallbackStrategy);
+                var elevImg = TemporalTensorRepository.loadTemporalMapImage(pKey, targetYear, "elevation", fallbackStrategy);
                 if (elevImg != null && planetPreset != null) {
                     // Pre-cached if needed
                 }

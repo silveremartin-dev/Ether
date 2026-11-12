@@ -27,7 +27,7 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
-import static org.ether.society.ui.analytics.SpatialTensorDiskCatalog.RASTER_IMAGE_CACHE;
+import static org.ether.society.ui.analytics.SpatialTensorDiskRegistry.RASTER_IMAGE_CACHE;
 
 /**
  * 2D Spatial Tensor &amp; Cartographic Comparison Pane.
@@ -391,7 +391,7 @@ public class SpatialTensorComparisonPane extends VBox {
             preloadAll2DTensorsAsync(itemA, itemB, minYear, maxYear);
         }
 
-        final String channelKey = SpatialTensorDiskCatalog.resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
+        final String channelKey = SpatialTensorDiskRegistry.resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
         int targetYear = dateSlider != null ? (int) dateSlider.getValue() : 0;
         final long currentReqId = spatialComparisonRequestId.incrementAndGet();
 
@@ -445,7 +445,7 @@ public class SpatialTensorComparisonPane extends VBox {
     }
 
     private void preloadAll2DTensorsAsync(ScenarioSelectableItem itemA, ScenarioSelectableItem itemB, int startYear, int endYear) {
-        String channelKey = SpatialTensorDiskCatalog.resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
+        String channelKey = SpatialTensorDiskRegistry.resolveCanonicalChannelKey(spatialChannelCombo != null ? spatialChannelCombo.getValue() : null);
         timelineAnimator.preloadAll2DTensorsAsync(itemA, itemB, startYear, endYear, channelKey, runResolver,
                 playTimelineBtn, mapRegenBox, mapRegenProgress, mapRegenStatusLabel);
     }
@@ -455,7 +455,7 @@ public class SpatialTensorComparisonPane extends VBox {
     }
 
     public static String resolveCanonicalChannelKey(String channel) {
-        return SpatialTensorDiskCatalog.resolveCanonicalChannelKey(channel);
+        return SpatialTensorDiskRegistry.resolveCanonicalChannelKey(channel);
     }
 
     private void toggleDateAnimation() {
@@ -494,5 +494,5 @@ public class SpatialTensorComparisonPane extends VBox {
     public ImageView getMapImageViewA() { return mapImageViewA; } public ImageView getMapImageViewB() { return mapImageViewB; }
     public ImageView getMapImageViewDiff() { return mapImageViewDiff; } public TextArea getSpatialMetricsReportArea() { return spatialMetricsReportArea; }
     public Button getExport2DZipBtn() { return export2DZipBtn; }
-    public static void clearRasterCache() { SpatialTensorDiskCatalog.clearRasterCache(); }
+    public static void clearRasterCache() { SpatialTensorDiskRegistry.clearRasterCache(); }
 }

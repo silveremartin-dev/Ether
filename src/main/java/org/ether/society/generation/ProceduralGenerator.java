@@ -469,6 +469,6 @@ public class ProceduralGenerator {
     }
 
     private void accumulateHydrographyFlow(List<H3Cell> cells, PlanetPreset preset, java.util.function.BooleanSupplier cancelSupplier) {
-        PlanetHydrographyFlowCalculator.accumulateHydrographyFlow(cells, preset, cancelSupplier);
+        PlanetHydrographyFlowHelper.accumulateHydrographyFlow(cells, preset, cancelSupplier);
     }
 }

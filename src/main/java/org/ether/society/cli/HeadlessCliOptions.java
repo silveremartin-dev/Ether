@@ -6,7 +6,7 @@ package org.ether.society.cli;
 
 import org.ether.society.core.dod.NativeRustBridge;
 import org.ether.society.i18n.I18n;
-import org.ether.society.network.ClusterManager;
+import org.ether.society.network.ClusterCoordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +42,8 @@ public final class HeadlessCliOptions {
             : HeadlessRunner.CliEngineMode.JAVA_VECTOR_SIMD;
 
     public boolean isClusterMode = false;
-    public ClusterManager.ClusterRole clusterRole = ClusterManager.ClusterRole.MASTER;
-    public ClusterManager.PartitionStrategy partitionStrategy = ClusterManager.PartitionStrategy.HILBERT;
+    public ClusterCoordinator.ClusterRole clusterRole = ClusterCoordinator.ClusterRole.MASTER;
+    public ClusterCoordinator.PartitionStrategy partitionStrategy = ClusterCoordinator.PartitionStrategy.HILBERT;
     public String masterHost = "127.0.0.1";
     public int port = 9090;
     public String secretToken = System.getenv("ETHER_CLUSTER_SECRET") != null
@@ -146,10 +146,10 @@ public final class HeadlessCliOptions {
             } else if (a.equals("--mode=local") || a.equals("--local")) {
                 o.isClusterMode = false;
             } else if (a.equals("--role=worker") || a.equals("--worker") || a.equals("--node")) {
-                o.clusterRole = ClusterManager.ClusterRole.WORKER;
+                o.clusterRole = ClusterCoordinator.ClusterRole.WORKER;
                 o.isClusterMode = true;
             } else if (a.equals("--role=master") || a.equals("--master") || a.equals("--server")) {
-                o.clusterRole = ClusterManager.ClusterRole.MASTER;
+                o.clusterRole = ClusterCoordinator.ClusterRole.MASTER;
                 o.isClusterMode = true;
             } else if (a.startsWith("--node-id=") || a.startsWith("--worker-id=") || a.startsWith("--id=")) {
                 o.workerNodeId = arg.substring(arg.indexOf('=') + 1).trim();
@@ -177,11 +177,11 @@ public final class HeadlessCliOptions {
             } else if (a.startsWith("--partition-strategy=") || a.startsWith("--split-strategy=")) {
                 String stratStr = a.substring(a.indexOf('=') + 1).toUpperCase();
                 if (stratStr.contains("LOAD") || stratStr.contains("WEIGHT") || stratStr.contains("DYN")) {
-                    o.partitionStrategy = ClusterManager.PartitionStrategy.LOAD_AWARE;
+                    o.partitionStrategy = ClusterCoordinator.PartitionStrategy.LOAD_AWARE;
                 } else if (stratStr.contains("SLICE") || stratStr.contains("EQUAL") || stratStr.contains("LAT")) {
-                    o.partitionStrategy = ClusterManager.PartitionStrategy.EQUAL_SLICES;
+                    o.partitionStrategy = ClusterCoordinator.PartitionStrategy.EQUAL_SLICES;
                 } else {
-                    o.partitionStrategy = ClusterManager.PartitionStrategy.HILBERT;
+                    o.partitionStrategy = ClusterCoordinator.PartitionStrategy.HILBERT;
                 }
             } else if (a.startsWith("--halo-exchange")) {
                 o.haloExchangeEnabled = !a.endsWith("=false");

@@ -25,7 +25,7 @@ import java.util.List;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.2
  * @see HistoricalScenarioMapOrchestrator
- * @see HomininPaleoOccupancyCalculator
+ * @see HomininPaleoOccupancyHelper
  * @see PaleoClimateMapRasterizer
  * @see GeologicalResourceMapRasterizer
  */
@@ -36,31 +36,31 @@ public class HistoricalMapGenerator {
     /** Standard global equirectangular raster height in pixels. */
     public static final int HEIGHT = 1024;
 
-    // Quaternary Continental Ice Sheets - Delegated to PaleoGeographyCoordinatesCatalog
-    public static final double[][] POLY_LAURENTIDE_LGM = PaleoGeographyCoordinatesCatalog.POLY_LAURENTIDE_LGM;
-    public static final double[][] POLY_LAURENTIDE_MIS3 = PaleoGeographyCoordinatesCatalog.POLY_LAURENTIDE_MIS3;
-    public static final double[][] POLY_LAURENTIDE_YD = PaleoGeographyCoordinatesCatalog.POLY_LAURENTIDE_YD;
-    public static final double[][] POLY_FENNOSCANDIA_LGM = PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_LGM;
-    public static final double[][] POLY_FENNOSCANDIA_MIS3 = PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_MIS3;
-    public static final double[][] POLY_FENNOSCANDIA_YD = PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_YD;
-    public static final double[][] POLY_FENNOSCANDIA_EARLY_HOLOCENE = PaleoGeographyCoordinatesCatalog.POLY_FENNOSCANDIA_EARLY_HOLOCENE;
-    public static final double[][] POLY_ALPS_LGM = PaleoGeographyCoordinatesCatalog.POLY_ALPS_LGM;
-    public static final double[][] POLY_PATAGONIA_LGM = PaleoGeographyCoordinatesCatalog.POLY_PATAGONIA_LGM;
-    public static final double[][] POLY_BERINGIA_REFUGE = PaleoGeographyCoordinatesCatalog.POLY_BERINGIA_REFUGE;
+    // Quaternary Continental Ice Sheets - Delegated to PaleoGeographyCoordinatesRegistry
+    public static final double[][] POLY_LAURENTIDE_LGM = PaleoGeographyCoordinatesRegistry.POLY_LAURENTIDE_LGM;
+    public static final double[][] POLY_LAURENTIDE_MIS3 = PaleoGeographyCoordinatesRegistry.POLY_LAURENTIDE_MIS3;
+    public static final double[][] POLY_LAURENTIDE_YD = PaleoGeographyCoordinatesRegistry.POLY_LAURENTIDE_YD;
+    public static final double[][] POLY_FENNOSCANDIA_LGM = PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_LGM;
+    public static final double[][] POLY_FENNOSCANDIA_MIS3 = PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_MIS3;
+    public static final double[][] POLY_FENNOSCANDIA_YD = PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_YD;
+    public static final double[][] POLY_FENNOSCANDIA_EARLY_HOLOCENE = PaleoGeographyCoordinatesRegistry.POLY_FENNOSCANDIA_EARLY_HOLOCENE;
+    public static final double[][] POLY_ALPS_LGM = PaleoGeographyCoordinatesRegistry.POLY_ALPS_LGM;
+    public static final double[][] POLY_PATAGONIA_LGM = PaleoGeographyCoordinatesRegistry.POLY_PATAGONIA_LGM;
+    public static final double[][] POLY_BERINGIA_REFUGE = PaleoGeographyCoordinatesRegistry.POLY_BERINGIA_REFUGE;
 
-    // Detailed Continental Migration Arteries - Delegated to PaleoGeographyCoordinatesCatalog
-    public static final double[][] ROUTE_PACIFIC_KELP_HIGHWAY = PaleoGeographyCoordinatesCatalog.ROUTE_PACIFIC_KELP_HIGHWAY;
-    public static final double[][] ROUTE_ICE_FREE_CORRIDOR = PaleoGeographyCoordinatesCatalog.ROUTE_ICE_FREE_CORRIDOR;
-    public static final double[][] ROUTE_COLUMBIA_SNAKE = PaleoGeographyCoordinatesCatalog.ROUTE_COLUMBIA_SNAKE;
-    public static final double[][] ROUTE_MISSOURI_RIVER = PaleoGeographyCoordinatesCatalog.ROUTE_MISSOURI_RIVER;
-    public static final double[][] ROUTE_MISSISSIPPI_OHIO = PaleoGeographyCoordinatesCatalog.ROUTE_MISSISSIPPI_OHIO;
-    public static final double[][] ROUTE_LOWER_MISSISSIPPI = PaleoGeographyCoordinatesCatalog.ROUTE_LOWER_MISSISSIPPI;
-    public static final double[][] ROUTE_SOUTHEAST_FLORIDA = PaleoGeographyCoordinatesCatalog.ROUTE_SOUTHEAST_FLORIDA;
-    public static final double[][] ROUTE_ANDES_CORRIDOR = PaleoGeographyCoordinatesCatalog.ROUTE_ANDES_CORRIDOR;
-    public static final double[][] ROUTE_AMAZON_MAINSTEM = PaleoGeographyCoordinatesCatalog.ROUTE_AMAZON_MAINSTEM;
-    public static final double[][] ROUTE_AMAZON_MADEIRA = PaleoGeographyCoordinatesCatalog.ROUTE_AMAZON_MADEIRA;
-    public static final double[][] ROUTE_BRAZIL_SAVANNA = PaleoGeographyCoordinatesCatalog.ROUTE_BRAZIL_SAVANNA;
-    public static final double[][] ROUTE_BERINGIA_STEPPE_CORRIDOR = PaleoGeographyCoordinatesCatalog.ROUTE_BERINGIA_STEPPE_CORRIDOR;
+    // Detailed Continental Migration Arteries - Delegated to PaleoGeographyCoordinatesRegistry
+    public static final double[][] ROUTE_PACIFIC_KELP_HIGHWAY = PaleoGeographyCoordinatesRegistry.ROUTE_PACIFIC_KELP_HIGHWAY;
+    public static final double[][] ROUTE_ICE_FREE_CORRIDOR = PaleoGeographyCoordinatesRegistry.ROUTE_ICE_FREE_CORRIDOR;
+    public static final double[][] ROUTE_COLUMBIA_SNAKE = PaleoGeographyCoordinatesRegistry.ROUTE_COLUMBIA_SNAKE;
+    public static final double[][] ROUTE_MISSOURI_RIVER = PaleoGeographyCoordinatesRegistry.ROUTE_MISSOURI_RIVER;
+    public static final double[][] ROUTE_MISSISSIPPI_OHIO = PaleoGeographyCoordinatesRegistry.ROUTE_MISSISSIPPI_OHIO;
+    public static final double[][] ROUTE_LOWER_MISSISSIPPI = PaleoGeographyCoordinatesRegistry.ROUTE_LOWER_MISSISSIPPI;
+    public static final double[][] ROUTE_SOUTHEAST_FLORIDA = PaleoGeographyCoordinatesRegistry.ROUTE_SOUTHEAST_FLORIDA;
+    public static final double[][] ROUTE_ANDES_CORRIDOR = PaleoGeographyCoordinatesRegistry.ROUTE_ANDES_CORRIDOR;
+    public static final double[][] ROUTE_AMAZON_MAINSTEM = PaleoGeographyCoordinatesRegistry.ROUTE_AMAZON_MAINSTEM;
+    public static final double[][] ROUTE_AMAZON_MADEIRA = PaleoGeographyCoordinatesRegistry.ROUTE_AMAZON_MADEIRA;
+    public static final double[][] ROUTE_BRAZIL_SAVANNA = PaleoGeographyCoordinatesRegistry.ROUTE_BRAZIL_SAVANNA;
+    public static final double[][] ROUTE_BERINGIA_STEPPE_CORRIDOR = PaleoGeographyCoordinatesRegistry.ROUTE_BERINGIA_STEPPE_CORRIDOR;
 
     // Biome Constants - Delegated to PaleoClimateMapRasterizer
     public static final int BIOME_DEEP_OCEAN = PaleoClimateMapRasterizer.BIOME_DEEP_OCEAN;
@@ -86,57 +86,57 @@ public class HistoricalMapGenerator {
 
     /** Computes hominin clade probability weights at (lon, lat). */
     public static double[] computeHomininCladeWeights(double lon, double lat) {
-        return HomininPaleoOccupancyCalculator.computeHomininCladeWeights(lon, lat);
+        return HomininPaleoOccupancyHelper.computeHomininCladeWeights(lon, lat);
     }
 
     /** Returns 1-indexed dominant hominin entity identifier at (lon, lat). */
     public static int getHomininEntityId(double lon, double lat) {
-        return HomininPaleoOccupancyCalculator.getHomininEntityId(lon, lat);
+        return HomininPaleoOccupancyHelper.getHomininEntityId(lon, lat);
     }
 
     /** Returns hominin species classification index at (lon, lat). */
     public static int getHomininSpeciesType(double lon, double lat) {
-        return HomininPaleoOccupancyCalculator.getHomininSpeciesType(lon, lat);
+        return HomininPaleoOccupancyHelper.getHomininSpeciesType(lon, lat);
     }
 
     /** Blends paleolithic sociological traits across Sapiens, Neanderthal, and Denisovan clades. */
     public static double blendPaleoTraits(double lon, double lat, double valSapiens, double valNeanderthal, double valDenisovan) {
-        return HomininPaleoOccupancyCalculator.blendPaleoTraits(lon, lat, valSapiens, valNeanderthal, valDenisovan);
+        return HomininPaleoOccupancyHelper.blendPaleoTraits(lon, lat, valSapiens, valNeanderthal, valDenisovan);
     }
 
     /** Smooths a closed polygon via Chaikin corner-cutting subdivision. */
     public static double[][] chaikinSmoothPolygon(double[][] poly, int iterations) {
-        return PaleoGeographyCoordinatesCatalog.chaikinSmoothPolygon(poly, iterations);
+        return PaleoGeographyCoordinatesRegistry.chaikinSmoothPolygon(poly, iterations);
     }
 
     /** Computes minimum distance in degrees from (lon, lat) to a polyline. */
     public static double distToPolyline(double lon, double lat, double[][] line) {
-        return HomininPaleoOccupancyCalculator.distToPolyline(lon, lat, line);
+        return HomininPaleoOccupancyHelper.distToPolyline(lon, lat, line);
     }
 
     /** Computes signed distance in degrees from (lon, lat) to a closed polygon (negative inside). */
     public static double signedDistanceToPolygon(double lon, double lat, double[][] poly) {
-        return HomininPaleoOccupancyCalculator.signedDistanceToPolygon(lon, lat, poly);
+        return HomininPaleoOccupancyHelper.signedDistanceToPolygon(lon, lat, poly);
     }
 
     /** Returns {@code true} if (lon, lat) is an uninhabited oceanic island at {@code year}. */
     public static boolean isRemoteOceanicIsland(double lon, double lat, long year) {
-        return HomininPaleoOccupancyCalculator.isRemoteOceanicIsland(lon, lat, year);
+        return HomininPaleoOccupancyHelper.isRemoteOceanicIsland(lon, lat, year);
     }
 
     /** Computes continuous hominin occupancy weight in \([0.0, 1.0]\) at (lon, lat, year). */
     public static double getHomininOccupancyWeight(double lon, double lat, long year) {
-        return HomininPaleoOccupancyCalculator.getHomininOccupancyWeight(lon, lat, year);
+        return HomininPaleoOccupancyHelper.getHomininOccupancyWeight(lon, lat, year);
     }
 
     /** Returns {@code true} if (lon, lat) is occupied by hominins at {@code year}. */
     public static boolean isHomininOccupied(double lon, double lat, long year) {
-        return HomininPaleoOccupancyCalculator.isHomininOccupied(lon, lat, year);
+        return HomininPaleoOccupancyHelper.isHomininOccupied(lon, lat, year);
     }
 
     /** Returns {@code true} if (lng, lat) lies on continental or insular land. */
     public static boolean isLand(double lng, double lat) {
-        return HistoricalLandGeometryCatalog.isLand(lng, lat);
+        return HistoricalLandGeometryRegistry.isLand(lng, lat);
     }
 
     /** Creates a pure transparent 2048x1024 ARGB canvas. */
@@ -185,22 +185,22 @@ public class HistoricalMapGenerator {
 
     /** Encodes a {@link BufferedImage} to a Base64 PNG string. */
     public static String bufferedImageToBase64Png(BufferedImage bImg) {
-        return HistoricalMapDiskCacheManager.bufferedImageToBase64Png(bImg);
+        return HistoricalMapRasterRepository.bufferedImageToBase64Png(bImg);
     }
 
     /** Writes a {@link BufferedImage} to disk as PNG. */
     public static void writePngFile(BufferedImage img, File targetFile) {
-        HistoricalMapDiskCacheManager.writePngFile(img, targetFile);
+        HistoricalMapRasterRepository.writePngFile(img, targetFile);
     }
 
     /** Loads scenario rasters from {@code data/maps/ether/earth/<year>/} if available. */
     public static boolean loadFromYearDirectory(Scenario scenario) {
-        return HistoricalMapDiskCacheManager.loadFromYearDirectory(scenario);
+        return HistoricalMapRasterRepository.loadFromYearDirectory(scenario);
     }
 
     /** Loads scenario rasters from legacy {@code data/cache/} directory if available. */
     public static boolean loadFromDiskCache(Scenario scenario, Path cacheDir, String safeName) {
-        return HistoricalMapDiskCacheManager.loadFromDiskCache(scenario, cacheDir, safeName);
+        return HistoricalMapRasterRepository.loadFromDiskCache(scenario, cacheDir, safeName);
     }
 
     /** Persists the full 20-channel demographic, cultural, and geological raster suite to {@code data/maps/ether/earth/<year>/}. */
@@ -209,19 +209,19 @@ public class HistoricalMapGenerator {
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen,
             BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas, BufferedImage imgUranium,
             BufferedImage imgHe3, BufferedImage imgIronCopper, BufferedImage imgPreciousMetals, BufferedImage imgRareEarths, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
-        HistoricalMapDiskCacheManager.saveImagesToYearDirectory(year, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTech, imgTrade, imgInst, imgEco, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
+        HistoricalMapRasterRepository.saveImagesToYearDirectory(year, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTech, imgTrade, imgInst, imgEco, imgPathogen, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
     }
 
     /** Persists cultural tensor rasters to {@code data/maps/ether/earth/<year>/}. */
     public static void saveCulturalTensorsToYearDirectory(long year, BufferedImage imgSovereignty,
             BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech,
             BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen) {
-        HistoricalMapDiskCacheManager.saveCulturalTensorsToYearDirectory(year, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTech, imgTrade, imgInst, imgEco, imgPathogen);
+        HistoricalMapRasterRepository.saveCulturalTensorsToYearDirectory(year, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTech, imgTrade, imgInst, imgEco, imgPathogen);
     }
 
     /** Persists demographic and cultural rasters to {@code data/cache/}. */
     public static void saveImagesToDiskCache(String scenarioName, BufferedImage imgDensity, BufferedImage imgSovereignty, BufferedImage imgIsogloss, BufferedImage imgKinship, BufferedImage imgRituals, BufferedImage imgTech, BufferedImage imgTrade, BufferedImage imgInst, BufferedImage imgEco, BufferedImage imgPathogen) {
-        HistoricalMapDiskCacheManager.saveImagesToDiskCache(scenarioName, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTech, imgTrade, imgInst, imgEco, imgPathogen);
+        HistoricalMapRasterRepository.saveImagesToDiskCache(scenarioName, imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals, imgTech, imgTrade, imgInst, imgEco, imgPathogen);
     }
 
     /** Persists geological resource rasters to {@code data/cache/}. */
@@ -229,7 +229,7 @@ public class HistoricalMapGenerator {
             BufferedImage imgCoal, BufferedImage imgOil, BufferedImage imgGas,
             BufferedImage imgUranium, BufferedImage imgHe3, BufferedImage imgIronCopper,
             BufferedImage imgPreciousMetals, BufferedImage imgRareEarths, BufferedImage imgMantleHeat, BufferedImage imgAquifer) {
-        HistoricalMapDiskCacheManager.saveGeologyTensorsToDiskCache(scenarioName, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
+        HistoricalMapRasterRepository.saveGeologyTensorsToDiskCache(scenarioName, imgCoal, imgOil, imgGas, imgUranium, imgHe3, imgIronCopper, imgPreciousMetals, imgRareEarths, imgMantleHeat, imgAquifer);
     }
 
     /** Generates or updates epoch provenance and README files inside an earth epoch directory. */

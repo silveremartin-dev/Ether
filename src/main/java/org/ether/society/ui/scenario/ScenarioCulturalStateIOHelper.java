@@ -83,7 +83,7 @@ final class ScenarioCulturalStateIOHelper {
         } else {
             fileLbl.setText(String.format(
                     I18n.getOrDefault("scenario.tensor.file.loaded_res", "✔ Carte chargée : %s (%dx%d)"),
-                    ScenarioCulturalTensorCatalog.getCulturalBaselineName(tensorIdx),
+                    ScenarioCulturalTensorRegistry.getCulturalBaselineName(tensorIdx),
                     val.width(), val.height()));
             fileLbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #38bdf8;");
             if (loadBtn != null) loadBtn.setStyle("");

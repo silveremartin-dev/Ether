@@ -35,7 +35,7 @@ public interface ISimulationEngine {
         return getSpeed();
     }
 
-    TimeManager getTimeManager();
+    SimulationTimeCoordinator getTimeManager();
 
     boolean isRunning();
 

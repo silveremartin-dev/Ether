@@ -11,7 +11,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import org.ether.society.analytics.HistoryManager;
+import org.ether.society.analytics.SimulationHistoryCoordinator;
 import org.ether.society.ui.export.AtlasVideoExporter;
 import org.ether.society.i18n.I18n;
 import org.ether.society.ui.DisplayMode;
@@ -57,7 +57,7 @@ public final class SpatialHeatmapExporter {
      */
     public static void exportVideo(
             Window window,
-            HistoryManager historyManager,
+            SimulationHistoryCoordinator historyManager,
             Set<DisplayMode> activeLayers,
             int startIdx,
             int endIdx,

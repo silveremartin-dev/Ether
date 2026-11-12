@@ -4,7 +4,7 @@
  */
 package org.ether.society.cli;
 
-import org.ether.society.network.ClusterManager;
+import org.ether.society.network.ClusterCoordinator;
 import org.ether.society.config.SimulationPerformanceConfig;
 import org.junit.jupiter.api.Test;
 
@@ -93,25 +93,25 @@ public class HeadlessRunnerCliTest {
         String secret = "MultiNodeTestSecret2026";
 
         // 1. Create Master Server with custom parameters
-        ClusterManager master = new ClusterManager(ClusterManager.ClusterRole.MASTER, "127.0.0.1", testPort, secret);
-        master.setPartitionStrategy(ClusterManager.PartitionStrategy.LOAD_AWARE);
+        ClusterCoordinator master = new ClusterCoordinator(ClusterCoordinator.ClusterRole.MASTER, "127.0.0.1", testPort, secret);
+        master.setPartitionStrategy(ClusterCoordinator.PartitionStrategy.LOAD_AWARE);
         master.setBarrierTimeoutMs(2500);
         master.setHeartbeatTimeoutSec(5);
         master.setTotalGridCellCount(300);
         master.start();
 
-        assertEquals(ClusterManager.PartitionStrategy.LOAD_AWARE, master.getPartitionStrategy());
+        assertEquals(ClusterCoordinator.PartitionStrategy.LOAD_AWARE, master.getPartitionStrategy());
         assertEquals(2500, master.getBarrierTimeoutMs());
         assertEquals(5, master.getHeartbeatTimeoutSec());
 
         // 2. Launch Worker Node 1 (Simulated GPU Node)
-        ClusterManager worker1 = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", testPort, secret);
+        ClusterCoordinator worker1 = new ClusterCoordinator(ClusterCoordinator.ClusterRole.WORKER, "127.0.0.1", testPort, secret);
         worker1.setCustomWorkerId("worker-gpu-alpha");
         worker1.setCustomWorkerCapacity("NVIDIA RTX 4090 GPU (24GB VRAM)");
         worker1.start();
 
         // 3. Launch Worker Node 2 (Simulated 64-Core SIMD Node)
-        ClusterManager worker2 = new ClusterManager(ClusterManager.ClusterRole.WORKER, "127.0.0.1", testPort, secret);
+        ClusterCoordinator worker2 = new ClusterCoordinator(ClusterCoordinator.ClusterRole.WORKER, "127.0.0.1", testPort, secret);
         worker2.setCustomWorkerId("worker-simd-beta");
         worker2.setCustomWorkerCapacity("AMD EPYC 64-Core AVX-512");
         worker2.start();
@@ -125,11 +125,11 @@ public class HeadlessRunnerCliTest {
         try {
             assertEquals(3, master.getNodeRegistry().size(), "Master must register both worker nodes + local master");
 
-            ClusterManager.ClusterNodeRecord node1 = master.getNodeRegistry().get("worker-gpu-alpha");
+            ClusterCoordinator.ClusterNodeRecord node1 = master.getNodeRegistry().get("worker-gpu-alpha");
             assertNotNull(node1, "Worker 1 must be registered with its custom ID");
             assertEquals("NVIDIA RTX 4090 GPU (24GB VRAM)", node1.getCapacity());
 
-            ClusterManager.ClusterNodeRecord node2 = master.getNodeRegistry().get("worker-simd-beta");
+            ClusterCoordinator.ClusterNodeRecord node2 = master.getNodeRegistry().get("worker-simd-beta");
             assertNotNull(node2, "Worker 2 must be registered with its custom ID");
             assertEquals("AMD EPYC 64-Core AVX-512", node2.getCapacity());
 

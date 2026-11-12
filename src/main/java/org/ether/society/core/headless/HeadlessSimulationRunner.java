@@ -9,7 +9,7 @@ import org.ether.society.config.ConfigurationLoader;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
-import org.ether.society.persistence.SimulationSaveManager;
+import org.ether.society.persistence.SimulationPersistenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public class HeadlessSimulationRunner {
     private static final Logger logger = LoggerFactory.getLogger(HeadlessSimulationRunner.class);
 
     private final H3SimulationEngine engine;
-    private final SimulationSaveManager saveManager;
+    private final SimulationPersistenceService saveManager;
     /** Internal state: initialized (boolean). */
     private boolean initialized = false;
 
@@ -38,7 +38,7 @@ public class HeadlessSimulationRunner {
     public HeadlessSimulationRunner() throws IOException {
         Configuration config = ConfigurationLoader.loadDefault();
         this.engine = new H3SimulationEngine(config);
-        this.saveManager = new SimulationSaveManager();
+        this.saveManager = new SimulationPersistenceService();
     }
 
     /**
@@ -48,7 +48,7 @@ public class HeadlessSimulationRunner {
      */
     public HeadlessSimulationRunner(Configuration config) {
         this.engine = new H3SimulationEngine(config);
-        this.saveManager = new SimulationSaveManager();
+        this.saveManager = new SimulationPersistenceService();
     }
 
     /**

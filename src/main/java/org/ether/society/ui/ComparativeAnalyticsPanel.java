@@ -21,7 +21,7 @@ import org.ether.society.analytics.GroundTruthAuditGenerator.AuditResult;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.i18n.I18n;
 import org.ether.society.persistence.ScenarioRepository;
-import org.ether.society.persistence.SimulationSaveManager;
+import org.ether.society.persistence.SimulationPersistenceService;
 import org.ether.society.ui.analytics.*;
 import org.ether.society.ui.export.ComparativeAnalyticsExporter;
 import org.ether.society.ui.util.MarkdownViewerPane;
@@ -47,7 +47,7 @@ public class ComparativeAnalyticsPanel extends BorderPane {
 
     private final SimulationRunRepository runRepository;
     private final ScenarioRepository scenarioRepository;
-    private final SimulationSaveManager saveManager = new SimulationSaveManager();
+    private final SimulationPersistenceService saveManager = new SimulationPersistenceService();
     private final RootCauseAnalyzer analyzer;
     private java.util.function.Supplier<H3SimulationEngine> engineSupplier;
 

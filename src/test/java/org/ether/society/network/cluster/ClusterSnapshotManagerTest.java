@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ClusterSnapshotManagerTest {
 
     private Path tempDir;
-    private ClusterSnapshotManager snapshotManager;
+    private ClusterSnapshotService snapshotManager;
 
     @BeforeEach
     /*
@@ -36,7 +36,7 @@ public class ClusterSnapshotManagerTest {
      */
     public void setup() throws IOException {
         tempDir = Files.createTempDirectory("ether_snapshots_test");
-        snapshotManager = new ClusterSnapshotManager(tempDir, 3);
+        snapshotManager = new ClusterSnapshotService(tempDir, 3);
     }
 
     @AfterEach

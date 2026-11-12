@@ -31,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
-import static org.ether.society.ui.analytics.SpatialTensorDiskCatalog.RASTER_IMAGE_CACHE;
+import static org.ether.society.ui.analytics.SpatialTensorDiskRegistry.RASTER_IMAGE_CACHE;
 
 /**
  * Manages timeline scrubbing, asynchronous frame preloading, and automated interactive playback
@@ -161,7 +161,7 @@ public class SpatialTensorTimelineAnimator {
         if (!RASTER_IMAGE_CACHE.containsKey(cacheKey)) {
             try {
                 List<H3Cell> snapshotCells = run != null ? run.getSpatialSnapshotAt(yr) : null;
-                File diskRaster = SpatialTensorDiskCatalog.getDiskRasterForChannel(yr, channelKey);
+                File diskRaster = SpatialTensorDiskRegistry.getDiskRasterForChannel(yr, channelKey);
                 BufferedImage buf = null;
                 if ("HISTORICAL_GROUND_TRUTH".equals(runId) && diskRaster != null && diskRaster.exists()) {
                     buf = ImageIO.read(diskRaster);
@@ -174,7 +174,7 @@ public class SpatialTensorTimelineAnimator {
                         buf = HistoricalMapGenerator.rasterizeDensityMapForYear(item.getScenario().getPopulationDensityType(), item.getScenario(), yr);
                     } else {
                         HistoricalMapGenerator.populateScenarioHistoricalMaps(item.getScenario());
-                        buf = SpatialTensorRasterRenderer.base64ToBufferedImage(SpatialTensorDiskCatalog.extractChannelBase64(item.getScenario(), channelKey));
+                        buf = SpatialTensorRasterRenderer.base64ToBufferedImage(SpatialTensorDiskRegistry.extractChannelBase64(item.getScenario(), channelKey));
                     }
                 }
                 if (buf != null) {

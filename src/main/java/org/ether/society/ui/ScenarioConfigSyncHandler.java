@@ -8,7 +8,7 @@ package org.ether.society.ui;
 import org.ether.society.generation.PlanetPreset;
 import org.ether.society.model.EcologyPreset;
 import org.ether.society.model.Scenario;
-import org.ether.society.ui.scenario.ScenarioEpochCatalog;
+import org.ether.society.ui.scenario.ScenarioEpochRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +112,7 @@ public class ScenarioConfigSyncHandler {
 
             if (panel.demographicSectionBuilder != null && panel.demographicSectionBuilder.getDemoSourceCombo() != null) {
                 String autoSrc = panel.demographicSectionBuilder.pickDemoSourceForEpoch(s.getStartDateYear(), panel.activePlanetPreset);
-                ScenarioEpochCatalog.selectBestSource(panel.demographicSectionBuilder.getDemoSourceCombo(), autoSrc, "Terre");
+                ScenarioEpochRegistry.selectBestSource(panel.demographicSectionBuilder.getDemoSourceCombo(), autoSrc, "Terre");
             }
 
             if (panel.eventsList != null) {

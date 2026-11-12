@@ -2,7 +2,7 @@ package org.ether.society.generation;
 
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.tier2.theories.ProceduralPopulationEngine;
-import org.ether.society.model.FutureAndExoplanetScenarioCatalog;
+import org.ether.society.model.FutureAndExoplanetScenarioRegistry;
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,7 @@ public class MarsColonyDistributionTest {
 
     @Test
     public void testMarsPopulationDistribution() {
-        Scenario marsScenario = FutureAndExoplanetScenarioCatalog.getBuiltInScenarios().stream()
+        Scenario marsScenario = FutureAndExoplanetScenarioRegistry.getBuiltInScenarios().stream()
                 .filter(s -> s.getPresetKey() != null && s.getPresetKey().contains("mars"))
                 .findFirst()
                 .orElse(null);

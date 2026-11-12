@@ -86,10 +86,10 @@ public final class HistoricalPolityAndSovereigntyRasterizer {
         }
 
         // (lon, lat, colorRGB, sigma)
-        List<double[]> empireCores = HistoricalEmpireCoresCatalog.getEmpireCoresForYear(year);
+        List<double[]> empireCores = HistoricalEmpireCoresRegistry.getEmpireCoresForYear(year);
 
         if (year <= -18000L) {
-            BufferedImage paleoImg = PaleolithicSovereigntySeedsCatalog.rasterizePaleolithicEpoch(year, mask);
+            BufferedImage paleoImg = PaleolithicSovereigntySeedsRegistry.rasterizePaleolithicEpoch(year, mask);
             if (paleoImg != null) return paleoImg;
         }
 

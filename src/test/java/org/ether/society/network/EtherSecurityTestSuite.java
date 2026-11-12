@@ -27,7 +27,7 @@ public class EtherSecurityTestSuite {
      *
      */
     public void testAesGcmEncryptionDecryption() throws Exception {
-        EtherSecurityManager sec = new EtherSecurityManager();
+        EtherSecurityService sec = new EtherSecurityService();
         String originalPayload = "GOD_MODE_INJECTION:SOOT_OPTICAL_DEPTH_1.5";
 
         String encrypted = sec.encrypt(originalPayload);

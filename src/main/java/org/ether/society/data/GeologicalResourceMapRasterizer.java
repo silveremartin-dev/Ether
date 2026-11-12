@@ -39,7 +39,7 @@ import java.util.zip.ZipFile;
  * @since 1.0.0
  * @see HistoricalMapGenerator
  * @see EmpiricalGeospatialDatasetIngestion
- * @see GeologicalResourceProvincesCatalog
+ * @see GeologicalResourceProvincesRegistry
  */
 public final class GeologicalResourceMapRasterizer {
 
@@ -226,7 +226,7 @@ public final class GeologicalResourceMapRasterizer {
         if (spots.isEmpty()) {
             spots = loadMRDSDeposits("coal", "lignite", "anthracite", "bituminous");
         }
-        Collections.addAll(spots, GeologicalResourceProvincesCatalog.SURFACE_COAL_OUTCROPS);
+        Collections.addAll(spots, GeologicalResourceProvincesRegistry.SURFACE_COAL_OUTCROPS);
 
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 8.0);
         cachedCoalMap = img;
@@ -245,14 +245,14 @@ public final class GeologicalResourceMapRasterizer {
         BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
 
         var spots = new ArrayList<double[]>();
-        Collections.addAll(spots, GeologicalResourceProvincesCatalog.MAJOR_CRUSTAL_OIL_BASINS);
+        Collections.addAll(spots, GeologicalResourceProvincesRegistry.MAJOR_CRUSTAL_OIL_BASINS);
         var empirical = EmpiricalGeospatialDatasetIngestion.getEmpiricalOilOccurrences();
         if (!empirical.isEmpty()) {
             spots.addAll(empirical);
         } else {
             spots.addAll(loadMRDSDeposits("petroleum", "oil", "hydrocarbon"));
         }
-        Collections.addAll(spots, GeologicalResourceProvincesCatalog.ANCIENT_BITUMEN_SPOTS);
+        Collections.addAll(spots, GeologicalResourceProvincesRegistry.ANCIENT_BITUMEN_SPOTS);
 
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 9.0);
         cachedOilMap = img;
@@ -271,12 +271,12 @@ public final class GeologicalResourceMapRasterizer {
         BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
 
         var spots = new ArrayList<double[]>();
-        Collections.addAll(spots, GeologicalResourceProvincesCatalog.MAJOR_GAS_BASINS);
+        Collections.addAll(spots, GeologicalResourceProvincesRegistry.MAJOR_GAS_BASINS);
         var empirical = EmpiricalGeospatialDatasetIngestion.getEmpiricalGasOccurrences();
         if (!empirical.isEmpty()) {
             spots.addAll(empirical);
         }
-        Collections.addAll(spots, GeologicalResourceProvincesCatalog.ANCIENT_GAS_SPOTS);
+        Collections.addAll(spots, GeologicalResourceProvincesRegistry.ANCIENT_GAS_SPOTS);
 
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 8.0);
         cachedGasMap = img;
@@ -295,7 +295,7 @@ public final class GeologicalResourceMapRasterizer {
         BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
 
         var spots = loadMRDSDeposits("uranium", "thorium");
-        Collections.addAll(spots, GeologicalResourceProvincesCatalog.IAEA_MAJOR_URANIUM_DEPOSITS);
+        Collections.addAll(spots, GeologicalResourceProvincesRegistry.IAEA_MAJOR_URANIUM_DEPOSITS);
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 6.0);
         cachedUraniumMap = img;
         return img;
@@ -326,8 +326,8 @@ public final class GeologicalResourceMapRasterizer {
         BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
 
         var spots = loadMRDSDeposits("iron", "copper", "magnetite", "hematite", "chalcopyrite");
-        Collections.addAll(spots, GeologicalResourceProvincesCatalog.MAJOR_IRON_COPPER_METALS);
-        Collections.addAll(spots, GeologicalResourceProvincesCatalog.ANCIENT_IRON_COPPER_METALS);
+        Collections.addAll(spots, GeologicalResourceProvincesRegistry.MAJOR_IRON_COPPER_METALS);
+        Collections.addAll(spots, GeologicalResourceProvincesRegistry.ANCIENT_IRON_COPPER_METALS);
 
         rasterizeTieredSpotList(img, spots, new Color(80, 80, 80), new Color(160, 160, 160), new Color(240, 240, 240), 6.0);
         cachedIronCopperMap = img;
@@ -349,7 +349,7 @@ public final class GeologicalResourceMapRasterizer {
         for (double[] m : loadMRDSDeposits("gold", "silver", "platinum", "palladium", "electrum")) {
             spots.add(new double[]{m[0], m[1], 5.0, 1.2});
         }
-        Collections.addAll(spots, GeologicalResourceProvincesCatalog.PRECIOUS_METALS_PROVINCES);
+        Collections.addAll(spots, GeologicalResourceProvincesRegistry.PRECIOUS_METALS_PROVINCES);
 
         rasterizeTieredSpotList(img, spots, new Color(90, 90, 90), new Color(175, 175, 175), new Color(255, 255, 255), 8.0);
         cachedPreciousMetalsMap = img;
@@ -368,7 +368,7 @@ public final class GeologicalResourceMapRasterizer {
         BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
         var spots = loadMRDSDeposits("rare earth", "bastnasite", "monazite", "xenotime", "neodymium",
                 "dysprosium", "yttrium", "lanthanum", "cerium", "lithium", "spodumene", "carbonatite", "loparite", "allanite");
-        Collections.addAll(spots, GeologicalResourceProvincesCatalog.MAJOR_REE_DEPOSITS);
+        Collections.addAll(spots, GeologicalResourceProvincesRegistry.MAJOR_REE_DEPOSITS);
         rasterizeSpotListToAlpha(img, spots, Color.WHITE, 5.0);
         cachedRareEarthsMap = img;
         return img;
@@ -384,7 +384,7 @@ public final class GeologicalResourceMapRasterizer {
      */
     public static BufferedImage rasterizeMantleHeatMap(String type, Scenario scenario) {
         if (cachedMantleHeatMap != null) return cachedMantleHeatMap;
-        cachedMantleHeatMap = GeologicalResourceProvincesCatalog.rasterizeDaviesMantleHeatFlow();
+        cachedMantleHeatMap = GeologicalResourceProvincesRegistry.rasterizeDaviesMantleHeatFlow();
         return cachedMantleHeatMap;
     }
 

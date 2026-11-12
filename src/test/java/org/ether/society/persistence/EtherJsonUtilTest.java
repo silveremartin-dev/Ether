@@ -57,7 +57,7 @@ public class EtherJsonUtilTest {
 
     @Test
     public void testAllExistingSavesCanBeListedWithoutCorruption() {
-        SimulationSaveManager saveManager = new SimulationSaveManager();
+        SimulationPersistenceService saveManager = new SimulationPersistenceService();
         List<SaveMetadata> saves = saveManager.listSaves();
         assertNotNull(saves);
         assertFalse(saves.isEmpty(), "Saves list should contain canonical saves");

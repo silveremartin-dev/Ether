@@ -33,11 +33,11 @@ import java.util.*;
  *
  * <p>Decomposed to adhere strictly to the Single Responsibility Principle (SRP):
  * <ul>
- *   <li>Scenario catalogs in {@link HistoricalCalibrationScenarioCatalog}.</li>
+ *   <li>Scenario catalogs in {@link HistoricalCalibrationScenarioRegistry}.</li>
  *   <li>Forward DoD simulation execution in {@link HistoricalCalibrationSimulationExecutor}.</li>
- *   <li>Sensitivity & engine ablation audits in {@link HistoricalCalibrationSensitivityEvaluator}.</li>
- *   <li>Atomicity & save persistence in {@link HistoricalCalibrationPersistenceManager}.</li>
- *   <li>Spatial maps & checkpoint evaluations in {@link HistoricalCalibrationSpatialEvaluator}.</li>
+ *   <li>Sensitivity & engine ablation audits in {@link HistoricalCalibrationSensitivityHelper}.</li>
+ *   <li>Atomicity & save persistence in {@link CalibrationPersistenceService}.</li>
+ *   <li>Spatial maps & checkpoint evaluations in {@link HistoricalCalibrationSpatialHelper}.</li>
  *   <li>Academic report synthesis in {@link HistoricalCalibrationReportGenerator}.</li>
  * </ul>
  * </p>
@@ -146,10 +146,10 @@ public class HistoricalScenarioCalibrationHarness {
     ) {}
 
     // --- PREDEFINED SCENARIO CATALOGS (DELEGATED FOR 100% BACKWARD COMPATIBILITY) ---
-    public static final List<CalibrationScenarioDefinition> CALIBRATION_SCENARIOS = HistoricalCalibrationScenarioCatalog.CALIBRATION_SCENARIOS;
-    public static final List<CalibrationScenarioDefinition> FALSIFICATION_COUNTERFACTUAL_SCENARIOS = HistoricalCalibrationScenarioCatalog.FALSIFICATION_COUNTERFACTUAL_SCENARIOS;
-    public static final List<CalibrationScenarioDefinition> ARCHAEOLOGICAL_DETECTIVE_SCENARIOS = HistoricalCalibrationScenarioCatalog.ARCHAEOLOGICAL_DETECTIVE_SCENARIOS;
-    public static final List<CalibrationScenarioDefinition> MASTER_NINE_EPOCH_BLOCKS = HistoricalCalibrationScenarioCatalog.MASTER_NINE_EPOCH_BLOCKS;
+    public static final List<CalibrationScenarioDefinition> CALIBRATION_SCENARIOS = HistoricalCalibrationScenarioRegistry.CALIBRATION_SCENARIOS;
+    public static final List<CalibrationScenarioDefinition> FALSIFICATION_COUNTERFACTUAL_SCENARIOS = HistoricalCalibrationScenarioRegistry.FALSIFICATION_COUNTERFACTUAL_SCENARIOS;
+    public static final List<CalibrationScenarioDefinition> ARCHAEOLOGICAL_DETECTIVE_SCENARIOS = HistoricalCalibrationScenarioRegistry.ARCHAEOLOGICAL_DETECTIVE_SCENARIOS;
+    public static final List<CalibrationScenarioDefinition> MASTER_NINE_EPOCH_BLOCKS = HistoricalCalibrationScenarioRegistry.MASTER_NINE_EPOCH_BLOCKS;
 
     /**
      * Parameter drift diagnostic and remediation item.
@@ -333,7 +333,7 @@ public class HistoricalScenarioCalibrationHarness {
      * @return list of {@link EngineAblationAuditEntry} audit records
      */
     public static List<EngineAblationAuditEntry> runPluggableEngineAndWorld3AblationAudit() {
-        return HistoricalCalibrationSensitivityEvaluator.runPluggableEngineAndWorld3AblationAudit();
+        return HistoricalCalibrationSensitivityHelper.runPluggableEngineAndWorld3AblationAudit();
     }
 
     /**
@@ -364,7 +364,7 @@ public class HistoricalScenarioCalibrationHarness {
      * @return multi-scale sensitivity matrix
      */
     public static MultiScaleSensitivityMatrix runMultiScaleSensitivityMatrix(CalibrationScenarioDefinition def) {
-        return HistoricalCalibrationSensitivityEvaluator.runMultiScaleSensitivityMatrix(def);
+        return HistoricalCalibrationSensitivityHelper.runMultiScaleSensitivityMatrix(def);
     }
 
     /**

@@ -14,7 +14,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
-import org.ether.society.ui.scenario.ScenarioEngineCatalog.EngineMeta;
+import org.ether.society.ui.scenario.ScenarioEngineRegistry.EngineMeta;
 import org.ether.society.ui.util.UIControlsHelper;
 
 import java.util.*;
@@ -87,7 +87,7 @@ final class ScenarioEngineParamControlsHelper {
             VBox typeABox,
             List<CoreEngineRow> coreEngineRows,
             ScenarioEngineConfigSectionBuilder builder) {
-        List<EngineMeta> coreEngines = ScenarioEngineCatalog.getCoreEngines();
+        List<EngineMeta> coreEngines = ScenarioEngineRegistry.getCoreEngines();
         coreEngineRows.clear();
         for (EngineMeta eng : coreEngines) {
             HBox row = new HBox(8);
@@ -246,13 +246,13 @@ final class ScenarioEngineParamControlsHelper {
             int sortIdx,
             Map<String, VBox> engineContainers,
             VBox typeBBoxContainer) {
-        List<EngineMeta> sorted = new ArrayList<>(ScenarioEngineCatalog.getOptionalEngines());
+        List<EngineMeta> sorted = new ArrayList<>(ScenarioEngineRegistry.getOptionalEngines());
         if (sortIdx == 1) {
-            sorted.sort(Comparator.comparingLong(e -> ScenarioEngineCatalog.getEngineApparitionYear(e.id())));
+            sorted.sort(Comparator.comparingLong(e -> ScenarioEngineRegistry.getEngineApparitionYear(e.id())));
         } else if (sortIdx == 2) {
             sorted.sort((a, b) -> Long.compare(
-                    ScenarioEngineCatalog.getEngineApparitionYear(b.id()),
-                    ScenarioEngineCatalog.getEngineApparitionYear(a.id())));
+                    ScenarioEngineRegistry.getEngineApparitionYear(b.id()),
+                    ScenarioEngineRegistry.getEngineApparitionYear(a.id())));
         } else if (sortIdx == 3) {
             sorted.sort(Comparator.comparing(e -> I18n.getEngineTitle(e.id(), e.defaultTitle())));
         }
