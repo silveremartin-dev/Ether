@@ -122,19 +122,19 @@ public class ExecutionContextClusterSection extends VBox {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colId.setPrefWidth(120);
 
-        colHost = new TableColumn<>("HÃ´te / IP");
+        colHost = new TableColumn<>("Hôte / IP");
         colHost.setCellValueFactory(new PropertyValueFactory<>("host"));
         colHost.setPrefWidth(120);
 
-        colRole = new TableColumn<>("RÃ´le");
+        colRole = new TableColumn<>("Rôle");
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
         colRole.setPrefWidth(90);
 
-        colStatus = new TableColumn<>("Ã‰tat");
+        colStatus = new TableColumn<>("État");
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colStatus.setPrefWidth(90);
 
-        colCap = new TableColumn<>("CapacitÃ© CPU / RAM / GPU");
+        colCap = new TableColumn<>("Capacité CPU / RAM / GPU");
         colCap.setCellValueFactory(new PropertyValueFactory<>("capacity"));
         colCap.setPrefWidth(180);
 
@@ -186,7 +186,7 @@ public class ExecutionContextClusterSection extends VBox {
         String p = (portField != null && portField.getText() != null && !portField.getText().isBlank()) ? portField.getText() : "9090";
 
         String roleStr = isMasterRunning ? I18n.getOrDefault("exec.cluster.role_master_active", "Master (Active)") : I18n.getOrDefault("exec.cluster.role_local", "Local Standalone");
-        String statusStr = isMasterRunning ? "ðŸŸ¢ " + I18n.getOrDefault("exec.cluster.listening", "Listening") + " (Port " + p + ")" : "ðŸŸ¢ Standalone";
+        String statusStr = isMasterRunning ? " " + I18n.getOrDefault("exec.cluster.listening", "Listening") + " (Port " + p + ")" : " Standalone";
 
         nodeList.add(new ClusterNode("node-01-local", localHost + ":" + p, roleStr, statusStr, cores + " CPU Cores (" + maxMemGb + " GB RAM) | " + localGpu, "H3 Zone 0-4000 (Consensus Master)"));
         if (onClusterStateChanged != null) onClusterStateChanged.run();
@@ -208,7 +208,7 @@ public class ExecutionContextClusterSection extends VBox {
                 startMasterBtn.setText(I18n.getOrDefault("exec.cluster.stop_master", "â¹ Stop Master Server"));
                 startMasterBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;");
 
-                String msg = String.format(I18n.getOrDefault("exec.cluster.status.master_started", "ðŸŸ¢ Master Server active on port %d â€” Local and remote nodes synchronized."), port);
+                String msg = String.format(I18n.getOrDefault("exec.cluster.status.master_started", " Master Server active on port %d — Local and remote nodes synchronized."), port);
                 clusterStatusLabel.setText(msg);
                 clusterStatusLabel.setStyle("-fx-font-weight: bold;");
 
@@ -242,7 +242,7 @@ public class ExecutionContextClusterSection extends VBox {
             }
             isMasterRunning = false;
             logger.info("Stopping Master Server...");
-            startMasterBtn.setText(I18n.getOrDefault("exec.cluster.start_master", "ðŸ‘‘ Start Master Server"));
+            startMasterBtn.setText(I18n.getOrDefault("exec.cluster.start_master", " Start Master Server"));
             startMasterBtn.setStyle("");
 
             clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.master_stopped", "âšª Master Server Stopped (Inactive Mode)"));
@@ -267,7 +267,7 @@ public class ExecutionContextClusterSection extends VBox {
             isConnectedCluster = true;
             logger.info("Successfully connected worker to cluster at {}:{}", host, port);
 
-            String msg = String.format(I18n.getOrDefault("exec.cluster.status.joined", "ðŸŸ¢ Connected to cluster Master node %s:%d."), host, port);
+            String msg = String.format(I18n.getOrDefault("exec.cluster.status.joined", " Connected to cluster Master node %s:%d."), host, port);
             clusterStatusLabel.setText(msg);
             clusterStatusLabel.setStyle("-fx-font-weight: bold;");
         } catch (Exception ex) {
@@ -291,7 +291,7 @@ public class ExecutionContextClusterSection extends VBox {
 
     public void testConnection() {
         logger.info("Testing cluster connectivity...");
-        clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.test_ok", "ðŸŸ¢ Cluster connection established â€” Network latency: 1.2 ms | Throughput: 10 Gbps"));
+        clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.status.test_ok", " Cluster connection established — Network latency: 1.2 ms | Throughput: 10 Gbps"));
         clusterStatusLabel.setStyle("-fx-font-weight: bold;");
     }
 
@@ -303,28 +303,28 @@ public class ExecutionContextClusterSection extends VBox {
                 String id = rec.getId();
                 String host = rec.getHost() + ":" + rec.getPort();
                 String role = rec.getRole() == ClusterCoordinator.ClusterRole.MASTER ? I18n.getOrDefault("exec.cluster.role_master_active", "Master (Active)") : I18n.getOrDefault("exec.cluster.role_worker", "Worker");
-                String status = "ðŸŸ¢ " + rec.getStatus().name();
+                String status = " " + rec.getStatus().name();
                 String cap = rec.getCapacity();
                 String chunks = "H3 Zone " + rec.getAssignedChunkStart() + "-" + rec.getAssignedChunkEnd();
                 nodeList.add(new ClusterNode(id, host, role, status, cap, chunks));
             }
-            clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.nodes_synced_prefix", "ðŸ”„ Cluster nodes synchronized live (") + nodeList.size() + I18n.getOrDefault("exec.cluster.nodes_synced_suffix", " registered nodes)."));
+            clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.nodes_synced_prefix", " Cluster nodes synchronized live (") + nodeList.size() + I18n.getOrDefault("exec.cluster.nodes_synced_suffix", " registered nodes)."));
         } else {
             populateInitialClusterNodes();
             if (isMasterRunning || isConnectedCluster) {
                 int cores = Runtime.getRuntime().availableProcessors();
                 String randomWorkerId = "node-0" + (nodeList.size() + 1) + "-worker";
-                nodeList.add(new ClusterNode(randomWorkerId, "192.168.1." + (100 + nodeList.size() + 1) + ":9090", I18n.getOrDefault("exec.cluster.role_worker", "Worker"), "ðŸŸ¢ " + I18n.getOrDefault("exec.cluster.connected", "Connected"), cores + " Cores | Sub-Mesh GPU Active", "H3 Zone Dynamic"));
-                clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.remote_worker_prefix", "ðŸ”„ Remote worker node detected and synchronized (") + nodeList.size() + I18n.getOrDefault("exec.cluster.remote_worker_suffix", " total nodes)."));
+                nodeList.add(new ClusterNode(randomWorkerId, "192.168.1." + (100 + nodeList.size() + 1) + ":9090", I18n.getOrDefault("exec.cluster.role_worker", "Worker"), " " + I18n.getOrDefault("exec.cluster.connected", "Connected"), cores + " Cores | Sub-Mesh GPU Active", "H3 Zone Dynamic"));
+                clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.remote_worker_prefix", " Remote worker node detected and synchronized (") + nodeList.size() + I18n.getOrDefault("exec.cluster.remote_worker_suffix", " total nodes)."));
             } else {
-                clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.no_workers", "â„¹ï¸ No remote worker nodes connected (Standalone Mode â€” 1 Local Node)."));
+                clusterStatusLabel.setText(I18n.getOrDefault("exec.cluster.no_workers", "â„¹ï¸ No remote worker nodes connected (Standalone Mode — 1 Local Node)."));
             }
         }
         if (onClusterStateChanged != null) onClusterStateChanged.run();
     }
 
     public void updateTexts() {
-        if (clusterHeaderLabel != null) clusterHeaderLabel.setText(I18n.getOrDefault("exec.cluster.title", "ðŸŒ Cluster Network & Node Setup"));
+        if (clusterHeaderLabel != null) clusterHeaderLabel.setText(I18n.getOrDefault("exec.cluster.title", " Cluster Network & Node Setup"));
         if (lblLocalRole != null) lblLocalRole.setText(I18n.getOrDefault("exec.cluster.local_role", "Local Node Role:"));
         if (lblMasterIp != null) lblMasterIp.setText(I18n.getOrDefault("exec.cluster.master_ip", "Master IP / Host Address:"));
         if (lblPort != null) lblPort.setText(I18n.getOrDefault("exec.cluster.port", "gRPC / TCP Port:"));
@@ -372,7 +372,7 @@ public class ExecutionContextClusterSection extends VBox {
 
         if (startMasterBtn != null) {
             if (!isMasterRunning) {
-                startMasterBtn.setText(I18n.getOrDefault("exec.cluster.start_master", "ðŸ‘‘ Start Master Server"));
+                startMasterBtn.setText(I18n.getOrDefault("exec.cluster.start_master", " Start Master Server"));
             } else {
                 startMasterBtn.setText(I18n.getOrDefault("exec.cluster.stop_master", "â¹ Stop Master Server"));
             }
@@ -380,17 +380,17 @@ public class ExecutionContextClusterSection extends VBox {
         }
 
         if (joinClusterBtn != null) {
-            joinClusterBtn.setText(I18n.getOrDefault("exec.cluster.join", "ðŸ”— Join Cluster"));
+            joinClusterBtn.setText(I18n.getOrDefault("exec.cluster.join", " Join Cluster"));
             joinClusterBtn.setTooltip(new Tooltip(I18n.getOrDefault("exec.cluster.join.tooltip", "Connect this workstation as a worker node to an external master server.")));
         }
 
         if (testConnBtn != null) {
-            testConnBtn.setText(I18n.getOrDefault("exec.cluster.test", "ðŸ“¡ Test Connection"));
+            testConnBtn.setText(I18n.getOrDefault("exec.cluster.test", " Test Connection"));
             testConnBtn.setTooltip(new Tooltip(I18n.getOrDefault("exec.cluster.test.tooltip", "Ping target master node and measure network round-trip latency.")));
         }
 
         if (refreshNodesBtn != null) {
-            refreshNodesBtn.setText(I18n.getOrDefault("exec.cluster.refresh", "ðŸ”„ Refresh Nodes"));
+            refreshNodesBtn.setText(I18n.getOrDefault("exec.cluster.refresh", " Refresh Nodes"));
             refreshNodesBtn.setTooltip(new Tooltip(I18n.getOrDefault("exec.cluster.refresh.tooltip", "Poll registered worker nodes and update cluster registry table.")));
         }
 

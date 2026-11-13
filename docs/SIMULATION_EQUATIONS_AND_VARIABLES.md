@@ -118,6 +118,44 @@ with canonical parameters:
 
 #### 2. Historical Epoch Uncertainty Envelopes:
 - **Deep Time ($-3\,000\,000\text{ BP}$ to $-10\,000\text{ BP}$)**: $\tau \approx 45\text{--}50\%$. Archeological bone beds, lithic scatters, and ice-core proxies capture order-of-magnitude demographic densities and global climate anomalies.
+
+### 2.3 Canonical Time-Step Representation (`SimulationTimeStep`) & Numerical Discretization Principles
+
+To enforce strict dimensional consistency, zero allocation per tick, and prevent numerical drift across spatial scales, temporal increments across all simulation engines, DOD kernels, and pipeline orchestrators are represented exclusively via the immutable value record `org.ether.society.core.SimulationTimeStep`.
+
+#### 1. Exact Astronomical Baseline Conversions:
+All temporal conversions anchor to authoritative astronomical invariants (`PhysicalConstants`):
+$$\text{DAYS\_PER\_JULIAN\_YEAR} = 365.25, \quad \text{DAYS\_PER\_SYNODIC\_MONTH} = 30.4375, \quad \text{SECONDS\_PER\_DAY} = 86\,400.0$$
+
+The canonical accessors are:
+$$\Delta t_{\text{days}} = \text{timeStep.dtDays}()$$
+$$\Delta t_{\text{years}} = \frac{\Delta t_{\text{days}}}{365.25} = \text{timeStep.dtYears}()$$
+$$\Delta t_{\text{months}} = \frac{\Delta t_{\text{days}}}{30.4375} = \text{timeStep.dtMonths}()$$
+$$\Delta t_{\text{seconds}} = \Delta t_{\text{days}} \times 86\,400.0 = \text{timeStep.dtSeconds}()$$
+
+A strict positive lower bound ($\Delta t_{\min} = 10^{-4}\text{ days} \approx 8.64\text{ s}$) guarantees numerical regularity and eliminates division-by-zero hazards. Ad-hoc approximations (such as equating monthly duration directly to annual duration) are strictly prohibited.
+
+#### 2. Numerical Integration Strategy & The Computational ROI Filter:
+The numerical solver architecture partitions differential systems based on their mathematical stiffness and computational return on investment (Computational ROI):
+
+1. **Option A — First-Order Explicit Euler with Unified $\Delta t$ (Production Baseline)**:
+   - Evaluates continuous state transitions and spatial fluxes as:
+     $$\mathbf{y}_{k+1} = \mathbf{y}_k + \Delta t \cdot \mathbf{f}(\mathbf{y}_k)$$
+   - **Computational ROI Filter Compliance**: Strict $\mathcal{O}(1)$ operations per cell, zero object allocations per tick, zero GC pressure, and optimal auto-vectorization across the DOD `WorldBuffer` flat contiguous primitive arrays.
+   - Truncation error is $\mathcal{O}(\Delta t)$. Numerical drift on non-linear limit cycles (such as Turchin SDT secular cycles) is bounded by continuous $C^1$ Fermi-Dirac and hyperbolic tangent saturations.
+
+2. **Option C Closed-Form Analytical Exponential Integration (Stiff Dissipative & Relaxation Terms)**:
+   - For rapid physical dissipation, thermal relaxation, radioactive decay, or crisis starvation mortality:
+     $$\frac{dy}{dt} = -\lambda (y - y^*), \quad \lambda \gg 1$$
+   - A naive explicit Euler update $y_{k+1} = y_k - \lambda \Delta t (y_k - y^*)$ exhibits catastrophic numerical oscillations and non-physical negative states whenever $\Delta t > 2 / \lambda$.
+   - Ether systematically resolves such stiff terms using the exact analytical exponential operator:
+     $$y_{k+1} = y^* + (y_k - y^*) \cdot \exp(-\lambda \cdot \Delta t)$$
+   - This formulation is **unconditionally $L$-stable**, preserves physical non-negativity across arbitrary step sizes, and incurs negligible CPU overhead ($\mathcal{O}(1)$ scalar transcendental evaluation).
+
+3. **Epistemic Delimitation of Higher-Order & Full Implicit Solvers (Option B & Full Option C)**:
+   - **Higher-Order Multistep / Runge-Kutta 4th Order (RK4 - Option B)**: While offering $\mathcal{O}(\Delta t^4)$ local precision and exact phase preservation on conservative oscillators, standard RK4 quadruples derivative evaluations ($4 \times$ CPU complexity) and triples intermediate buffer memory bandwidth ($\mathcal{O}(4N)$ memory cache footprint), severely degrading interactive framerates.
+   - **Monolithic Implicit Newton-Raphson (Full Option C)**: Eliminates stiffness limits but requires computing and inverting high-dimensional cellular Jacobian matrices ($\mathcal{O}(M^3)$ per cell), which is computationally intractable for $175\,000+$ cell meshes in real time.
+   - Consequently, Option B and full implicit Newton schemes are restricted to offline mathematical benchmarking suites (`ScientificModelFalsificationAndValidationSuite.java`); production simulation runs rely on Option A stabilized by analytical exponential closures.
 - **Agrarian Antiquity & High Middle Ages ($-10\,000\text{ BP}$ to $1500\text{ CE}$)**: $\tau \approx 25\text{--}35\%$. Textual tax records, grain censuses, and numismatic surveys provide regional population bounds.
 - **Early Modern & First Industrial Era ($1500\text{ CE}$ to $1900\text{ CE}$)**: $\tau \approx 15\text{--}20\%$ at $1800\text{ CE}$, tightening to $\sim 10\%$ by $1900\text{ CE}$ with national censuses, bill of mortality records, and international trade statistics.
 - **Contemporary Era ($1950\text{ CE}$ to $2025\text{ CE}$)**: $\tau \to 5\%$. Governed by global census databases (UN WPP), satellite remote sensing, and national macroeconomic accounts.

@@ -112,7 +112,7 @@ public class H3VectorLayerRenderer {
         double cRightLng = Math.min(180.0, Math.max(-180.0, viewRightLng));
 
         String coordsText = String.format(
-            "ðŸ“ Center: %.2fÂ°N, %.2fÂ°E | Bounds: [%.2fÂ°N, %.2fÂ°E] â†’ [%.2fÂ°N, %.2fÂ°E] | Zoom: %.1fx",
+            " Center: %.2fÂ°N, %.2fÂ°E | Bounds: [%.2fÂ°N, %.2fÂ°E] → [%.2fÂ°N, %.2fÂ°E] | Zoom: %.1fx",
             centerLat, centerLng, cTopLat, cLeftLng, cBotLat, cRightLng, zoomFactor
         );
 
@@ -386,7 +386,7 @@ public class H3VectorLayerRenderer {
 
         gc.setFill(Color.rgb(56, 189, 248));
         gc.setFont(Font.font("Segoe UI", FontWeight.BOLD, 11));
-        gc.fillText(I18n.getOrDefault("sim.legend.title", "LEGEND â€” ") + primaryMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
+        gc.fillText(I18n.getOrDefault("sim.legend.title", "LEGEND — ") + primaryMode.getDisplayName().toUpperCase(), lx + 12, ly + 18);
 
         double minVal = Double.MAX_VALUE;
         double maxVal = -Double.MAX_VALUE;

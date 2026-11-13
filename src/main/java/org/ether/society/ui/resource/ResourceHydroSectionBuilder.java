@@ -105,7 +105,7 @@ public class ResourceHydroSectionBuilder {
     public VBox buildHydroSection() {
         ToggleGroup hydroGroup = new ToggleGroup();
         radioProcHydro = new RadioButton(I18n.getOrDefault("resource.mode.procedural_hydro", "â–¶ Procedural Hydrography"));
-        radioImportHydro = new RadioButton(I18n.getOrDefault("resource.mode.import_hydro", "ðŸ“‚ Hydrographic Map (PNG)"));
+        radioImportHydro = new RadioButton(I18n.getOrDefault("resource.mode.import_hydro", " Hydrographic Map (PNG)"));
         radioProcHydro.setToggleGroup(hydroGroup);
         radioImportHydro.setToggleGroup(hydroGroup);
         radioProcHydro.setSelected(true);
@@ -118,7 +118,7 @@ public class ResourceHydroSectionBuilder {
             host.updatePreviewCanvas();
         });
 
-        Button hydroRandBtn = new Button("ðŸŽ²");
+        Button hydroRandBtn = new Button("");
         hydroRandBtn.getStyleClass().add("button-secondary");
         hydroRandBtn.setOnAction(e -> {
             hydroSeedField.setText(String.valueOf(new Random().nextLong(1000000)));
@@ -129,7 +129,7 @@ public class ResourceHydroSectionBuilder {
         HBox hydroSeedBox = new HBox(5, hydroSeedField, hydroRandBtn);
         HBox.setHgrow(hydroSeedField, Priority.ALWAYS);
 
-        autoDeriveHydroBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_hydro", "ðŸ’§ Auto-derive Aquifers & Freshwater from Physics"));
+        autoDeriveHydroBtn = new Button(I18n.getOrDefault("resource.btn.auto_derive_hydro", " Auto-derive Aquifers & Freshwater from Physics"));
         autoDeriveHydroBtn.getStyleClass().add("button-secondary");
         autoDeriveHydroBtn.setMaxWidth(Double.MAX_VALUE);
         autoDeriveHydroBtn.setOnAction(e -> autoDeriveHydroFromPlanet());
@@ -145,7 +145,7 @@ public class ResourceHydroSectionBuilder {
             host.updatePreviewCanvas();
         });
 
-        exportHydroBtn = new Button(I18n.getOrDefault("resource.btn.export_hydro", "ðŸ“¤ Export Hydrography Map (PNG / JPEG)"));
+        exportHydroBtn = new Button(I18n.getOrDefault("resource.btn.export_hydro", " Export Hydrography Map (PNG / JPEG)"));
         exportHydroBtn.setMaxWidth(Double.MAX_VALUE);
         exportHydroBtn.getStyleClass().add("button-secondary");
         exportHydroBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_hydro", "Export the active hydrographic map as high-resolution raster (PNG / JPEG).")));
@@ -186,7 +186,7 @@ public class ResourceHydroSectionBuilder {
         loadHydroBtn.getStyleClass().add("button-secondary");
         loadHydroBtn.setOnAction(e -> loadCustomHydroMap());
 
-        clearHydroBtn = new Button("ðŸ—‘");
+        clearHydroBtn = new Button("");
         clearHydroBtn.getStyleClass().add("button-secondary");
         clearHydroBtn.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -252,7 +252,7 @@ public class ResourceHydroSectionBuilder {
         if (file != null) {
             try {
                 customHydroImage = new Image(new FileInputStream(file));
-                if (hydroFileLabel != null) hydroFileLabel.setText("ðŸŒŠ " + file.getName());
+                if (hydroFileLabel != null) hydroFileLabel.setText(" " + file.getName());
                 host.selectViewMode(2);
                 host.notifyParamChange();
                 host.updatePreviewCanvas();
@@ -274,14 +274,14 @@ public class ResourceHydroSectionBuilder {
         host.getOnlineMapService().fetchHydroMapAsync(body).thenAccept(img -> javafx.application.Platform.runLater(() -> {
             if (img != null) {
                 customHydroImage = img;
-                if (hydroFileLabel != null) hydroFileLabel.setText("ðŸŒ " + body.getName() + " USGS HydroSHEDS / SWBD Hydro WMS");
+                if (hydroFileLabel != null) hydroFileLabel.setText(" " + body.getName() + " USGS HydroSHEDS / SWBD Hydro WMS");
                 host.setMapStatus(I18n.getOrDefault("planet.map.status_success", "Hydrographic map downloaded successfully."));
                 host.updatePreviewCanvas();
                 host.notifyParamChange();
             } else {
                 if ("earth".equals(sourceKey) && radioImportHydro != null && radioImportHydro.isSelected()) {
-                    if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.source.earth_hydro_wms", "ðŸŒŠ Earth SWBD / USGS HydroSHEDS Hydrographie"));
-                    host.setMapStatus(I18n.getOrDefault("resource.status.usgs_active", "ðŸŒ Earth Hydrographic Map USGS HydroSHEDS / SWBD active."));
+                    if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("resource.source.earth_hydro_wms", " Earth SWBD / USGS HydroSHEDS Hydrographie"));
+                    host.setMapStatus(I18n.getOrDefault("resource.status.usgs_active", " Earth Hydrographic Map USGS HydroSHEDS / SWBD active."));
                     host.updatePreviewCanvas();
                     host.notifyParamChange();
                 } else {
@@ -366,18 +366,18 @@ public class ResourceHydroSectionBuilder {
     public String getHydroSourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase(Locale.ROOT)) {
-            case "mars" -> "ðŸŒŠ Mars MARSIS / Ancient Paleochannels Hydrography";
-            case "moon" -> "ðŸŒŠ Moon Polar Traps (Dry Crust Hydrography)";
-            case "venus" -> "ðŸŒŠ Venus Volcanic Channels (Anhydrous Hydrography)";
-            case "mercury" -> "ðŸŒŠ Mercury Polar Cold Traps Hydrography";
-            default -> I18n.getOrDefault("resource.source.earth_hydro", "ðŸŒŠ Earth SWBD Hydrography");
+            case "mars" -> " Mars MARSIS / Ancient Paleochannels Hydrography";
+            case "moon" -> " Moon Polar Traps (Dry Crust Hydrography)";
+            case "venus" -> " Venus Volcanic Channels (Anhydrous Hydrography)";
+            case "mercury" -> " Mercury Polar Cold Traps Hydrography";
+            default -> I18n.getOrDefault("resource.source.earth_hydro", " Earth SWBD Hydrography");
         };
     }
 
     public void applyPresetHydro(org.ether.society.model.EcologyPreset p, String planetKey, long epochYear) {
         if (p != null && p.customHydroBase64() != null) {
             customHydroImage = ImageMapLoader.base64PngToImage(p.customHydroBase64());
-            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.preset.hydro", "ðŸ’§ Preset Hydro"));
+            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.preset.hydro", " Preset Hydro"));
             if (radioImportHydro != null) radioImportHydro.setSelected(true);
         } else if ("earth".equals(planetKey)) {
             if (hydroSourceCombo != null) hydroSourceCombo.setValue("earth");
@@ -392,7 +392,7 @@ public class ResourceHydroSectionBuilder {
             if (radioImportHydro != null) radioImportHydro.setSelected(true);
         } else {
             customHydroImage = null;
-            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
             if (radioProcHydro != null) radioProcHydro.setSelected(true);
             if (hydroSourceCombo != null) hydroSourceCombo.setValue("none");
         }
@@ -401,7 +401,7 @@ public class ResourceHydroSectionBuilder {
     public void applyPresetMapSource(String sourceKey, String body) {
         if (sourceKey == null || "none".equals(sourceKey)) {
             customHydroImage = null;
-            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+            if (hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
             if (radioProcHydro != null) radioProcHydro.setSelected(true);
             if (hydroSourceCombo != null) hydroSourceCombo.setValue("none");
         } else {
@@ -416,11 +416,11 @@ public class ResourceHydroSectionBuilder {
         if (hydroDomainSecHeader != null) hydroDomainSecHeader.setText(I18n.getOrDefault("resource.domain.hydro", "2. DOMAINE HYDROGRAPHIE & EAU DOUCE"));
         if (hydroMapRowLabel != null) hydroMapRowLabel.setText(I18n.getOrDefault("resource.param.hydro_map", "Hydrographic & Rivers Map (PNG Watercourses):"));
         if (radioProcHydro != null) radioProcHydro.setText(I18n.getOrDefault("resource.mode.procedural_hydro", "â–¶ Procedural Hydrography"));
-        if (radioImportHydro != null) radioImportHydro.setText(I18n.getOrDefault("resource.mode.import_hydro", "ðŸ“‚ Hydrographic Map (PNG)"));
+        if (radioImportHydro != null) radioImportHydro.setText(I18n.getOrDefault("resource.mode.import_hydro", " Hydrographic Map (PNG)"));
         if (loadHydroBtn != null) loadHydroBtn.setText(I18n.get("planet.map.btn_load"));
         if (customHydroImage == null && hydroFileLabel != null) hydroFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "- No file loaded -"));
         if (hydroFormatHintLabel != null) hydroFormatHintLabel.setText(I18n.getOrDefault("resource.format.hydro_hint", "PNG / JPEG (2:1 equirectangular projection):\n  Black (0) = no water | White (255) = river network / max flow."));
-        if (exportHydroBtn != null) exportHydroBtn.setText(I18n.getOrDefault("resource.btn.export_hydro", "ðŸ“¤ Export Hydrography Map (PNG / JPEG)"));
+        if (exportHydroBtn != null) exportHydroBtn.setText(I18n.getOrDefault("resource.btn.export_hydro", " Export Hydrography Map (PNG / JPEG)"));
         if (hydroSourcePromptLabel != null) hydroSourcePromptLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
         if (freshwaterAquiferRowLabel != null) freshwaterAquiferRowLabel.setText(I18n.getOrDefault("resource.param.freshwater_aquifers", "Groundwater / Continental Aquifers:"));
     }

@@ -48,7 +48,7 @@ public class SnapshotExplanationDialog extends Stage {
         setMinHeight(520);
         setWidth(740);
         setHeight(620);
-        setTitle(I18n.getOrDefault("snapshot.modal.window_title", "ðŸ“¸ Fonctionnement des Snapshots & Points de Restauration"));
+        setTitle(I18n.getOrDefault("snapshot.modal.window_title", " Fonctionnement des Snapshots & Points de Restauration"));
 
         BorderPane root = new BorderPane();
         root.getStyleClass().add("glass-panel");
@@ -58,11 +58,11 @@ public class SnapshotExplanationDialog extends Stage {
         headerBox.setPadding(new Insets(16, 20, 14, 20));
         headerBox.setStyle("-fx-border-color: rgba(56, 189, 248, 0.25); -fx-border-width: 0 0 1 0;");
 
-        Label titleLabel = new Label(I18n.getOrDefault("snapshot.modal.header_title", "ðŸ“¸ QU'EST-CE QU'UN SNAPSHOT & COMMENT Ã‡A FONCTIONNE ?"));
+        Label titleLabel = new Label(I18n.getOrDefault("snapshot.modal.header_title", " QU'EST-CE QU'UN SNAPSHOT & COMMENT Ã‡A FONCTIONNE ?"));
         titleLabel.getStyleClass().add("label-title");
         titleLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
-        Label subtitleLabel = new Label(I18n.getOrDefault("snapshot.modal.header_subtitle", "Guide technique sur la persistance dÃ©terministe, les rolling checkpoints et les embranchements de trajectoires (Branching)."));
+        Label subtitleLabel = new Label(I18n.getOrDefault("snapshot.modal.header_subtitle", "Guide technique sur la persistance déterministe, les rolling checkpoints et les embranchements de trajectoires (Branching)."));
         subtitleLabel.getStyleClass().add("card-description-muted");
         subtitleLabel.setWrapText(true);
 
@@ -75,42 +75,42 @@ public class SnapshotExplanationDialog extends Stage {
 
         // Card 1: Definition & Physical Nature
         contentBox.getChildren().add(createCard(
-                I18n.getOrDefault("snapshot.modal.card1.title", "ðŸ’¡ 1. DÃ‰FINITION & NATURE D'UN SNAPSHOT"),
-                I18n.getOrDefault("snapshot.modal.card1.body", "Un Snapshot (ou instantanÃ© d'Ã©tat) est une capture intÃ©grale, fidÃ¨le et dÃ©terministe de la planÃ¨te et des sociÃ©tÃ©s Ã  un tick ou une annÃ©e T prÃ©cise.\n"
-                        + "Il fige l'intÃ©gralitÃ© des lois de conservation sans aucune approximation ni perte de prÃ©cision."),
+                I18n.getOrDefault("snapshot.modal.card1.title", "💡 1. DÉFINITION & NATURE D'UN SNAPSHOT"),
+                I18n.getOrDefault("snapshot.modal.card1.body", "Un Snapshot (ou instantané d'état) est une capture intégrale, fidèle et déterministe de la planète et des sociétés à un tick ou une année T précise.\n"
+                        + "Il fige l'intégralité des lois de conservation sans aucune approximation ni perte de précision."),
                 "-fx-text-fill: #38bdf8;"
         ));
 
         // Card 2: Captured Variables & Conservation
         contentBox.getChildren().add(createCard(
-                I18n.getOrDefault("snapshot.modal.card2.title", "ðŸª 2. VARIABLES & REGISTRES CAPTURÃ‰S"),
-                I18n.getOrDefault("snapshot.modal.card2.body", "â€¢ Ã‰tats Cellulaires H3 : Biomasse humaine, stocks alimentaires, eau disponible, nutriments du sol (NPK), capital physique (Kâ‚€), Ã©nergie (Eâ‚€), savoirs (Iâ‚€) et niveau technologique.\n"
-                        + "â€¢ Registres DOD & Tenseurs : Buffers vectorisÃ©s des cohortes d'agents, tranches d'Ã¢ges, pyramides dÃ©mographiques et flux migratoires.\n"
-                        + "â€¢ Climat & Temps : AnnÃ©e calendaire, mois, saison, forÃ§age radiatif et bilan carbone.\n"
-                        + "â€¢ EntitÃ©s Sociopolitiques : FrontiÃ¨res territoriales, matrice d'affinitÃ© culturelle et journal des Ã©vÃ©nements."),
+                I18n.getOrDefault("snapshot.modal.card2.title", " 2. VARIABLES & REGISTRES CAPTURÉS"),
+                I18n.getOrDefault("snapshot.modal.card2.body", "• États Cellulaires H3 : Biomasse humaine, stocks alimentaires, eau disponible, nutriments du sol (NPK), capital physique (Kâ‚€), énergie (Eâ‚€), savoirs (Iâ‚€) et niveau technologique.\n"
+                        + "• Registres DOD & Tenseurs : Buffers vectorisés des cohortes d'agents, tranches d'-ges, pyramides démographiques et flux migratoires.\n"
+                        + "• Climat & Temps : Année calendaire, mois, saison, forçage radiatif et bilan carbone.\n"
+                        + "• Entités Sociopolitiques : Frontières territoriales, matrice d'affinité culturelle et journal des événements."),
                 "-fx-text-fill: #10b981;"
         ));
 
         // Card 3: Rolling Checkpoints & Async Persistence
         contentBox.getChildren().add(createCard(
-                I18n.getOrDefault("snapshot.modal.card3.title", "âš¡ 3. CHECKPOINTS EN TÃ‚CHE DE FOND & RESTAURATION INSTANTANÃ‰E"),
-                I18n.getOrDefault("snapshot.modal.card3.body", "â€¢ Rolling Checkpoint Asynchrone : Le moteur persiste automatiquement un checkpoint lÃ©ger sur disque tous les 60 ticks sans jamais figer l'interface utilisateur.\n"
-                        + "â€¢ Restauration InstantanÃ©e (Warm-Start) : Charger un snapshot rÃ©injecte directement les structures de donnÃ©es en mÃ©moire vive, Ã©vitant d'avoir Ã  recalculer des millÃ©naires ou des siÃ¨cles Ã©coulÃ©s."),
+                I18n.getOrDefault("snapshot.modal.card3.title", "âš¡ 3. CHECKPOINTS EN TÃ‚CHE DE FOND & RESTAURATION INSTANTANÉE"),
+                I18n.getOrDefault("snapshot.modal.card3.body", "• Rolling Checkpoint Asynchrone : Le moteur persiste automatiquement un checkpoint léger sur disque tous les 60 ticks sans jamais figer l'interface utilisateur.\n"
+                        + "• Restauration Instantanée (Warm-Start) : Charger un snapshot réinjecte directement les structures de données en mémoire vive, évitant d'avoir à recalculer des millénaires ou des siècles écoulés."),
                 "-fx-text-fill: #f59e0b;"
         ));
 
         // Card 4: Multiverse Branching & Forking
         contentBox.getChildren().add(createCard(
-                I18n.getOrDefault("snapshot.modal.card4.title", "ðŸ”€ 4. MULTIVERS & EMBRANCHEMENTS DE TRAJECTOIRES (BRANCHING)"),
-                I18n.getOrDefault("snapshot.modal.card4.body", "Vous pouvez charger un snapshot Ã  une annÃ©e charniÃ¨re (ex : 2040), modifier les paramÃ¨tres d'infrastructure, les lois physiques ou injecter une crise (ex : rupture technologique, volcanisme), et observer la divergence de la civilisation par rapport Ã  la session initiale."),
+                I18n.getOrDefault("snapshot.modal.card4.title", "🔀 4. MULTIVERS & EMBRANCHEMENTS DE TRAJECTOIRES (BRANCHING)"),
+                I18n.getOrDefault("snapshot.modal.card4.body", "Vous pouvez charger un snapshot à une année charnière (ex : 2040), modifier les paramètres d'infrastructure, les lois physiques ou injecter une crise (ex : rupture technologique, volcanisme), et observer la divergence de la civilisation par rapport à la session initiale."),
                 "-fx-text-fill: #a855f7;"
         ));
 
         // Card 5: Autonomous Pruning & Logarithmic Time-Decay
         contentBox.getChildren().add(createCard(
-                I18n.getOrDefault("snapshot.modal.card5.title", "ðŸ§¹ 5. GESTION AUTOMATIQUE & Ã‰LAGAGE TEMPOREL LOGARITHMIQUE"),
-                I18n.getOrDefault("snapshot.modal.card5.body", "â€¢ Aucune Gestion Manuelle Requise : Le systÃ¨me de persistance gÃ¨re les snapshots de maniÃ¨re 100% autonome pour Ã©viter Ã  l'utilisateur d'avoir Ã  supprimer des fichiers manuellement.\n"
-                        + "â€¢ RÃ©tention Logarithmique (Time-Decay) : Les snapshots rÃ©cents sont conservÃ©s Ã  haute frÃ©quence temporelle, tandis que les Ã©poques plus anciennes sont automatiquement espacÃ©es selon une Ã©chelle logarithmique. Cela garantit un historique complet sur des millÃ©naires tout en maintenant une empreinte disque et mÃ©moire ultra-lÃ©gÃ¨re."),
+                I18n.getOrDefault("snapshot.modal.card5.title", " 5. GESTION AUTOMATIQUE & ÉLAGAGE TEMPOREL LOGARITHMIQUE"),
+                I18n.getOrDefault("snapshot.modal.card5.body", "• Aucune Gestion Manuelle Requise : Le système de persistance gère les snapshots de manière 100% autonome pour éviter à l'utilisateur d'avoir à supprimer des fichiers manuellement.\n"
+                        + "• Rétention Logarithmique (Time-Decay) : Les snapshots récents sont conservés à haute fréquence temporelle, tandis que les époques plus anciennes sont automatiquement espacées selon une échelle logarithmique. Cela garantit un historique complet sur des millénaires tout en maintenant une empreinte disque et mémoire ultra-légère."),
                 "-fx-text-fill: #ec4899;"
         ));
 
@@ -130,7 +130,7 @@ public class SnapshotExplanationDialog extends Stage {
         Button btnClose = new Button(I18n.getOrDefault("snapshot.modal.btn_close", "Fermer"));
         btnClose.getStyleClass().add("button-primary");
         btnClose.setStyle("-fx-font-weight: bold; -fx-padding: 8 20;");
-        btnClose.setTooltip(new Tooltip(I18n.getOrDefault("snapshot.modal.btn_close.tooltip", "Fermer cette boÃ®te d'explications.")));
+        btnClose.setTooltip(new Tooltip(I18n.getOrDefault("snapshot.modal.btn_close.tooltip", "Fermer cette boîte d'explications.")));
         btnClose.setOnAction(e -> close());
 
         bottomBar.getChildren().add(btnClose);

@@ -205,7 +205,7 @@ public class StatsChartsSection {
         lineChart.setPrefHeight(160);
         lineChart.getData().add(chartSeries);
 
-        Label chartNavHelpLabel = new Label(I18n.getOrDefault("stats.chart.nav_help", "ðŸ’¡ Navigation : Molette pour zoomer sur le curseur | Glisser (clic) pour dÃ©filer temporellement | Double-clic pour rÃ©initialiser"));
+        Label chartNavHelpLabel = new Label(I18n.getOrDefault("stats.chart.nav_help", "💡 Navigation : Molette pour zoomer sur le curseur | Glisser (clic) pour défiler temporellement | Double-clic pour réinitialiser"));
         chartNavHelpLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #38bdf8; -fx-padding: 3 6; -fx-background-color: rgba(56, 189, 248, 0.08); -fx-background-radius: 4;");
         chartNavHelpLabel.setWrapText(true);
 
@@ -435,15 +435,15 @@ public class StatsChartsSection {
 
     public void updateTexts(boolean isUpdating) {
         this.isUpdatingTexts = isUpdating;
-        chartHeaderLabel.setText("ðŸ“ˆ " + I18n.getOrDefault("stats.header.chart", "HISTORIQUE DYNAMIQUE"));
-        comboLabel.setText(I18n.getOrDefault("stats.label.choose_metric", "MÃ©trique reprÃ©sentÃ©e :"));
-        windowLabel.setText(I18n.getOrDefault("stats.label.window", "FenÃªtre :"));
+        chartHeaderLabel.setText(" " + I18n.getOrDefault("stats.header.chart", "HISTORIQUE DYNAMIQUE"));
+        comboLabel.setText(I18n.getOrDefault("stats.label.choose_metric", "Métrique représentée :"));
+        windowLabel.setText(I18n.getOrDefault("stats.label.window", "Fenêtre :"));
         btn1Yr.setText(I18n.getOrDefault("stats.btn.1yr", "1 an"));
         btn10Yr.setText(I18n.getOrDefault("stats.btn.10yr", "10 ans"));
         btn100Yr.setText(I18n.getOrDefault("stats.btn.100yr", "100 ans"));
         btn1000Yr.setText(I18n.getOrDefault("stats.btn.1000yr", "1 000 ans"));
         btnAll.setText(I18n.getOrDefault("stats.btn.all", "Tout"));
-        barHeaderLabel.setText("ðŸ‘¥ " + I18n.getOrDefault("stats.header.pyramid", "PYRAMIDE DES Ã‚GES (POPULATION MONDIALE)"));
+        barHeaderLabel.setText("👥 " + I18n.getOrDefault("stats.header.pyramid", "PYRAMIDE DES Ã‚GES (POPULATION MONDIALE)"));
     }
 
     private long getMinAllowedYear() {

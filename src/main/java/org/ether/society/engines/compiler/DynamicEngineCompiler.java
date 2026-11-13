@@ -126,7 +126,7 @@ public class DynamicEngineCompiler {
             // 1. Static Security Validation
             String securityViolation = validateSourceCodeSecurity(sourceCode);
             if (securityViolation != null) {
-                logger.warn("ðŸ›‘ Rejected untrusted engine file '{}': {}", fileName, securityViolation);
+                logger.warn(" Rejected untrusted engine file '{}': {}", fileName, securityViolation);
                 return new CompilationResult(false, fileName, "Security Error: " + securityViolation, null);
             }
 

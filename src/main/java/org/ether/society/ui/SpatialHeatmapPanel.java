@@ -83,7 +83,7 @@ public class SpatialHeatmapPanel extends VBox {
     private Integer rangeStartIndex = null;
     private Integer rangeEndIndex = null;
 
-    // Hover popup a€“ enlarged map (560Ã—280)
+    // -----------------------------------------------------------------------------
     private final Popup hoverPopup = new Popup();
     private final Canvas popupCanvas = new Canvas(560, 280);
 
@@ -161,7 +161,7 @@ public class SpatialHeatmapPanel extends VBox {
         sliderBox.setAlignment(Pos.CENTER_LEFT);
 
         // 5. Transport Toolbar
-        btnJumpStart = createTransportBtn("â®", "heatmap.tooltip.jump_start", "Aller au premier instant (ou dÃ©but de plage)");
+        btnJumpStart = createTransportBtn("â®", "heatmap.tooltip.jump_start", "Aller au premier instant (ou début de plage)");
         btnJumpStart.setOnAction(e -> {
             pauseAnimation();
             jumpToSnapshotIndex(getEffectiveStartIndex(), true);
@@ -197,7 +197,7 @@ public class SpatialHeatmapPanel extends VBox {
         speedCombo.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.speed", "Vitesse de relecture temporelle")));
         speedCombo.setOnAction(e -> updatePlaybackSpeed());
 
-        loopCheckBox = new CheckBox(I18n.getOrDefault("heatmap.loop", "ðŸ”"));
+        loopCheckBox = new CheckBox(I18n.getOrDefault("heatmap.loop", ""));
         loopCheckBox.setSelected(true);
         loopCheckBox.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-font-weight: bold;");
         loopCheckBox.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.loop", "Relecture en boucle")));
@@ -206,18 +206,18 @@ public class SpatialHeatmapPanel extends VBox {
         transportBar.setAlignment(Pos.CENTER_LEFT);
 
         // 6. Interval / Range Selection & Video Export Bar
-        btnSetStart = createMiniRangeBtn("ðŸ“Œ DÃ©but A", () -> setRangeStart(currentSnapshotIndex));
-        btnSetStart.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.set_start", "DÃ©finir l'instant actuel comme borne de dÃ©part (A)")));
+        btnSetStart = createMiniRangeBtn(" Début A", () -> setRangeStart(currentSnapshotIndex));
+        btnSetStart.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.set_start", "Définir l'instant actuel comme borne de départ (A)")));
 
-        btnSetEnd = createMiniRangeBtn("ðŸ“Œ Fin B", () -> setRangeEnd(currentSnapshotIndex));
-        btnSetEnd.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.set_end", "DÃ©finir l'instant actuel comme borne de fin (B)")));
+        btnSetEnd = createMiniRangeBtn(" Fin B", () -> setRangeEnd(currentSnapshotIndex));
+        btnSetEnd.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.set_end", "Définir l'instant actuel comme borne de fin (B)")));
 
         btnClearRange = createMiniRangeBtn("âœ– Bornes", this::clearRange);
-        btnClearRange.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.clear_range", "RÃ©initialiser les bornes pour rejouer tout l'historique")));
+        btnClearRange.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.clear_range", "Réinitialiser les bornes pour rejouer tout l'historique")));
 
-        btnExportVideo = new Button("ðŸŽ¥ " + I18n.getOrDefault("heatmap.btn.export_video", "Export"));
+        btnExportVideo = new Button(" " + I18n.getOrDefault("heatmap.btn.export_video", "Export"));
         btnExportVideo.setStyle("-fx-background-color: #0369a1; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 3 8; -fx-background-radius: 4; -fx-cursor: hand;");
-        btnExportVideo.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.export_video", "Exporte l'atlas dynamique et ses couches multicouches au format vidÃ©o / GIF animÃ© haute fidÃ©litÃ©.")));
+        btnExportVideo.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.export_video", "Exporte l'atlas dynamique et ses couches multicouches au format vidéo / GIF animé haute fidélité.")));
         btnExportVideo.setOnAction(e -> exportVideo());
 
         rangeInfoLabel = new Label(I18n.getOrDefault("heatmap.range.all", "Plage : Tout l'historique"));
@@ -287,7 +287,7 @@ public class SpatialHeatmapPanel extends VBox {
      * Updates all localized UI texts and layer menus.
      */
     public void updateTexts() {
-        titleLabel.setText(I18n.getOrDefault("heatmap.title", "ðŸ—ºï¸ Atlas Dynamique des Territoires (Toutes Couches)"));
+        titleLabel.setText(I18n.getOrDefault("heatmap.title", "¸ Atlas Dynamique des Territoires (Toutes Couches)"));
         buildLayerMenu();
 
         if (isPlayingAnimation) {
@@ -297,11 +297,11 @@ public class SpatialHeatmapPanel extends VBox {
         } else {
             playPauseBtn.setText("â–¶");
             playPauseBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 6;");
-            playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.play", "Lancer la sÃ©quence temporelle (2D+1D)")));
+            playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.play", "Lancer la séquence temporelle (2D+1D)")));
         }
 
-        btnExportVideo.setText("ðŸŽ¥ " + I18n.getOrDefault("heatmap.btn.export_video", "Export"));
-        btnExportVideo.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.export_video", "Exporte l'atlas dynamique et ses couches multicouches au format vidÃ©o / GIF animÃ© haute fidÃ©litÃ©.")));
+        btnExportVideo.setText(" " + I18n.getOrDefault("heatmap.btn.export_video", "Export"));
+        btnExportVideo.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.export_video", "Exporte l'atlas dynamique et ses couches multicouches au format vidéo / GIF animé haute fidélité.")));
 
         updateRangeLabel();
     }
@@ -404,7 +404,7 @@ public class SpatialHeatmapPanel extends VBox {
                 getScene() != null ? getScene().getWindow() : null,
                 historyManager, activeLayers, getEffectiveStartIndex(), getEffectiveEndIndex(), playbackDelayMs,
                 () -> { btnExportVideo.setDisable(true); btnExportVideo.setText("â³ " + I18n.getOrDefault("heatmap.export.exporting", "Export en cours...")); },
-                () -> { btnExportVideo.setDisable(false); btnExportVideo.setText("ðŸŽ¥ " + I18n.getOrDefault("heatmap.btn.export_video", "Exporter VidÃ©o")); }
+                () -> { btnExportVideo.setDisable(false); btnExportVideo.setText(" " + I18n.getOrDefault("heatmap.btn.export_video", "Exporter Vidéo")); }
         );
     }
 
@@ -476,7 +476,7 @@ public class SpatialHeatmapPanel extends VBox {
         isPlayingAnimation = false;
         playPauseBtn.setText("â–¶");
         playPauseBtn.setStyle("-fx-background-color: #0284c7; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; -fx-background-radius: 6;");
-        playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.play", "Lancer la sÃ©quence temporelle (2D+1D)")));
+        playPauseBtn.setTooltip(new Tooltip(I18n.getOrDefault("heatmap.tooltip.play", "Lancer la séquence temporelle (2D+1D)")));
     }
 
     private void toggleAnimation() {
@@ -485,7 +485,7 @@ public class SpatialHeatmapPanel extends VBox {
             return;
         }
         if (historyManager == null || historyManager.getWorldSnapshots().isEmpty()) {
-            lblMoranI.setText(I18n.getOrDefault("heatmap.no_snapshot", "Veuillez lancer la simulation pour animer la sÃ©quence temporelle."));
+            lblMoranI.setText(I18n.getOrDefault("heatmap.no_snapshot", "Veuillez lancer la simulation pour animer la séquence temporelle."));
             return;
         }
         if (currentSnapshotIndex >= getEffectiveEndIndex()) {

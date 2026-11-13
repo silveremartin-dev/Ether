@@ -41,10 +41,28 @@ public final class HeadlessScenarioResolver {
 
         boolean matched = false;
 
-        // Direct file resolution for preset JSON (e.g. earth_+1950_great_acceleration or path/to/file.json)
+        // Direct file resolution for preset JSON (e.g. earth_+1950_great_acceleration, black_death_1347, or path/to/file.json)
+        java.nio.file.Path presetsDir = org.ether.society.config.EtherPaths.getPresetsScenariosDir();
         java.nio.file.Path directJsonPath = java.nio.file.Paths.get(scenarioName.endsWith(".json") ? scenarioName : scenarioName + ".json");
-        if (!java.nio.file.Files.exists(directJsonPath)) {
-            directJsonPath = org.ether.society.config.EtherPaths.getPresetsScenariosDir().resolve(scenarioName.endsWith(".json") ? scenarioName : scenarioName + ".json");
+        if (!java.nio.file.Files.exists(directJsonPath) && presetsDir != null) {
+            directJsonPath = presetsDir.resolve(scenarioName.endsWith(".json") ? scenarioName : scenarioName + ".json");
+        }
+        if (!java.nio.file.Files.exists(directJsonPath) && presetsDir != null && java.nio.file.Files.exists(presetsDir)) {
+            String target = scenarioName.toLowerCase(java.util.Locale.ROOT).replace(".json", "");
+            try (java.util.stream.Stream<java.nio.file.Path> stream = java.nio.file.Files.list(presetsDir)) {
+                java.util.Optional<java.nio.file.Path> candidate = stream
+                        .filter(p -> p.toString().endsWith(".json"))
+                        .filter(p -> {
+                            String fn = p.getFileName().toString().toLowerCase(java.util.Locale.ROOT).replace(".json", "");
+                            return fn.equalsIgnoreCase(target) || fn.contains(target) || target.contains(fn);
+                        })
+                        .findFirst();
+                if (candidate.isPresent()) {
+                    directJsonPath = candidate.get();
+                }
+            } catch (Exception e) {
+                logger.warn("Could not list presets scenarios directory: {}", e.getMessage());
+            }
         }
         if (java.nio.file.Files.exists(directJsonPath)) {
             try {
@@ -68,7 +86,8 @@ public final class HeadlessScenarioResolver {
                     : HistoricalScenarioCalibrationHarness.CALIBRATION_SCENARIOS) {
                 if (calDef.scenarioKey().equalsIgnoreCase(scenarioName)
                         || calDef.displayName().equalsIgnoreCase(scenarioName)
-                        || scenarioName.toLowerCase().contains(calDef.scenarioKey().toLowerCase())) {
+                        || scenarioName.toLowerCase().contains(calDef.scenarioKey().toLowerCase())
+                        || calDef.scenarioKey().toLowerCase().contains(scenarioName.toLowerCase())) {
                     scenario.setStartDateYear(calDef.startYear());
                     scenario.setEndDateYear(calDef.endYear());
                     scenario.setInitialHumanCount((long) (calDef.initialWorldPopMillions() * 1_000_000L));
@@ -89,7 +108,8 @@ public final class HeadlessScenarioResolver {
             for (Scenario builtIn : Scenario.getBuiltInScenarios()) {
                 if ((builtIn.getPresetKey() != null && builtIn.getPresetKey().equalsIgnoreCase(scenarioName))
                         || (builtIn.getName() != null && builtIn.getName().equalsIgnoreCase(scenarioName))
-                        || (builtIn.getPresetKey() != null && scenarioName.toLowerCase().contains(builtIn.getPresetKey().toLowerCase()))) {
+                        || (builtIn.getPresetKey() != null && (scenarioName.toLowerCase().contains(builtIn.getPresetKey().toLowerCase())
+                        || builtIn.getPresetKey().toLowerCase().contains(scenarioName.toLowerCase())))) {
                     scenario = builtIn.copy();
                     logger.info("Matched Built-In Scenario: '{}' (Years {} -> {})",
                             builtIn.getName(), builtIn.getStartDateYear(), builtIn.getEndDateYear());
@@ -103,7 +123,8 @@ public final class HeadlessScenarioResolver {
             for (Scenario jsonPreset : PresetStorageService.loadAllScenarios()) {
                 if ((jsonPreset.getPresetKey() != null && jsonPreset.getPresetKey().equalsIgnoreCase(scenarioName))
                         || (jsonPreset.getName() != null && jsonPreset.getName().equalsIgnoreCase(scenarioName))
-                        || (jsonPreset.getPresetKey() != null && scenarioName.toLowerCase().contains(jsonPreset.getPresetKey().toLowerCase()))) {
+                        || (jsonPreset.getPresetKey() != null && (scenarioName.toLowerCase().contains(jsonPreset.getPresetKey().toLowerCase())
+                        || jsonPreset.getPresetKey().toLowerCase().contains(scenarioName.toLowerCase())))) {
                     scenario = jsonPreset.copy();
                     logger.info("Matched JSON Scenario Preset: '{}' (Years {} -> {})",
                             jsonPreset.getName(), jsonPreset.getStartDateYear(), jsonPreset.getEndDateYear());

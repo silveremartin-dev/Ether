@@ -6,7 +6,7 @@ import org.ether.society.model.PhysicalConstants;
 /**
  * Data-Oriented Urban Agglomeration, Capital Accumulation &amp; Institutional Entropy Kernel.
  * <p>
- * Models urban emergence, Solow-Swan / Ayres-KÃ¼mmel physical capital accumulation ($K$),
+ * Models urban emergence, Solow-Swan / Ayres-K-mmel physical capital accumulation ($K$),
  * and Tainter's thermodynamic maintenance constraints ($C$) across all active cells using
  * strictly smooth ($C^\infty$) differential equations of conserved physical observables
  * ({@code AGENTS.md} Â§10.1, Â§10.2). Zero state-level {@code technologyLevel} reads or mutations.
@@ -22,20 +22,36 @@ public class UrbanKernel {
 
     /**
      * Updates global infrastructure physical capital ($K$) and institutional complexity ($C$)
+     * across all active cells using the canonical {@link org.ether.society.core.SimulationTimeStep}.
+     *
+     * @param world    contiguous world state buffer
+     * @param timeStep canonical time step representation
+     */
+    public void tick(WorldBuffer world, org.ether.society.core.SimulationTimeStep timeStep) {
+        tickWithDtYears(world, timeStep != null ? timeStep.dtYearsF() : (1.0f / 12.0f));
+    }
+
+    /**
+     * Updates global infrastructure physical capital ($K$) and institutional complexity ($C$)
      * across all active cells under thermodynamic conservation and entropic depreciation laws.
      *
      * @param world contiguous world state buffer
      * @param dt    integration time step (years if &le; 20, days if &le; 1000, seconds if &gt; 1000)
      */
     public void tick(WorldBuffer world, float dt) {
+        float dtInYears = (float) Math.max(0.0001, dt > 1000.0f
+                ? (dt / PhysicalConstants.SECONDS_PER_JULIAN_YEAR)
+                : (dt > 20.0f ? dt / 365.25 : dt));
+        tickWithDtYears(world, dtInYears);
+    }
+
+    private void tickWithDtYears(WorldBuffer world, float dtYears) {
         float[] prices = world.getLocalPrice();
         float[] capital = world.getResourceCapital();
         float[] pop = world.getBiomassHuman();
         float[] complexity = world.getInstitutionalComplexity();
 
-        float dtInYears = (float) Math.max(0.0001, dt > 1000.0f
-                ? (dt / PhysicalConstants.SECONDS_PER_JULIAN_YEAR)
-                : (dt > 20.0f ? dt / 365.25 : dt));
+        float dtInYears = dtYears;
         float decayCapital = (float) Math.pow(0.95, dtInYears);
         float decayComplexity = (float) Math.pow(0.90, dtInYears);
 

@@ -99,7 +99,7 @@ public class H3MapCanvas extends Canvas {
     private H3Globe3DSubScene globe3DSubScene;
 
     // --- Metadata & Recording State ---
-    private String scenarioName = "ScÃ©nario Standard";
+    private String scenarioName = "Scénario Standard";
     private String currentDateStr = "An -100000";
     private boolean isRecordingVideo = false;
 

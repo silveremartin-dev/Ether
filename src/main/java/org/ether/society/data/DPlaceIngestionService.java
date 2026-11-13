@@ -45,7 +45,7 @@ public class DPlaceIngestionService {
         List<DPlaceSociety> societies = loadAllSocieties();
 
         for (DPlaceSociety soc : societies) {
-            String label = "SociÃ©tÃ© Traditionnelle : " + soc.name() 
+            String label = "Société Traditionnelle : " + soc.name() 
                     + (soc.glottocode() != null && !soc.glottocode().isBlank() ? " [" + soc.glottocode() + "]" : "")
                     + " (" + soc.dataset() + ")";
             if (label.length() > 120) label = label.substring(0, 117) + "...";

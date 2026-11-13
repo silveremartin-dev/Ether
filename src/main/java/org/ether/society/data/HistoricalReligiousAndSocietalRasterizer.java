@@ -138,7 +138,7 @@ public final class HistoricalReligiousAndSocietalRasterizer {
             mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(71.2, 57.7, 0xD97706, 1.4, "Siberian Ust'-Ishim Mammoth Cults"));
             mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(84.5, 51.4, 0xD97706, 1.4, "Altai Denisova Bone/Chloritolite Shrines"));
             // Late Neanderthal Burials
-            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(1.2, 44.9, 0x3B82F6, 1.2, "Late Neanderthal ChÃ¢telperronian Mortuary Sites"));
+            mis3Rituals.add(new OrographicGlottologPropagator.CulturalSeed(1.2, 44.9, 0x3B82F6, 1.2, "Late Neanderthal Ch-telperronian Mortuary Sites"));
 
             BufferedImage ritImg = OrographicGlottologPropagator.propagateCulturalSeeds(mis3Rituals, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, mask, 32.0f);
             for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
@@ -194,9 +194,9 @@ public final class HistoricalReligiousAndSocietalRasterizer {
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(21.2, -34.4, 0x10B981, 1.5, "African LSA Symbolic Caches"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(32.6, 24.1, 0x15803D, 1.1, "Nile Qadan Cemetery Tradition"));
         } else if (year <= -7000L) {
-            // Early Neolithic / GÃ¶bekli Tepe / Ã‡atalhÃ¶yÃ¼k / Mehrgarh
-            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(38.92, 37.22, 0xEA580C, 1.2, "GÃ¶bekli Pillar Megalithic Shrines"));
-            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(32.83, 37.67, 0xEA580C, 1.1, "Ã‡atalhÃ¶yÃ¼k Bucrania Cults"));
+            // -----------------------------------------------------------------------------
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(38.92, 37.22, 0xEA580C, 1.2, "G-bekli Pillar Megalithic Shrines"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(32.83, 37.67, 0xEA580C, 1.1, "Ã‡atalh-y-k Bucrania Cults"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(35.44, 31.87, 0xB45309, 1.0, "Jericho Plastered Skull Sanctuary"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(22.0, 44.5, 0x4D7C0F, 1.1, "Lepenski Vir Fish-God Cults"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(113.6, 33.6, 0xEF4444, 1.3, "Jiahu Ancestral Bone Flute Cults"));
@@ -227,7 +227,7 @@ public final class HistoricalReligiousAndSocietalRasterizer {
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(23.7, 37.9, 0xEA580C, 1.2, "Greek Olympian Polytheism"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(51.0, 32.0, 0x0891B2, 1.3, "Zoroastrianism"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-94.7, 17.7, 0xD97706, 1.3, "Olmec Were-Jaguar Ceremonialism"));
-            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-77.1, -9.6, 0xC27803, 1.3, "ChavÃ­n de HuÃ¡ntar Cult"));
+            ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(-77.1, -9.6, 0xC27803, 1.3, "Chav-n de Hu-ntar Cult"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(133.0, -25.0, 0xA04000, 1.6, "Australian Dreamtime"));
             ritualSeeds.add(new OrographicGlottologPropagator.CulturalSeed(8.0, 9.0, 0x1B5E20, 1.5, "West African Traditional Animism"));
         } else if (year <= 500L) {

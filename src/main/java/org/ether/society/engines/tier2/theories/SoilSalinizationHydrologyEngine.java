@@ -69,10 +69,10 @@ public class SoilSalinizationHydrologyEngine extends AbstractSimulationEngine {
     public String getEquationsTooltip() {
         return """
                [Soil Salinization & Irrigation Mass Balance (Jacobsen & Adams 1958, FAO 1985)]
-               â€¢ Mass Balance:       d[Salts]/dt = (Q_irr Â· [Salts]_water) / Depth_rhizosphere - (Q_drain Â· [Salts]_leached)
-               â€¢ Potential Evapo:    PET = 1.6 Â· (10 Â· Temp / I_heat)^a  (Thornthwaite)
-               â€¢ Yield Degradation:  Y(t) = Y_0 Â· max(0.15, 1.0 - 0.08 Â· [Salts_dS/m])
-               â€¢ Crop Substitution:  Wheat -> Barley (Tolerance shift) -> Final Sterilization
+               • Mass Balance:       d[Salts]/dt = (Q_irr Â· [Salts]_water) / Depth_rhizosphere - (Q_drain Â· [Salts]_leached)
+               • Potential Evapo:    PET = 1.6 Â· (10 Â· Temp / I_heat)^a  (Thornthwaite)
+               • Yield Degradation:  Y(t) = Y_0 Â· max(0.15, 1.0 - 0.08 Â· [Salts_dS/m])
+               • Crop Substitution:  Wheat -> Barley (Tolerance shift) -> Final Sterilization
                Ref: T. Jacobsen & R. M. Adams (1958) "Salt and Silt in Ancient Mesopotamian Agriculture", Science 128
                """;
     }

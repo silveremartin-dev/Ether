@@ -115,21 +115,21 @@ final class ScenarioOperationsHelper {
 
     static String formatDefaultDescription(Scenario s) {
         return String.format("""
-                ðŸ”¬ SCÃ‰NARIO EXPÃ‰RIMENTAL Ã‰THER : Configuration de Simulation PlanÃ©taire (%s)
+                 SCÉNARIO EXPÉRIMENTAL ÉTHER : Configuration de Simulation Planétaire (%s)
                 
                 [CONTEXTE HISTORIQUE & PHYSIQUE]
-                Ce scÃ©nario dÃ©finit les conditions aux limites et les termes de forÃ§age physique initiaux pour la modÃ©lisation multi-Ã©chelle des systÃ¨mes humains, Ã©cologiques et atmosphÃ©riques.
+                Ce scénario définit les conditions aux limites et les termes de forçage physique initiaux pour la modélisation multi-échelle des systèmes humains, écologiques et atmosphériques.
                 
                 [CONDITIONS INITIALES PHYSIQUES (T_0)]
-                â€¢ Population Initiale : %,d individus.
-                â€¢ Capital Physique (Kâ‚€) : %.1f kg/habitant (Outillages & machines).
-                â€¢ Ã‰nergie StockÃ©e (Eâ‚€) : %.1f MJ/habitant (Stocks Ã©nergÃ©tiques).
-                â€¢ RÃ©serves Alimentaires (Fâ‚€) : %.1f mois (Autonomie alimentaire).
-                â€¢ Savoir ArchivÃ© (Iâ‚€) : %.1f bits/habitant (MÃ©moire technique).
-                â€¢ Rayon PlanÃ©taire : %.0f km (g_rel = %.2f g).
-                â€¢ Rotation PlanÃ©taire : %.1f heures | Inclinaison Axiale : %.1fÂ°.
+                • Population Initiale : %,d individus.
+                • Capital Physique (Kâ‚€) : %.1f kg/habitant (Outillages & machines).
+                • Énergie Stockée (Eâ‚€) : %.1f MJ/habitant (Stocks énergétiques).
+                • Réserves Alimentaires (Fâ‚€) : %.1f mois (Autonomie alimentaire).
+                • Savoir Archivé (Iâ‚€) : %.1f bits/habitant (Mémoire technique).
+                • Rayon Planétaire : %.0f km (g_rel = %.2f g).
+                • Rotation Planétaire : %.1f heures | Inclinaison Axiale : %.1fÂ°.
                 """,
-                s.getName() != null ? s.getName() : "ScÃ©nario Standard",
+                s.getName() != null ? s.getName() : "Scénario Standard",
                 s.getInitialHumanCount(),
                 s.getInitialCapitalPerCapita(),
                 s.getInitialEnergyPerCapita(),

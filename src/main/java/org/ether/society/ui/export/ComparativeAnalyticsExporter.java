@@ -1,4 +1,4 @@
-﻿package org.ether.society.ui.export;
+package org.ether.society.ui.export;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -83,7 +83,7 @@ public final class ComparativeAnalyticsExporter {
 
             if (exportMdBtn != null) {
                 String origText = exportMdBtn.getText();
-                exportMdBtn.setText(String.format(I18n.getOrDefault("analytics.status.export_md_success", "âœ… ExportÃ© : %s"), fileName));
+                exportMdBtn.setText(String.format(I18n.getOrDefault("analytics.status.export_md_success", "âœ… Exporté : %s"), fileName));
                 exportMdBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #059669; -fx-text-fill: white; -fx-padding: 6 14;");
 
                 Timeline resetTimer = new Timeline(new KeyFrame(Duration.seconds(3), evt -> {
@@ -148,7 +148,7 @@ public final class ComparativeAnalyticsExporter {
 
             if (exportCsvBtn != null) {
                 String origText = exportCsvBtn.getText();
-                exportCsvBtn.setText(String.format(I18n.getOrDefault("analytics.status.export_csv_success", "âœ… ExportÃ© : %s"), fileName));
+                exportCsvBtn.setText(String.format(I18n.getOrDefault("analytics.status.export_csv_success", "âœ… Exporté : %s"), fileName));
                 exportCsvBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #6d28d9; -fx-text-fill: white; -fx-padding: 6 14;");
 
                 Timeline resetTimer = new Timeline(new KeyFrame(Duration.seconds(3), evt -> {
@@ -249,10 +249,10 @@ public final class ComparativeAnalyticsExporter {
                 if (export2DZipBtn != null) {
                     Platform.runLater(() -> {
                         export2DZipBtn.setDisable(false);
-                        export2DZipBtn.setText("âœ… ExportÃ© : " + savedFileName);
+                        export2DZipBtn.setText("âœ… Exporté : " + savedFileName);
                         export2DZipBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #059669; -fx-text-fill: white; -fx-padding: 6 14;");
                         Timeline t = new Timeline(new KeyFrame(Duration.seconds(4), evt -> {
-                            export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "ðŸ“¦ Export 2D Tensors (.zip)"));
+                            export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "💦 Export 2D Tensors (.zip)"));
                             export2DZipBtn.setStyle("-fx-font-weight: bold; -fx-background-color: #6366f1; -fx-text-fill: white; -fx-padding: 6 14; -fx-cursor: hand;");
                         }));
                         t.setCycleCount(1);
@@ -264,7 +264,7 @@ public final class ComparativeAnalyticsExporter {
                 if (export2DZipBtn != null) {
                     Platform.runLater(() -> {
                         export2DZipBtn.setDisable(false);
-                        export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "ðŸ“¦ Export 2D Tensors (.zip)"));
+                        export2DZipBtn.setText(I18n.getOrDefault("analytics.btn.export_2d_zip", "💦 Export 2D Tensors (.zip)"));
                     });
                 }
             }

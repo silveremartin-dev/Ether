@@ -27,8 +27,8 @@ import java.util.zip.ZipFile;
  *   <li><b>Natural Gas</b>: Major conventional gas reservoirs (South Pars, Urengoy, Groningen) and ancient bamboo brine drillings.</li>
  *   <li><b>Uranium &amp; Thorium</b>: IAEA NFCIS metallogenic provinces (Athabasca, Olympic Dam, Chu-Sarysu).</li>
  *   <li><b>Lunar Helium-3</b>: Regolith volatilization reserve maps.</li>
- *   <li><b>Base Metals (Iron &amp; Copper)</b>: Banded Iron Formations (Pilbara, CarajÃ¡s, Krivoy Rog) and ancient smelting centers (Rio Tinto, Cyprus, Elba, Noricum).</li>
- *   <li><b>Precious Metals (Gold, Silver, PGEs)</b>: Hydraulic roman placer mines (Las MÃ©dulas), Witwatersrand, PotosÃ­, Carlin Trend.</li>
+ *   <li><b>Base Metals (Iron &amp; Copper)</b>: Banded Iron Formations (Pilbara, Caraj-s, Krivoy Rog) and ancient smelting centers (Rio Tinto, Cyprus, Elba, Noricum).</li>
+ *   <li><b>Precious Metals (Gold, Silver, PGEs)</b>: Hydraulic roman placer mines (Las Médulas), Witwatersrand, Potos-, Carlin Trend.</li>
  *   <li><b>Rare Earth Elements (REE &amp; Lithium)</b>: Carbonatites (Bayan Obo, Mountain Pass) and salt flat brines (Atacama, Uyuni).</li>
  *   <li><b>Mantle Heat Flow</b>: Ingestion of Davies 2013 spherical grid (2Â° resolution) via bilinear interpolation.</li>
  *   <li><b>Aquifers &amp; Groundwater Tables</b>: UNESCO WHYMAP shapefile polygon ingestion and paleo-recharge pluvial factors (\(\Delta t\)).</li>

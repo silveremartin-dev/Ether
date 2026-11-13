@@ -77,7 +77,7 @@ public class AutoEpochScenarioGenerator {
             s.setOceanMultiRateTickingEnabled(false);
             s.setParallelExecutionEnabled(true);
             s.setSpatialRangeTruncationEnabled(false);
-            s.setRandomEventsEnabled(true);
+            s.setRandomEventsEnabled(false);
             s.setEarthHistoricalLeadersEnabled(false);
             s.setProceduralLeadersEnabled(true);
         }
@@ -435,7 +435,7 @@ public class AutoEpochScenarioGenerator {
 
     private static String generateEpochDescription(String planet, long year, String epochLabel) {
         return String.format(Locale.ROOT, """
-            ðŸŒ SCÉNARIO AUTOMATIQUE D'ÉPOQUE : %s — %s
+            🌍 SCÉNARIO AUTOMATIQUE D'ÉPOQUE : %s — %s
             
             [PARAMÉTRAGE SCIENTIFIQUE & GÉOPHYSIQUE (TIER 1)]
             • Planète cible : %s

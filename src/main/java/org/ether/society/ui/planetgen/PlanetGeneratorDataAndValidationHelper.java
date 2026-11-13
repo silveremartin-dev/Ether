@@ -426,7 +426,7 @@ public final class PlanetGeneratorDataAndValidationHelper {
         if (!isValid) {
             if (showDialog && warningLabel != null && warningBanner != null) {
                 StringBuilder sb = new StringBuilder();
-                for (String err : errors) sb.append("â€¢ ").append(err).append("\n");
+                for (String err : errors) sb.append("• ").append(err).append("\n");
                 warningLabel.setText(sb.toString().trim());
                 warningBanner.setVisible(true);
                 warningBanner.setManaged(true);

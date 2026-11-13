@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Betz Wind Kinetic Power & Solar Radiance Physics Engine.
  * Replaces abstract solar/wind units with physical power flux equations:
- * 1. <b>Betz Law Wind Kinetic Power Density</b>: P_wind = 0.5 * Ï * A * v³ * Cp (where Cp â‰¤ 0.593 Betz limit).
+ * 1. <b>Betz Law Wind Kinetic Power Density</b>: P_wind = 0.5 * Ï * A * v³ * Cp (where Cp ≤ 0.593 Betz limit).
  * 2. <b>Top-of-Atmosphere Solar Irradiance</b>: Sâ‚€ = 1361 W/m² attenuated by atmospheric optical transmittance (Ï„).
  *
  * @author Silvere Martin-Michiellot

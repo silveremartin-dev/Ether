@@ -56,10 +56,10 @@ public class WestBettencourtAllometryEngine extends AbstractSimulationEngine {
     public String getEquationsTooltip() {
         return """
                [West-Bettencourt Urban Scaling Laws (PNAS 2007)]
-               â€¢ Super-Linear Output:  Y_i = Y_0 Â· (N_i / N_ref)^1.15  (GDP, Patents, Wages)
-               â€¢ Sub-Linear Network:  I_i = I_0 Â· (N_i / N_ref)^0.85  (Roads, Cables, Energy Grid)
-               â€¢ Metabolic Pace:      v_pace âˆ N_i^0.15 (Pace of urban life & interactions)
-               Units: N [hab], Y [$/an, brevets], I [km rÃ©seau, J/hab]
+               • Super-Linear Output:  Y_i = Y_0 Â· (N_i / N_ref)^1.15  (GDP, Patents, Wages)
+               • Sub-Linear Network:  I_i = I_0 Â· (N_i / N_ref)^0.85  (Roads, Cables, Energy Grid)
+               • Metabolic Pace:      v_pace âˆ N_i^0.15 (Pace of urban life & interactions)
+               Units: N [hab], Y [$/an, brevets], I [km réseau, J/hab]
                """;
     }
 

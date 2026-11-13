@@ -275,7 +275,7 @@ public class EtherApp extends Application {
     }
 
     private void updateTexts() {
-        primaryStage.setTitle(I18n.get("app.title") + " â€” " + org.ether.society.config.AppVersion.getFullDisplayVersion());
+        primaryStage.setTitle(I18n.get("app.title") + " — " + org.ether.society.config.AppVersion.getFullDisplayVersion());
     }
 }
 

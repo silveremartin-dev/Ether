@@ -148,12 +148,7 @@ final class TelemetryDagNodeHelper {
             }
             case "temperatureAnomaly" -> {
                 double co2 = m.getOrDefault("co2Concentration", 280.0);
-                double radiativeAnom = CliodynamicFormulasRegistry.computeTemperatureAnomalyFromCo2(co2);
-                if (c.landCellCount > 0) {
-                    double cellDelta = (c.landTempSum / c.landCellCount) - 14.5;
-                    yield Math.clamp(0.5 * radiativeAnom + 0.5 * cellDelta, -8.5, 8.5);
-                }
-                yield Math.clamp(radiativeAnom, -8.5, 8.5);
+                yield CliodynamicFormulasRegistry.computeTemperatureAnomalyFromCo2(co2);
             }
             case "soilErosionRate" -> CliodynamicFormulasRegistry.computeTopsoilErosionLoss(c.phiExergy());
             case "agriculturalEroei" -> CliodynamicFormulasRegistry.computeAgriculturalEroei(c.phiExergy());

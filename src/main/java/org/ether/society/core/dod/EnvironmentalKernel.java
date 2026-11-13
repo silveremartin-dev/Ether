@@ -128,6 +128,24 @@ public class EnvironmentalKernel {
     /**
      * Executes one environmental update tick with default month {@code 0}.
      */
+    /**
+     * Executes one environmental update tick over all active land cells in {@link WorldBuffer}
+     * using the canonical {@link org.ether.society.core.SimulationTimeStep}.
+     *
+     * @param world    DOD buffer container for world state
+     * @param month    current simulation month
+     * @param timeStep canonical time step representation
+     */
+    public void tick(WorldBuffer world, int month, org.ether.society.core.SimulationTimeStep timeStep) {
+        tickWithDtYears(world, month, timeStep != null ? timeStep.dtYearsF() : 1.0f / 12.0f);
+    }
+
+    /**
+     * Legacy tick overload accepting raw time delta. Automatically normalizes via {@link org.ether.society.core.SimulationTimeStep}.
+     *
+     * @param world DOD buffer container for world state
+     * @param dt    time delta in days or seconds (if &gt; 1000)
+     */
     public void tick(WorldBuffer world, float dt) {
         tick(world, 0, dt);
     }
@@ -137,9 +155,16 @@ public class EnvironmentalKernel {
      *
      * @param world DOD buffer container for world state
      * @param month current simulation month
-     * @param dt    time delta in seconds (if &gt; 1000) or days
+     * @param dt    time delta in days or seconds (if &gt; 1000)
      */
     public void tick(WorldBuffer world, int month, float dt) {
+        float dtYears = dt > 1000.0f
+                ? (float) (dt / PhysicalConstants.SECONDS_PER_JULIAN_YEAR)
+                : (float) (dt > 20.0f ? dt / PhysicalConstants.DAYS_PER_JULIAN_YEAR : dt);
+        tickWithDtYears(world, month, dtYears);
+    }
+
+    private void tickWithDtYears(WorldBuffer world, int month, float dtYears) {
         float[] food = world.getFoodResource();
         float[] temp = world.getTemperature();
         float[] rain = world.getRainfall();
@@ -159,9 +184,7 @@ public class EnvironmentalKernel {
             }
         }
 
-        float dtInYears = (float) Math.max(0.0001, dt > 1000.0f
-                ? (dt / PhysicalConstants.SECONDS_PER_JULIAN_YEAR)
-                : (dt / 365.25));
+        float dtInYears = Math.max(0.0001f, dtYears);
         float foodRetentionFactor = (float) Math.exp(-0.03 * dtInYears);
 
         float[] waterArr = world.getWaterResource();

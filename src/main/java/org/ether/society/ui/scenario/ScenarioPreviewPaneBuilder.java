@@ -142,7 +142,7 @@ public class ScenarioPreviewPaneBuilder {
         root.setPadding(new Insets(10));
         root.getStyleClass().add("subcard-section");
 
-        previewTitleLabel = new Label(I18n.getOrDefault("scenario.title.right_view", "ðŸ—ºï¸ Resource Cartography & Display"));
+        previewTitleLabel = new Label(I18n.getOrDefault("scenario.title.right_view", "¸ Resource Cartography & Display"));
         previewTitleLabel.getStyleClass().add("label-header");
         previewTitleLabel.setMaxWidth(Double.MAX_VALUE);
         previewTitleLabel.setAlignment(Pos.CENTER);
@@ -185,20 +185,20 @@ public class ScenarioPreviewPaneBuilder {
             drawPreview();
         });
 
-        btnReliefOverlay = new ToggleButton("ðŸ”ï¸ Relief HypsomÃ©trique");
+        btnReliefOverlay = new ToggleButton("¸ Relief Hypsométrique");
         btnReliefOverlay.setSelected(true);
         btnReliefOverlay.getStyleClass().add("button-secondary");
-        btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.relief_overlay", "Active/dÃ©sactive le relief topographique ombrÃ© en arriÃ¨re-plan")));
+        btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.relief_overlay", "Active/désactive le relief topographique ombré en arrière-plan")));
         btnReliefOverlay.setOnAction(e -> drawPreview());
 
-        btnExportPreviewRaster = new Button(I18n.getOrDefault("scenario.btn.export_preview_raster", "ðŸ’¾ Exporter Image"));
+        btnExportPreviewRaster = new Button(I18n.getOrDefault("scenario.btn.export_preview_raster", " Exporter Image"));
         btnExportPreviewRaster.getStyleClass().add("button-secondary");
-        btnExportPreviewRaster.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_preview_raster", "Exporte l'aperÃ§u cartographique actuel en haute rÃ©solution (PNG)")));
+        btnExportPreviewRaster.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.export_preview_raster", "Exporte l'aperçu cartographique actuel en haute résolution (PNG)")));
         btnExportPreviewRaster.setOnAction(e -> exportPreviewImage());
 
-        btnGraphicSelect = new ToggleButton("ðŸ“ SÃ©lection Zone");
+        btnGraphicSelect = new ToggleButton(" Sélection Zone");
         btnGraphicSelect.getStyleClass().add("button-secondary");
-        btnGraphicSelect.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.graphic_select", "Activer la sÃ©lection rectangulaire sur la carte pour dÃ©finir les limites de dÃ©coupage")));
+        btnGraphicSelect.setTooltip(new Tooltip(I18n.getOrDefault("scenario.tooltip.graphic_select", "Activer la sélection rectangulaire sur la carte pour définir les limites de découpage")));
         btnGraphicSelect.selectedProperty().addListener((obs, oldV, newV) -> {
             context.setGraphicSelectActive(newV);
             drawPreview();
@@ -275,7 +275,7 @@ public class ScenarioPreviewPaneBuilder {
         int prevIdx = previewModeCombo.getSelectionModel().getSelectedIndex();
 
         previewModeCombo.getItems().clear();
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.density", "ðŸ‘¥ DensitÃ© DÃ©mographique & Biomes"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.density", "👥 Densité Démographique & Biomes"));
 
         int dims = context.getCultureVectorDimensions();
         if (dims > 0) {
@@ -285,13 +285,13 @@ public class ScenarioPreviewPaneBuilder {
             }
         }
 
-        previewModeCombo.getItems().add("â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ " + I18n.getOrDefault("scenario.preview_group.derived", "CALQUES DÃ‰DUITS & PHYSIQUE") + " â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€");
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.capital", "ðŸ›ï¸ Capital Productif K(x) [kg/hab]"));
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.energy", "âš¡ RÃ©gime Ã‰nergÃ©tique E(x) [MJ/hab]"));
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.food", "ðŸŒ¾ Stocks Alimentaires F(x) [mois]"));
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.info", "ðŸ§  Stock Informationnel I(x) [bits/hab]"));
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.footprint", "ðŸŒ± Empreinte Ã‰cologique & Pression Malthusienne"));
-        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.friction", "ðŸ”ï¸ Friction aux FrontiÃ¨res & Obstacles"));
+        previewModeCombo.getItems().add("â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ " + I18n.getOrDefault("scenario.preview_group.derived", "CALQUES DÉDUITS & PHYSIQUE") + " â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€");
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.capital", "¸ Capital Productif K(x) [kg/hab]"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.energy", "âš¡ Régime Énergétique E(x) [MJ/hab]"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.food", "🌾 Stocks Alimentaires F(x) [mois]"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.info", "🧠 Stock Informationnel I(x) [bits/hab]"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.footprint", " Empreinte Écologique & Pression Malthusienne"));
+        previewModeCombo.getItems().add(I18n.getOrDefault("scenario.preview_mode.friction", "¸ Friction aux Frontières & Obstacles"));
 
         if (prevIdx >= 0 && prevIdx < previewModeCombo.getItems().size() && !previewModeCombo.getItems().get(prevIdx).startsWith("â”€â”€")) {
             previewModeCombo.getSelectionModel().select(prevIdx);
@@ -306,10 +306,10 @@ public class ScenarioPreviewPaneBuilder {
         if (previewTitleLabel == null || previewModeCombo == null) return;
         String sel = previewModeCombo.getValue();
         if (sel == null || sel.isBlank() || sel.startsWith("â”€â”€")) {
-            previewTitleLabel.setText(I18n.getOrDefault("scenario.title.right_view", "ðŸ—ºï¸ Resource Cartography & Display"));
+            previewTitleLabel.setText(I18n.getOrDefault("scenario.title.right_view", "¸ Resource Cartography & Display"));
             return;
         }
-        previewTitleLabel.setText("ðŸ—ºï¸ " + sel);
+        previewTitleLabel.setText("¸ " + sel);
     }
 
     public void updateBottomLegend() {
@@ -482,7 +482,7 @@ public class ScenarioPreviewPaneBuilder {
             previewCanvas.snapshot(null, wImg);
             WindowHelper.exportImageWithChooser(
                     context.getWindow(), wImg, "ether-map-preview.png",
-                    I18n.getOrDefault("scenario.title.export_preview_dialog", "Exporter l'AperÃ§u Cartographique (PNG)"));
+                    I18n.getOrDefault("scenario.title.export_preview_dialog", "Exporter l'Aperçu Cartographique (PNG)"));
         } catch (Exception ex) {
             logger.error("Failed to export preview canvas image", ex);
         }

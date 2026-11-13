@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * <h2>Scientific Foundations</h2>
  * <ul>
  *   <li><b>Johann Heinrich von ThÃƒÂ¼nen (1826)</b> <i>Der isolirte Staat in Beziehung auf Landwirthschaft und NationalÃƒÂ¶konomie</i>, Perthes, Hamburg.</li>
- *   <li><b>Paul Krugman (1991)</b> <i>Increasing Returns and Economic Geography</i>, J. Political Econ. 99(3): 483Ã¢â‚¬â€œ499.</li>
+ *   <li><b>Paul Krugman (1991)</b> <i>Increasing Returns and Economic Geography</i>, J. Political Econ. 99(3): 483-â‚¬“499.</li>
  *   <li><b>Paul Bairoch (1988)</b> <i>Cities and Economic Development: From the Dawn of History to the Present</i>, Univ. of Chicago Press.</li>
  * </ul>
  *

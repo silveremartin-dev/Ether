@@ -413,13 +413,13 @@ public final class Tier2EngineContributionAnalyzer {
             return "âšª Inert (Unwired)";
         }
         if (globalSharePct >= 10.0) {
-            return "ðŸ”¥ Dominant";
+            return "🔥 Dominant";
         }
         if (globalSharePct >= 1.0) {
-            return "ðŸŸ¡ Moderate";
+            return " Moderate";
         }
         if (globalSharePct > 1e-4) {
-            return "ðŸ”¹ Marginal";
+            return " Marginal";
         }
         return "âšª Inert (0%)";
     }

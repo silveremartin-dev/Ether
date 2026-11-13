@@ -79,7 +79,7 @@ public class AutoEpochScenarioDialog extends Stage {
         setMinHeight(580);
         setWidth(850);
         setHeight(750);
-        setTitle(I18n.getOrDefault("scenario.autodialog.title", "âœ¨ Assistant de ScÃ©nario Temporel & Ã‰poques Historiques"));
+        setTitle(I18n.getOrDefault("scenario.autodialog.title", "âœ¨ Assistant de Scénario Temporel & Époques Historiques"));
 
         BorderPane root = new BorderPane();
         root.getStyleClass().add("glass-panel");
@@ -89,12 +89,12 @@ public class AutoEpochScenarioDialog extends Stage {
         headerBox.setPadding(new Insets(16, 20, 10, 20));
         headerBox.setStyle("-fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-width: 0 0 1 0;");
 
-        Label headerTitle = new Label(I18n.getOrDefault("scenario.autodialog.header", "ðŸ›ï¸ GÃ‰NÃ‰RATEUR AUTOMATIQUE DE SCÃ‰NARIO PAR DATE"));
+        Label headerTitle = new Label(I18n.getOrDefault("scenario.autodialog.header", "¸ GÉNÉRATEUR AUTOMATIQUE DE SCÉNARIO PAR DATE"));
         headerTitle.getStyleClass().add("label-section-header");
         headerTitle.setStyle("-fx-font-size: 15px; -fx-font-weight: bold;");
 
         Label headerSub = new Label(I18n.getOrDefault("scenario.autodialog.subtitle", 
-                "SÃ©lectionnez une planÃ¨te et une date : Ether configure automatiquement la gÃ©ophysique (Onglet 1), les ressources (Onglet 2) et les moteurs physiques & anthropiques adaptÃ©s (Onglet 3)."));
+                "Sélectionnez une planète et une date : Ether configure automatiquement la géophysique (Onglet 1), les ressources (Onglet 2) et les moteurs physiques & anthropiques adaptés (Onglet 3)."));
         headerSub.setWrapText(true);
         headerSub.getStyleClass().add("card-description-muted");
         headerSub.setStyle("-fx-font-size: 11px;");
@@ -112,7 +112,7 @@ public class AutoEpochScenarioDialog extends Stage {
 
         HBox planetRow = new HBox(10);
         planetRow.setAlignment(Pos.CENTER_LEFT);
-        Label lblPlanet = new Label(I18n.getOrDefault("scenario.autodialog.planet_label", "ðŸª PlanÃ¨te cible :"));
+        Label lblPlanet = new Label(I18n.getOrDefault("scenario.autodialog.planet_label", " Planète cible :"));
         lblPlanet.getStyleClass().add("control-label");
         lblPlanet.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
@@ -141,13 +141,13 @@ public class AutoEpochScenarioDialog extends Stage {
         });
         planetSelector.setButtonCell(planetSelector.getCellFactory().call(null));
         planetSelector.getStyleClass().add("combo-box");
-        planetSelector.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.planet", "Choisissez la planÃ¨te dont les calques cartographiques et Ã©poques doivent Ãªtre configurÃ©s.")));
+        planetSelector.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.planet", "Choisissez la planète dont les calques cartographiques et époques doivent être configurés.")));
 
         planetRow.getChildren().addAll(lblPlanet, planetSelector);
 
         HBox spinnerRow = new HBox(12);
         spinnerRow.setAlignment(Pos.CENTER_LEFT);
-        Label lblYear = new Label(I18n.getOrDefault("scenario.autodialog.year_label", "ðŸ“… Date de dÃ©part (AnnÃ©e BP / AD) :"));
+        Label lblYear = new Label(I18n.getOrDefault("scenario.autodialog.year_label", " Date de départ (Année BP / AD) :"));
         lblYear.getStyleClass().add("control-label");
         lblYear.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
@@ -155,10 +155,10 @@ public class AutoEpochScenarioDialog extends Stage {
         yearSpinner.getValueFactory().setValue((int) initialYear);
         yearSpinner.setPrefWidth(140);
         yearSpinner.getStyleClass().add("spinner");
-        yearSpinner.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.year_spinner", "Entrez l'annÃ©e de dÃ©part numÃ©rique (valeurs nÃ©gatives pour BP / avant J.-C., positives pour AD / aprÃ¨s J.-C.).")));
+        yearSpinner.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.year_spinner", "Entrez l'année de départ numérique (valeurs négatives pour BP / avant J.-C., positives pour AD / après J.-C.).")));
 
         milestoneTitleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #38bdf8;");
-        milestoneTitleLabel.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.preview_milestone", "Ãˆre chronologique et contexte gÃ©ophysique/historique clÃ© pour l'annÃ©e ciblÃ©e.")));
+        milestoneTitleLabel.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.preview_milestone", "Ãˆre chronologique et contexte géophysique/historique clé pour l'année ciblée.")));
         spinnerRow.getChildren().addAll(lblYear, yearSpinner, milestoneTitleLabel);
 
         yearSlider.setShowTickMarks(true);
@@ -167,7 +167,7 @@ public class AutoEpochScenarioDialog extends Stage {
         yearSlider.setBlockIncrement(100);
         yearSlider.setValue(initialYear);
         yearSlider.setMaxWidth(Double.MAX_VALUE);
-        yearSlider.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.slider", "Glissez pour parcourir les Ã©poques de -100 000 BP jusqu'en 2060 AD.")));
+        yearSlider.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.slider", "Glissez pour parcourir les époques de -100 000 BP jusqu'en 2060 AD.")));
 
         // Bidirectional sync between slider & spinner
         yearSlider.valueProperty().addListener((obs, oldV, newV) -> {
@@ -188,7 +188,7 @@ public class AutoEpochScenarioDialog extends Stage {
             }
         });
 
-        Label quickLabel = new Label(I18n.getOrDefault("scenario.autodialog.quick_milestones", "âš¡ Jalons & Ã‰poques ClÃ©s :"));
+        Label quickLabel = new Label(I18n.getOrDefault("scenario.autodialog.quick_milestones", "âš¡ Jalons & Époques Clés :"));
         quickLabel.getStyleClass().add("card-description-muted");
         quickLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
 
@@ -200,13 +200,13 @@ public class AutoEpochScenarioDialog extends Stage {
         VBox strategySectionBox = new VBox(8);
         strategySectionBox.getStyleClass().add("card-section");
 
-        Label strategySectionHeader = new Label(I18n.getOrDefault("scenario.autodialog.strategy_section_header", "âš™ï¸ STRATÃ‰GIE DE RÃ‰SOLUTION TEMPORELLE & SYNTHÃˆSE CARTOGRAPHIQUE"));
+        Label strategySectionHeader = new Label(I18n.getOrDefault("scenario.autodialog.strategy_section_header", "âš™ï¸ STRATÉGIE DE RÉSOLUTION TEMPORELLE & SYNTHÃˆSE CARTOGRAPHIQUE"));
         strategySectionHeader.getStyleClass().add("label-section-header");
         strategySectionHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
         HBox fallbackRow = new HBox(10);
         fallbackRow.setAlignment(Pos.CENTER_LEFT);
-        Label lblFallback = new Label(I18n.getOrDefault("scenario.autodialog.fallback_label", "StratÃ©gie de rÃ©solution des dates intermÃ©diaires (Onglet 3) :"));
+        Label lblFallback = new Label(I18n.getOrDefault("scenario.autodialog.fallback_label", "Stratégie de résolution des dates intermédiaires (Onglet 3) :"));
         lblFallback.getStyleClass().add("control-label");
         lblFallback.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
@@ -228,7 +228,7 @@ public class AutoEpochScenarioDialog extends Stage {
         fallbackSelector.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(fallbackSelector, Priority.ALWAYS);
         fallbackSelector.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.fallback", 
-                "Choisissez comment les calques cartographiques de l'Onglet 3 (dÃ©mographie et tenseurs culturels) sont rÃ©solus en l'absence de donnÃ©es empiriques directes pour l'annÃ©e exacte.")));
+                "Choisissez comment les calques cartographiques de l'Onglet 3 (démographie et tenseurs culturels) sont résolus en l'absence de données empiriques directes pour l'année exacte.")));
 
         fallbackRow.getChildren().addAll(lblFallback, fallbackSelector);
 
@@ -241,15 +241,15 @@ public class AutoEpochScenarioDialog extends Stage {
 
         // Synthesis Checkbox placed directly at the same strategy level
         cbRegenerateSpecificMaps.setText(I18n.getOrDefault("scenario.autodialog.cb_regenerate_maps", 
-                "ðŸ”„ SynthÃ©tiser les cartes raster dÃ©diÃ©es pour cette date prÃ©cise (via sources brutes exactes)"));
+                " Synthétiser les cartes raster dédiées pour cette date précise (via sources brutes exactes)"));
         cbRegenerateSpecificMaps.setSelected(true);
         cbRegenerateSpecificMaps.getStyleClass().add("check-box");
         cbRegenerateSpecificMaps.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
         cbRegenerateSpecificMaps.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.regenerate_maps", 
-                "Si cochÃ©, gÃ©nÃ¨re un jeu de donnÃ©es raster exact pour l'annÃ©e ciblÃ©e en s'appuyant directement sur les sources brutes (NOAA, WorldClim, HYDE 3.4), Ã©vitant tout besoin d'interpolation ou de repli approximatif.")));
+                "Si coché, génère un jeu de données raster exact pour l'année ciblée en s'appuyant directement sur les sources brutes (NOAA, WorldClim, HYDE 3.4), évitant tout besoin d'interpolation ou de repli approximatif.")));
 
         Label regenDesc = new Label(I18n.getOrDefault("scenario.autodialog.regen_desc", 
-                "ðŸ’¡ Cette option synthÃ©tise un jeu de donnÃ©es exact et dÃ©diÃ© pour la date choisie, garantissant l'alignement sans interpolation des 25 cartes."));
+                "💡 Cette option synthétise un jeu de données exact et dédié pour la date choisie, garantissant l'alignement sans interpolation des 25 cartes."));
         regenDesc.setWrapText(true);
         regenDesc.getStyleClass().add("card-description-muted");
         regenDesc.setStyle("-fx-font-size: 10px; -fx-padding: 0 0 0 20;");
@@ -260,7 +260,7 @@ public class AutoEpochScenarioDialog extends Stage {
         VBox actionsCard = new VBox(8);
         actionsCard.getStyleClass().add("subcard-section");
 
-        Label previewHeader = new Label(I18n.getOrDefault("scenario.autodialog.actions_header", "ðŸ“‹ ACTIONS EXÃ‰CUTÃ‰ES EN CASCADE (ZÃ‰RO SURPRISE)"));
+        Label previewHeader = new Label(I18n.getOrDefault("scenario.autodialog.actions_header", " ACTIONS EXÉCUTÉES EN CASCADE (ZÉRO SURPRISE)"));
         previewHeader.getStyleClass().add("label-section-header");
         previewHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
 
@@ -284,11 +284,11 @@ public class AutoEpochScenarioDialog extends Stage {
         warningCard.getStyleClass().add("card-section");
         warningCard.setStyle("-fx-padding: 8 10; -fx-border-color: rgba(245, 158, 11, 0.4); -fx-border-radius: 6;");
 
-        Label warningHeader = new Label(I18n.getOrDefault("scenario.autodialog.warning_header", "âš ï¸ NOTE Ã‰PISTÃ‰MIQUE & FIDÃ‰LITÃ‰ PHYSIQUE :"));
+        Label warningHeader = new Label(I18n.getOrDefault("scenario.autodialog.warning_header", "âš ï¸ NOTE ÉPISTÉMIQUE & FIDÉLITÉ PHYSIQUE :"));
         warningHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 10px; -fx-text-fill: #d97706;");
 
         Label warningBody = new Label(I18n.getOrDefault("scenario.autodialog.warning_body", 
-                "La prÃ©cision des calques dÃ©pend directement des donnÃ©es empiriques disponibles (NOAA ETOPO, Paleoclim, HYDE 3.4, EPICA). Pour les planÃ¨tes extraterrestres (Mars, Lune, etc.), le moteur gÃ©nÃ¨re une configuration procÃ©durale cohÃ©rente avec les calques d'Ã©lÃ©vation rÃ©els (MOLA, LOLA)."));
+                "La précision des calques dépend directement des données empiriques disponibles (NOAA ETOPO, Paleoclim, HYDE 3.4, EPICA). Pour les planètes extraterrestres (Mars, Lune, etc.), le moteur génère une configuration procédurale cohérente avec les calques d'élévation réels (MOLA, LOLA)."));
         warningBody.setWrapText(true);
         warningBody.getStyleClass().add("card-description-muted");
         warningBody.setStyle("-fx-font-size: 10px;");
@@ -323,13 +323,13 @@ public class AutoEpochScenarioDialog extends Stage {
 
         btnCancel.setText(I18n.getOrDefault("scenario.autodialog.btn_cancel", "Annuler"));
         btnCancel.getStyleClass().add("button-secondary");
-        btnCancel.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.cancel", "Fermer l'assistant sans modifier le scÃ©nario actuel.")));
+        btnCancel.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.cancel", "Fermer l'assistant sans modifier le scénario actuel.")));
         btnCancel.setOnAction(e -> close());
 
-        btnApply.setText(I18n.getOrDefault("scenario.autodialog.btn_apply", "âš¡ CrÃ©er & Appliquer le ScÃ©nario Complet"));
+        btnApply.setText(I18n.getOrDefault("scenario.autodialog.btn_apply", "âš¡ Créer & Appliquer le Scénario Complet"));
         btnApply.getStyleClass().add("button-primary");
         btnApply.setStyle("-fx-font-weight: bold;");
-        btnApply.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.apply", "GÃ©nÃ¨re le scÃ©nario complet, applique les cartes dans les onglets 1 et 2, calibre la dÃ©mographie et active les moteurs compatibles.")));
+        btnApply.setTooltip(new Tooltip(I18n.getOrDefault("scenario.autodialog.tooltip.apply", "Génère le scénario complet, applique les cartes dans les onglets 1 et 2, calibre la démographie et active les moteurs compatibles.")));
         
         btnApply.setOnAction(e -> launchScenarioGeneration());
 
@@ -374,7 +374,7 @@ public class AutoEpochScenarioDialog extends Stage {
                 Button chip = new Button(label);
                 chip.getStyleClass().add("button-secondary");
                 chip.setStyle("-fx-font-size: 10px; -fx-padding: 3 8; -fx-background-radius: 12; -fx-cursor: hand;");
-                chip.setTooltip(new Tooltip(String.format(Locale.ROOT, "Initialiser %s pour l'Ã©poque %s", AutoEpochDialogPresenter.getLocalizedPlanetName(planet), label)));
+                chip.setTooltip(new Tooltip(String.format(Locale.ROOT, "Initialiser %s pour l'époque %s", AutoEpochDialogPresenter.getLocalizedPlanetName(planet), label)));
                 chip.setOnAction(e -> yearSpinner.getValueFactory().setValue(yr.intValue()));
                 chipsPane.getChildren().add(chip);
             }
@@ -393,7 +393,7 @@ public class AutoEpochScenarioDialog extends Stage {
         btnCancel.setDisable(true);
         progressBar.setVisible(true);
         progressLabel.setVisible(true);
-        progressLabel.setText(I18n.getOrDefault("scenario.autodialog.status_generating", "GÃ©nÃ©ration des 25 calques en cours..."));
+        progressLabel.setText(I18n.getOrDefault("scenario.autodialog.status_generating", "Génération des 25 calques en cours..."));
 
         Task<Scenario> task = new Task<>() {
             /**
@@ -420,7 +420,7 @@ public class AutoEpochScenarioDialog extends Stage {
             btnApply.setDisable(false);
             btnCancel.setDisable(false);
             progressBar.setVisible(false);
-            progressLabel.setText(I18n.getOrDefault("scenario.autodialog.status_error", "Erreur lors de la gÃ©nÃ©ration."));
+            progressLabel.setText(I18n.getOrDefault("scenario.autodialog.status_error", "Erreur lors de la génération."));
         });
 
         Thread thread = new Thread(task, "AutoEpochScenario-Generator");
@@ -435,7 +435,7 @@ public class AutoEpochScenarioDialog extends Stage {
         boolean isEarth = "earth".equalsIgnoreCase(TemporalTensorRepository.normalizePlanet(planet));
 
         String formattedYear = AutoEpochScenarioGenerator.formatEpochName(year);
-        milestoneTitleLabel.setText("ðŸ“ " + formattedYear);
+        milestoneTitleLabel.setText(" " + formattedYear);
 
         // Update strategy explanation
         TemporalTensorRepository.DataFallbackStrategy strat = fallbackSelector.getValue() != null 
@@ -446,8 +446,8 @@ public class AutoEpochScenarioDialog extends Stage {
 
         // Match description
         String milestoneDesc = isEarth 
-                ? I18n.getOrDefault("scenario.autodialog.interpolated_epoch", "Ã‰poque continue interpolÃ©e via TemporalTensorRepository.")
-                : String.format(Locale.ROOT, "Contexte planÃ©taire & colonisation extraterrestre pour %s (%s).", AutoEpochDialogPresenter.getLocalizedPlanetName(planet), formattedYear);
+                ? I18n.getOrDefault("scenario.autodialog.interpolated_epoch", "Époque continue interpolée via TemporalTensorRepository.")
+                : String.format(Locale.ROOT, "Contexte planétaire & colonisation extraterrestre pour %s (%s).", AutoEpochDialogPresenter.getLocalizedPlanetName(planet), formattedYear);
 
         if (isEarth) {
             for (AutoEpochScenarioGenerator.EpochMilestone m : AutoEpochScenarioGenerator.EARTH_KEY_MILESTONES) {
@@ -457,11 +457,11 @@ public class AutoEpochScenarioDialog extends Stage {
                 }
             }
         }
-        milestoneDescLabel.setText("ðŸ“œ " + milestoneDesc);
+        milestoneDescLabel.setText(" " + milestoneDesc);
 
         List<Long> availableEpochs = TemporalTensorRepository.getAvailableEpochYears(planet);
         String rasterFormat = I18n.getOrDefault("scenario.autodialog.raster_preview", 
-                "ðŸ—ºï¸ Onglets 1 & 2 (Cartographie & Ressources) : 25 calques rÃ©solus [%s] (%s, %d Ã©poques empiriques). Topographie, biomes, nappes & minerais.");
+                "¸ Onglets 1 & 2 (Cartographie & Ressources) : 25 calques résolus [%s] (%s, %d époques empiriques). Topographie, biomes, nappes & minerais.");
         rasterPreviewLabel.setText(String.format(Locale.ROOT, rasterFormat,
                 strat.getLocalizedName(), AutoEpochDialogPresenter.getLocalizedPlanetName(planet), availableEpochs.size()));
 
@@ -469,16 +469,16 @@ public class AutoEpochScenarioDialog extends Stage {
         double k0 = AutoEpochScenarioGenerator.estimateCapitalPerCapita(planet, year);
         double e0 = AutoEpochScenarioGenerator.estimateEnergyPerCapita(planet, year);
         String demoFormat = I18n.getOrDefault("scenario.autodialog.demo_preview", 
-                "ðŸ‘¥ Onglet 3 (DÃ©mographie & Tenseurs) : Nâ‚€ = %,d hab. | Capital Kâ‚€ = %.1f kg/hab. | Ã‰nergie Eâ‚€ = %.1f MJ/hab. | Horizon recommandÃ© : %d ans");
+                "👥 Onglet 3 (Démographie & Tenseurs) : Nâ‚€ = %,d hab. | Capital Kâ‚€ = %.1f kg/hab. | Énergie Eâ‚€ = %.1f MJ/hab. | Horizon recommandé : %d ans");
         long horizon = Math.abs(AutoEpochScenarioGenerator.computeRecommendedEndYear(year) - year);
         demoPreviewLabel.setText(String.format(Locale.ROOT, demoFormat, pop, k0, e0, horizon));
 
         Map<String, Boolean> engines = AutoEpochScenarioGenerator.calibrateTypeBEngines(planet, year);
         long activeCount = engines.values().stream().filter(Boolean::booleanValue).count();
         String activeLabel = I18n.getOrDefault("scenario.autodialog.state.active", "ACTIF");
-        String disabledLabel = I18n.getOrDefault("scenario.autodialog.state.disabled", "DÃ©sactivÃ©");
+        String disabledLabel = I18n.getOrDefault("scenario.autodialog.state.disabled", "Désactivé");
         String enginesFormat = I18n.getOrDefault("scenario.autodialog.engines_preview", 
-                "âš™ï¸ Onglet 3 (Modules Type B) : %d moteurs activÃ©s sur %d (PalÃ©o: %s | Dynasties/SDT: %s | Industriel/IA: %s).");
+                "âš™ï¸ Onglet 3 (Modules Type B) : %d moteurs activés sur %d (Paléo: %s | Dynasties/SDT: %s | Industriel/IA: %s).");
         enginesPreviewLabel.setText(String.format(Locale.ROOT, enginesFormat,
                 activeCount, engines.size(),
                 (isEarth && year <= -10000) ? activeLabel : disabledLabel,

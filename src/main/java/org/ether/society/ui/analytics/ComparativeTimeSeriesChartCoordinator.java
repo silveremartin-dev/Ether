@@ -137,14 +137,14 @@ public final class ComparativeTimeSeriesChartCoordinator {
         if (timeSeriesWarningBox != null && timeSeriesWarningLabel != null) {
             if (spatialDisjoint) {
                 timeSeriesWarningLabel.setText(differentPlanets
-                    ? I18n.getOrDefault("analytics.warning.different_planets", "âš ï¸ ScÃ©narios sur des planÃ¨tes distinctes : aucune intersection spatiale possible. DonnÃ©es comparatives cartographiques directes indisponibles.")
-                    : I18n.getOrDefault("analytics.warning.spatially_disjoint", "âš ï¸ ScÃ©narios spatialement disjoints : aucune intersection gÃ©ographique possible. DonnÃ©es spatiales comparatives indisponibles."));
+                    ? I18n.getOrDefault("analytics.warning.different_planets", "âš ï¸ Scénarios sur des planètes distinctes : aucune intersection spatiale possible. Données comparatives cartographiques directes indisponibles.")
+                    : I18n.getOrDefault("analytics.warning.spatially_disjoint", "âš ï¸ Scénarios spatialement disjoints : aucune intersection géographique possible. Données spatiales comparatives indisponibles."));
                 timeSeriesWarningBox.setStyle("-fx-background-color: rgba(239, 68, 68, 0.15); -fx-border-color: #ef4444; -fx-border-radius: 4; -fx-padding: 6 10;");
                 timeSeriesWarningLabel.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 12px;");
                 timeSeriesWarningBox.setVisible(true);
                 timeSeriesWarningBox.setManaged(true);
             } else if (temporalDisjoint) {
-                timeSeriesWarningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.temporally_disjoint_fmt", "âš ï¸ ScÃ©narios temporellement disjoints : aucune intersection temporelle possible (PÃ©riodes disjointes : min %d > max %d)."), interStartYear, interEndYear));
+                timeSeriesWarningLabel.setText(String.format(I18n.getOrDefault("analytics.warning.temporally_disjoint_fmt", "âš ï¸ Scénarios temporellement disjoints : aucune intersection temporelle possible (Périodes disjointes : min %d > max %d)."), interStartYear, interEndYear));
                 timeSeriesWarningBox.setStyle("-fx-background-color: rgba(239, 68, 68, 0.15); -fx-border-color: #ef4444; -fx-border-radius: 4; -fx-padding: 6 10;");
                 timeSeriesWarningLabel.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 12px;");
                 timeSeriesWarningBox.setVisible(true);
@@ -152,15 +152,15 @@ public final class ComparativeTimeSeriesChartCoordinator {
             } else {
                 StringBuilder banner = new StringBuilder();
                 if (hasClipped) {
-                    banner.append(String.format(java.util.Locale.US, I18n.getOrDefault("analytics.info.spatial_intersection", "â„¹ï¸ Intersection spatiale appliquÃ©e : [%.1fÂ°, %.1fÂ° Lat | %.1fÂ°, %.1fÂ° Lng]"), interMinLat, interMaxLat, interMinLng, interMaxLng));
+                    banner.append(String.format(java.util.Locale.US, I18n.getOrDefault("analytics.info.spatial_intersection", "â„¹ï¸ Intersection spatiale appliquée : [%.1fÂ°, %.1fÂ° Lat | %.1fÂ°, %.1fÂ° Lng]"), interMinLat, interMaxLat, interMinLng, interMaxLng));
                 }
                 if (hasGroundTruth && hasPre10k) {
                     if (banner.length() > 0) banner.append(" | ");
-                    banner.append(I18n.getOrDefault("analytics.warning.pre_10k_data", "âš ï¸ DonnÃ©es historiques rÃ©elles peu fiables ou estimÃ©es avant -10 000 BP (estimations macroscopiques HYDE / palÃ©oanthropologie)."));
+                    banner.append(I18n.getOrDefault("analytics.warning.pre_10k_data", "âš ï¸ Données historiques réelles peu fiables ou estimées avant -10 000 BP (estimations macroscopiques HYDE / paléoanthropologie)."));
                 }
                 if (hasClippedWithGroundTruth && (metric != null && (metric.toLowerCase().contains("pop") || metric.toLowerCase().contains("gdp") || metric.toLowerCase().contains("pib")))) {
                     if (banner.length() > 0) banner.append(" | ");
-                    banner.append(I18n.getOrDefault("analytics.warning.global_ground_truth_clipped", "âš ï¸ RÃ©fÃ©rence historique mondiale : la trajectoire HYDE/Maddison est globale et n'est pas restreinte au fenÃªtrage gÃ©ographique de ce scÃ©nario."));
+                    banner.append(I18n.getOrDefault("analytics.warning.global_ground_truth_clipped", "âš ï¸ Référence historique mondiale : la trajectoire HYDE/Maddison est globale et n'est pas restreinte au fenêtrage géographique de ce scénario."));
                 }
                 if (banner.length() > 0) {
                     timeSeriesWarningLabel.setText(banner.toString());
@@ -193,9 +193,9 @@ public final class ComparativeTimeSeriesChartCoordinator {
             yAxis.setLabel(metricDisplayName + unitStr);
             String tipText = String.format("%s\n%s: %s\n%s: %s\n%s: %s",
                 metricDisplayName,
-                I18n.getOrDefault("analytics.metric.category", "CatÃ©gorie"),
-                metricDesc != null && metricDesc.getCategory() != null ? metricDesc.getCategory() : "SociÃ©tÃ© & MacroÃ©conomie",
-                I18n.getOrDefault("analytics.metric.unit", "UnitÃ©"),
+                I18n.getOrDefault("analytics.metric.category", "Catégorie"),
+                metricDesc != null && metricDesc.getCategory() != null ? metricDesc.getCategory() : "Société & Macroéconomie",
+                I18n.getOrDefault("analytics.metric.unit", "Unité"),
                 metricDesc != null && metricDesc.getUnit() != null && !metricDesc.getUnit().isBlank() ? metricDesc.getUnit() : "Scalaire sans dimension",
                 I18n.getOrDefault("analytics.metric.desc", "Description"),
                 metricDesc != null && metricDesc.getDescription() != null ? metricDesc.getDescription() : "Mesure de dynamique macroscopique et historique."
@@ -289,7 +289,7 @@ public final class ComparativeTimeSeriesChartCoordinator {
                 } else {
                     yrStr = isFr ? "An 0" : "0 AD";
                 }
-                String tip = String.format("%s\nðŸ“… %s\nðŸ“ˆ %,.2f%s", series.getName(), yrStr, dp.getYValue().doubleValue(), unitStr != null ? unitStr : "");
+                String tip = String.format("%s\n %s\n %,.2f%s", series.getName(), yrStr, dp.getYValue().doubleValue(), unitStr != null ? unitStr : "");
                 Tooltip tooltip = new Tooltip(tip);
                 tooltip.setShowDelay(Duration.millis(50));
                 Tooltip.install(newNode, tooltip);

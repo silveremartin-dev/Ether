@@ -28,10 +28,10 @@ import java.util.stream.Stream;
 /**
  * Unified High-Performance Simulation Persistence &amp; Replay Manager.
  * Orchestrates saving and loading of:
- * 1. Topology (topology.bin.gz) â€” Static/cold spatial baselines via CellTopologyWireCodec
- * 2. World State (state.bin.gz &amp; snapshots/) â€” Dynamic simulation arrays via WorldBufferWireCodec
- * 3. Metadata (metadata.json) â€” Scenario identification, timeline, and tick indexes
- * 4. Telemetry (history.json) â€” Time series analytics and historical snapshots
+ * 1. Topology (topology.bin.gz) — Static/cold spatial baselines via CellTopologyWireCodec
+ * 2. World State (state.bin.gz &amp; snapshots/) — Dynamic simulation arrays via WorldBufferWireCodec
+ * 3. Metadata (metadata.json) — Scenario identification, timeline, and tick indexes
+ * 4. Telemetry (history.json) — Time series analytics and historical snapshots
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvère Martin-Michiellot
  */
 package org.ether.society.persistence;
 

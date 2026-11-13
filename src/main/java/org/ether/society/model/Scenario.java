@@ -123,7 +123,7 @@ public class Scenario extends AbstractScenarioTensorAndEngineConfig {
     private long endDateYear = 2100;
     private long seed = 12345L;
     private long culturalSeed = 54321L;
-    private boolean randomEventsEnabled = true;
+    private boolean randomEventsEnabled = false;
     private boolean earthHistoricalLeadersEnabled = false;
     private boolean proceduralLeadersEnabled = false;
     private boolean chronicleSingularityObserverEnabled = false;
@@ -151,7 +151,7 @@ public class Scenario extends AbstractScenarioTensorAndEngineConfig {
         this.startDateYear = -100000;
         this.useRealEarthData = false;
         this.seed = 12345L;
-        this.randomEventsEnabled = true;
+        this.randomEventsEnabled = false;
     }
 
     public static Scenario createDefaultScenario() {

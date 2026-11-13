@@ -109,8 +109,9 @@ public class SimulationPipeline {
             configureScenario(activeScenario);
         }
 
-        double dtYears = (double) dtSlow / 31_557_600.0;
-        double dtMonthly = dtYears;
+        SimulationTimeStep timeStep = SimulationTimeStep.ofSeconds(dtSlow);
+        double dtYears = timeStep.dtYears();
+        double dtMonthly = timeStep.dtMonths();
 
         // --- Phase 1: Demographics, Urbanization & Culture DOD Kernels ---
         profiler.beginPhase("3_DemographicsAndCulture");
@@ -130,8 +131,8 @@ public class SimulationPipeline {
                 }
                 long sSeed = activeScenario != null && activeScenario.getSeed() != 0L ? activeScenario.getSeed() : 42L;
                 long tickCount = engine != null ? engine.getTickCounter() : 1L;
-                float dtY = (float) dtYears;
-                float dtSec = (float) dtSlow;
+                float dtY = timeStep.dtYearsF();
+                float dtSec = timeStep.dtSecondsF();
 
                 cachedNativeArena.syncFromJavaBuffers(worldBuffer, agentBuffer);
                 cachedNativeArena.tickEnvironmental(dtY);
@@ -148,14 +149,14 @@ public class SimulationPipeline {
         }
 
         if (!executedNative) {
-            environmentalKernel.tick(worldBuffer, dtSlow);
+            environmentalKernel.tick(worldBuffer, 0, timeStep);
             if (agentBuffer != null) {
-                demographicKernel.tick(worldBuffer, agentBuffer, dtSlow);
+                demographicKernel.tick(worldBuffer, agentBuffer, timeStep);
             }
-            urbanKernel.tick(worldBuffer, dtSlow);
-            fluxKernel.tick(worldBuffer, dtSlow);
+            urbanKernel.tick(worldBuffer, timeStep);
+            fluxKernel.tick(worldBuffer, timeStep);
             if (agentBuffer != null) {
-                cultureKernel.tick(worldBuffer, agentBuffer, dtSlow);
+                cultureKernel.tick(worldBuffer, agentBuffer, timeStep);
             }
         }
 

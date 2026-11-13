@@ -58,7 +58,7 @@ public class SeshatDataIntegrator {
 
         // Initialize default Seshat polity benchmarks
         registerPolity("ROMAN_EMPIRE", "ItRome01", "Imperium Romanum", -27, 476, 0.88, 0.90, 0.85, 0.82, 0.92);
-        registerPolity("FRANCE_1800", "FrFrance03", "RÃ©publique FranÃ§aise", 1792, 1815, 0.95, 0.96, 0.70, 0.95, 0.90);
+        registerPolity("FRANCE_1800", "FrFrance03", "République Française", 1792, 1815, 0.95, 0.96, 0.70, 0.95, 0.90);
         registerPolity("EGYPT_OLD_KINGDOM", "EgOldK01", "Old Kingdom of Egypt", -2686, -2181, 0.65, 0.60, 0.92, 0.50, 0.75);
         registerPolity("MESOPOTAMIA_SUMER", "IqSumer01", "Sumerian City-States", -3500, -2000, 0.58, 0.65, 0.88, 0.45, 0.70);
         registerPolity("SONG_DYNASTY", "CnSong01", "Song Dynasty China", 960, 1279, 0.92, 0.95, 0.80, 0.88, 0.94);

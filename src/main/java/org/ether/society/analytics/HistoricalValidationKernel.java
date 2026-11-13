@@ -63,14 +63,14 @@ public class HistoricalValidationKernel {
     public static String getReferenceModelDisplayLabel(String modelKey) {
         if (modelKey == null) return "HYDE 3.4 & Maddison Project";
         return switch (modelKey.toUpperCase(Locale.ROOT)) {
-            case "PALEO_SOURCES" -> "PalÃ©o Sources (EPICA Dome C, PaleoClim v1.2, Biraben)";
+            case "PALEO_SOURCES" -> "Paléo Sources (EPICA Dome C, PaleoClim v1.2, Biraben)";
             case "HYDE_MADDISON" -> "HYDE 3.4 & Maddison Project (10k BCE - 2024 CE)";
-            case "SSP1", "PREDICTIVE_SSP1" -> "SSP1 - DurabilitÃ© & DÃ©carbonation Rapide (IIASA/IEA)";
+            case "SSP1", "PREDICTIVE_SSP1" -> "SSP1 - Durabilité & Décarbonation Rapide (IIASA/IEA)";
             case "SSP2", "PREDICTIVE_SSP2" -> "SSP2 - Tendances Actuelles / Milieu de la Route (UN WPP / IIASA)";
-            case "SSP3", "PREDICTIVE_SSP3_WORLD3" -> "SSP3 - RivalitÃ©s RÃ©gionales & Limites Ressources (Club de Rome)";
-            case "SSP4", "PREDICTIVE_SSP4" -> "SSP4 - InÃ©galitÃ©s & Stratification Sociale (GCAM4)";
-            case "SSP5", "PREDICTIVE_SSP5" -> "SSP5 - Ã‰nergies Fossiles & Croissance ForcÃ©e (PIK/IIASA)";
-            case "ETHER_CALIBRATED" -> "Ether Biophysique CalibrÃ© (ERA5 / ContinuitÃ© EndogÃ¨ne 2025-2200)";
+            case "SSP3", "PREDICTIVE_SSP3_WORLD3" -> "SSP3 - Rivalités Régionales & Limites Ressources (Club de Rome)";
+            case "SSP4", "PREDICTIVE_SSP4" -> "SSP4 - Inégalités & Stratification Sociale (GCAM4)";
+            case "SSP5", "PREDICTIVE_SSP5" -> "SSP5 - Énergies Fossiles & Croissance Forcée (PIK/IIASA)";
+            case "ETHER_CALIBRATED" -> "Ether Biophysique Calibré (ERA5 / Continuité Endogène 2025-2200)";
             default -> modelKey;
         };
     }

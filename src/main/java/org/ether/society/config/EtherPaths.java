@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 SilvÃƒÂ¨re Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvère Martin-Michiellot
  */
 package org.ether.society.config;
 
@@ -148,7 +148,7 @@ public final class EtherPaths {
         }
     }
 
-    // Ã¢a€a‚¬Ã¢a€a‚¬ Root Paths Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
+    // -----------------------------------------------------------------------------
 
     /**
      * Get data dir.
@@ -195,7 +195,7 @@ public final class EtherPaths {
         return cacheDir;
     }
 
-    // Ã¢a€a‚¬Ã¢a€a‚¬ Preset Sub-Directories Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
+    // -----------------------------------------------------------------------------
 
     /**
      * Get presets dir.
@@ -242,7 +242,7 @@ public final class EtherPaths {
         return getEarthLeadersDir();
     }
 
-    // Ã¢a€a‚¬Ã¢a€a‚¬ Planetary Domain Directories (Option A Canonical) Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
+    // -----------------------------------------------------------------------------
 
     /**
      * Retrieves the root directory for planetary simulation data ({@code data/maps/ether/}).
@@ -352,7 +352,7 @@ public final class EtherPaths {
         return getVariablesDir().resolve("projections");
     }
 
-    // Ã¢a€a‚¬Ã¢a€a‚¬ Saves Sub-Directories Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
+    // -----------------------------------------------------------------------------
 
     /**
      * Get engines compiled dir.
@@ -372,7 +372,7 @@ public final class EtherPaths {
         return savesDir.resolve("cluster_snapshots");
     }
 
-    // Ã¢a€a‚¬Ã¢a€a‚¬ External Data Sources & Maps Directories Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬Ã¢a€a‚¬
+    // -----------------------------------------------------------------------------
 
     /**
      * Retrieves the root directory for external empirical data sources ({@code data/sources/}).

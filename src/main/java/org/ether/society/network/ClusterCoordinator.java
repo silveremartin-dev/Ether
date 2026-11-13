@@ -180,7 +180,7 @@ public class ClusterCoordinator {
 
     private void startMasterServer() throws IOException {
         masterServerSocket = new ServerSocket(port);
-        logger.info("ðŸŸ¢ Ether Cluster Master Server started on port {} (Security Active)", port);
+        logger.info(" Ether Cluster Master Server started on port {} (Security Active)", port);
 
         ClusterNodeRecord masterNode = new ClusterNodeRecord("master-local", "127.0.0.1", port, ClusterRole.MASTER, NodeStatus.ACTIVE, "Local Host Master CPU/GPU");
         nodeRegistry.put(masterNode.getId(), masterNode);
@@ -350,7 +350,7 @@ public class ClusterCoordinator {
     public synchronized void dispatchScenarioToCluster(Scenario scenario) {
         this.currentActiveScenario = scenario;
         String scenarioName = scenario != null ? scenario.getName() : "Default Scenario";
-        logger.info("ðŸ“¡ Master broadcasting Scenario [{}] to all active cluster workers...", scenarioName);
+        logger.info(" Master broadcasting Scenario [{}] to all active cluster workers...", scenarioName);
     }
 
     /**

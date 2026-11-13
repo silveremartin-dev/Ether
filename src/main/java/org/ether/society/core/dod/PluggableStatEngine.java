@@ -47,100 +47,100 @@ public class PluggableStatEngine {
         registerStat(new StatDefinition(
                 "custom_gini_wealth",
                 "Indice de Gini Richesse / PIB",
-                "ðŸ’Ž Ã‰conomie & Richesse",
+                " Économie & Richesse",
                 "GINI(wealth)",
                 "Coeff",
-                "Distribution d'inÃ©galitÃ© de la richesse individuelle (0 = Ã©galitÃ© absolue, 1 = inÃ©galitÃ© totale)",
+                "Distribution d'inégalité de la richesse individuelle (0 = égalité absolue, 1 = inégalité totale)",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "custom_variance_wealth",
                 "Variance de Richesse Entre Individus",
-                "ðŸ’Ž Ã‰conomie & Richesse",
+                " Économie & Richesse",
                 "VAR(wealth)",
                 "G$^2",
-                "Statistique de variance entre individus sur la variable richesse : Ã  quel point les gens s'Ã©loignent du schÃ©ma standard",
+                "Statistique de variance entre individus sur la variable richesse : à quel point les gens s'éloignent du schéma standard",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "custom_stddev_food",
-                "Ã‰cart-Type Distribution Nourriture",
-                "ðŸŒ¾ Ã‰nergie & MatiÃ¨re",
+                "Écart-Type Distribution Nourriture",
+                "🌾 Énergie & Matière",
                 "STDDEV(food)",
                 "t",
-                "Ã‰cart-type de la quantitÃ© de nourriture disponible par maille/individu par rapport Ã  la moyenne",
+                "Écart-type de la quantité de nourriture disponible par maille/individu par rapport à la moyenne",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "custom_food_per_capita",
                 "Nourriture Moyenne Par Habitant",
-                "ðŸŒ¾ Ã‰nergie & MatiÃ¨re",
+                "🌾 Énergie & Matière",
                 "SUM(food) / COUNT(population)",
                 "t/hab",
-                "Formule calculÃ©e : Somme totale des rÃ©serves alimentaires divisÃ©e par le nombre de mailles/habitants",
+                "Formule calculée : Somme totale des réserves alimentaires divisée par le nombre de mailles/habitants",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "custom_pop_density_variance",
-                "Variance DensitÃ© de Population",
-                "ðŸ‘¥ DÃ©mographie & SantÃ©",
+                "Variance Densité de Population",
+                "👥 Démographie & Santé",
                 "VAR(population)",
                 "hab^2",
-                "Variance de la rÃ©partition de densitÃ© de population entre les zones du terrarium",
+                "Variance de la répartition de densité de population entre les zones du terrarium",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "custom_median_age",
-                "Ã‚ge MÃ©dian de la Population",
-                "ðŸ‘¥ DÃ©mographie & SantÃ©",
+                "Ã‚ge Médian de la Population",
+                "👥 Démographie & Santé",
                 "MEDIAN(age)",
                 "ans",
-                "Valeur mÃ©diane sÃ©parant la moitiÃ© la plus jeune de la moitiÃ© la plus Ã¢gÃ©e",
+                "Valeur médiane séparant la moitié la plus jeune de la moitié la plus -gée",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "largest_org_complexity",
-                "ComplexitÃ© de la Plus Grande Organisation",
-                "ðŸ›ï¸ SociÃ©tÃ© & Institutions",
+                "Complexité de la Plus Grande Organisation",
+                "¸ Société & Institutions",
                 "MAX(population * tech * (1 + giniindex))",
                 "Idx",
-                "Mesure de la complexitÃ© sociÃ©tale et administrative maximale atteinte par le plus grand empire/organisation",
+                "Mesure de la complexité sociétale et administrative maximale atteinte par le plus grand empire/organisation",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "largest_org_entropy",
-                "Entropie GÃ©nÃ©rÃ©e par la Plus Grande Civilisation",
-                "âš¡ Ã‰nergie & MatiÃ¨re",
+                "Entropie Générée par la Plus Grande Civilisation",
+                "âš¡ Énergie & Matière",
                 "MAX(population * tech * pollution)",
                 "J/K",
-                "QuantitÃ© d'entropie thermodynamique et de chaleur rÃ©siduelle gÃ©nÃ©rÃ©e par la plus grande civilisation",
+                "Quantité d'entropie thermodynamique et de chaleur résiduelle générée par la plus grande civilisation",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "avg_tech_level",
                 "Niveau Technologique Moyen",
-                "ðŸ›ï¸ SociÃ©tÃ© & Institutions",
+                "¸ Société & Institutions",
                 "AVG(tech)",
                 "Niv",
-                "Moyenne globale du niveau d'avancement scientifique et technologique Ã  travers la grille",
+                "Moyenne globale du niveau d'avancement scientifique et technologique à travers la grille",
                 true
         ));
 
         registerStat(new StatDefinition(
                 "max_tech_level",
                 "Niveau Technologique Maximal",
-                "ðŸ›ï¸ SociÃ©tÃ© & Institutions",
+                "¸ Société & Institutions",
                 "MAX(tech)",
                 "Niv",
-                "Niveau technologique de pointe atteint par la cellule/civilisation la plus avancÃ©e",
+                "Niveau technologique de pointe atteint par la cellule/civilisation la plus avancée",
                 true
         ));
     }

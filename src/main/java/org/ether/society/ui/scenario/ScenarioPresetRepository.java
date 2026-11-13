@@ -71,7 +71,7 @@ public class ScenarioPresetRepository {
     }
 
     private void initPresetBar() {
-        scenarioPresetBar = new PresetControlBar<>("scenario.preset_bar", "1. PRÃ‰RÃ‰GLAGES DE SCÃ‰NARIOS");
+        scenarioPresetBar = new PresetControlBar<>("scenario.preset_bar", "1. PRÉRÉGLAGES DE SCÉNARIOS");
         scenarioPresetBar.setExportCategory("scenario");
 
         List<Scenario> builtInScenarios = getBuiltInScenarios();
@@ -215,13 +215,13 @@ public class ScenarioPresetRepository {
      */
     public void updateTexts() {
         if (scenarioPresetHeader != null) {
-            scenarioPresetHeader.setText(I18n.getOrDefault("scenario.section.presets", "ðŸŽ›ï¸ GLOBAL PRESETS & SCENARIO SAVE"));
+            scenarioPresetHeader.setText(I18n.getOrDefault("scenario.section.presets", "¸ GLOBAL PRESETS & SCENARIO SAVE"));
         }
         if (scenarioPresetBar != null) {
             scenarioPresetBar.updateTexts();
         }
         if (scenarioDescLabel != null) {
-            scenarioDescLabel.setText(I18n.getOrDefault("scenario.section.description", "ðŸ“– Detailed Description, Initial Conditions & Key Observables:"));
+            scenarioDescLabel.setText(I18n.getOrDefault("scenario.section.description", "📆 Detailed Description, Initial Conditions & Key Observables:"));
         }
     }
 

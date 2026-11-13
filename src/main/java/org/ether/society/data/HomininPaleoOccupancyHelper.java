@@ -49,7 +49,7 @@ public final class HomininPaleoOccupancyHelper {
         if (lon >= -6.5 && lon <= -5.0 && lat >= -16.5 && lat <= -15.5) return null; // Saint Helena
         if (lon >= -15.0 && lon <= -13.5 && lat >= -8.5 && lat <= -7.5) return null; // Ascension
 
-        if (lat >= -2.0 && lat <= 2.0 && lon >= 6.0 && lon <= 9.0) return null; // SÃ£o TomÃ© & PrÃ­ncipe
+        if (lat >= -2.0 && lat <= 2.0 && lon >= 6.0 && lon <= 9.0) return null; // S-o Tomé & Pr-ncipe
         if (lat >= 12.0 && lat <= 13.0 && lon >= 53.0 && lon <= 55.0) return null; // Socotra Island
         if (lat <= -8.0 && lon >= 110.0) return null; // Australia / Sahul / Tasmania
         if (lat > -8.0 && lat <= 0.0 && lon >= 128.0) return null; // New Guinea

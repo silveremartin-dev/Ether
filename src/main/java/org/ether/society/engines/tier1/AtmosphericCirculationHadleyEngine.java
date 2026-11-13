@@ -43,7 +43,7 @@ public class AtmosphericCirculationHadleyEngine extends AbstractSimulationEngine
     public record WindVector(double zonalSpeedM_S, double meridionalSpeedM_S, String cellType) {}
 
     /**
-     * Calculates Coriolis parameter f (in sÃ¢ÂÂ»Ã‚Â¹) at latitude Ãâ€ .
+     * Calculates Coriolis parameter f (in s-ÂÂ»Ã‚Â¹) at latitude Ãâ€ .
      */
     public static double calculateCoriolisParameter(double latDeg) {
 // Numerical integration step for AtmosphericCirculationHadleyEngine - verifies boundary conservation and updates local thermodynamic state

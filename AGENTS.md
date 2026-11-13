@@ -60,8 +60,8 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
 1. **Full Localization (5 Languages: EN, FR, DE, ES, ZH) & Complete Technical Tooltips**:
    * ALL UI components (labels, sliders, buttons, combo box options, table headers, status indicators, tooltips, chart legends, and modal text) MUST be localized across all 5 supported languages (`EN`, `FR`, `DE`, `ES`, `ZH`) as well as the default fallback bundle (`messages.properties`). Absolutely NO hardcoded user-visible text in Java UI code (`new Label("...")`, `new Button("...")`, `.setText("...")`, `.setTitle("...")`).
    * EVERY single interactive UI element MUST feature a detailed mouse-over technical tooltip explaining the underlying simulation variable, physical formula, or feature mechanism.
-   * **Mandatory Automated i18n & Hardcoded Strings Verification (`scripts/audit-i18n-and-hardcoded-strings.ps1`)**:
-     * After any UI modification, feature addition, or localization update, the automated audit script `powershell -ExecutionPolicy Bypass -File scripts/audit-i18n-and-hardcoded-strings.ps1` MUST be executed.
+   * **Mandatory Automated i18n & Hardcoded Strings Verification (`scripts/i18n/audit-i18n-and-hardcoded-strings.ps1` / `.sh`)**:
+     * After any UI modification, feature addition, or localization update, the automated audit script `powershell -ExecutionPolicy Bypass -File scripts/i18n/audit-i18n-and-hardcoded-strings.ps1` (Windows) or `./scripts/i18n/audit-i18n-and-hardcoded-strings.sh` (Linux/macOS) MUST be executed.
      * All 6 resource bundles (`messages.properties`, `messages_en.properties`, `messages_fr.properties`, `messages_de.properties`, `messages_es.properties`, `messages_zh.properties`) MUST contain the exact same key count with **0 missing or empty keys**, and the Java UI package scan MUST report **0 hardcoded user-facing strings**.
 2. **Strict High-Contrast & Consistent Theming**:
    * **Dark Theme**: Dark background with high-luminance (bright/light) text, icons, and control strokes.
@@ -176,7 +176,29 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
 
 ---
 
-## 🚫 11. Epistemic Humility, Ban on Empirical Curve-Fitting & Continuous Confidence Envelopes
+## ⏱️ 11. Numerical Integration, Temporal Discretization & Time-Step Standardization Directives
+1. **Unified Canonical Time-Step Representation (`SimulationTimeStep`)**:
+   * Ad-hoc time step handling (such as raw second divisions `dt / 31_557_600.0` or equating monthly duration directly to annual duration `dtMonthly = dtYears`) is **STRICTLY PROHIBITED** across all simulation engines, kernels, and pipeline orchestrators.
+   * All temporal conversions MUST pass through the canonical immutable record `org.ether.society.core.SimulationTimeStep` anchored to authoritative astronomical invariants (`PhysicalConstants`):
+     $$\Delta t_{\text{years}} = \frac{\Delta t_{\text{days}}}{365.25}, \quad \Delta t_{\text{months}} = \frac{\Delta t_{\text{days}}}{30.4375}, \quad \Delta t_{\text{seconds}} = \Delta t_{\text{days}} \times 86\,400.0$$
+   * A strict positive lower bound ($\Delta t_{\min} = 10^{-4}\text{ days} \approx 8.64\text{ s}$) guarantees numerical regularity and prevents division-by-zero hazards.
+2. **Standard Numerical Integration Architecture (Computational ROI Filter)**:
+   * **Default Strategy (Option A — First-Order Explicit Euler with Unified $\Delta t$)**:
+     * Production execution uses first-order explicit Euler for spatial transport, demographic transitions, and procedural state updates ($y_{k+1} = y_k + \Delta t \cdot f(y_k)$).
+     * Strictly fulfills the **Computational ROI filter**: $O(1)$ complexity per cell, zero object allocations per tick, zero GC pressure, and optimal SIMD auto-vectorization across flat DOD `WorldBuffer` arrays.
+   * **Stiff Dissipative & Relaxation Terms (Option C Analytical Closed Form - Exponential Integrator)**:
+     * For stiff dissipation rates, thermal relaxation, radioactive decay, or crisis starvation mortality ($\frac{dy}{dt} = -\lambda (y - y^*)$ with $\lambda \gg 1$), linear explicit Euler truncation causes catastrophic numerical oscillations or unphysical negative states when $\Delta t > 2 / \lambda$.
+     * Such terms MUST systematically use the exact analytical exponential operator:
+       $$y_{k+1} = y^* + (y_k - y^*) \cdot e^{-\lambda \cdot \Delta t}$$
+       guaranteeing unconditional $L$-stability, asymptotic convergence, and non-negativity across arbitrary time-step durations.
+   * **Epistemic Delimitation of Higher-Order & Full Implicit Solvers (Option B & Full Option C)**:
+     * Full Runge-Kutta 4th order (RK4 - Option B) quadruples derivative evaluations per cell ($4 \times$ CPU complexity) and triples intermediate memory bandwidth ($O(4N)$ buffer cache footprint).
+     * Full implicit Newton-Raphson solvers require computing and inverting a high-dimensional cellular Jacobian matrix ($O(M^3)$ per cell), violating real-time interactive simulation throughput.
+     * Option B and full implicit Newton schemes are restricted to offline mathematical benchmarking suites (`ScientificModelFalsificationAndValidationSuite.java`); production simulation runs rely on Option A stabilized by analytical exponential closures and continuous $C^1$ sigmoidal saturations.
+
+---
+
+## 🚫 12. Epistemic Humility, Ban on Empirical Curve-Fitting & Continuous Confidence Envelopes
 1. **Strict Ban on Empirical Curve-Fitting & Multi-Stage Sigmoid Tuning**:
    * It is **strictly forbidden** to add ad-hoc non-linear polynomial patches, piecewise sigmoids, or arbitrary exponent tuning to force a mathematical equation through empirical benchmark milestones.
    * Macro-historical data sources (HYDE 3.4, Maddison, EPICA, Seshat) are reconstructions containing inherent uncertainties, not infallible physical constants. Forcing equations to pass exactly through historical points constitutes fatal overfitting.
@@ -200,7 +222,7 @@ $$\text{Computational ROI} = \frac{\text{Emergent Impact on History, Demographic
 
 ---
 
-## ⚖️ 12. Tri-Partite Model Conflict Taxonomy & Epistemic Overlap Protocol
+## ⚖️ 13. Tri-Partite Model Conflict Taxonomy & Epistemic Overlap Protocol
 Prior to designing or implementing any proposed Type B simulation engine, an exhaustive conflict analysis must be performed against the existing engine registry (`EngineConflictAnalyzer`):
 
 1. **Category 1: Zero Conflict (Structural Gap Fillers - APPROVED)**:
@@ -222,7 +244,7 @@ Prior to designing or implementing any proposed Type B simulation engine, an exh
 
 ---
 
-## 🧭 13. Tier 2 Type B Engine Domain Validity & Default Scenario Activation Protocol
+## 🧭 14. Tier 2 Type B Engine Domain Validity & Default Scenario Activation Protocol
 Because **Tier 2 Type B** engines model specific historical, institutional, technological, capital-dependent, or geopolitical mechanisms rather than universal thermodynamic conservation laws (Tier 1), every Tier 2 Type B engine MUST follow this four-part specification:
 
 1. **Mandatory Documentation of Validity Conditions (`docs/TYPE_B_ENGINES_VALIDITY_CONDITIONS_CATALOG.md` & `docs/SIMULATION_EQUATIONS_AND_VARIABLES.md`)**:
@@ -245,7 +267,7 @@ Because **Tier 2 Type B** engines model specific historical, institutional, tech
 
 ---
 
-## 🗑️ 14. Code Cleanliness Directive: Ban on `@Deprecated` Annotations & Immediate Code Deletion
+## 🗑️ 15. Code Cleanliness Directive: Ban on `@Deprecated` Annotations & Immediate Code Deletion
 1. **Strict Ban on `@Deprecated` Annotations & Zombie Stubs**:
    * It is **strictly forbidden** to retain obsolete, superseded, duplicated, or conflicting code by annotating classes or methods with `@Deprecated` or by creating forwarding shims/wrappers.
    * Do not keep deprecated legacy stubs under the pretext of backwards compatibility when cleaning up or refactoring simulation engines and models.
@@ -259,7 +281,7 @@ Because **Tier 2 Type B** engines model specific historical, institutional, tech
 
 ---
 
-## 🎯 15. The Tri-Pronged Calibration & Bug Fixing Directive (Zero Overfitting Mandate)
+## 🎯 16. The Tri-Pronged Calibration & Bug Fixing Directive (Zero Overfitting Mandate)
 During all calibration, benchmark falsification, and testing phases, any code modification across engines, kernels, and metrics MUST strictly adhere to the following three mutually exclusive rules:
 
 1. **Category A: Genuine Algorithmic & Dimensional Bug Fixes (Permitted & Mandatory)**:
@@ -288,3 +310,25 @@ During all calibration, benchmark falsification, and testing phases, any code mo
      2. **Physical / Dynamical Root Cause**: Exact mechanistic reason for the divergence in the coupled system.
      3. **Authoritative Literature Model & Differential Equations**: Specific published academic equations (authors, year, exact mathematical ODE/PDE formulation, state variables, SI units) capable of modeling the phenomenon authentically without ad-hoc curve fitting.
      4. **Computational ROI & Implementation Viability**: Evaluation of $O(1)$ complexity, $C^1$ continuity, and suitability for the continuous H3 tensor mesh.
+
+---
+
+## 🛠️ 17. Automated Code Quality, Architecture Compliance & Multi-OS Script Parity Directives
+1. **Mandatory Automated Architecture & Code Quality Audits (`scripts/test/`)**:
+   * Every structural refactoring, new engine addition, or codebase maintenance pass MUST pass the two automated zero-defect audit suites:
+     * **Architecture & Zero-Defect Compliance Audit (`scripts/test/audit-architecture-compliance.ps1` / `.sh`)**:
+       * Enforces the $\le 500$ lines ceiling on all `src/main/java` production classes, zero silent exception swallowing (`catch` blocks), zero duplicate class names across packages, pure stateless `*Helper` / `*Formatter` contracts (`final` class, `private` constructor, zero instance fields), canonical Singleton contracts, and `SimulationEngineModule` contract compliance.
+     * **Comprehensive Code Quality, Naming & Determinism Audit (`scripts/test/audit-full-quality-and-naming.ps1` / `.sh`)**:
+       * Verifies canonical class naming archetypes (zero legacy `*Manager`, `*Catalog`, `*Evaluator`, `*Calculator`, `*Util` drift), 100% class-level Javadoc coverage, strict English-only comments, and zero unseeded `new Random()` or `Math.random()` calls in simulation engines and kernels.
+     * **Localization & Hardcoded UI Strings Audit (`scripts/i18n/audit-i18n-and-hardcoded-strings.ps1` / `.sh`)**:
+       * Verifies 100% key parity across all 6 resource bundles (`messages.properties`, `en`, `fr`, `de`, `es`, `zh`) and zero hardcoded user-visible strings in `src/main/java/org/ether/society/ui`.
+2. **Strict Cross-Platform Script Parity (Windows PowerShell/Batch & Linux/macOS Bash) & Directory Organization**:
+   * **Mandatory Dual-OS Parity**: Every operational, build, test, benchmark, or audit script MUST maintain strict cross-platform parity with both a Windows version (`.ps1` and/or `.bat`) and a POSIX Linux/macOS Bash version (`.sh`). Creating a standalone Windows-only or Linux-only operational script is strictly prohibited.
+   * **Strict Subdirectory Categorization (`scripts/`)**: No ad-hoc or temporary refactoring scripts may be left at the root of `scripts/` or the project root. All scripts must reside in their designated functional subdirectory:
+     * `scripts/build/`: Compilation, native Rust builds, Javadoc, and release packaging (`package-release.ps1` / `.sh`, `deploy-release-*`).
+     * `scripts/run/`: Desktop GUI launchers, headless runners, cluster master/worker nodes, and Docker lifecycles.
+     * `scripts/test/`: Architecture compliance audits (`audit-architecture-compliance.ps1` / `.sh`), code quality audits (`audit-full-quality-and-naming.ps1` / `.sh`), scientific falsification suites, and bifurcation benchmarks.
+     * `scripts/benchmark/`: 5-axis performance benchmarks and falsification report generators.
+     * `scripts/i18n/`: Localization and hardcoded string audits (`audit-i18n-and-hardcoded-strings.ps1` / `.sh`).
+     * `scripts/gcp/`: Google Cloud Platform Batch and distributed cluster automation.
+     * `scripts/gis/` & `scripts/ingest/`: External geospatial and empirical dataset ingestion pipelines.

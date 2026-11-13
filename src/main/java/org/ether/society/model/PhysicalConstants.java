@@ -53,6 +53,12 @@ public final class PhysicalConstants {
     /** Duration of one standard Earth day in SI seconds */
     public static final double SECONDS_PER_DAY = 86400.0;
 
+    /** Number of solar days per Julian year (365.25 days) */
+    public static final double DAYS_PER_JULIAN_YEAR = 365.25;
+
+    /** Number of solar days per synodic calendar month (365.25 / 12.0 = 30.4375 days) */
+    public static final double DAYS_PER_SYNODIC_MONTH = 30.4375;
+
     /** Mean planetary Earth radius in kilometers */
     public static final double EARTH_RADIUS_KM = 6371.0;
 

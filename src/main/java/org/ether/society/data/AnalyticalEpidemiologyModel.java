@@ -153,7 +153,7 @@ public class AnalyticalEpidemiologyModel {
 
     /**
      * Continuous, smooth elevation barrier (Himalayas/Tibet, Andes, Alps, Ethiopian Highlands).
-     * Smooth Gaussian falloff with distance to mountain crests â€” no sharp rectangular box discontinuities.
+     * Smooth Gaussian falloff with distance to mountain crests — no sharp rectangular box discontinuities.
      */
     private static double getSmoothAltitudeSuppression(double lon, double lat) {
         // Tibetan Plateau / Himalayas core (approx 32A°N, 88A°E)

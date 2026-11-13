@@ -126,7 +126,7 @@ public final class PaleolithicEpochDensityHelper {
                 } else if (year <= -32000) {
                     // -40,000 to -35,000 BP (Late MIS 3 / Aurignacian / Tasmania Settled)
                     double densEuropeAurignacian = 0.0026 +
-                        0.0260 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 4.4, 44.4) / 80.0) +      // Chauvet Cave / ArdÃ¨che
+                        0.0260 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 4.4, 44.4) / 80.0) +      // Chauvet Cave / Ardèche
                         0.0220 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 10.2, 48.6) / 80.0) +     // Vogelherd / Swabian Jura
                         0.0200 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 1.0, 45.0) / 90.0) +      // Dordogne Aurignacian
                         0.0180 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 24.5, 45.5) / 100.0);     // PeE™tera cu Oase Romania
@@ -148,7 +148,7 @@ public final class PaleolithicEpochDensityHelper {
                 } else if (year <= -22000) {
                     // -25,000 BP: Gravettian Horizon, Beringian Standstill, Early Americas Pioneers
                     double densEurope = 0.0035 +
-                        0.0380 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 16.5, 48.8) / 80.0) +     // Pavlovian / DolnÃ­ VÄ›stonice / Willendorf
+                        0.0380 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 16.5, 48.8) / 80.0) +     // Pavlovian / Doln- VÄ›stonice / Willendorf
                         0.0340 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 1.0, 45.0) / 90.0) +      // Franco-Cantabrian Gravettian (Laugerie, Abri Pataud)
                         0.0300 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 39.0, 51.4) / 100.0) +    // Kostenki-Borshchevo / Don
                         0.0260 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 40.5, 56.2) / 80.0) +     // Sungir / Upper Volga
@@ -182,9 +182,9 @@ public final class PaleolithicEpochDensityHelper {
                 } else if (year <= -15000) {
                     // -20,000 BP: LGM Paroxysm Refugia & White Sands Peak
                     double densSolutrean =
-                        0.0450 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 0.5, 44.8) / 60.0) +    // Dordogne & Aquitaine Solutrean Core (Laugerie-Haute, SolutrÃ©)
+                        0.0450 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 0.5, 44.8) / 60.0) +    // Dordogne & Aquitaine Solutrean Core (Laugerie-Haute, Solutré)
                         0.0380 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, -4.5, 43.4) / 50.0) +   // Cantabrian / Altamira Solutrean
-                        0.0320 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, -3.5, 38.0) / 60.0) +   // Iberian Mediterranean (ParpallÃ³)
+                        0.0320 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, -3.5, 38.0) / 60.0) +   // Iberian Mediterranean (Parpall-)
                         0.0280 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, -8.5, 37.1) / 60.0);    // Portuguese Estremadura (Vale Almoinha)
 
                     double densMedEpigravettian =
@@ -246,7 +246,7 @@ public final class PaleolithicEpochDensityHelper {
 
                     densKelpHighway = Math.max(densKelpHighway,
                         0.080 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, -73.8, -41.8) / 30.0) +   // Monte Verde II Chile (14.5k BP)
-                        0.065 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, -79.0, -8.0) / 30.0) +    // Huaca Prieta / PaijÃ¡n Peru
+                        0.065 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, -79.0, -8.0) / 30.0) +    // Huaca Prieta / Paij-n Peru
                         0.060 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, -120.5, 42.7) / 30.0) +   // Paisley Caves OR
                         0.065 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, -119.8, 34.2) / 30.0) +   // Channel Islands CA
                         0.045 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, -80.4, 40.3) / 35.0) +    // Meadowcroft PA
@@ -332,12 +332,12 @@ public final class PaleolithicEpochDensityHelper {
                     dens = Math.max(densNatufian, Math.max(densAmericasYD,
                            Math.max(densEuropeYD, densAsiaAfricaYD)));
                 } else if (year <= -9000) {
-                    // -10,000 BP: Early Holocene / Pre-Pottery Neolithic A (GÃ¶bekli Tepe, Jericho, Folsom)
+                    // -----------------------------------------------------------------------------
                     double densPPNA = 0.018 +
-                        0.45 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 38.92, 37.22) / 30.0) +    // GÃ¶bekli Tepe / Karahan Tepe Monumental Core
+                        0.45 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 38.92, 37.22) / 30.0) +    // G-bekli Tepe / Karahan Tepe Monumental Core
                         0.38 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 35.44, 31.87) / 30.0) +    // Jericho PPNA (Tell es-Sultan)
                         0.32 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 38.10, 35.90) / 35.0) +    // Mureybet / Jerf el Ahmar
-                        0.30 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 39.70, 38.20) / 35.0) +    // Ã‡ayÃ¶nÃ¼ Tepesi
+                        0.30 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 39.70, 38.20) / 35.0) +    // Ã‡ay-n- Tepesi
                         0.25 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 47.40, 32.50) / 40.0);     // Ali Kosh Zagros
 
                     double densChinaPPN = 0.014 +
@@ -398,9 +398,9 @@ public final class PaleolithicEpochDensityHelper {
                     dens = Math.max(densPPNA, Math.max(densChinaPPN,
                            Math.max(densAmericasPaleo, Math.max(densEuropeMesolithic, densIndiaAfrica))));
                 } else if (year <= -7000) {
-                    // -8,000 BP: Early Neolithic / 8.2 ka Event (Ã‡atalhÃ¶yÃ¼k, Jiahu, Mehrgarh, Early European Farmers)
+                    // -----------------------------------------------------------------------------
                     double densAnatoliaNeolithic = 0.08 +
-                        3.20 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 32.83, 37.67) / 40.0) +   // Ã‡atalhÃ¶yÃ¼k Mega-Village Core
+                        3.20 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 32.83, 37.67) / 40.0) +   // Ã‡atalh-y-k Mega-Village Core
                         2.50 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 30.10, 37.60) / 40.0) +   // Hacilar
                         2.40 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 35.95, 31.98) / 45.0) +   // Ain Ghazal Jordan
                         2.20 * Math.exp(-HistoricalScenarioFeaturesRegistry.distSq(lng, lat, 39.10, 36.50) / 50.0) +   // Tell Sabi Abyad / Halaf

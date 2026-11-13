@@ -183,19 +183,19 @@ final class ScenarioEngineParamControlsHelper {
                     "Multiplicateur de friction sur l'eau", onParamChangedCallback);
         } else if ("HydrologicalEngineeringEngine".equals(engineKey)) {
             addDoubleParamSpinner(grid, spinners, 0, "tenochtitlanTech", "Tech Min Drainage Lacs:", 3.5, 1.0, 10.0, 0.5,
-                    "Niveau technique minimum pour assÃ©cher un lac urbain", onParamChangedCallback);
+                    "Niveau technique minimum pour assécher un lac urbain", onParamChangedCallback);
             addDoubleParamSpinner(grid, spinners, 1, "tenochtitlanCapital", "Capital Min Drainage (kg):", 150.0, 10.0, 1000.0, 50.0,
                     "Capital par habitant requis pour le drainage", onParamChangedCallback);
             addDoubleParamSpinner(grid, spinners, 2, "aralRainfallThreshold", "Seuil Pluie Aral (mm):", 300.0, 50.0, 1000.0, 50.0,
-                    "Seuil pluviomÃ©trique sous lequel l'assÃ¨chement dÃ©marre", onParamChangedCallback);
+                    "Seuil pluviométrique sous lequel l'assèchement démarre", onParamChangedCallback);
             addDoubleParamSpinner(grid, spinners, 3, "damMinElevation", "Altitude Min Barrage (m):", 300.0, 50.0, 2000.0, 50.0,
                     "Altitude minimale pour construire un barrage de montagne", onParamChangedCallback);
         } else if ("SoilSalinizationHydrologyEngine".equals(engineKey)) {
             addDoubleParamSpinner(grid, spinners, 0, "salinizationRate", "Taux Salinisation / Siècle:", 0.02, 0.001, 0.10, 0.005,
                     "Vitesse d'accumulation des sels par irrigation intensive", onParamChangedCallback);
         } else if ("LandReclamationEngine".equals(engineKey)) {
-            addDoubleParamSpinner(grid, spinners, 0, "polderTechThreshold", "Tech Seuil PoldÃ©risation:", 4.0, 1.0, 10.0, 0.5,
-                    "Niveau technique requis pour conquÃ©rir des terres sur la mer", onParamChangedCallback);
+            addDoubleParamSpinner(grid, spinners, 0, "polderTechThreshold", "Tech Seuil Poldérisation:", 4.0, 1.0, 10.0, 0.5,
+                    "Niveau technique requis pour conquérir des terres sur la mer", onParamChangedCallback);
             addDoubleParamSpinner(grid, spinners, 1, "polderCapitalThreshold", "Capital Seuil Polders (kg):", 100.0, 10.0, 500.0, 20.0,
                     "Capital d'infrastructure minimum requis pour les digues", onParamChangedCallback);
         }

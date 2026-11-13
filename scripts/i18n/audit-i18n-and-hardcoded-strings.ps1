@@ -1,7 +1,12 @@
 ﻿param(
-    [string]$SourceDir = "src/main/java",
-    [string]$I18nDir = "src/main/resources/i18n"
+    [string]$SourceDir,
+    [string]$I18nDir
 )
+
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
+if (-not $SourceDir) { $SourceDir = Join-Path $repoRoot "src\main\java" }
+if (-not $I18nDir) { $I18nDir = Join-Path $repoRoot "src\main\resources\i18n" }
 
 Write-Host "================================================================="
 Write-Host "  AUDIT INTEGRAL DE TRADUCTION & DETECTION DES TEXTES HARDCODES  "
@@ -137,3 +142,4 @@ if ($totalMissing -gt 0) {
 
 Write-Host "`n✅ SUCCES : 100% des cles i18n sont synchronisees sur les 5 langues et 0 chaine hardcodee dans l'UI."
 exit 0
+

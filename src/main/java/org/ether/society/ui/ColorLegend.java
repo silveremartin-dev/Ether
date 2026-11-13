@@ -247,14 +247,14 @@ public class ColorLegend extends VBox {
     private void updateTitle() {
         // UI Thread Dispatch: Synchronize JavaFX scene graph with atomic simulation state
         int count = activeModes != null ? activeModes.size() : 0;
-        String titlePrefix = I18n.getOrDefault("sim.legend.title", "LÃ‰GENDE SIG");
+        String titlePrefix = I18n.getOrDefault("sim.legend.title", "LÉGENDE SIG");
         if (count > 1) {
-            titleLabel.setText(String.format("ðŸ“Š %s (%d %s)", titlePrefix, count, I18n.getOrDefault("sim.legend.layers", "calques")));
+            titleLabel.setText(String.format("📊 %s (%d %s)", titlePrefix, count, I18n.getOrDefault("sim.legend.layers", "calques")));
         } else if (count == 1) {
             DisplayMode single = activeModes.iterator().next();
-            titleLabel.setText("ðŸ“Š " + titlePrefix + " â€” " + single.getDisplayName().toUpperCase());
+            titleLabel.setText("📊 " + titlePrefix + " — " + single.getDisplayName().toUpperCase());
         } else {
-            titleLabel.setText("ðŸ“Š " + titlePrefix);
+            titleLabel.setText("📊 " + titlePrefix);
         }
     }
 

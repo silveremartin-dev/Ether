@@ -143,7 +143,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         validationWarningLabel.setWrapText(true);
         validationWarningLabel.setStyle("-fx-text-fill: #f87171; -fx-font-size: 11px;");
         validationWarningBanner = new VBox(4,
-                new Label(I18n.getOrDefault("planet.validation.header", "âš ï¸ ParamÃ¨tres ou cartes requis manquants ou invalides :")),
+                new Label(I18n.getOrDefault("planet.validation.header", "âš ï¸ Paramètres ou cartes requis manquants ou invalides :")),
                 validationWarningLabel
         );
         validationWarningBanner.setStyle("-fx-background-color: rgba(239, 68, 68, 0.15); -fx-border-color: #ef4444; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
@@ -151,7 +151,7 @@ public class PlanetGeneratorPanel extends BorderPane {
         validationWarningBanner.setVisible(false);
         validationWarningBanner.setManaged(false);
 
-        PresetControlBar<PlanetPreset> topPresetBar = new PresetControlBar<>("planet.preset", "PrÃ©rÃ©glage Global");
+        PresetControlBar<PlanetPreset> topPresetBar = new PresetControlBar<>("planet.preset", "Préréglage Global");
         this.presetBar = topPresetBar;
         topPresetBar.setExportCategory("planetgenerator");
         presetCombo = topPresetBar.getPresetCombo();
@@ -234,12 +234,12 @@ public class PlanetGeneratorPanel extends BorderPane {
             if (p.customBiomeBase64() != null) {
                 customBiomeImage = ImageMapLoader.base64PngToImage(p.customBiomeBase64());
                 cachedBiomeB64 = p.customBiomeBase64();
-                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.preset.biomes", "ðŸŒ¿ Preset Biomes"));
+                if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.preset.biomes", "🌿 Preset Biomes"));
             }
             if (p.customResourceBase64() != null) {
                 customResourceImage = ImageMapLoader.base64PngToImage(p.customResourceBase64());
                 cachedResourceB64 = p.customResourceBase64();
-                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.preset.resources", "ðŸª¨ Preset Resources"));
+                if (resourceFileLabel != null) resourceFileLabel.setText(I18n.getOrDefault("planet.preset.resources", " Preset Resources"));
             }
 
             String elevSrc = p.elevationMapSource();

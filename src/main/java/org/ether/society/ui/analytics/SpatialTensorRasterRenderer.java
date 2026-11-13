@@ -108,7 +108,7 @@ public final class SpatialTensorRasterRenderer {
             int y = (int) Math.round(((90.0 - lat) / 180.0) * targetH);
 
             Color col;
-            if (chLower.contains("densitÃ©") || chLower.contains("demographic") || chLower.contains("density") || chLower.contains("äººå£")) {
+            if (chLower.contains("densité") || chLower.contains("demographic") || chLower.contains("density") || chLower.contains("äººå£")) {
                 long pop = c.getPopulation() != null ? c.getPopulation() : 0;
                 if (pop > 0) {
                     double norm = Math.min(1.0, Math.log10(pop + 1.0) / 6.0);
@@ -120,11 +120,11 @@ public final class SpatialTensorRasterRenderer {
                 double tech = org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
                 double norm = Math.min(1.0, tech / 100.0);
                 col = getTechColor(norm);
-            } else if (chLower.contains("tempÃ©rature") || chLower.contains("temperature") || chLower.contains("climat") || chLower.contains("æ°”æ¸©")) {
+            } else if (chLower.contains("température") || chLower.contains("temperature") || chLower.contains("climat") || chLower.contains("æ°”æ¸©")) {
                 double temp = c.getTemperature() != null ? c.getTemperature() : 15.0;
                 double norm = Math.max(0.0, Math.min(1.0, (temp + 20.0) / 60.0));
                 col = getTemperatureColor(norm);
-            } else if (chLower.contains("aquifÃ¨re") || chLower.contains("aquifer") || chLower.contains("eau") || chLower.contains("water") || chLower.contains("å«æ°´å±‚")) {
+            } else if (chLower.contains("aquifère") || chLower.contains("aquifer") || chLower.contains("eau") || chLower.contains("water") || chLower.contains("å«æ°´å±‚")) {
                 double aqua = c.getFreshwaterAquifer() != null ? c.getFreshwaterAquifer() : 50.0;
                 double norm = Math.max(0.0, Math.min(1.0, aqua / 100.0));
                 col = getAquiferColor(norm);
@@ -137,7 +137,7 @@ public final class SpatialTensorRasterRenderer {
                         ? (long) Math.abs(c.getLanguageGroup().hashCode())
                         : (c.getId() != null ? (long) Math.abs(c.getId().hashCode()) : 0L);
                 col = getPolityColor(clade);
-            } else if (chLower.contains("souverainetÃ©") || chLower.contains("sovereignty") || chLower.contains("ä¸»æƒ")) {
+            } else if (chLower.contains("souveraineté") || chLower.contains("sovereignty") || chLower.contains("ä¸»æƒ")) {
                 long polity = (c.getLanguageGroup() != null) ? (long) Math.abs(c.getLanguageGroup().hashCode()) : (c.getId() != null ? (long) Math.abs(c.getId().hashCode()) : 0L);
                 col = getPolityColor(polity);
             } else if (chLower.contains("parent") || chLower.contains("kinship") || chLower.contains("famill") || chLower.contains("äº²å±ž")) {
@@ -155,7 +155,7 @@ public final class SpatialTensorRasterRenderer {
                 double kpc = (c.getResourceCapital() != null && pop > 0) ? (c.getResourceCapital() / pop) : 0.0;
                 double instNorm = Math.min(1.0, (Math.log10(Math.max(1.0, pop)) / 6.0) * 0.6 + (Math.min(1.0, kpc / 1500.0) * 0.4));
                 col = getTechColor(instNorm);
-            } else if (chLower.contains("Ã©colog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("ç”Ÿæ€")) {
+            } else if (chLower.contains("écolog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("ç”Ÿæ€")) {
                 long pop = c.getPopulationOr(0);
                 double bioAgr = c.getBiomassAgricultureOr(0.0);
                 double bioLiv = c.getBiomassLivestock() != null ? c.getBiomassLivestock() : 0.0;

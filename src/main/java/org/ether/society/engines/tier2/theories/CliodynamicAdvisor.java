@@ -88,7 +88,7 @@ public final class CliodynamicAdvisor {
 
         if (boundaries.climateChangeRisk() > 0.6) {
 
-            alerts.add(new CliodynamicAlert("CRITICAL", I18n.getOrDefault("advisor.alert.climate_forcing.title", "Ã°Å¸â€Â¥ MAJOR CLIMATE FORCING ALERT"),
+            alerts.add(new CliodynamicAlert("CRITICAL", I18n.getOrDefault("advisor.alert.climate_forcing.title", "-Å¸”Â¥ MAJOR CLIMATE FORCING ALERT"),
 
                 I18n.getOrDefault("advisor.alert.climate_forcing.desc", "Average warming exceeds critical threshold (+3.5°C). Risk of desertification in temperate zones.")));
 

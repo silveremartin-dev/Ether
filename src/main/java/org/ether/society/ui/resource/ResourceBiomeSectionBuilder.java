@@ -152,7 +152,7 @@ public class ResourceBiomeSectionBuilder {
 
         ToggleGroup biomeGroup = new ToggleGroup();
         radioProcBiome = new RadioButton(I18n.getOrDefault("resource.mode.procedural_biome", "â–¶ Procedural Biomes"));
-        radioImportBiome = new RadioButton(I18n.getOrDefault("resource.mode.import_biome", "ðŸ“‚ Biome Map (PNG)"));
+        radioImportBiome = new RadioButton(I18n.getOrDefault("resource.mode.import_biome", " Biome Map (PNG)"));
         radioProcBiome.setToggleGroup(biomeGroup);
         radioImportBiome.setToggleGroup(biomeGroup);
         radioProcBiome.setSelected(true);
@@ -165,7 +165,7 @@ public class ResourceBiomeSectionBuilder {
             host.updatePreviewCanvas();
         });
 
-        randSeedBtn = new Button("ðŸŽ²");
+        randSeedBtn = new Button("");
         randSeedBtn.getStyleClass().add("button-secondary");
         randSeedBtn.setOnAction(e -> {
             biomeSeedField.setText(String.valueOf(new Random().nextLong(1000000)));
@@ -176,7 +176,7 @@ public class ResourceBiomeSectionBuilder {
         HBox biomeSeedBox = new HBox(5, biomeSeedField, randSeedBtn);
         HBox.setHgrow(biomeSeedField, Priority.ALWAYS);
 
-        exportBiomeBtn = new Button(I18n.getOrDefault("resource.btn.export_biome", "ðŸ“¤ Export Biome Map (PNG / JPEG)"));
+        exportBiomeBtn = new Button(I18n.getOrDefault("resource.btn.export_biome", " Export Biome Map (PNG / JPEG)"));
         exportBiomeBtn.setMaxWidth(Double.MAX_VALUE);
         exportBiomeBtn.getStyleClass().add("button-secondary");
         exportBiomeBtn.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.export_biome", "Export the active biome map as high-resolution raster (PNG / JPEG).")));
@@ -218,7 +218,7 @@ public class ResourceBiomeSectionBuilder {
 
         biomeSourcePromptLabel = new Label(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
         biomeMapRowLabel = new Label(I18n.getOrDefault("resource.param.biome_map", "Biome / Extraterrestrial Vegetation Map (PNG):"));
-        biomeFileLabel = new Label(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+        biomeFileLabel = new Label(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
         biomeFileLabel.getStyleClass().add("value-label");
 
         loadBiomeBtn = new Button(I18n.get("planet.map.btn_load"));
@@ -237,7 +237,7 @@ public class ResourceBiomeSectionBuilder {
             alert.showAndWait().ifPresent(res -> {
                 if (res == ButtonType.OK) {
                     customBiomeImage = null;
-                    biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+                    biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
                     host.updatePreviewCanvas();
                     host.updateSummary();
                     host.notifyParamChange();
@@ -317,7 +317,7 @@ public class ResourceBiomeSectionBuilder {
         if (file != null) {
             try {
                 customBiomeImage = new Image(new FileInputStream(file));
-                if (biomeFileLabel != null) biomeFileLabel.setText("ðŸ“· " + file.getName());
+                if (biomeFileLabel != null) biomeFileLabel.setText("💷 " + file.getName());
                 host.selectViewMode(1);
                 host.updateSummary();
                 host.updatePreviewCanvas();
@@ -342,7 +342,7 @@ public class ResourceBiomeSectionBuilder {
             host.getOnlineMapService().fetchBiomeMapAsync(body).thenAccept(img -> javafx.application.Platform.runLater(() -> {
                 if (img != null) {
                     customBiomeImage = img;
-                    if (biomeFileLabel != null) biomeFileLabel.setText("ðŸŒ " + body.getName() + " WMS Biomes");
+                    if (biomeFileLabel != null) biomeFileLabel.setText(" " + body.getName() + " WMS Biomes");
                     host.setMapStatus(I18n.getOrDefault("planet.map.status_success", "Satellite map downloaded successfully."));
                     host.updatePreviewCanvas();
                     host.updateSummary();
@@ -384,18 +384,18 @@ public class ResourceBiomeSectionBuilder {
     public String getBiomeSourceDisplayName(String planetKey) {
         if (planetKey == null) planetKey = "earth";
         return switch (planetKey.toLowerCase(Locale.ROOT)) {
-            case "mars" -> "ðŸŒ¿ Mars MOLA & Biomes Reconstitution";
-            case "moon" -> "ðŸŒ¿ Moon Clementine Regolith (Barren Biome)";
-            case "venus" -> "ðŸŒ¿ Venus Magellan Radar (Supercritical Biome)";
-            case "mercury" -> "ðŸŒ¿ Mercury MESSENGER Surface (Airless Biome)";
-            default -> I18n.getOrDefault("planet.source.earth_modis_biomes", "ðŸŒ¿ Earth MODIS Biomes");
+            case "mars" -> "🌿 Mars MOLA & Biomes Reconstitution";
+            case "moon" -> "🌿 Moon Clementine Regolith (Barren Biome)";
+            case "venus" -> "🌿 Venus Magellan Radar (Supercritical Biome)";
+            case "mercury" -> "🌿 Mercury MESSENGER Surface (Airless Biome)";
+            default -> I18n.getOrDefault("planet.source.earth_modis_biomes", "🌿 Earth MODIS Biomes");
         };
     }
 
     public void applyPresetBiome(EcologyPreset p, String planetKey, long epochYear) {
         if (p != null && p.customBiomeBase64() != null) {
             customBiomeImage = ImageMapLoader.base64PngToImage(p.customBiomeBase64());
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.preset.biomes", "ðŸŒ¿ Preset Biomes"));
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.preset.biomes", "🌿 Preset Biomes"));
             if (radioImportBiome != null) radioImportBiome.setSelected(true);
         } else if ("earth".equals(planetKey)) {
             if (biomeSourceCombo != null) biomeSourceCombo.setValue("earth");
@@ -410,7 +410,7 @@ public class ResourceBiomeSectionBuilder {
             if (radioImportBiome != null) radioImportBiome.setSelected(true);
         } else {
             customBiomeImage = null;
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
             if (radioProcBiome != null) radioProcBiome.setSelected(true);
             if (biomeSourceCombo != null) biomeSourceCombo.setValue("none");
         }
@@ -419,7 +419,7 @@ public class ResourceBiomeSectionBuilder {
     public void applyPresetMapSource(String sourceKey, String body) {
         if ("none".equals(sourceKey) || sourceKey == null) {
             customBiomeImage = null;
-            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” Aucun fichier â€”"));
+            if (biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— Aucun fichier —"));
             if (radioProcBiome != null) radioProcBiome.setSelected(true);
             if (biomeSourceCombo != null) biomeSourceCombo.setValue("none");
         } else {
@@ -433,12 +433,12 @@ public class ResourceBiomeSectionBuilder {
     public void updateTexts() {
         if (biomeDomainSecHeader != null) biomeDomainSecHeader.setText(I18n.getOrDefault("resource.domain.biome", "1. BIOME & FLORA DOMAIN (VEGETATION)"));
         if (radioProcBiome != null) radioProcBiome.setText(I18n.getOrDefault("resource.mode.procedural_biome", "â–¶ Procedural Biomes"));
-        if (radioImportBiome != null) radioImportBiome.setText(I18n.getOrDefault("resource.mode.import_biome", "ðŸ“‚ Biome Map (PNG)"));
+        if (radioImportBiome != null) radioImportBiome.setText(I18n.getOrDefault("resource.mode.import_biome", " Biome Map (PNG)"));
         if (biomeMapRowLabel != null) biomeMapRowLabel.setText(I18n.getOrDefault("resource.param.biome_map", "Biome / Extraterrestrial Vegetation Map (PNG):"));
         if (loadBiomeBtn != null) loadBiomeBtn.setText(I18n.get("planet.map.btn_load"));
-        if (customBiomeImage == null && biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "â€” No file loaded â€”"));
+        if (customBiomeImage == null && biomeFileLabel != null) biomeFileLabel.setText(I18n.getOrDefault("planet.map.none_file", "— No file loaded —"));
         if (biomeFormatHintLabel != null) biomeFormatHintLabel.setText(I18n.getOrDefault("resource.format.biome_hint", "PNG / JPEG (2:1 equirectangular projection):\n  Biome image or vegetation cover (grayscale or RGB)."));
-        if (exportBiomeBtn != null) exportBiomeBtn.setText(I18n.getOrDefault("resource.btn.export_biome", "ðŸ“¤ Export Biome Map (PNG + WorldFile)"));
+        if (exportBiomeBtn != null) exportBiomeBtn.setText(I18n.getOrDefault("resource.btn.export_biome", " Export Biome Map (PNG + WorldFile)"));
         if (autoDeriveEcologyBtn != null) autoDeriveEcologyBtn.setText(I18n.getOrDefault("resource.btn.auto_derive_eco", "âš¡ Auto-derive Ecology & Biomes from Physics"));
         if (biomeSourcePromptLabel != null) biomeSourcePromptLabel.setText(I18n.getOrDefault("resource.param.map_source", "Celestial Body / Source:"));
         if (terrestrialBiomassRowLabel != null) terrestrialBiomassRowLabel.setText(I18n.getOrDefault("resource.param.terrestrial_biomass", "Terrestrial Plant Biomass (GtC):"));

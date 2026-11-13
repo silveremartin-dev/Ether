@@ -115,7 +115,7 @@ public final class HistoricalCalibrationSpatialHelper {
 
             String classification = (Math.abs(omegaDot) >= 0.015) 
                     ? "âš¡ Acute Rupture / Bifurcation (Exogenous / Non-linear)" 
-                    : "ðŸ”„ Continuous Parametric Drift (Slow)";
+                    : " Continuous Parametric Drift (Slow)";
 
             result.discrepancySpectra.add(new DiscrepancySpectrum(chkYear, omega, omegaDot, classification));
             prevOmega = omega;

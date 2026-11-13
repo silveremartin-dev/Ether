@@ -82,10 +82,10 @@ public class ScenarioGisExporter {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(I18n.getOrDefault("scenario.title.gis_success", "GIS Export Successful"));
                 alert.setHeaderText(I18n.getOrDefault("scenario.header.gis_success", "GIS File Generated Successfully"));
-                alert.setContentText("Le scÃ©nario a Ã©tÃ© exportÃ© sous format SIG compatible QGIS/ArcGIS : " + targetFile.getName());
+                alert.setContentText("Le scénario a été exporté sous format SIG compatible QGIS/ArcGIS : " + targetFile.getName());
                 alert.showAndWait();
             } catch (Exception ex) {
-                logger.error("Erreur lors de l'exportation SIG du scÃ©nario: {}", ex.getMessage(), ex);
+                logger.error("Erreur lors de l'exportation SIG du scénario: {}", ex.getMessage(), ex);
             }
         }
     }
@@ -126,10 +126,10 @@ public class ScenarioGisExporter {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(I18n.getOrDefault("scenario.title.provenance_success", "Cryptographic Manifest Generated"));
                 alert.setHeaderText(I18n.getOrDefault("scenario.header.provenance_success", "provenance.json Manifest Created"));
-                alert.setContentText("Le manifeste de provenance SHA-256 garantissant la reproductibilitÃ© a Ã©tÃ© Ã©crit dans : " + targetFile.getName());
+                alert.setContentText("Le manifeste de provenance SHA-256 garantissant la reproductibilité a été écrit dans : " + targetFile.getName());
                 alert.showAndWait();
             } catch (Exception ex) {
-                logger.error("Erreur lors de la gÃ©nÃ©ration du manifeste de provenance: {}", ex.getMessage(), ex);
+                logger.error("Erreur lors de la génération du manifeste de provenance: {}", ex.getMessage(), ex);
             }
         }
     }
@@ -141,7 +141,7 @@ public class ScenarioGisExporter {
      */
     public static void showCulturalImportFormatHelp(Window owner) {
         Stage dialog = new Stage();
-        dialog.setTitle(I18n.getOrDefault("scenario.title.layer_formats_modal", "SpÃ©cifications Techniques des Tenseurs Cartographiques & Datasets"));
+        dialog.setTitle(I18n.getOrDefault("scenario.title.layer_formats_modal", "Spécifications Techniques des Tenseurs Cartographiques & Datasets"));
         dialog.initModality(Modality.APPLICATION_MODAL);
         if (owner != null) dialog.initOwner(owner);
 
@@ -151,7 +151,7 @@ public class ScenarioGisExporter {
         root.setPrefWidth(720);
         root.setPrefHeight(600);
 
-        Label title = new Label(I18n.getOrDefault("scenario.layer_formats.title", "Standard des Tenseurs Spatio-Temporels (2048 x 1024, Ã‰quirectangulaire 2:1)"));
+        Label title = new Label(I18n.getOrDefault("scenario.layer_formats.title", "Standard des Tenseurs Spatio-Temporels (2048 x 1024, Équirectangulaire 2:1)"));
         title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
         ScrollPane scroll = new ScrollPane();
@@ -164,13 +164,13 @@ public class ScenarioGisExporter {
 
         VBox sec1 = new VBox(6);
         sec1.setStyle("-fx-background-color: #1e293b; -fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #3b82f6; -fx-border-radius: 8;");
-        Label lblSec1 = new Label("ðŸ·ï¸ " + I18n.getOrDefault("scenario.layer_formats.rgb_title", "1. Tenseurs CatÃ©goriels Discrets & Dithering Spatial (Encodage RGB 24-bit)"));
+        Label lblSec1 = new Label("¸ " + I18n.getOrDefault("scenario.layer_formats.rgb_title", "1. Tenseurs Catégoriels Discrets & Dithering Spatial (Encodage RGB 24-bit)"));
         lblSec1.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #60a5fa;");
         Label descSec1 = new Label(
-                "â€¢ Tenseur 0 (Isoglosses / Langues) : Couleur RGB pure par famille linguistique (Glottolog 5.0 / WALS).\n" +
-                "â€¢ Tenseur 1 (ParentÃ© / Filiation) : Typologie Todd & Murdock (Famille souche #8B5CF6, NuclÃ©aire #2563EB, Communautaire #DC2626, MatrilinÃ©aire #F43F5E).\n" +
-                "â€¢ Tenseur 2 (Rituels & Croyances) : SystÃ¨mes sacrÃ©s (Sunnisme, Catholicisme, Orthodoxie, Culte antique, Hindouisme, Bouddhisme, JudaÃ¯sme).\n" +
-                "â€¢ Tenseur 3 (SouverainetÃ© & Domaines) : EntitÃ©s politiques Ã©tatiques (Seshat ClioPatria / CShapes)."
+                "• Tenseur 0 (Isoglosses / Langues) : Couleur RGB pure par famille linguistique (Glottolog 5.0 / WALS).\n" +
+                "• Tenseur 1 (Parenté / Filiation) : Typologie Todd & Murdock (Famille souche #8B5CF6, Nucléaire #2563EB, Communautaire #DC2626, Matrilinéaire #F43F5E).\n" +
+                "• Tenseur 2 (Rituels & Croyances) : Systèmes sacrés (Sunnisme, Catholicisme, Orthodoxie, Culte antique, Hindouisme, Bouddhisme, Juda-sme).\n" +
+                "• Tenseur 3 (Souveraineté & Domaines) : Entités politiques étatiques (Seshat ClioPatria / CShapes)."
         );
         descSec1.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 11.5px;");
         descSec1.setWrapText(true);

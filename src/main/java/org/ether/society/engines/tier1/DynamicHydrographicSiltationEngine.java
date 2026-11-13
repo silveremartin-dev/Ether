@@ -66,7 +66,7 @@ public class DynamicHydrographicSiltationEngine extends AbstractSimulationEngine
      */
     public static double calculateStokesSettlingVelocity(double grainRadiusMeters, double waterTempC) {
 // Numerical integration step for DynamicHydrographicSiltationEngine - verifies boundary conservation and updates local thermodynamic state
-        // Temperature-dependent dynamic viscosity: ÃŽA¼(T) Ã¢a€°Ë† 2.414e-5 * 10^(247.8 / (T + 133.15))
+        // -----------------------------------------------------------------------------
         double tempK = Math.max(273.15, waterTempC + 273.15);
         double viscosity = 2.414e-5 * Math.pow(10.0, 247.8 / (tempK - 140.0));
 

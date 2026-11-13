@@ -75,6 +75,19 @@ public class DemographicKernel {
     private int activeCellCount = 0;
 
     /**
+     * Executes one complete demographic simulation cycle across all active cohorts
+     * using the canonical {@link org.ether.society.core.SimulationTimeStep}.
+     *
+     * @param world    global world buffer containing conserved cell states
+     * @param agents   agent/cohort contiguous memory buffer
+     * @param timeStep canonical time step representation
+     */
+    public void tick(WorldBuffer world, AgentBuffer agents, org.ether.society.core.SimulationTimeStep timeStep) {
+        float dtYears = timeStep != null ? timeStep.dtYearsF() : (1.0f / 12.0f);
+        tickWithDtYears(world, agents, dtYears);
+    }
+
+    /**
      * Executes one complete demographic simulation cycle across all active cohorts.
      *
      * @param world  global world buffer containing conserved cell states
@@ -82,7 +95,14 @@ public class DemographicKernel {
      * @param dt     time step duration in days or seconds (if &gt; 1000)
      */
     public void tick(WorldBuffer world, AgentBuffer agents, float dt) {
-        processMetabolism(world, agents, dt);
+        float dtYears = dt > 1000.0f
+                ? (float) (dt / PhysicalConstants.SECONDS_PER_JULIAN_YEAR)
+                : (float) (dt > 20.0f ? dt / PhysicalConstants.DAYS_PER_JULIAN_YEAR : dt);
+        tickWithDtYears(world, agents, dtYears);
+    }
+
+    private void tickWithDtYears(WorldBuffer world, AgentBuffer agents, float dtYears) {
+        processMetabolism(world, agents, dtYears);
         processMitosis(agents);
     }
 
@@ -103,7 +123,7 @@ public class DemographicKernel {
     /**
      * Evaluates caloric consumption, mass updates, age progression, births, and deaths per cohort.
      */
-    private void processMetabolism(WorldBuffer world, AgentBuffer agents, float dt) {
+    private void processMetabolism(WorldBuffer world, AgentBuffer agents, float dtYears) {
         OrganismBiophysicalProfile organism = world.getOrganismProfile();
         final double annualMetabolicGJ = organism.annualMetabolicEnergyGJ();
         final double minPrimiparityYears = organism.minPrimiparityAgeYears();
@@ -123,7 +143,8 @@ public class DemographicKernel {
         float[] biomassHuman = world.getBiomassHuman();
         java.util.Arrays.fill(biomassHuman, 0.0f);
 
-        float dtInYears = Math.max(0.0001f, dt > 1000.0f ? (dt / 31557600.0f) : (dt / 365.25f));
+        float dtInYears = Math.max(0.0001f, dtYears);
+        float dtMonthlyEquivalent = dtInYears * 12.0f;
         float minMassThreshold = Math.max(0.0001f, Math.min(0.05f, targetCohortSize * 0.001f));
 
         int worldCap = world.getCapacity();
@@ -224,11 +245,11 @@ public class DemographicKernel {
                 capArr[hIdx] += (float) (foodTaken * PhysicalConstants.CARCASS_MATERIAL_BYPRODUCT_FRACTION * 0.05 * foragerWeight);
             }
 
-            // Smooth C^infty internal somatic energy store update in [0, 100]
+            // Smooth C^infty internal somatic energy store update in [0, 100] scaled by dt
             double satGate = SmoothMath.sigmoid(foodSatisfaction, 0.80, 0.05);
             double energyGain = 5.0 * foodSatisfaction;
             double energyLoss = 15.0 * (1.0 - foodSatisfaction);
-            double deltaEnergy = satGate * energyGain - (1.0 - satGate) * energyLoss;
+            double deltaEnergy = (satGate * energyGain - (1.0 - satGate) * energyLoss) * dtMonthlyEquivalent;
             energy[i] = Math.clamp((float) (energy[i] + deltaEnergy), 0.0f, 100.0f);
 
             // 1. Smooth Primiparity & Fecundity Curve (Zero step discontinuity at primiparityAge - 1.5)

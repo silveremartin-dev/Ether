@@ -119,7 +119,7 @@ public final class MetricCatalogHelper {
             cells -> cells.stream().mapToDouble(c -> c != null && c.getRainfall() != null ? c.getRainfall() : 0.0).average().orElse(0.0)
         ));
 
-        // --- ðŸ‘¥ 2. DEMOGRAPHICS & HEALTH ---
+        // --- 👥 2. DEMOGRAPHICS & HEALTH ---
         register.accept(new MetricDescriptor(
             "population", "Human Population", MetricDescriptor.Category.DEMOGRAPHICS, "cap",
             "Total number of human inhabitants residing within the H3 hexagonal cell.",
@@ -155,7 +155,7 @@ public final class MetricCatalogHelper {
             cells -> cells.stream().mapToDouble(c -> c != null ? Math.min(100.0, org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) * 10.0) : 0.0).average().orElse(0.0)
         ));
 
-        // --- ðŸ›i¸ 3. SOCIETY & INSTITUTIONS ---
+        // --- ¸ 3. SOCIETY & INSTITUTIONS ---
         register.accept(new MetricDescriptor(
             "asabiyyah", "Social Cohesion (Asabiyyah %)", MetricDescriptor.Category.SOCIETY_POLITICS, "%",
             "Ibn Khaldun index of group feeling, collective solidarity, and institutional trust.",
@@ -201,7 +201,7 @@ public final class MetricCatalogHelper {
             cells -> cells.stream().mapToDouble(c -> c != null ? org.ether.society.database.H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c) : 0.0).average().orElse(0.0)
         ));
 
-        // --- ðŸ’Ž 4. ECONOMY & WEALTH ---
+        // ---  4. ECONOMY & WEALTH ---
         register.accept(new MetricDescriptor(
             "gini", "Gini Inequality Index", MetricDescriptor.Category.ECONOMY, "Coeff",
             "G = A / (A + B). Measure of wealth and income inequality (0 = perfect equality, 1 = absolute concentration).",
@@ -231,7 +231,7 @@ public final class MetricCatalogHelper {
             cells -> cells.stream().mapToDouble(c -> c != null && c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(0.0)
         ));
 
-        // --- ðŸ§  5. COGNITION & INFORMATION ---
+        // --- 🧠 5. COGNITION & INFORMATION ---
         register.accept(new MetricDescriptor(
             "collectiveMemory", "Collective Memory Stock", MetricDescriptor.Category.COGNITION, "TB",
             "Cumulative storage volume of recorded knowledge, scientific archives, and cultural heritage.",

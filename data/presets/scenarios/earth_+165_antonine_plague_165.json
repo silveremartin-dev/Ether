@@ -1,4 +1,4 @@
-{
+﻿{
   "cultureVectorDimensions" : 9,
   "culturalDiffusionRate" : 0.05,
   "culturalMutationRate" : 0.01,
@@ -244,7 +244,7 @@
   "endDateYear" : 180,
   "seed" : 12345,
   "culturalSeed" : 54321,
-  "randomEventsEnabled" : true,
+  "randomEventsEnabled" : false,
   "earthHistoricalLeadersEnabled" : true,
   "proceduralLeadersEnabled" : true,
   "chronicleSingularityObserverEnabled" : false,

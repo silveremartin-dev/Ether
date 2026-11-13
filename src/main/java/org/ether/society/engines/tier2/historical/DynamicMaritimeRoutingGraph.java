@@ -92,7 +92,7 @@ public class DynamicMaritimeRoutingGraph {
      * Rebuilds the dynamic trans-oceanic routing graph based on current physical properties.
      */
     private static void rebuildRoutingGraph(List<H3Cell> cells) {
-        logger.info("ðŸŒŠ Dynamically recalculating Trans-Oceanic Maritime Routing Graph (Avg Tech: {}, Nodes: {})...",
+        logger.info(" Dynamically recalculating Trans-Oceanic Maritime Routing Graph (Avg Tech: {}, Nodes: {})...",
                 String.format("%.1f kg", cachedAvgCapital), cachedNodeCount);
 
         routingGraph.clear();

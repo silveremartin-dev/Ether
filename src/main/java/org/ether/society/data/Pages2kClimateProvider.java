@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot & Gemini AI
+ * Copyright (c) 2024-2026 Silvère Martin-Michiellot & Gemini AI
  */
 package org.ether.society.data;
 
@@ -37,7 +37,7 @@ import java.util.*;
  * </ul>
  * </p>
  *
- * @author SilvÃ¨re Martin-Michiellot &amp; Gemini AI
+ * @author Silvère Martin-Michiellot &amp; Gemini AI
  * @version 1.0.0
  * @see org.ether.society.config.EtherPaths#resolveSourceFile(String)
  */

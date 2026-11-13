@@ -152,7 +152,7 @@ public class ResourcePreviewCanvasBuilder {
         btnReliefOverlay = new ToggleButton(I18n.getOrDefault("resource.btn.relief_overlay", "â›ï¸ Relief"));
         btnReliefOverlay.setSelected(false);
         btnReliefOverlay.getStyleClass().add("button-secondary");
-        btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec dÃ©limitation du trait de cÃ´te.")));
+        btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec délimitation du trait de côte.")));
         btnReliefOverlay.setOnAction(e -> updatePreviewCanvas());
 
         HBox viewModeControlBar = new HBox(8, viewModeCombo, btnReliefOverlay);
@@ -246,7 +246,7 @@ public class ResourcePreviewCanvasBuilder {
         legendBar.getStyleClass().add("card-section");
         updateLegend();
 
-        summaryLabel = new Label(I18n.getOrDefault("resource.prompt.load_cells", "ðŸŒ Generate or load planet cells to activate map."));
+        summaryLabel = new Label(I18n.getOrDefault("resource.prompt.load_cells", "🌍 Generate or load planet cells to activate map."));
         summaryLabel.getStyleClass().addAll("control-label", "summary-centered-label");
         summaryLabel.setWrapText(true);
 
@@ -260,22 +260,22 @@ public class ResourcePreviewCanvasBuilder {
         if (viewModeCombo == null) return;
         viewModeCombo.getItems().setAll(
                 I18n.getOrDefault("resource.view.section_base", "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ 12 CARTES CANONIQUES DE BASE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"),
-                I18n.getOrDefault("resource.view.biomes", "ðŸŒ¿ 1. Biomes & Couverture VÃ©gÃ©tale"),
-                I18n.getOrDefault("resource.view.hydro", "ðŸŒŠ 2. Hydrographie & RÃ©seau Fluvial"),
+                I18n.getOrDefault("resource.view.biomes", "🌿 1. Biomes & Couverture Végétale"),
+                I18n.getOrDefault("resource.view.hydro", " 2. Hydrographie & Réseau Fluvial"),
                 I18n.getOrDefault("resource.view.coal", "â›ï¸ 3. Gisements de Charbon"),
-                I18n.getOrDefault("resource.view.oil", "ðŸ›¢ï¸ 4. RÃ©serves de PÃ©trole Brut"),
-                I18n.getOrDefault("resource.view.gas", "ðŸ”¥ 5. Champs de Gaz Naturel"),
+                I18n.getOrDefault("resource.view.oil", "¸ 4. Réserves de Pétrole Brut"),
+                I18n.getOrDefault("resource.view.gas", "🔥 5. Champs de Gaz Naturel"),
                 I18n.getOrDefault("resource.view.uranium", "â˜¢ï¸ 6. Minerais d'Uranium & Fission"),
-                I18n.getOrDefault("resource.view.helium3", "ðŸŒŒ 7. HÃ©lium-3 & Fusion Lunaires"),
-                I18n.getOrDefault("resource.view.iron_copper", "â›“ï¸ 8. MÃ©taux Fer BIF & Cuivre"),
-                I18n.getOrDefault("resource.view.precious_metals", "ðŸ’Ž 9. MÃ©taux PrÃ©cieux (Or, Argent, PGM)"),
-                I18n.getOrDefault("resource.view.rare_earths", "ðŸ”‹ 10. Terres Rares & MinÃ©raux Critiques / Lithium"),
-                I18n.getOrDefault("resource.view.heat", "ðŸŒ‹ 11. Flux Thermique du Manteau"),
-                I18n.getOrDefault("resource.view.aquifer", "ðŸ’§ 12. AquifÃ¨res & Eau Douce"),
-                I18n.getOrDefault("resource.view.section_derived", "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CARTES DÃ‰DUITES / ANOMALIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"),
-                I18n.getOrDefault("resource.view.temp", "ðŸŒ¡ï¸ 13. TempÃ©ratures Surface & Microclimats"),
-                I18n.getOrDefault("resource.view.seismic", "ðŸŒ‹ 14. Tectonique & AlÃ©a Sismique/Volcanique"),
-                I18n.getOrDefault("resource.view.aridity", "ðŸœï¸ 15. AriditÃ© & Salinisation des Sols")
+                I18n.getOrDefault("resource.view.helium3", " 7. Hélium-3 & Fusion Lunaires"),
+                I18n.getOrDefault("resource.view.iron_copper", "â›“ï¸ 8. Métaux Fer BIF & Cuivre"),
+                I18n.getOrDefault("resource.view.precious_metals", " 9. Métaux Précieux (Or, Argent, PGM)"),
+                I18n.getOrDefault("resource.view.rare_earths", " 10. Terres Rares & Minéraux Critiques / Lithium"),
+                I18n.getOrDefault("resource.view.heat", " 11. Flux Thermique du Manteau"),
+                I18n.getOrDefault("resource.view.aquifer", " 12. Aquifères & Eau Douce"),
+                I18n.getOrDefault("resource.view.section_derived", "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CARTES DÉDUITES / ANOMALIES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"),
+                I18n.getOrDefault("resource.view.temp", "¸ 13. Températures Surface & Microclimats"),
+                I18n.getOrDefault("resource.view.seismic", " 14. Tectonique & Aléa Sismique/Volcanique"),
+                I18n.getOrDefault("resource.view.aridity", "¸ 15. Aridité & Salinisation des Sols")
         );
     }
 
@@ -381,7 +381,7 @@ public class ResourcePreviewCanvasBuilder {
         }
         if (btnReliefOverlay != null) {
             btnReliefOverlay.setText(I18n.getOrDefault("resource.btn.relief_overlay", "â›ï¸ Relief"));
-            btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec dÃ©limitation du trait de cÃ´te.")));
+            btnReliefOverlay.setTooltip(new Tooltip(I18n.getOrDefault("resource.tooltip.relief_overlay", "Superposer l'ombrage du relief topographique et des pentes avec délimitation du trait de côte.")));
         }
         if (viewModeCombo != null) {
             int selected = viewModeCombo.getSelectionModel().getSelectedIndex();

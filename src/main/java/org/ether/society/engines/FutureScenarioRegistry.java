@@ -117,16 +117,16 @@ public class FutureScenarioRegistry {
         String name = scenario.getName() != null ? scenario.getName().toLowerCase() : "";
         String desc = scenario.getDescription() != null ? scenario.getDescription().toLowerCase() : "";
 
-        if (name.contains("sovereign") || name.contains("maÃ®tre du monde") || name.contains("leviathan") || desc.contains("gouvernance ia")) {
+        if (name.contains("sovereign") || name.contains("maître du monde") || name.contains("leviathan") || desc.contains("gouvernance ia")) {
             return name.contains("multipolar") || name.contains("guerre froide") ? SCENARIO_SOVEREIGN_AI_MULTIPOLAR : SCENARIO_SOVEREIGN_AI_SINGLE;
         }
         if (name.contains("business as usual") || name.contains("ssp5") || name.contains("bau") || name.contains("tendancielle biophysique")) {
             return SCENARIO_BAU;
         }
-        if (name.contains("hiver nuclÃ©aire") || name.contains("nuclear winter") || desc.contains("hiver nuclÃ©aire") || desc.contains("nuclear winter") || name.contains("guerre nuclÃ©aire")) {
+        if (name.contains("hiver nucléaire") || name.contains("nuclear winter") || desc.contains("hiver nucléaire") || desc.contains("nuclear winter") || name.contains("guerre nucléaire")) {
             return SCENARIO_NUCLEAR_WINTER;
         }
-        if (name.contains("singularitÃ©") || name.contains("singularity") || name.contains("asi")) {
+        if (name.contains("singularité") || name.contains("singularity") || name.contains("asi")) {
             return SCENARIO_SINGULARITY;
         }
         if (name.contains("amoc") || name.contains("thermohalin")) {

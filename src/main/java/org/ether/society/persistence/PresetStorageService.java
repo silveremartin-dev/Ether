@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024-2026 SilvÃ¨re Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvère Martin-Michiellot
  */
 package org.ether.society.persistence;
 
@@ -324,12 +324,12 @@ public final class PresetStorageService {
             String pName = s.getPlanetPreset().name().toLowerCase(Locale.ROOT);
             if (pName.contains("super-terre") || pName.contains("super_earth") || pName.contains("gaia")) planetSlug = "super_earth";
             else if (pName.contains("mars") || pName.contains("ares")) planetSlug = "mars";
-            else if (pName.contains("venus") || pName.contains("vÃ©nus") || pName.contains("hesperos")) planetSlug = "venus";
+            else if (pName.contains("venus") || pName.contains("vénus") || pName.contains("hesperos")) planetSlug = "venus";
             else if (pName.contains("moon") || pName.contains("lune") || pName.contains("selene")) planetSlug = "moon";
             else if (pName.contains("mercury") || pName.contains("mercure") || pName.contains("hermes")) planetSlug = "mercury";
             else if (pName.contains("titan")) planetSlug = "titan";
             else if (pName.contains("synchrone") || pName.contains("eyeball")) planetSlug = "eyeball_world";
-            else if (pName.contains("ocean") || pName.contains("ocÃ©an") || pName.contains("oceania")) planetSlug = "oceania";
+            else if (pName.contains("ocean") || pName.contains("océan") || pName.contains("oceania")) planetSlug = "oceania";
             else if (pName.contains("boreas")) planetSlug = "boreas";
             else if (pName.contains("archipel") || pName.contains("archipelago")) planetSlug = "archipelago";
             else if (pName.contains("terre") || pName.contains("earth") || pName.contains("glaciaire") || pName.contains("interglaciaire")) planetSlug = "earth";

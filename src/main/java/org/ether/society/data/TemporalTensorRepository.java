@@ -30,9 +30,9 @@ public class TemporalTensorRepository {
      * Data resolution & fallback strategy when exact empirical measurements for a target date are missing.
      */
     public enum DataFallbackStrategy {
-        CONTINUOUS_INTERPOLATION("scenario.fallback.interpolation", "Ã°Å¸â€â€ž Interpolation temporelle continue (Fondu barycentrique)"),
-        PREVIOUS_EARLIER_EPOCH("scenario.fallback.earlier_epoch", "Ã¢ÂÂ®Ã¯Â¸Â Repli conservateur sur l'ÃƒÂ©poque antÃƒÂ©rieure connue (Ãƒâ€°vite tout anachronisme)"),
-        CLOSEST_ANCHOR_EPOCH("scenario.fallback.closest_anchor", "Ã°Å¸Å½Â¯ Jalon ÃƒÂ©talonnÃƒÂ© le plus proche (Distance chronologique minimale)");
+        CONTINUOUS_INTERPOLATION("scenario.fallback.interpolation", "-Å¸”â€ž Interpolation temporelle continue (Fondu barycentrique)"),
+        PREVIOUS_EARLIER_EPOCH("scenario.fallback.earlier_epoch", "-ÂÂ®-Â¸Â Repli conservateur sur l'ÃƒÂ©poque antÃƒÂ©rieure connue (Ãƒâ€°vite tout anachronisme)"),
+        CLOSEST_ANCHOR_EPOCH("scenario.fallback.closest_anchor", "-Å¸Å½Â¯ Jalon ÃƒÂ©talonnÃƒÂ© le plus proche (Distance chronologique minimale)");
 
         /** Internal state: i18n key (String). */
         private final String i18nKey;

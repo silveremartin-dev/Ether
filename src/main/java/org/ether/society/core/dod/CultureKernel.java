@@ -1,6 +1,7 @@
 package org.ether.society.core.dod;
 
 import org.ether.society.core.math.SmoothMath;
+import org.ether.society.model.PhysicalConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +64,19 @@ public class CultureKernel {
     public void setForcingRate(float rate) { this.forcingRate = Math.max(0.0f, rate); }
 
     /**
+     * Executes one thermodynamic cultural evolution step (Langevin SDE integration)
+     * using the canonical {@link org.ether.society.core.SimulationTimeStep}.
+     *
+     * @param world    contiguous world state buffer
+     * @param agents   contiguous agent/cohort state buffer
+     * @param timeStep canonical time step representation
+     */
+    public void tick(WorldBuffer world, AgentBuffer agents, org.ether.society.core.SimulationTimeStep timeStep) {
+        float dtYears = timeStep != null ? timeStep.dtYearsF() : (1.0f / 12.0f);
+        tickWithDtYears(world, agents, dtYears);
+    }
+
+    /**
      * Executes one thermodynamic cultural evolution step (Langevin SDE integration).
      *
      * @param world  contiguous world state buffer
@@ -70,7 +84,14 @@ public class CultureKernel {
      * @param dt     time step duration in days or seconds (if &gt; 1000)
      */
     public void tick(WorldBuffer world, AgentBuffer agents, float dt) {
-        float dtNormalized = Math.max(0.0001f, dt > 1000.0f ? (dt / 31557600.0f) : (dt / 365.25f));
+        float dtNormalized = dt > 1000.0f
+                ? (float) (dt / PhysicalConstants.SECONDS_PER_JULIAN_YEAR)
+                : (float) (dt > 20.0f ? dt / PhysicalConstants.DAYS_PER_JULIAN_YEAR : dt);
+        tickWithDtYears(world, agents, dtNormalized);
+    }
+
+    private void tickWithDtYears(WorldBuffer world, AgentBuffer agents, float dtYears) {
+        float dtNormalized = Math.max(0.0001f, dtYears);
         deterministicTickCounter++;
         langevinDrift(agents, dtNormalized, deterministicTickCounter);
         diffuseAndForce(world, agents, dtNormalized);

@@ -41,12 +41,28 @@ public class FluxKernel {
     }
 
     /**
+     * Executes one finite-volume trade diffusion cycle using the canonical {@link org.ether.society.core.SimulationTimeStep}.
+     *
+     * @param world    contiguous world buffer
+     * @param timeStep canonical time step representation
+     */
+    public void tick(WorldBuffer world, org.ether.society.core.SimulationTimeStep timeStep) {
+        float dtDays = timeStep != null ? timeStep.dtDaysF() : 30.0f;
+        tickWithDtDays(world, dtDays);
+    }
+
+    /**
      * Executes one finite-volume trade diffusion cycle across contiguous WorldBuffer arrays.
      *
      * @param world contiguous world buffer
-     * @param dtSeconds integration time step in seconds
+     * @param dtSeconds integration time step in seconds (or days if &le; 1000)
      */
     public void tick(WorldBuffer world, float dtSeconds) {
+        float dtDays = dtSeconds > 1000.0f ? (dtSeconds / 86400.0f) : dtSeconds;
+        tickWithDtDays(world, dtDays);
+    }
+
+    private void tickWithDtDays(WorldBuffer world, float dtDays) {
         int capacity = world != null ? world.getCapacity() : 0;
         if (capacity == 0) return;
 
@@ -70,7 +86,7 @@ public class FluxKernel {
             java.util.Arrays.fill(cachedDeltaFood, 0, capacity, 0.0f);
         }
 
-        float dtDays = dtSeconds / 86400.0f;
+        float dtSafeDays = Math.max(0.0001f, dtDays);
 
         // 2. Symmetric edge flux across 6 H3 neighbors (guarantees exact numerical conservation)
         for (int i = 0; i < capacity; i++) {
@@ -94,7 +110,7 @@ public class FluxKernel {
                 float friction = 1.0f + Math.abs(hB - hA) * 0.1f;
                 float conductivity = baseConductivity / friction;
 
-                float rawFlux = gradient * conductivity * dtDays;
+                float rawFlux = gradient * conductivity * dtSafeDays;
 
                 float maxTransferA = foodA > 0.0f ? foodA * 0.5f : 0.0f;
                 float maxTransferB = foodB > 0.0f ? foodB * 0.5f : 0.0f;

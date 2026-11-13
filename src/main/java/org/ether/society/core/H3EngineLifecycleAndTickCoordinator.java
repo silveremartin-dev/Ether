@@ -85,7 +85,7 @@ final class H3EngineLifecycleAndTickCoordinator {
             if (scenario != null) {
                 engine.eventSystem.setSeed(scenario.getSeed());
                 engine.eventSystem.setEnableRandomEvents(scenario.isRandomEventsEnabled());
-                engine.eventSystem.setEnableHistoricalMilestones(scenario.isRandomEventsEnabled());
+                engine.eventSystem.setEnableHistoricalMilestones(true);
                 engine.eventSystem.setEnableEarthHistoricalLeaders(scenario.isEarthHistoricalLeadersEnabled());
                 engine.eventSystem.setEnableProceduralLeaders(scenario.isProceduralLeadersEnabled());
                 engine.eventSystem.setEnableChronicleSingularityObserver(scenario.isChronicleSingularityObserverEnabled());

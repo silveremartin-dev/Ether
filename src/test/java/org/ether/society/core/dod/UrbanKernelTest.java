@@ -22,6 +22,7 @@ public class UrbanKernelTest {
     @DisplayName("Verify Tainter Complexity growth and non-linear institutional maintenance overhead")
     void testTainterComplexityAndDepreciation() {
         WorldBuffer buffer = new WorldBuffer(10);
+        buffer.getBiomes()[0] = (byte) org.ether.society.model.Biome.PLAINS.ordinal();
         buffer.getH3Indexes()[0] = 0x882681a339fffffL;
         buffer.getBiomassHuman()[0] = 50_000.0f; // Megacity
         buffer.getResourceCapital()[0] = 1_000_000.0f; // 20 units capital per capita
@@ -44,6 +45,7 @@ public class UrbanKernelTest {
     @DisplayName("Verify that sub-threshold populations experience no unphysical urban agglomeration spillover")
     void testSubThresholdPopulationInvariance() {
         WorldBuffer buffer = new WorldBuffer(10);
+        buffer.getBiomes()[0] = (byte) org.ether.society.model.Biome.PLAINS.ordinal();
         buffer.getH3Indexes()[0] = 0x882681a339fffffL;
         buffer.getBiomassHuman()[0] = 5.0f; // Isolated small clan (below 10.0 threshold)
         buffer.getResourceCapital()[0] = 50.0f;

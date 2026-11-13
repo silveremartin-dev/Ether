@@ -96,27 +96,27 @@ public class CulturalAffinityMatrixDialog extends Stage {
         this.currentEpoch = initialEpoch;
         this.targetScenario = scenario;
         initModality(Modality.APPLICATION_MODAL);
-        setTitle(I18n.getOrDefault("cultural.matrix.window_title", "ðŸ§© Matrice d'AffinitÃ© & Distances Culturelles"));
+        setTitle(I18n.getOrDefault("cultural.matrix.window_title", "🧩 Matrice d'Affinité & Distances Culturelles"));
 
         VBox root = new VBox(12);
         root.setPadding(new Insets(16));
         root.getStyleClass().add("glass-panel");
 
-        titleLabel.setText(I18n.getOrDefault("cultural.matrix.header_title", "ðŸ›ï¸ Matrice d'AffinitÃ© Culturelle Cliodynamique (N Ã— N)"));
+        titleLabel.setText(I18n.getOrDefault("cultural.matrix.header_title", "¸ Matrice d'Affinité Culturelle Cliodynamique (N Ã— N)"));
         titleLabel.getStyleClass().add("panel-header");
         titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #38bdf8;");
 
-        subtitleLabel.setText(I18n.getOrDefault("cultural.matrix.header_desc", "Inspecter et Ã©diter la matrice NÃ—N des distances de Mahalanobis, continuitÃ©s linguistiques et coefficients d'assimilation."));
+        subtitleLabel.setText(I18n.getOrDefault("cultural.matrix.header_desc", "Inspecter et éditer la matrice NÃ—N des distances de Mahalanobis, continuités linguistiques et coefficients d'assimilation."));
         subtitleLabel.getStyleClass().add("card-description-muted");
         subtitleLabel.setStyle("-fx-font-size: 11.5px; -fx-text-fill: #94a3b8;");
 
         HBox epochRow = new HBox(12);
         epochRow.setAlignment(Pos.CENTER_LEFT);
 
-        scenarioEpochBadge.setText(String.format(I18n.getOrDefault("cultural.matrix.current_scenario_epoch", "ðŸŽ¯ Ã‰poque du ScÃ©nario : %s"), CulturalEpochRegistryLoader.formatEpochName(initialEpoch)));
+        scenarioEpochBadge.setText(String.format(I18n.getOrDefault("cultural.matrix.current_scenario_epoch", "🎯 Époque du Scénario : %s"), CulturalEpochRegistryLoader.formatEpochName(initialEpoch)));
         scenarioEpochBadge.setStyle("-fx-font-weight: bold; -fx-font-size: 11.5px; -fx-text-fill: #f59e0b; -fx-background-color: rgba(245, 158, 11, 0.12); -fx-padding: 4 10; -fx-background-radius: 6; -fx-border-color: rgba(245, 158, 11, 0.35); -fx-border-radius: 6;");
 
-        Label lblEpoch = new Label(I18n.getOrDefault("cultural.matrix.select_epoch", "Ã‰poque Historique :"));
+        Label lblEpoch = new Label(I18n.getOrDefault("cultural.matrix.select_epoch", "Époque Historique :"));
         lblEpoch.getStyleClass().add("control-label");
         lblEpoch.setStyle("-fx-font-weight: bold; -fx-text-fill: #e2e8f0;");
 
@@ -130,7 +130,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
             }
         });
         epochSelector.setButtonCell(epochSelector.getCellFactory().call(null));
-        epochSelector.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.epoch", "SÃ©lectionner l'Ã©poque historique pour inspecter les entitÃ©s ethnolinguistiques et matrices d'affinitÃ©.")));
+        epochSelector.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.epoch", "Sélectionner l'époque historique pour inspecter les entités ethnolinguistiques et matrices d'affinité.")));
         epochSelector.setOnAction(e -> {
             Long val = epochSelector.getValue();
             if (val != null) loadEpochRegistry(val);
@@ -161,15 +161,15 @@ public class CulturalAffinityMatrixDialog extends Stage {
         setupQuickEditorPanel();
         matrixTabRoot.getChildren().addAll(proceduralToolbar, matrixScroll, quickEditorCard);
 
-        Tab tabMatrix = new Tab(I18n.getOrDefault("cultural.matrix.tab_heatmap", "ðŸ“Š Carte Thermique d'AffinitÃ© (N Ã— N)"), matrixTabRoot);
-        tabMatrix.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.tab_heatmap", "Matrice NÃ—N des coefficients d'affinitÃ© symÃ©triques Ã©ditables en direct.")));
+        Tab tabMatrix = new Tab(I18n.getOrDefault("cultural.matrix.tab_heatmap", "📊 Carte Thermique d'Affinité (N Ã— N)"), matrixTabRoot);
+        tabMatrix.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.tab_heatmap", "Matrice NÃ—N des coefficients d'affinité symétriques éditables en direct.")));
 
         ScrollPane entitiesScroll = new ScrollPane(entitiesBox);
         entitiesScroll.setFitToWidth(true);
         entitiesScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
         entitiesBox.setPadding(new Insets(10));
-        Tab tabEntities = new Tab(I18n.getOrDefault("cultural.matrix.tab_entities", "ðŸ“œ Registre Culturel & Technocomplexes"), entitiesScroll);
-        tabEntities.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.tab_entities", "EntitÃ©s ethnolinguistiques discrÃ¨tes avec codage couleur 24-bit, rÃ©gimes de parentÃ© et technocomplexes lithiques.")));
+        Tab tabEntities = new Tab(I18n.getOrDefault("cultural.matrix.tab_entities", " Registre Culturel & Technocomplexes"), entitiesScroll);
+        tabEntities.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.tab_entities", "Entités ethnolinguistiques discrètes avec codage couleur 24-bit, régimes de parenté et technocomplexes lithiques.")));
 
         tabPane.getTabs().addAll(tabMatrix, tabEntities);
         HBox footer = buildFooterBar();
@@ -196,20 +196,20 @@ public class CulturalAffinityMatrixDialog extends Stage {
         proceduralToolbar.setPadding(new Insets(6, 10, 6, 10));
         proceduralToolbar.setStyle("-fx-background-color: rgba(15, 23, 42, 0.4); -fx-background-radius: 6; -fx-border-color: rgba(255, 255, 255, 0.08); -fx-border-radius: 6;");
 
-        Label procLabel = new Label(I18n.getOrDefault("cultural.matrix.procedural_header", "ðŸª„ GÃ©nÃ©ration ProcÃ©durale & Heuristiques :"));
+        Label procLabel = new Label(I18n.getOrDefault("cultural.matrix.procedural_header", " Génération Procédurale & Heuristiques :"));
         procLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 11px; -fx-text-fill: #38bdf8;");
 
-        configureToolbarBtn(btnGenGeo, "cultural.matrix.btn_gen_geo", "ðŸŒ Distance GÃ©o & Isoglosses",
-                "cultural.matrix.btn_gen_geo_tt", "Calculer les affinitÃ©s par dÃ©croissance exponentielle de distance spatiale et linguistique.",
+        configureToolbarBtn(btnGenGeo, "cultural.matrix.btn_gen_geo", " Distance Géo & Isoglosses",
+                "cultural.matrix.btn_gen_geo_tt", "Calculer les affinités par décroissance exponentielle de distance spatiale et linguistique.",
                 this::generateAffinitiesByGeography);
-        configureToolbarBtn(btnGenTraits, "cultural.matrix.btn_gen_traits", "ðŸ§¬ SimilaritÃ© des Traits (Mahalanobis)",
-                "cultural.matrix.btn_gen_traits_tt", "Calculer les affinitÃ©s basÃ©es sur la distance euclidienne des traits ethnographiques multidimensionnels.",
+        configureToolbarBtn(btnGenTraits, "cultural.matrix.btn_gen_traits", " Similarité des Traits (Mahalanobis)",
+                "cultural.matrix.btn_gen_traits_tt", "Calculer les affinités basées sur la distance euclidienne des traits ethnographiques multidimensionnels.",
                 this::generateAffinitiesByTraits);
-        configureToolbarBtn(btnGenStochastic, "cultural.matrix.btn_gen_stochastic", "ðŸŽ² Bruit Stochastique",
-                "cultural.matrix.btn_gen_stochastic_tt", "Appliquer une variation alÃ©atoire rÃ©aliste gaussienne symÃ©trique.",
+        configureToolbarBtn(btnGenStochastic, "cultural.matrix.btn_gen_stochastic", " Bruit Stochastique",
+                "cultural.matrix.btn_gen_stochastic_tt", "Appliquer une variation aléatoire réaliste gaussienne symétrique.",
                 this::generateAffinitiesStochastic);
-        configureToolbarBtn(btnResetDefaults, "cultural.matrix.btn_reset_defaults", "ðŸ”„ DÃ©fauts",
-                "cultural.matrix.btn_reset_defaults_tt", "Restaurer les affinitÃ©s historiques canoniques de cette Ã©poque.",
+        configureToolbarBtn(btnResetDefaults, "cultural.matrix.btn_reset_defaults", " Défauts",
+                "cultural.matrix.btn_reset_defaults_tt", "Restaurer les affinités historiques canoniques de cette époque.",
                 () -> {
                     customAffinityOverrides.clear();
                     renderMatrixHeatmap();
@@ -232,19 +232,19 @@ public class CulturalAffinityMatrixDialog extends Stage {
         HBox footer = new HBox(10);
         footer.setAlignment(Pos.CENTER_RIGHT);
 
-        btnExportCsv.setText(I18n.getOrDefault("cultural.matrix.btn_export_csv", "ðŸ’¾ Exporter Matrice (CSV)"));
+        btnExportCsv.setText(I18n.getOrDefault("cultural.matrix.btn_export_csv", " Exporter Matrice (CSV)"));
         btnExportCsv.getStyleClass().add("button-secondary");
-        btnExportCsv.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.export_csv", "Exporter la matrice complÃ¨te d'affinitÃ© culturelle NÃ—N sous format CSV standard.")));
+        btnExportCsv.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.export_csv", "Exporter la matrice complète d'affinité culturelle NÃ—N sous format CSV standard.")));
         btnExportCsv.setOnAction(e -> CulturalAffinityMatrixExporter.exportMatrixCsv(this, currentEpoch, activeEntities, this::getAffinity));
 
-        btnExportJson.setText(I18n.getOrDefault("cultural.matrix.btn_export_json", "ðŸ“„ Exporter Matrice (JSON)"));
+        btnExportJson.setText(I18n.getOrDefault("cultural.matrix.btn_export_json", "📄 Exporter Matrice (JSON)"));
         btnExportJson.getStyleClass().add("button-secondary");
-        btnExportJson.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.export_json", "Exporter le registre culturel complet et la matrice d'affinitÃ© sous format JSON.")));
+        btnExportJson.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.export_json", "Exporter le registre culturel complet et la matrice d'affinité sous format JSON.")));
         btnExportJson.setOnAction(e -> CulturalAffinityMatrixExporter.exportMatrixJson(this, currentEpoch, scenarioStartYear, activeEntities, this::getAffinity));
 
         btnCancel.setText(I18n.getOrDefault("common.btn.cancel", "Annuler"));
         btnCancel.getStyleClass().add("button-secondary");
-        btnCancel.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.cancel", "Annuler les modifications et restaurer l'Ã©tat initial des affinitÃ©s.")));
+        btnCancel.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.cancel", "Annuler les modifications et restaurer l'état initial des affinités.")));
         btnCancel.setOnAction(e -> {
             customAffinityOverrides.clear();
             customAffinityOverrides.putAll(initialAffinityOverridesSnapshot);
@@ -254,7 +254,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
         btnClose.setText(I18n.getOrDefault("common.btn.close", "Fermer"));
         btnClose.getStyleClass().add("button-primary");
         btnClose.setStyle("-fx-font-weight: bold;");
-        btnClose.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.close", "Valider et fermer l'inspecteur des affinitÃ©s culturelles.")));
+        btnClose.setTooltip(new Tooltip(I18n.getOrDefault("cultural.matrix.tooltip.close", "Valider et fermer l'inspecteur des affinités culturelles.")));
         btnClose.setOnAction(e -> {
             if (targetScenario != null) {
                 targetScenario.setCulturalAffinityMatrix(customAffinityOverrides);
@@ -357,7 +357,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
 
     private void updateQuickEditor() {
         if (selectedI < 0 || selectedJ < 0 || selectedI >= activeEntities.size() || selectedJ >= activeEntities.size()) {
-            quickEditorPairLabel.setText("â€” " + I18n.getOrDefault("cultural.matrix.select_cell_hint", "SÃ©lectionnez une cellule de la matrice ci-dessus pour l'Ã©diter."));
+            quickEditorPairLabel.setText("— " + I18n.getOrDefault("cultural.matrix.select_cell_hint", "Sélectionnez une cellule de la matrice ci-dessus pour l'éditer."));
             quickAffinitySlider.setDisable(true);
             quickAffinitySpinner.setDisable(true);
             presetChipsBox.setDisable(true);
@@ -367,7 +367,7 @@ public class CulturalAffinityMatrixDialog extends Stage {
         CulturalEntity e2 = activeEntities.get(selectedJ);
         double aff = getAffinity(e1, e2);
         boolean isDiagonal = (selectedI == selectedJ);
-        quickEditorPairLabel.setText(String.format("ðŸ·ï¸ %s â†’ %s %s", e1.getLocalizedName(), e2.getLocalizedName(), isDiagonal ? "(ðŸ”’ Auto-identitÃ©)" : ""));
+        quickEditorPairLabel.setText(String.format("¸ %s → %s %s", e1.getLocalizedName(), e2.getLocalizedName(), isDiagonal ? "( Auto-identité)" : ""));
 
         isUpdatingEditor = true;
         quickAffinitySlider.setValue(aff * 100.0);

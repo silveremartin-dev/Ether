@@ -125,13 +125,13 @@ public final class PresetDialogAndToastHelper {
             alert.initOwner(ownerWindow);
         }
 
-        alert.setTitle(I18n.getOrDefault("preset.dialog.unsaved_title", "Modifications non enregistrÃ©es"));
+        alert.setTitle(I18n.getOrDefault("preset.dialog.unsaved_title", "Modifications non enregistrées"));
         String rawName = (presetCombo.getValue() != null)
                 ? PresetItemFormatter.formatPresetItem(presetCombo.getValue())
                 : (nameField.getText() != null ? nameField.getText() : "");
-        String cleanName = rawName.replace("(Custom)", "").replace("(PersonnalisÃ©)", "").trim();
+        String cleanName = rawName.replace("(Custom)", "").replace("(Personnalisé)", "").trim();
         if (cleanName.isBlank()) {
-            cleanName = I18n.getOrDefault("preset.name.custom", "PersonnalisÃ©");
+            cleanName = I18n.getOrDefault("preset.name.custom", "Personnalisé");
         }
         alert.setContentText(I18n.get("preset.dialog.unsaved_content", cleanName));
         alert.getButtonTypes().setAll(btnSave, btnDiscard, btnCancel);
@@ -148,7 +148,7 @@ public final class PresetDialogAndToastHelper {
     public static Optional<String> promptSavePresetName(String rawCurrentName) {
         String defaultName = rawCurrentName.isBlank()
                 ? I18n.getOrDefault("preset.dialog.default_name", "My Preset")
-                : rawCurrentName.replace("(Custom)", "").replace("(PersonnalisÃ©)", "").trim();
+                : rawCurrentName.replace("(Custom)", "").replace("(Personnalisé)", "").trim();
         TextInputDialog dialog = new TextInputDialog(defaultName);
         WindowHelper.applyWindowIcon(dialog);
         WindowHelper.styleDialogPane(dialog.getDialogPane());
@@ -176,7 +176,7 @@ public final class PresetDialogAndToastHelper {
         confirm.setTitle(I18n.getOrDefault("preset.dialog.overwrite_title", "Preset Exists"));
         confirm.setHeaderText(I18n.getOrDefault("preset.dialog.overwrite_header", "Replace existing preset"));
         confirm.setContentText(I18n.getOrDefault("preset.dialog.overwrite_content",
-                "Un prÃ©rÃ©glage nommÃ© '" + name + "' existe dÃ©jÃ . Voulez-vous l'Ã©craser ?"));
+                "Un préréglage nommé '" + name + "' existe déjà. Voulez-vous l'écraser ?"));
         Optional<ButtonType> result = confirm.showAndWait();
         return result.isPresent() && result.get() == ButtonType.OK;
     }
@@ -278,7 +278,7 @@ public final class PresetDialogAndToastHelper {
         File file = chooser.showSaveDialog(ownerWindow);
         if (file != null && onExport != null) {
             onExport.accept(file, selected);
-            showToast(toastLabel, I18n.getOrDefault("preset.toast.exported", "ðŸ“¤ Exported: ") + file.getName(),
+            showToast(toastLabel, I18n.getOrDefault("preset.toast.exported", " Exported: ") + file.getName(),
                     "-fx-background-color: rgba(16,185,129,0.9);");
         }
     }
@@ -297,7 +297,7 @@ public final class PresetDialogAndToastHelper {
         File file = chooser.showOpenDialog(ownerWindow);
         if (file != null && onImport != null) {
             onImport.accept(file);
-            showToast(toastLabel, I18n.getOrDefault("preset.toast.imported", "ðŸ“¥ Imported: ") + file.getName(),
+            showToast(toastLabel, I18n.getOrDefault("preset.toast.imported", " Imported: ") + file.getName(),
                     "-fx-background-color: rgba(16,185,129,0.9);");
         }
     }

@@ -36,6 +36,9 @@ All scripts are categorized into modular subdirectories:
 | **`test/`** | `run-scientific-falsification.bat` / `.sh` | CI / Dev Host | N/A \| Falsification \| No | **Epistemic Falsification**: Runs all 24 scientific debate benchmarks (HYDE, EPICA, Seshat). |
 | **`test/`** | `run_historical_bifurcation_benchmarks.bat` / `.sh` | CI / Dev Host | N/A \| Falsification \| No | **Bifurcation Suite**: Runs Turchin SDT, Malthus, Boserup, and Scott state tests. |
 | **`test/`** | `run_cloud_calibration_campaign.bat` / `.sh` | Cloud / HPC | N/A \| HPC Harness \| No | **Calibration Campaign**: Executes parameter sweeps against empirical datasets. |
+| **`test/`** | `audit-architecture-compliance.ps1` / `.sh` | CI / Dev Host | N/A \| Code Audit \| No | **Architecture Compliance**: Enforces <= 500 lines ceiling, zero empty catch, stateless Helper contracts. |
+| **`test/`** | `audit-full-quality-and-naming.ps1` / `.sh` | CI / Dev Host | N/A \| Quality Audit \| No | **Code Quality & Naming**: Audits naming archetypes, Javadoc coverage, English comments, and PRNG determinism. |
+| **`i18n/`** | `audit-i18n-and-hardcoded-strings.ps1` / `.sh` | CI / Dev Host | N/A \| i18n Audit \| No | **Localization & UI Audit**: Verifies 100% key parity across 6 bundles and zero hardcoded UI strings. |
 | **`benchmark/`** | `run-all-benchmarks.bat` / `.sh` | Dev Host / Cloud | N/A \| Benchmark Harness \| No | **5-Axis Master Benchmark**: Evaluates spatial, temporal, SIMD, coupling, and epoch scaling. |
 | **`root`** | `clean_workspace.bat` / `.ps1` / `.sh` | Local Host / CI | N/A \| Maintenance \| No | **Workspace Cleaner**: Safely purges orphan UUID test saves, old logs, and build churn. |
 

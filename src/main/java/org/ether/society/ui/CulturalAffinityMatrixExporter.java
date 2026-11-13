@@ -40,7 +40,7 @@ public final class CulturalAffinityMatrixExporter {
                                        BiFunction<CulturalEntity, CulturalEntity, Double> affinityProvider) {
         if (activeEntities == null || activeEntities.isEmpty()) return;
         FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("cultural.matrix.export_title", "Exporter la Matrice d'AffinitÃ© Culturelle (CSV)"));
+        chooser.setTitle(I18n.getOrDefault("cultural.matrix.export_title", "Exporter la Matrice d'Affinité Culturelle (CSV)"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv"));
         chooser.setInitialFileName("cultural_affinity_matrix_" + Math.abs(currentEpoch) + ".csv");
         File file = chooser.showSaveDialog(owner);
@@ -71,7 +71,7 @@ public final class CulturalAffinityMatrixExporter {
                                         BiFunction<CulturalEntity, CulturalEntity, Double> affinityProvider) {
         if (activeEntities == null || activeEntities.isEmpty()) return;
         FileChooser chooser = new FileChooser();
-        chooser.setTitle(I18n.getOrDefault("cultural.matrix.export_json_title", "Exporter la Matrice d'AffinitÃ© Culturelle (JSON)"));
+        chooser.setTitle(I18n.getOrDefault("cultural.matrix.export_json_title", "Exporter la Matrice d'Affinité Culturelle (JSON)"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON (*.json)", "*.json"));
         chooser.setInitialFileName("cultural_affinity_matrix_" + Math.abs(currentEpoch) + ".json");
         File file = chooser.showSaveDialog(owner);

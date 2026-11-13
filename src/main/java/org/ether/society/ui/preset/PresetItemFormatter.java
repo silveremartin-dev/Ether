@@ -150,7 +150,7 @@ public final class PresetItemFormatter {
                     String dateText = getPresetDateText(item);
                     if (dateText != null && !dateText.isBlank()) {
                         nameLabel.setText(formattedName);
-                        dateLabel.setText("ðŸ“… " + dateText);
+                        dateLabel.setText(" " + dateText);
                         setGraphic(container);
                         setText(null);
                     } else {

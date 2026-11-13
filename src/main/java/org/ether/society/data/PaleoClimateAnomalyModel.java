@@ -53,7 +53,7 @@ public final class PaleoClimateAnomalyModel {
             { -25000.0, -5.6}, // Early LGM
             { -20000.0, -6.2}, // LGM Peak Glaciation
             { -16000.0, -4.5}, // Heinrich Stadial 1
-            { -14500.0, -2.0}, // BÃ¸lling-AllerÃ¸d Interstadial
+            { -14500.0, -2.0}, // B-lling-Aller-d Interstadial
             { -12000.0, -3.5}, // Younger Dryas Cold Stadial
             { -10000.0, -0.5}, // Early Holocene Preboreal
             {  -7000.0,  0.8}, // Holocene Climate Optimum (+0.8A°C)

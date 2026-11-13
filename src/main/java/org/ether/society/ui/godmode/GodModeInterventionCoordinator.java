@@ -94,7 +94,7 @@ public final class GodModeInterventionCoordinator {
         }
 
         String daysUnit = durationDays > 1 ? "jours" : "jour";
-        String details = String.format(Locale.ROOT, "Date: %d-%02d-%02d, Lat: %.2fÂ°, Lng: %.2fÂ°, Mag: %.1f, R: %.0fkm, DurÃ©e: %d %s",
+        String details = String.format(Locale.ROOT, "Date: %d-%02d-%02d, Lat: %.2fÂ°, Lng: %.2fÂ°, Mag: %.1f, R: %.0fkm, Durée: %d %s",
                 targetYear, targetMonth + 1, targetDay, lat, lng, mag, radiusKm, durationDays, daysUnit);
 
         timeline.addEntry(targetYear, type, name, details, true, lat, lng, mag, durationDays);
@@ -175,12 +175,12 @@ public final class GodModeInterventionCoordinator {
         boolean isOcean = nearestCell.getBiome() == Biome.OCEAN || nearestCell.getBiome() == Biome.DEEP_OCEAN;
         if (GodModeDisasterExecutor.isTerrestrialEventType(type) && isOcean) {
             String warnMsg = String.format(Locale.ROOT,
-                    "âš ï¸ IncompatibilitÃ© GÃ©ographique :\nL'Ã©vÃ©nement '%s' (%s) ne peut pas se produire en plein ocÃ©an (Lat: %.2fÂ°, Lng: %.2fÂ°).",
+                    "âš ï¸ Incompatibilité Géographique :\nL'événement '%s' (%s) ne peut pas se produire en plein océan (Lat: %.2fÂ°, Lng: %.2fÂ°).",
                     name, type, lat, lng);
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
-            alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "âš ï¸ Ã‰vÃ©nement incompatible avec le milieu ocÃ©anique"));
-            alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice", "Veuillez sÃ©lectionner des coordonnÃ©es situÃ©es sur la terre ferme."));
+            alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "âš ï¸ Événement incompatible avec le milieu océanique"));
+            alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice", "Veuillez sélectionner des coordonnées situées sur la terre ferme."));
             WindowHelper.applyWindowIcon(alert);
             alert.showAndWait();
             return false;
@@ -188,12 +188,12 @@ public final class GodModeInterventionCoordinator {
         if (GodModeDisasterExecutor.isOceanicEventType(type) && !isOcean
                 && nearestCell.getElevation() != null && nearestCell.getElevation() > 300) {
             String warnMsg = String.format(Locale.ROOT,
-                    "âš ï¸ IncompatibilitÃ© GÃ©ographique :\nL'Ã©vÃ©nement '%s' (%s) nÃ©cessite une zone maritime ou cÃ´tiÃ¨re (Lat: %.2fÂ°, Lng: %.2fÂ°).",
+                    "âš ï¸ Incompatibilité Géographique :\nL'événement '%s' (%s) nécessite une zone maritime ou côtière (Lat: %.2fÂ°, Lng: %.2fÂ°).",
                     name, type, lat, lng);
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle(I18n.getOrDefault("godmode.incompatible.title", "Emplacement Incompatible"));
-            alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "âš ï¸ Ã‰vÃ©nement incompatible avec les hautes terres"));
-            alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice_ocean", "Veuillez sÃ©lectionner des coordonnÃ©es maritimes ou cÃ´tiÃ¨res."));
+            alert.setHeaderText(I18n.getOrDefault("godmode.incompatible.header", "âš ï¸ Événement incompatible avec les hautes terres"));
+            alert.setContentText(warnMsg + "\n\n" + I18n.getOrDefault("godmode.incompatible.advice_ocean", "Veuillez sélectionner des coordonnées maritimes ou côtières."));
             WindowHelper.applyWindowIcon(alert);
             alert.showAndWait();
             return false;
@@ -342,7 +342,7 @@ public final class GodModeInterventionCoordinator {
         timelineListView.getItems().clear();
         String yearPrefix = I18n.getOrDefault("godmode.timeline.year_prefix", "Year");
         String godBadge = I18n.getOrDefault("godmode.timeline.godmode_badge", "âš¡ [GOD MODE]");
-        String histBadge = I18n.getOrDefault("godmode.timeline.historical_badge", "ðŸ“œ [HISTORICAL]");
+        String histBadge = I18n.getOrDefault("godmode.timeline.historical_badge", " [HISTORICAL]");
         for (ScenarioTimeline.TimelineEntry entry : timeline.getEntries()) {
             String badge = entry.isGodModeIntervention() ? godBadge : histBadge;
             timelineListView.getItems().add(String.format("%s %5d | %s %s : %s",

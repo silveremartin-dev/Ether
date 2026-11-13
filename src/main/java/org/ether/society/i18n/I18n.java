@@ -271,21 +271,21 @@ public class I18n {
             return getOrDefault("planet.preset.earth_lig", "Terre (-100 000 / Dernier Interglaciaire)");
         } else if (lower.contains("-50") || lower.contains("mis3") || lower.contains("mis 3") || lower.contains("sahul")) {
             return getOrDefault("planet.preset.earth_mis3", "Terre (-50 000 / Stade Isotopique 3 & Sahul)");
-        } else if (lower.contains("-25") || lower.contains("bÃ©ringie") || lower.contains("beringia")) {
-            return getOrDefault("planet.preset.earth_lgm_onset", "Terre (-25 000 / DÃ©but LGM & BÃ©ringie)");
+        } else if (lower.contains("-25") || lower.contains("béringie") || lower.contains("beringia")) {
+            return getOrDefault("planet.preset.earth_lgm_onset", "Terre (-25 000 / Début LGM & Béringie)");
         } else if (lower.contains("-20") || lower.contains("lgm") || lower.contains("maximum glaciaire") || lower.contains("last glacial maximum") || lower.contains("æœ«æ¬¡ç››å†°æœŸ") || lower.contains("letztes glaziales maximum")) {
             return getOrDefault("planet.preset.earth_lgm", "Terre (-20 000 / Maximum Glaciaire)");
-        } else if (lower.contains("-10000") || lower.contains("-10 000") || lower.contains("eh") || lower.contains("prÃ©coce") || lower.contains("early holocene") || lower.contains("frÃ¼hholozÃ¤n") || lower.contains("æ—©å…¨æ–°ä¸–")) {
-            return getOrDefault("planet.preset.earth_eh", "Terre (-10 000 / HolocÃ¨ne PrÃ©coce)");
-        } else if (lower.contains("-6000") || lower.contains("-6 000") || lower.contains("mh") || lower.contains("sahara") || lower.contains("mid holocene") || lower.contains("ç»¿è‰²æ’’å“ˆæ‹‰") || lower.contains("grÃ¼ne sahara")) {
+        } else if (lower.contains("-10000") || lower.contains("-10 000") || lower.contains("eh") || lower.contains("précoce") || lower.contains("early holocene") || lower.contains("fr-hholoz-n") || lower.contains("æ—©å…¨æ–°ä¸–")) {
+            return getOrDefault("planet.preset.earth_eh", "Terre (-10 000 / Holocène Précoce)");
+        } else if (lower.contains("-6000") || lower.contains("-6 000") || lower.contains("mh") || lower.contains("sahara") || lower.contains("mid holocene") || lower.contains("ç»¿è‰²æ’’å“ˆæ‹‰") || lower.contains("gr-ne sahara")) {
             return getOrDefault("planet.preset.earth_mh", "Terre (-6 000 / Sahara Vert)");
-        } else if (lower.contains("-3000") || lower.contains("-3 000") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene") || lower.contains("spÃ¤tholozÃ¤n") || lower.contains("æ™šå…¨æ–°ä¸–")) {
-            return getOrDefault("planet.preset.earth_lh", "Terre (-3 000 / HolocÃ¨ne Tardif)");
+        } else if (lower.contains("-3000") || lower.contains("-3 000") || lower.contains("lh") || lower.contains("tardif") || lower.contains("late holocene") || lower.contains("sp-tholoz-n") || lower.contains("æ™šå…¨æ–°ä¸–")) {
+            return getOrDefault("planet.preset.earth_lh", "Terre (-3 000 / Holocène Tardif)");
         } else if (lower.contains("-1900") || lower.contains("-1 900") || lower.contains("bronze") || lower.contains("é’é“œæ—¶ä»£")) {
             return getOrDefault("planet.preset.earth_bronze", "Terre (-1 900 / Ã‚ge du Bronze Moyen)");
         } else if (lower.contains("-1000") || lower.contains("-1 000") || lower.contains("iron") || lower.contains("fer") || lower.contains("eisenzeit") || lower.contains("hierro") || lower.contains("é“å™¨æ—¶ä»£")) {
-            return getOrDefault("planet.preset.earth_iron", "Terre (-1 000 / DÃ©but Ã‚ge du Fer)");
-        } else if (lower.contains("2026") || lower.contains("moderne") || lower.contains("modern") || lower.contains("anthropocÃ¨ne") || lower.contains("anthropocene")) {
+            return getOrDefault("planet.preset.earth_iron", "Terre (-1 000 / Début Ã‚ge du Fer)");
+        } else if (lower.contains("2026") || lower.contains("moderne") || lower.contains("modern") || lower.contains("anthropocène") || lower.contains("anthropocene")) {
             return getOrDefault("planet.preset.earth_modern", "Terre (2026 / Moderne)");
         } else if (lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia")) {
             return getOrDefault("planet.preset.super_earth", "Super-Terre (Gaia Prime)");
@@ -293,8 +293,8 @@ public class I18n {
             return getOrDefault("planet.preset.earth", "Terre (Terran)");
         } else if (lower.contains("mars") || lower.contains("ares")) {
             return getOrDefault("planet.preset.mars", "Mars (Ares)");
-        } else if (lower.contains("vÃ©nus") || lower.contains("venus") || lower.contains("hesperos")) {
-            return getOrDefault("planet.preset.venus", "VÃ©nus (Hesperos)");
+        } else if (lower.contains("vénus") || lower.contains("venus") || lower.contains("hesperos")) {
+            return getOrDefault("planet.preset.venus", "Vénus (Hesperos)");
         } else if (lower.contains("titan")) {
             return getOrDefault("planet.preset.titan", "Titan (Cryo-Lune)");
         } else if (lower.contains("lune") || lower.contains("moon") || lower.contains("selene")) {
@@ -303,8 +303,8 @@ public class I18n {
             return getOrDefault("planet.preset.mercury", "Mercure (Hermes)");
         } else if (lower.contains("synchrone") || lower.contains("eyeball") || lower.contains("locked")) {
             return getOrDefault("planet.preset.eyeball", "Monde Synchrone (Eyeball)");
-        } else if (lower.contains("ocÃ©an") || lower.contains("ocean") || lower.contains("oceania")) {
-            return getOrDefault("planet.preset.water", "Monde OcÃ©an (Oceania)");
+        } else if (lower.contains("océan") || lower.contains("ocean") || lower.contains("oceania")) {
+            return getOrDefault("planet.preset.water", "Monde Océan (Oceania)");
         } else if (lower.contains("glaciaire") || lower.contains("ice") || lower.contains("boreas")) {
             return getOrDefault("planet.preset.ice", "Monde Glaciaire (Boreas)");
         } else if (lower.contains("archipel") || lower.contains("archipelago")) {
@@ -324,22 +324,22 @@ public class I18n {
         String descKey = null;
         if (lower.contains("-100") || lower.contains("lig") || lower.contains("interglaciaire") || lower.contains("eemian")) descKey = "planet.preset.earth_lig.desc";
         else if (lower.contains("-50") || lower.contains("mis3") || lower.contains("mis 3") || lower.contains("sahul")) descKey = "planet.preset.earth_mis3.desc";
-        else if (lower.contains("-25") || lower.contains("beringia") || lower.contains("bÃ©ringie")) descKey = "planet.preset.earth_lgm_onset.desc";
+        else if (lower.contains("-25") || lower.contains("beringia") || lower.contains("béringie")) descKey = "planet.preset.earth_lgm_onset.desc";
         else if (lower.contains("-20") || lower.contains("lgm") || lower.contains("maximum glaciaire") || lower.contains("last glacial maximum") || lower.contains("æœ«æ¬¡ç››å†°æœŸ") || lower.contains("letztes glaziales maximum")) descKey = "planet.preset.earth_lgm.desc";
-        else if (lower.contains("-10000") || lower.contains("-10 000") || lower.contains("early holocene") || lower.contains("prÃ©coce") || lower.contains("frÃ¼hholozÃ¤n") || lower.contains("æ—©å…¨æ–°ä¸–")) descKey = "planet.preset.earth_eh.desc";
-        else if (lower.contains("-6000") || lower.contains("-6 000") || lower.contains("sahara") || lower.contains("mid holocene") || lower.contains("ç»¿è‰²æ’’å“ˆæ‹‰") || lower.contains("grÃ¼ne sahara")) descKey = "planet.preset.earth_mh.desc";
-        else if (lower.contains("-3000") || lower.contains("-3 000") || lower.contains("late holocene") || lower.contains("tardif") || lower.contains("spÃ¤tholozÃ¤n") || lower.contains("æ™šå…¨æ–°ä¸–")) descKey = "planet.preset.earth_lh.desc";
+        else if (lower.contains("-10000") || lower.contains("-10 000") || lower.contains("early holocene") || lower.contains("précoce") || lower.contains("fr-hholoz-n") || lower.contains("æ—©å…¨æ–°ä¸–")) descKey = "planet.preset.earth_eh.desc";
+        else if (lower.contains("-6000") || lower.contains("-6 000") || lower.contains("sahara") || lower.contains("mid holocene") || lower.contains("ç»¿è‰²æ’’å“ˆæ‹‰") || lower.contains("gr-ne sahara")) descKey = "planet.preset.earth_mh.desc";
+        else if (lower.contains("-3000") || lower.contains("-3 000") || lower.contains("late holocene") || lower.contains("tardif") || lower.contains("sp-tholoz-n") || lower.contains("æ™šå…¨æ–°ä¸–")) descKey = "planet.preset.earth_lh.desc";
         else if (lower.contains("-1900") || lower.contains("-1 900") || lower.contains("bronze") || lower.contains("é’é“œæ—¶ä»£")) descKey = "planet.preset.earth_bronze.desc";
         else if (lower.contains("-1000") || lower.contains("-1 000") || lower.contains("iron") || lower.contains("fer") || lower.contains("eisenzeit") || lower.contains("hierro") || lower.contains("é“å™¨æ—¶ä»£")) descKey = "planet.preset.earth_iron.desc";
-        else if (lower.contains("2026") || lower.contains("modern") || lower.contains("moderne") || lower.contains("anthropocÃ¨ne") || lower.contains("anthropocene")) descKey = "planet.preset.earth_modern.desc";
+        else if (lower.contains("2026") || lower.contains("modern") || lower.contains("moderne") || lower.contains("anthropocène") || lower.contains("anthropocene")) descKey = "planet.preset.earth_modern.desc";
         else if (lower.contains("super-terre") || lower.contains("super-earth") || lower.contains("gaia")) descKey = "planet.preset.super_earth.desc";
         else if (lower.contains("mars") || lower.contains("ares")) descKey = "planet.preset.mars.desc";
-        else if (lower.contains("venus") || lower.contains("vÃ©nus") || lower.contains("hesperos")) descKey = "planet.preset.venus.desc";
+        else if (lower.contains("venus") || lower.contains("vénus") || lower.contains("hesperos")) descKey = "planet.preset.venus.desc";
         else if (lower.contains("titan")) descKey = "planet.preset.titan.desc";
         else if (lower.contains("moon") || lower.contains("lune") || lower.contains("selene")) descKey = "planet.preset.moon.desc";
         else if (lower.contains("mercury") || lower.contains("mercure") || lower.contains("hermes")) descKey = "planet.preset.mercury.desc";
         else if (lower.contains("synchrone") || lower.contains("eyeball") || lower.contains("locked")) descKey = "planet.preset.eyeball.desc";
-        else if (lower.contains("ocÃ©an") || lower.contains("ocean") || lower.contains("oceania")) descKey = "planet.preset.water.desc";
+        else if (lower.contains("océan") || lower.contains("ocean") || lower.contains("oceania")) descKey = "planet.preset.water.desc";
         else if (lower.contains("glaciaire") || lower.contains("ice") || lower.contains("boreas")) descKey = "planet.preset.ice.desc";
         else if (lower.contains("archipel") || lower.contains("archipelago")) descKey = "planet.preset.archipelago.desc";
         else if (lower.contains("terre") || lower.contains("terran") || lower.contains("earth")) descKey = "planet.preset.earth_modern.desc";
@@ -368,11 +368,11 @@ public class I18n {
     public static String getBiomeDisplayName(org.ether.society.model.Biome biome) {
         if (biome == null) return "";
         return switch (biome) {
-            case OCEAN -> getOrDefault("biome.ocean", "OcÃ©an");
-            case DEEP_OCEAN -> getOrDefault("biome.deep_ocean", "OcÃ©an Profond");
+            case OCEAN -> getOrDefault("biome.ocean", "Océan");
+            case DEEP_OCEAN -> getOrDefault("biome.deep_ocean", "Océan Profond");
             case PLAINS -> getOrDefault("biome.plains", "Plaine");
-            case FOREST -> getOrDefault("biome.forest", "ForÃªt");
-            case DESERT -> getOrDefault("biome.desert", "DÃ©sert");
+            case FOREST -> getOrDefault("biome.forest", "Forêt");
+            case DESERT -> getOrDefault("biome.desert", "Désert");
             case SNOW -> getOrDefault("biome.snow", "Neige");
             case TUNDRA -> getOrDefault("biome.tundra", "Toundra");
             case HILLS -> getOrDefault("biome.hills", "Collines");

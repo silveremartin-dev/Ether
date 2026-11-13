@@ -213,12 +213,12 @@ public class StructuralDemographicBifurcationEngine extends AbstractSimulationEn
     public String getEquationsTooltip() {
         return """
                [Turchin-Goldstone Structural Demographic Bifurcation Model]
-               â€¢ Political Stress Index:  PSI = MMP Â· EMP Â· SF
-               â€¢ Mass Immiseration:       MMP = (Food_req / Food_avail) Â· (P / CarryingCapacity)
-               â€¢ Elite Overproduction:    EMP = (Capital / BaseCapital) Â· GiniÂ²
-               â€¢ State Fiscal Distress:   SF  = 1.0 + 1.5 / (1.0 + exp(-0.01 Â· (Capital - 500)))
-               â€¢ Poisson Jump Hazard:     Î»_crisis = Î»â‚€ Â· exp(Îº Â· max(0, PSI - PSI_crit))
-               â€¢ Crisis Dissipation:      Î”Gini = -30%, Î”Capital = -25%, Î”Mortality = +15%
+               • Political Stress Index:  PSI = MMP Â· EMP Â· SF
+               • Mass Immiseration:       MMP = (Food_req / Food_avail) Â· (P / CarryingCapacity)
+               • Elite Overproduction:    EMP = (Capital / BaseCapital) Â· GiniÂ²
+               • State Fiscal Distress:   SF  = 1.0 + 1.5 / (1.0 + exp(-0.01 Â· (Capital - 500)))
+               • Poisson Jump Hazard:     Î»_crisis = Î»â‚€ Â· exp(Îº Â· max(0, PSI - PSI_crit))
+               • Crisis Dissipation:      Î”Gini = -30%, Î”Capital = -25%, Î”Mortality = +15%
                Ref: P. Turchin (2016) "Ages of Discord", W. Scheidel (2017) "The Great Leveler"
                """;
     }

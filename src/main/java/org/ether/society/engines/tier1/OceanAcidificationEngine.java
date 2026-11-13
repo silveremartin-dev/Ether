@@ -17,11 +17,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Ocean Acidification, Henry's Law COÃ¢â€šâ€š Solubility & Marine Carbon Pump Engine.
+ * Ocean Acidification, Henry's Law CO-â€šâ€š Solubility & Marine Carbon Pump Engine.
  * 
  * <h2>Fundamental Model Physics Equations</h2>
  * <ul>
- *   <li><b>Henry's Law for COÃ¢â€šâ€š Gas Dissolution</b>:
+ *   <li><b>Henry's Law for CO-â€šâ€š Gas Dissolution</b>:
  *       $$[\text{CO}_{2,\text{aq}}] = K_H(T) \cdot p_{\text{CO}_2}$$
  *       $$K_H(T) = K_0 \cdot \exp\left( \frac{-\Delta H_{\text{sol}}}{R} \left( \frac{1}{T_K} - \frac{1}{T_0} \right) \right)$$
  *   </li>

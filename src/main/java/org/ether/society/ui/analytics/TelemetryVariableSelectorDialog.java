@@ -43,48 +43,48 @@ public class TelemetryVariableSelectorDialog extends Dialog<Set<String>> {
     private static final Map<String, TelemetryVariableMeta> AVAILABLE_VARIABLES = new LinkedHashMap<>();
 
     static {
-        // ðŸ‘¥ DÃ©mographie & SociÃ©tÃ©
-        register("population", "Population Humaine", "ðŸ‘¥ DÃ©mographie", "Taille absolue du stock dÃ©mographique mondial");
-        register("fertilityRate", "Taux de FÃ©conditÃ©", "ðŸ‘¥ DÃ©mographie", "Nombre moyen d'enfants par femme");
-        register("lifeExpectancy", "EspÃ©rance de Vie", "ðŸ‘¥ DÃ©mographie", "EspÃ©rance de vie moyenne Ã  la naissance (annÃ©es)");
-        register("urbanizationRate", "Taux d'Urbanisation", "ðŸ‘¥ DÃ©mographie", "Part de la population rÃ©sidant dans des pÃ´les urbains (%)");
-        register("literacyRate", "Taux d'AlphabÃ©tisation", "ðŸ‘¥ DÃ©mographie", "Proportion de la population sachant lire et Ã©crire (%)");
+        // 👥 Démographie & Société
+        register("population", "Population Humaine", "👥 Démographie", "Taille absolue du stock démographique mondial");
+        register("fertilityRate", "Taux de Fécondité", "👥 Démographie", "Nombre moyen d'enfants par femme");
+        register("lifeExpectancy", "Espérance de Vie", "👥 Démographie", "Espérance de vie moyenne à la naissance (années)");
+        register("urbanizationRate", "Taux d'Urbanisation", "👥 Démographie", "Part de la population résidant dans des pôles urbains (%)");
+        register("literacyRate", "Taux d'Alphabétisation", "👥 Démographie", "Proportion de la population sachant lire et écrire (%)");
 
-        // ðŸ’° Ã‰conomie & Macro-Production
-        register("gdpTotal", "PIB Mondial (GWP)", "ðŸ’° Ã‰conomie", "Produit intÃ©rieur brut mondial agrÃ©gÃ© (Int$ 1990)");
-        register("giniIndex", "Coefficient de Gini", "ðŸ’° Ã‰conomie", "Indice d'inÃ©galitÃ© de distribution de la richesse");
-        register("realUnskilledWage", "Salaire RÃ©el Non QualifiÃ©", "ðŸ’° Ã‰conomie", "Indice du pouvoir d'achat du travailleur de subsistance");
-        register("globalTradeVolume", "Volume du Commerce Global", "ðŸ’° Ã‰conomie", "IntensitÃ© des Ã©changes marchands inter-rÃ©gionaux");
-        register("shippingFreightCostIndex", "CoÃ»t du Fret Maritime", "ðŸ’° Ã‰conomie", "Indice de coÃ»t de transport maritime au mille marin");
+        //  Économie & Macro-Production
+        register("gdpTotal", "PIB Mondial (GWP)", " Économie", "Produit intérieur brut mondial agrégé (Int$ 1990)");
+        register("giniIndex", "Coefficient de Gini", " Économie", "Indice d'inégalité de distribution de la richesse");
+        register("realUnskilledWage", "Salaire Réel Non Qualifié", " Économie", "Indice du pouvoir d'achat du travailleur de subsistance");
+        register("globalTradeVolume", "Volume du Commerce Global", " Économie", "Intensité des échanges marchands inter-régionaux");
+        register("shippingFreightCostIndex", "Co-t du Fret Maritime", " Économie", "Indice de co-t de transport maritime au mille marin");
 
-        // aš¡ Ã‰nergie, MÃ©tabolisme & MatiÃ¨re
-        register("energyCaptured", "Ã‰nergie Primaire CapturÃ©e", "âš¡ Ã‰nergie", "Flux d'exergie brute soutirÃ© Ã  la biosphÃ¨re (MW)");
-        register("energyPerCapita", "Ã‰nergie par Habitant", "âš¡ Ã‰nergie", "Consommation primaire par individu (MJ/hab/an)");
-        register("fossilSharePrimaryEnergy", "Part des Ã‰nergies Fossiles", "âš¡ Ã‰nergie", "Proportion d'Ã©nergie issue du charbon et pÃ©trole (%)");
-        register("eroiAlim", "EROEI Alimentaire", "âš¡ Ã‰nergie", "Rendement Ã©nergÃ©tique net de la production agricole (E_out / E_in)");
-        register("metalSmeltingPerCapita", "MÃ©tallurgie par Habitant", "âš¡ Ã‰nergie", "Production d'acier, fer et mÃ©taux raffinÃ©s (kg/hab)");
+        // aš¡ Énergie, Métabolisme & Matière
+        register("energyCaptured", "Énergie Primaire Capturée", "âš¡ Énergie", "Flux d'exergie brute soutiré à la biosphère (MW)");
+        register("energyPerCapita", "Énergie par Habitant", "âš¡ Énergie", "Consommation primaire par individu (MJ/hab/an)");
+        register("fossilSharePrimaryEnergy", "Part des Énergies Fossiles", "âš¡ Énergie", "Proportion d'énergie issue du charbon et pétrole (%)");
+        register("eroiAlim", "EROEI Alimentaire", "âš¡ Énergie", "Rendement énergétique net de la production agricole (E_out / E_in)");
+        register("metalSmeltingPerCapita", "Métallurgie par Habitant", "âš¡ Énergie", "Production d'acier, fer et métaux raffinés (kg/hab)");
 
-        // ðŸ›i¸ Institutions & ThÃ©orie Structurelle-DÃ©mographique (SDT)
-        register("politicalStressIndex", "Indice de Stress Politique (PSI)", "ðŸ›ï¸ Institutions", "Pression de crise institutionnelle selon Turchin");
-        register("eliteOverproduction", "Surproduction des Ã‰lites", "ðŸ›ï¸ Institutions", "CompÃ©tition intra-Ã©lite pour les postes de pouvoir");
-        register("currencyDebasement", "DÃ©prÃ©ciation MonÃ©taire", "ðŸ›ï¸ Institutions", "Perte de titre mÃ©tallique et dÃ©valuation de la monnaie");
-        register("asabiyyah", "CohÃ©sion Sociale (Asabiyyah)", "ðŸ›ï¸ Institutions", "CapacitÃ© d'action collective selon Ibn Khaldun");
-        register("sovereignDebtBurden", "Dette Souveraine", "ðŸ›ï¸ Institutions", "Poids de l'endettement public par rapport au produit fiscal");
+        // ¸ Institutions & Théorie Structurelle-Démographique (SDT)
+        register("politicalStressIndex", "Indice de Stress Politique (PSI)", "¸ Institutions", "Pression de crise institutionnelle selon Turchin");
+        register("eliteOverproduction", "Surproduction des Élites", "¸ Institutions", "Compétition intra-élite pour les postes de pouvoir");
+        register("currencyDebasement", "Dépréciation Monétaire", "¸ Institutions", "Perte de titre métallique et dévaluation de la monnaie");
+        register("asabiyyah", "Cohésion Sociale (Asabiyyah)", "¸ Institutions", "Capacité d'action collective selon Ibn Khaldun");
+        register("sovereignDebtBurden", "Dette Souveraine", "¸ Institutions", "Poids de l'endettement public par rapport au produit fiscal");
 
-        // ðŸŒ¿ Environnement & Cycles PlanÃ©taires
-        register("carbonFootprint", "Concentration CO2 AtmosphÃ©rique", "ðŸŒ¿ Environnement", "Teneur en dioxyde de carbone atmosphÃ©rique (ppm)");
-        register("temperatureAnomaly", "Anomalie Thermique", "ðŸŒ¿ Environnement", "Ã‰cart de tempÃ©rature par rapport Ã  la moyenne prÃ©industrielle (Â°C)");
-        register("soilNPK", "Ã‰rosion & QualitÃ© des Sols", "ðŸŒ¿ Environnement", "Teneur en macronutriments N-P-K et Ã©rosion du sol superficiel");
-        register("forestCoverRemaining", "Couverture ForestiÃ¨re Restante", "ðŸŒ¿ Environnement", "Pourcentage de rÃ©tention forestiÃ¨re post-glaciaire (%)");
-        register("megafaunaIndex", "Biomasse MÃ©gafaune", "ðŸŒ¿ Environnement", "Survie des grands herbivores et prÃ©dateurs (>44 kg)");
+        // 🌿 Environnement & Cycles Planétaires
+        register("carbonFootprint", "Concentration CO2 Atmosphérique", "🌿 Environnement", "Teneur en dioxyde de carbone atmosphérique (ppm)");
+        register("temperatureAnomaly", "Anomalie Thermique", "🌿 Environnement", "Écart de température par rapport à la moyenne préindustrielle (Â°C)");
+        register("soilNPK", "Érosion & Qualité des Sols", "🌿 Environnement", "Teneur en macronutriments N-P-K et érosion du sol superficiel");
+        register("forestCoverRemaining", "Couverture Forestière Restante", "🌿 Environnement", "Pourcentage de rétention forestière post-glaciaire (%)");
+        register("megafaunaIndex", "Biomasse Mégafaune", "🌿 Environnement", "Survie des grands herbivores et prédateurs (>44 kg)");
 
-        // aš¡ RÃ©seaux & Information
-        register("informationSpeed", "Vitesse de l'Information", "âš¡ RÃ©seaux", "Vitesse de propagation des dÃ©pÃªches et savoirs (km/jour)");
-        register("systemInterdependence", "InterdÃ©pendance SystÃ©mique", "âš¡ RÃ©seaux", "ConnectivitÃ© et vulnÃ©rabilitÃ© aux cascades de rupture");
+        // aš¡ Réseaux & Information
+        register("informationSpeed", "Vitesse de l'Information", "âš¡ Réseaux", "Vitesse de propagation des dépêches et savoirs (km/jour)");
+        register("systemInterdependence", "Interdépendance Systémique", "âš¡ Réseaux", "Connectivité et vulnérabilité aux cascades de rupture");
 
-        // ðŸ—ºi¸ Cartographie Spatiale 2D & Matrices Culturelles
-        register("spatialMap2D", "Rasters Spatiaux 2D (Champs Physiques)", "ðŸ—ºï¸ Cartographie & Matrices", "Extraction et rendu 2D des champs de densitÃ©, capital et biomasse");
-        register("culturalMatrix", "Matrice Culturelle (N Ã— N AffinitÃ©s)", "ðŸ—ºï¸ Cartographie & Matrices", "Calcul des affinitÃ©s ethnolinguistiques, dÃ©rive culturelle et polarisation");
+        // ¸ Cartographie Spatiale 2D & Matrices Culturelles
+        register("spatialMap2D", "Rasters Spatiaux 2D (Champs Physiques)", "¸ Cartographie & Matrices", "Extraction et rendu 2D des champs de densité, capital et biomasse");
+        register("culturalMatrix", "Matrice Culturelle (N Ã— N Affinités)", "¸ Cartographie & Matrices", "Calcul des affinités ethnolinguistiques, dérive culturelle et polarisation");
     }
 
     private static void register(String id, String label, String category, String description) {
@@ -96,8 +96,8 @@ public class TelemetryVariableSelectorDialog extends Dialog<Set<String>> {
 
     public TelemetryVariableSelectorDialog(Set<String> currentlyActiveIds) {
         initModality(Modality.APPLICATION_MODAL);
-        setTitle(I18n.getOrDefault("telemetry.dialog.title", "âš™ï¸ Configuration de la TÃ©lÃ©mÃ©trie en Temps RÃ©el"));
-        setHeaderText(I18n.getOrDefault("telemetry.dialog.header", "SÃ©lectionnez les variables Ã  calculer et afficher en direct pendant la simulation"));
+        setTitle(I18n.getOrDefault("telemetry.dialog.title", "âš™ï¸ Configuration de la Télémétrie en Temps Réel"));
+        setHeaderText(I18n.getOrDefault("telemetry.dialog.header", "Sélectionnez les variables à calculer et afficher en direct pendant la simulation"));
 
         VBox contentBox = new VBox(14);
         contentBox.setPadding(new Insets(16));

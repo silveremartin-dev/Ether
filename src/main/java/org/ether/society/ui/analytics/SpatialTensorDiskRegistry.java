@@ -82,21 +82,21 @@ public final class SpatialTensorDiskRegistry {
             }
         }
         String chLower = ch.toLowerCase(Locale.ROOT);
-        if (chLower.contains("technolog") || chLower.contains("outillage") || chLower.contains("Ã§Â§â€˜Ã¦Å â‚¬")) return "technology";
-        if (chLower.contains("tempÃƒÂ©rat") || chLower.contains("temperat") || chLower.contains("climat") || chLower.contains("Ã¦Â°â€Ã¦Â¸Â©")) return "temperature";
-        if (chLower.contains("aquif") || chLower.contains("eau") || chLower.contains("water") || chLower.contains("Ã¥ÂÂ«Ã¦Â°Â´Ã¥Â±â€š")) return "aquifers";
-        if (chLower.contains("biom") || chLower.contains("agricul") || chLower.contains("biomass") || chLower.contains("Ã¥â€ Å“Ã¤Â¸Å¡")) return "biomes";
-        if (chLower.contains("souverain") || chLower.contains("sovereign") || chLower.contains("politi") || chLower.contains("fronti") || chLower.contains("border") || chLower.contains("Ã¤Â¸Â»Ã¦ÂÆ’")) return "sovereignty";
-        if (chLower.contains("isogloss") || chLower.contains("linguist") || chLower.contains("lang") || chLower.contains("Ã¨Â¯Â­Ã¨Â¨â‚¬")) return "isogloss";
-        if (chLower.contains("parent") || chLower.contains("kinship") || chLower.contains("famill") || chLower.contains("Ã¤ÂºÂ²Ã¥Â±Å¾")) return "kinship";
-        if (chLower.contains("rituel") || chLower.contains("ritual") || chLower.contains("croyan") || chLower.contains("belief") || chLower.contains("Ã¤Â¿Â¡Ã¤Â»Â°")) return "rituals";
-        if (chLower.contains("commerc") || chLower.contains("trade") || chLower.contains("route") || chLower.contains("Ã¨Â´Â¸Ã¦Ëœâ€œ")) return "tradenetwork";
-        if (chLower.contains("institut") || chLower.contains("seshat") || chLower.contains("Ã¥Ë†Â¶Ã¥ÂºÂ¦")) return "institutional";
-        if (chLower.contains("ÃƒÂ©colog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("Ã§â€Å¸Ã¦â‚¬Â")) return "ecological";
-        if (chLower.contains("pathog") || chLower.contains("sanit") || chLower.contains("immunit") || chLower.contains("health") || chLower.contains("zoonot") || chLower.contains("Ã§â€”â€¦Ã¥Å½Å¸")) return "pathogen";
-        if (chLower.contains("prÃƒÂ©cipit") || chLower.contains("precipit") || chLower.contains("pluie") || chLower.contains("rainfall") || chLower.contains("Ã©â„¢ÂÃ¦Â°Â´")) return "precipitation";
-        if (chLower.contains("ÃƒÂ©lÃƒÂ©vat") || chLower.contains("elevat") || chLower.contains("altitude") || chLower.contains("relief") || chLower.contains("Ã¦ÂµÂ·Ã¦â€¹â€")) return "elevation";
-        if (chLower.contains("saison") || chLower.contains("season") || chLower.contains("Ã¥Â­Â£Ã¨Å â€š")) return "seasonality";
+        if (chLower.contains("technolog") || chLower.contains("outillage") || chLower.contains("çÂ§â€˜-Å â‚¬")) return "technology";
+        if (chLower.contains("tempÃƒÂ©rat") || chLower.contains("temperat") || chLower.contains("climat") || chLower.contains("-Â°”-Â¸Â©")) return "temperature";
+        if (chLower.contains("aquif") || chLower.contains("eau") || chLower.contains("water") || chLower.contains("-ÂÂ«-Â°Â´-Â±â€š")) return "aquifers";
+        if (chLower.contains("biom") || chLower.contains("agricul") || chLower.contains("biomass") || chLower.contains("-â€ Å“-Â¸Å¡")) return "biomes";
+        if (chLower.contains("souverain") || chLower.contains("sovereign") || chLower.contains("politi") || chLower.contains("fronti") || chLower.contains("border") || chLower.contains("-Â¸Â»-ÂÆ’")) return "sovereignty";
+        if (chLower.contains("isogloss") || chLower.contains("linguist") || chLower.contains("lang") || chLower.contains("èÂ¯Â­èÂ¨â‚¬")) return "isogloss";
+        if (chLower.contains("parent") || chLower.contains("kinship") || chLower.contains("famill") || chLower.contains("-ÂºÂ²-Â±Å¾")) return "kinship";
+        if (chLower.contains("rituel") || chLower.contains("ritual") || chLower.contains("croyan") || chLower.contains("belief") || chLower.contains("-Â¿Â¡-Â»Â°")) return "rituals";
+        if (chLower.contains("commerc") || chLower.contains("trade") || chLower.contains("route") || chLower.contains("èÂ´Â¸-Ëœ“")) return "tradenetwork";
+        if (chLower.contains("institut") || chLower.contains("seshat") || chLower.contains("-Ë†Â¶-ÂºÂ¦")) return "institutional";
+        if (chLower.contains("ÃƒÂ©colog") || chLower.contains("ecolog") || chLower.contains("empreint") || chLower.contains("footprint") || chLower.contains("ç”Å¸-â‚¬Â")) return "ecological";
+        if (chLower.contains("pathog") || chLower.contains("sanit") || chLower.contains("immunit") || chLower.contains("health") || chLower.contains("zoonot") || chLower.contains("ç—…-Å½Å¸")) return "pathogen";
+        if (chLower.contains("prÃƒÂ©cipit") || chLower.contains("precipit") || chLower.contains("pluie") || chLower.contains("rainfall") || chLower.contains("é™Â-Â°Â´")) return "precipitation";
+        if (chLower.contains("ÃƒÂ©lÃƒÂ©vat") || chLower.contains("elevat") || chLower.contains("altitude") || chLower.contains("relief") || chLower.contains("-ÂµÂ·-â€¹”")) return "elevation";
+        if (chLower.contains("saison") || chLower.contains("season") || chLower.contains("-Â­Â£èÅ â€š")) return "seasonality";
 
         String customSlug = chLower.replaceAll("[^a-z0-9_]+", "_").replaceAll("^_+|_+$", "");
         return customSlug.isBlank() ? "density" : customSlug;
