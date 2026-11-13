@@ -210,14 +210,17 @@ public class PreComputePhase {
                     + "' (year " + startYear + "). Procedural population fallback is forbidden for Earth.");
         }
 
-        long effectiveWorldPop = totalPop;
-        if (effectiveWorldPop <= 0) {
+        long effectiveWorldPop;
+        if (scenario.isClippingEnabled()) {
             double wp = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
                     "worldPopulation", (double) startYear, InterpolationMethod.PCHIP_MONOTONE_CUBIC);
-            if (wp > 0.0 && !Double.isNaN(wp)) {
-                effectiveWorldPop = Math.round(wp * 1_000_000.0);
-            } else {
-                effectiveWorldPop = 5_000_000L;
+            effectiveWorldPop = (wp > 0.0 && !Double.isNaN(wp)) ? Math.round(wp * 1_000_000.0) : 232_000_000L;
+        } else {
+            effectiveWorldPop = totalPop;
+            if (effectiveWorldPop <= 0) {
+                double wp = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
+                        "worldPopulation", (double) startYear, InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+                effectiveWorldPop = (wp > 0.0 && !Double.isNaN(wp)) ? Math.round(wp * 1_000_000.0) : 5_000_000L;
             }
         }
 

@@ -46,6 +46,8 @@ public class SimulationTimeCoordinator {
     private int currentDay;   // 1-30
     /** Internal state: total ticks (long). */
     private long totalTicks;
+    /** Current canonical simulation time step. */
+    private SimulationTimeStep timeStep = SimulationTimeStep.ofDays(30.0);
 
     /**
      * Creates a SimulationTimeCoordinator starting at the specified year.
@@ -57,6 +59,33 @@ public class SimulationTimeCoordinator {
         this.currentMonth = 0;
         this.currentDay = 1;
         this.totalTicks = 0;
+    }
+
+    /**
+     * Gets the active canonical simulation time step.
+     *
+     * @return current {@link SimulationTimeStep}
+     */
+    public SimulationTimeStep getTimeStep() {
+        return timeStep;
+    }
+
+    /**
+     * Sets the active canonical simulation time step.
+     *
+     * @param timeStep non-null time step representation
+     */
+    public void setTimeStep(SimulationTimeStep timeStep) {
+        if (timeStep != null) {
+            this.timeStep = timeStep;
+        }
+    }
+
+    /**
+     * Advances time by one discrete canonical simulation time step.
+     */
+    public void advanceTick() {
+        advanceDays((int) Math.round(timeStep.dtDays()));
     }
 
     /**

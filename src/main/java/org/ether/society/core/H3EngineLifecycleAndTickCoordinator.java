@@ -77,6 +77,8 @@ final class H3EngineLifecycleAndTickCoordinator {
         }
 
         engine.cells = cells;
+        double dtDays = (scenario != null && scenario.getTemporalResolutionDays() > 0) ? scenario.getTemporalResolutionDays() : 30.0;
+        engine.timeManager.setTimeStep(SimulationTimeStep.ofDays(dtDays));
         engine.timeManager.reset((int) scenario.getStartDateYear());
         engine.firedScenarioEventKeys.clear();
 
@@ -224,14 +226,13 @@ final class H3EngineLifecycleAndTickCoordinator {
         engine.lastTickTime = tickStartNanos;
 
         try {
-            int stepDays = (engine.currentScenario != null && engine.currentScenario.getTemporalResolutionDays() > 0)
-                    ? (int) Math.round(engine.currentScenario.getTemporalResolutionDays()) : 1;
-            stepDays = Math.max(1, stepDays);
-            final float dtTick = stepDays * 86400f;
+            SimulationTimeStep step = engine.timeManager.getTimeStep();
+            int stepDays = Math.max(1, (int) Math.round(step.dtDays()));
+            final float dtTick = (float) step.dtSeconds();
 
             // 1. Fast-scale temporal advancement
             int yearBeforeTick = engine.timeManager.getCurrentYear();
-            engine.timeManager.advanceDays(stepDays);
+            engine.timeManager.advanceTick();
             boolean yearChanged = (engine.timeManager.getCurrentYear() != yearBeforeTick);
             engine.profiler.endPhase("1_FastScaleFlux");
 

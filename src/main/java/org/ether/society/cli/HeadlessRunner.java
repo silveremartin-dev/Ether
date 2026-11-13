@@ -129,10 +129,9 @@ public class HeadlessRunner {
             if (engine.getHistoryManager() != null) {
                 engine.getHistoryManager().configureTargetCadence(ticksToRun, opts.maxSnapshots);
             }
-            double dtDays = scenario.getTemporalResolutionDays() > 0 ? scenario.getTemporalResolutionDays() : 30.0;
-            long durYears = Math.max(1, scenario.getEndDateYear() - scenario.getStartDateYear());
-            long sampIntervalYears = Math.max(1, Math.min(20, durYears / 25));
-            int ticksPerSamp = Math.max(1, (int) Math.round((sampIntervalYears * 365.25) / dtDays));
+            // Calibrate telemetry sampling interval against actual run length to guarantee uniform sampling
+            int targetSnapshots = Math.max(1, opts.maxSnapshots);
+            int ticksPerSamp = Math.max(1, ticksToRun / targetSnapshots);
             engine.setTelemetrySubscription(org.ether.society.core.telemetry.TelemetrySubscription.allCanonicalBenchmarks(ticksPerSamp));
 
             SimulationProfiler profiler = engine.getProfiler();
