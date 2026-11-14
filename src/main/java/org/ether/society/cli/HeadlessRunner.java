@@ -274,13 +274,40 @@ public class HeadlessRunner {
                     List.of(item),
                     org.ether.society.analytics.HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC,
                     ignored -> finalRun);
-            System.out.println(audit.reportMarkdown());
+
+            // 2D Spatial Fidelity Evaluation directly against end-state raster on disk
+            StringBuilder fullReport = new StringBuilder(audit.reportMarkdown());
+            try {
+                int endYear = (int) scenario.getEndDateYear();
+                var endCells = finalRun.getSpatialSnapshotAt(endYear);
+                if (endCells == null || endCells.isEmpty()) {
+                    endCells = engine.getCells();
+                }
+                var spatialComp = org.ether.society.analytics.SpatialRasterFidelityAuditHelper
+                        .evaluateEndStateRasterFidelity(endCells, scenario, endYear);
+                fullReport.append("\n## 🗺️ 4. End-State 2D Empirical Spatial Raster Fidelity\n\n");
+                fullReport.append(String.format(java.util.Locale.US,
+                        "| Horizon Year | Spatial Pearson r | SSIM | Jaccard Overlap | Dice Coeff | Spatial RMSE | Max Cell Delta | Lat/Lng Peak Delta |\n"));
+                fullReport.append("|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n");
+                fullReport.append(String.format(java.util.Locale.US,
+                        "| %d | **%+.3f** | **%.3f** | **%.1f%%** | **%.1f%%** | %.2f | %.1f hab/km² | [%.2f°, %.2f°] |\n\n",
+                        endYear, spatialComp.getPearsonR(), spatialComp.getSsim(),
+                        spatialComp.getJaccardIndex() * 100.0, spatialComp.getDiceCoefficient() * 100.0,
+                        spatialComp.getRmse(), spatialComp.getMaxDeltaValue(),
+                        spatialComp.getMaxDeltaLat(), spatialComp.getMaxDeltaLng()));
+                fullReport.append("> **Ground-Truth Source**: Direct disk comparison against `earth_").append(endYear)
+                        .append("_density.png` without external databases.\n\n");
+            } catch (Exception se) {
+                logger.warn("Could not compute end-state spatial comparison: {}", se.getMessage());
+            }
+
+            System.out.println(fullReport.toString());
 
             java.nio.file.Path reportsDir = java.nio.file.Paths.get("docs/reports");
             java.nio.file.Files.createDirectories(reportsDir);
             String safeFile = saveTarget.replaceAll("[^a-zA-Z0-9._-]", "_");
             java.nio.file.Path outFile = reportsDir.resolve("headless_report_" + safeFile + ".md");
-            java.nio.file.Files.writeString(outFile, audit.reportMarkdown(), java.nio.charset.StandardCharsets.UTF_8);
+            java.nio.file.Files.writeString(outFile, fullReport.toString(), java.nio.charset.StandardCharsets.UTF_8);
             System.out.println("Headless comparative report written to: " + outFile.toAbsolutePath());
         } catch (Exception e) {
             logger.warn("Could not generate headless comparative report: {}", e.getMessage());
