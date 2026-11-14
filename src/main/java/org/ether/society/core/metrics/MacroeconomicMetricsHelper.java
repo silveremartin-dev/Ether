@@ -73,7 +73,7 @@ public final class MacroeconomicMetricsHelper {
      * @return coinage silver purity in $[0.0, 99.0]$ %
      */
     public double getCurrencyDebasement() {
-        double stability = aggregator.getHappinessIndex();
+        double stability = aggregator.getAsabiyyahSocialCohesionScore() * 100.0;
         return org.ether.society.analytics.CliodynamicFormulasRegistry.computeCurrencyDebasement(
                 computePhysicalExergyCapitalIndex(), stability);
     }
