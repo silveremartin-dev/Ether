@@ -275,16 +275,17 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 11: Cellular Groundwater Extraction Dimensional Scaling
+### Entry 11: Non-Linear Boussinesq Groundwater Mesh Closure & Darcy Transmissivity on H3 Hexagons
 * **Subsystem**: `AquiferDepletionEngine.java`
 * **Canonical Literature**:
   * Wada, Y., et al. (2010). *Global depletion of groundwater resources*. Geophysical Research Letters, 37(20), L20402.
   * Margat, J., & van der Gun, J. (2013). *Groundwater around the World: A Geographic Synopsis*. CRC Press / UNESCO.
 * **Canonical Published Formulation**:
-  * Global hydrological models report groundwater abstraction at national or regional basin scales in volumetric units: $V_{\text{abs}}$ [$\text{km}^3/\text{year}$].
+  * Continuous 2D non-linear Boussinesq PDE $\nabla \cdot (T \nabla h) + R - W = S_s \frac{\partial h}{\partial t}$ solved on structured Cartesian rasters ($0.5^\circ \times 0.5^\circ$) or macro-watershed compartments with volumetric withdrawals $V_{\text{abs}}$ [$\text{km}^3/\text{year}$].
 * **Calibrated Ether Formulation**:
-  $$W_i = \frac{N_i \cdot w_{\text{crop}}(k_{\text{pc}})}{A_{\text{cell}}} \cdot \eta_{\text{pump}}(p, k_{\text{pc}}) \quad [\text{mm/year}]$$
-  $$\frac{\partial h_i}{\partial t} = \frac{1}{S_s} \left[ \sum_{j \in \text{H3Neighbors}} T_{ij} \frac{h_j - h_i}{d_{ij}} + R_{\text{recharge}, i} - W_i \right]$$
+  * Discretized across spherical geodesic hexagonal neighbors with distance-weighted Darcy transmissivity and resolution-invariant intensive withdrawal depth:
+    $$W_i = \frac{N_i \cdot w_{\text{crop}}(k_{\text{pc}})}{A_{\text{cell}}} \cdot \eta_{\text{pump}}(p, k_{\text{pc}}) \quad [\text{mm/year}]$$
+    $$\frac{\partial h_i}{\partial t} = \frac{1}{S_s} \left[ \sum_{j \in \text{H3Neighbors}} T_{ij} \frac{h_j - h_i}{d_{ij}} + R_{\text{recharge}, i} - W_i \right]$$
 * **Parameters & Physical Units**:
   * $N_i$: Cell population [inhabitants].
   * $w_{\text{crop}}$: Per-capita agricultural water requirement [$\text{m}^3/(\text{person}\cdot\text{year})$].
@@ -292,9 +293,10 @@ The foundational purpose of this registry is **epistemic transparency and algori
   * $W_i$: Local water withdrawal depth [$\text{mm/year}$].
   * $S_s = 0.01$: Specific storage coefficient [dimensionless].
   * $T_{ij}$: Aquifer hydraulic transmissivity [$\text{m}^2/\text{day}$].
+  * $d_{ij}$: Inter-cell geodesic centroid distance [$\text{m}$].
   * $h$: Piezometric hydraulic head [$\text{m}$].
 * **Justification for Deviation**:
-  * Dividing volumetric consumption by cell surface area $A_{\text{cell}}$ preserves dimensional homogeneity and mass conservation across different H3 grid resolutions (Res 4 to Res 7), preventing localized mesh cells from falsely exhausting entire regional aquifers.
+  * Transposes continuous 2D Boussinesq aquifer flow onto an unstructured discrete H3 spherical hexagonal mesh via distance-weighted inter-cell transmissivity $T_{ij}/d_{ij}$ and intensive withdrawal depth $W_i$, ensuring rigorous local and regional mass conservation without requiring heavy iterative sparse-matrix PDE solvers across 288,000 cells per tick.
 * **Empirical Validation**:
   * UNESCO WHYMAP; FAO AQUASTAT; Wada et al. (2010).
 
@@ -442,23 +444,23 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 18: Areal Pollution Concentration Normalization & World3 Industrial Domain Scope
-* **Subsystems**: `EntropicMetalDissipationEngine.java`, `World3CouplingEngine.java`, `InfrastructureEnergyEngine.java`
+### Entry 18: Areal Entropic Metal Dissipation & Cellular Pollution Concentration
+* **Subsystems**: `EntropicMetalDissipationEngine.java`, `InfrastructureEnergyEngine.java`
 * **Canonical Literature**:
   * Bihouix, P. (2014). *L'Âge des low tech: Vers une civilisation techniquement soutenable*. Éditions du Seuil.
-  * Meadows, D. H., Meadows, D. L., Randers, J., & Behrens, W. W. (1972). *The Limits to Growth*. Universe Books.
 * **Canonical Published Formulation**:
-  * Global 0D box models where dissipated metal mass $\Delta M_i = M_i (1 - e^{-\lambda \Delta t})$ or industrial output $IO_i = K_i (1 - \text{FCAOR})$ increments global persistent pollution stock $P$.
+  * Global 0D aggregate mass balances where dissipated non-ferrous and structural metals $\Delta M = M_0 (1 - e^{-\lambda t})$ accumulate in an abstract global inventory without spatial concentration dynamics.
 * **Calibrated Ether Formulation**:
-  * On a variable-resolution H3 discrete global grid ($A_{\text{cell}} = 1\,770.49\text{ km}^2$ at `Res 4` vs $36.13\text{ km}^2$ at `Res 6`), cellular `pollutionLevel` is an **intensive areal concentration** ($\text{units/km}^2$):
-    $$\Delta P_i = 0.1 \cdot \frac{\Delta M_i}{A_{\text{cell}, i}} \qquad \text{and} \qquad \text{PPG}_i = 0.01 \cdot \frac{IO_i}{A_{\text{cell}, i}} \cdot \Delta t$$
-  * Furthermore, because *World3* (Meadows et al. 1972) treats all physical capital $K_i$ as 20th-century industrial capital (`IC`) generating persistent chemical pollution and depleting non-renewable mineral reserves, *World3* is explicitly unchecked (`false`) on pre-industrial scenarios in `AutoEpochScenarioHelper` rather than artificially masked by hidden $k_{\text{pc}}$ sigmoids.
+  * Transformed on variable-resolution H3 discrete meshes into an intensive areal concentration ($\text{units/km}^2$) coupled to natural biogeochemical attenuation:
+    $$\Delta P_i = 0.10 \cdot \frac{\Delta M_i}{A_{\text{cell}, i}} \quad [\text{pollution units} / \text{km}^2]$$
 * **Parameters & Physical Units**:
-  * $\lambda_{\text{diss}} = 0.015\text{ yr}^{-1}$, $A_{\text{cell}, i}$ [$\text{km}^2$].
+  * $\lambda_{\text{diss}} = 0.015\text{ yr}^{-1}$: Structural and industrial metal entropic dissipation rate.
+  * $A_{\text{cell}, i}$: Hexagonal cell surface area [$\text{km}^2$] ($A_{\text{cell}} \approx 1\,770.49\text{ km}^2$ at Res 4).
+  * $\Delta M_i$: Local unrecovered scrap and dissipated metal mass [$\text{metric tons}$].
 * **Justification for Deviation**:
-  * Dividing extensive dissipated mass by cell surface area $A_{\text{cell}, i}$ ensures resolution invariance across H3 meshes so natural biogeochemical attenuation (`EcologicalDegradationEngine`) absorbs pre-industrial trace wear without requiring ad-hoc threshold gates.
+  * Dividing extensive dissipated metal mass by cell surface area $A_{\text{cell}, i}$ guarantees dimensional resolution invariance across all H3 mesh levels (Res 4 to Res 7), allowing local biogeochemical ecosystems to absorb low-density pre-industrial trace wear naturally while capturing high-density industrial contamination hotspots without artificial gating constants.
 * **Empirical Validation**:
-  * Verified in `TelemetryAndDimensionalInvarianceBugFixTest.java`.
+  * Bihouix (2014); Baccini & Brunner (2012) *Metabolism of the Anthroposphere*; USGS Minerals Information.
 
 ---
 
@@ -553,31 +555,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 25: Omran & Cutler-Miller Municipal Sanitation & Infant Survival Formulation
-* **Subsystem**: `DemographicKernel.java` & `PublicSanitationWaterGridEngine.java`
-* **Canonical Literature**:
-  * Omran, A. R. (1971). *The epidemiological transition: a theory of the epidemiology of population change*. Milbank Memorial Fund Quarterly, 49(4), 509–538.
-  * Cutler, D., & Miller, G. (2005). *The role of public health improvements in health advances: The twentieth-century United States*. Demography, 42(1), 1–22.
-  * Preston, S. H. (1975). *The Changing Relation between Mortality and Level of Economic Development*. Population Studies, 29(2), 231–248.
-* **Canonical Literature Baseline (Eq. 99 in Encyclopedia)**:
-  $$f_{\text{clean}} = \frac{k_{\text{pc}}}{k_{\text{pc}} + 1200.0} \cdot \min\left(1.0, \frac{W_{\text{fresh}}}{W_{\text{req}} \cdot N_i}\right)$$
-  $$f_{\text{sewer}} = \frac{k_{\text{pc}}^2}{k_{\text{pc}}^2 + 2500.0^2}$$
-  $$q_{\text{infant}} = 0.015 + 0.305 \cdot (1.0 - f_{\text{clean}})^{1.5} \cdot (1.0 - 0.5 f_{\text{sewer}}) \cdot \text{nutritionalStress} \cdot \text{waterStress}$$
-* **Parameters, Material Properties & Physical Units**:
-  * $f_{\text{clean}}$: Clean filtered water distribution fraction [$0.0 - 1.0$].
-  * $f_{\text{sewer}}$: Subterranean sewer drainage infrastructure fraction [$0.0 - 1.0$].
-  * $k_{\text{water}, 0} = 1200.0\text{ kg/cap}$: Capital threshold for sand filtration and piped water grids.
-  * $k_{\text{sewer}, 0} = 2500.0\text{ kg/cap}$: Capital threshold for heavy subterranean municipal sewage networks.
-  * $q_{\text{infant}}$: Infant/childhood mortality rate [$0.015 - 0.55$] ($32\%$ pre-industrial baseline, $1.5\%$ modern sanitised floor).
-* **Epistemic Justification & Elimination of Non-Documented Sigmoid**:
-  * Eliminates an undocumented closed-form sigmoid `sigmoid(capPerCap, 320, 110)` that erroneously simulated modern chlorination and water sanitation at early mechanization capital depths ($K/N \sim 320$), collapsing pre-industrial infant mortality prematurely and inducing an unphysical demographic explosion (+43% in 1800).
-  * Enforces exact Eq. 99 Hill/Michaelis-Menten kinetics driven by physical water supply and municipal infrastructure capital.
-* **Empirical Validation**:
-  * Wrigley & Schofield (1981), *The Population History of England 1541-1871*; Preston (1975); Cutler & Miller (2005).
-
----
-
-### Entry 26: Solow-Swan Physical Capital Accumulation with Ayres-Garrett Exergy Feedback
+### Entry 23: Solow-Swan Physical Capital Accumulation with Ayres-Garrett Exergy Feedback
 * **Subsystem**: `UrbanKernel.java` & `urban.rs`
 * **Canonical Literature**:
   * Solow, R. M. (1956). *A contribution to the theory of economic growth*. The Quarterly Journal of Economics, 70(1), 65–94.
@@ -611,7 +589,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-## 📊 4. Central Summary Matrix of All Calibrated Subsystems (Entries 1 to 26)
+## 📊 4. Central Summary Matrix of All Calibrated Subsystems (Entries 1 to 23)
 
 | # | Category | Subsystem | Canonical Literature | Calibrated Ether Formulation | Specific Adaptation / Material Calibration |
 |---|---|---|---|---|---|
@@ -625,19 +603,16 @@ The foundational purpose of this registry is **epistemic transparency and algori
 | **8** | Tier 1 | Charney Sahara Bistability | Charney (1975), Claussen (1999) | Precession-driven vegetation-albedo fold bifurcation | $O(1)$ analytical fold catastrophe replacing 3D AGCMs; $P_{50} = 200\text{ mm/yr}, \tau_V = 10\text{ yr}$ |
 | **9** | Tier 1 | Stream Power Erosion | Howard & Kerby (1983), Bagnold (1966) | $\dot{E} = K A^m S^n$ via Hack closure & alluvial siltation | $O(1)$ drainage area estimation replaces recursive DEM flow routing; $K_{\text{erod}} = 1.2 \times 10^{-4}$ |
 | **10** | Tier 2 | $\Phi_{\text{exergy}}$ Index | Garrett (2011), Lotka (1922) | Logarithmic scaling of $(k_{\text{active}}, p_{\text{exo}})$ | Replaces abstract technology with continuous physical observables $(p_{\text{somatic}} = 348\text{ W})$ |
-| **11** | Tier 2 | Aquifer Extraction | Wada et al. (2010) | $W_i = (N_i \cdot w_{\text{crop}}) / A_{\text{cell}}$ | Resolution invariance on H3 hexagonal mesh ($S_s = 0.01$) |
+| **11** | Tier 2 | Aquifer Darcy-Boussinesq | Wada et al. (2010), Margat & van der Gun (2013) | $W_i = (N_i \cdot w_{\text{crop}}) / A_{\text{cell}}$, discrete $\sum T_{ij} \Delta h_{ij} / d_{ij}$ | Discretization of 2D Boussinesq flow on H3 mesh with distance-weighted transmissivity |
 | **12** | Tier 2 | Combinatorial Capital | Arthur (2009), Kremer (1993) | $dK/dt \propto N (1 + k/k_0)^\alpha$ | Embodies abstract ideas into conserved physical capital mass ($k_0 = 120\text{ kg/cap}, \alpha = 1.35$) |
-| **13** | Tier 2 | Inequality Curve | Lenski (1966), Milanovic (2011) | Log-normal agrarian + Hill industrial $G^*(k_{\text{pc}})$ | Continuous $C^\infty$ function replacing discrete stages ($G_{\text{forager}} = 0.25, \Delta G_{\text{agr}} = 0.40$) |
-| **14** | Tier 2 | Exergy Efficiency | Ayres & Warr (2005), Kümmel (2011) | $\eta_0 + \Delta \eta \tanh(k_{\text{pc}} / k_{\text{trans}})$ | Replaces historical time series with physical machinery mass ($\eta_0 = 5\%, \eta_{\max} = 45\%$) |
-| **15** | Tier 2 | Chalcolithic Gate | Hotelling (1931), Radivojević (2010) | Third-order Hill furnace gate $k^3/(k^3+65^3)$ | Enforces Pleistocene zero-smelting without calendar hacks ($k_{\text{chalco}} = 65\text{ kg/cap}$) |
-| **16** | Tier 2 | Carrier Bandwidth | Shannon (1948), Brillouin (1956) | $B = B_0 + \alpha_k k_{\text{pc}} + \alpha_p p_{\text{exo}}^2$ | Grounds communication bandwidth in physical roads and power ($B_0 = 1\text{ Hz}$) |
-| **17** | Tier 2 | SDT Stress Index | Turchin (2016), Goldstone (1991) | Normalized spatial $\Psi \in [0, 100]$ | Spatial normalization of local demographic/food/Gini stress to Seshat $[0, 100]$ scale |
-| **18** | Tier 2 | Soil Erosion Gate | Montgomery (2007), USDA | $\tanh(\max(0, \Phi - 0.88) \cdot 2.5)$ | Preserves $0.03\text{ t/ha/yr}$ geological baseline for foragers |
-| **19** | Tier 2 | Krugman Agglomeration | Krugman (1991), Fujita et al. (1999) | Centripetal $\Phi_{\text{cent}}$ vs. centrifugal congestion $dK_i/dt$ | $O(N_{\text{cells}})$ continuous cellular formulation on H3 mesh |
-| **20** | Tier 2 | Areal Pollution & World3 Scope | Bihouix (2014), Meadows et al. (1972) | $\Delta P_i \propto \Delta M_i / A_{\text{cell}, i}$; World3 unchecked pre-1900 | Intensive areal concentration on H3 mesh; zero artificial $k_{\text{pc}}$ gates |
-| **21** | Tier 2 | Ricardo Differential Rent | Ricardo (1817), Sraffa (1960) | $\text{Margin}_{\text{ext}} = \sigma(N/(B_{\text{agr}}+1) - 1.25, 0.40)$ | Profit compression & Gini dilation from cultivating diminishing extensive margins |
-| **22** | Tier 2 | Lewis Dual-Sector Model | Lewis (1954), Ranis & Fei (1961) | $\text{TurningPoint} = \sigma(k_{\text{pc}}, 250, 40) \cdot \sigma(\text{Trade}, 20, 5)$ | Continuous transition from surplus labor phase to induced capital-deepening mechanization |
-| **23** | Tier 2 | Kondratiev Long Wave | Kondratiev (1925), Schumpeter (1939) | $\phi(t) = \sin(2\pi(t-1780)/52)$, creative destruction trough | Infrastructure cycle coupled to physical capital scrapping and scrap metal recovery |
-| **24** | Tier 2 | Pomeranz Great Divergence | Pomeranz (2000), Allen (2009), Wrigley | $\mathcal{P}_{\text{div}} = \text{CoalProx} \cdot (1 + 0.8 \cdot \text{GhostAcreage})$ | Energy transport proximity & transoceanic land relief driving takeoff vs organic involution |
-| **25** | Tier 1/2 | Municipal Sanitation & Infant Survival | Omran (1971), Cutler & Miller (2005) | Hill kinetics $f_{\text{clean}} = \frac{k}{k + 1200}$, $f_{\text{sewer}} = \frac{k^2}{k^2 + 2500^2}$ | Canonical Eq. 99 restoring physical water/sewage infrastructure, eradicating premature ad-hoc sigmoids |
-| **26** | Tier 1/2 | Solow-Swan Capital Accumulation | Solow (1956), Garrett (2011), Ayres (2009) | $\dot{k}_{\text{pc}} = \delta(k^* - k_{\text{pc}}) + \dot{i}_{\text{gross}}$, $k^*(P_{\text{watts}})$ | Thermodynamic grounding of capital formation in useful surplus power, replacing abstract Solow residual |
+| **13** | Tier 2 | Chalcolithic Gate | Hotelling (1931), Radivojević (2010) | Third-order Hill furnace gate $k^3/(k^3+65^3)$ | Enforces Pleistocene zero-smelting without calendar hacks ($k_{\text{chalco}} = 65\text{ kg/cap}$) |
+| **14** | Tier 2 | Carrier Bandwidth | Shannon (1948), Brillouin (1956) | $B = B_0 + \alpha_k k_{\text{pc}} + \alpha_p p_{\text{exo}}^2$ | Grounds communication bandwidth in physical roads and power ($B_0 = 1\text{ Hz}$) |
+| **15** | Tier 2 | SDT Stress Index | Turchin (2016), Goldstone (1991) | Normalized spatial $\Psi \in [0, 100]$ | Spatial normalization of local demographic/food/Gini stress to Seshat $[0, 100]$ scale |
+| **16** | Tier 2 | Soil Erosion Gate | Montgomery (2007), USDA | $\tanh(\max(0, \Phi - 0.88) \cdot 2.5)$ | Preserves $0.03\text{ t/ha/yr}$ geological baseline for foragers |
+| **17** | Tier 2 | Krugman Agglomeration | Krugman (1991), Fujita et al. (1999) | Centripetal $\Phi_{\text{cent}}$ vs. centrifugal congestion $dK_i/dt$ | $O(N_{\text{cells}})$ continuous cellular formulation on H3 mesh |
+| **18** | Tier 2 | Areal Entropic Dissipation | Bihouix (2014) | $\Delta P_i \propto \Delta M_i / A_{\text{cell}, i}$ | Resolution-invariant intensive areal concentration on H3 mesh ($\lambda_{\text{diss}} = 0.015\text{ yr}^{-1}$) |
+| **19** | Tier 2 | Ricardo Differential Rent | Ricardo (1817), Sraffa (1960) | $\text{Margin}_{\text{ext}} = \sigma(N/(B_{\text{agr}}+1) - 1.25, 0.40)$ | Profit compression & Gini dilation from cultivating diminishing extensive margins |
+| **20** | Tier 2 | Lewis Dual-Sector Model | Lewis (1954), Ranis & Fei (1961) | $\text{TurningPoint} = \sigma(k_{\text{pc}}, 250, 40) \cdot \sigma(\text{Trade}, 20, 5)$ | Continuous transition from surplus labor phase to induced capital-deepening mechanization |
+| **21** | Tier 2 | Kondratiev Long Wave | Kondratiev (1925), Schumpeter (1939) | $\phi(t) = \sin(2\pi(t-1780)/52)$, creative destruction trough | Infrastructure cycle coupled to physical capital scrapping and scrap metal recovery |
+| **22** | Tier 2 | Pomeranz Great Divergence | Pomeranz (2000), Allen (2009), Wrigley | $\mathcal{P}_{\text{div}} = \text{CoalProx} \cdot (1 + 0.8 \cdot \text{GhostAcreage})$ | Energy transport proximity & transoceanic land relief driving takeoff vs organic involution |
+| **23** | Tier 2 | Solow-Swan Capital Accumulation | Solow (1956), Garrett (2011), Ayres (2009) | $\dot{k}_{\text{pc}} = \delta(k^* - k_{\text{pc}}) + \dot{i}_{\text{gross}}$, $k^*(P_{\text{watts}})$ | Thermodynamic grounding of capital formation in useful surplus power, replacing abstract Solow residual |

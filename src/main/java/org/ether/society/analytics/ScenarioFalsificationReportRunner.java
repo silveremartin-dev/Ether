@@ -45,7 +45,7 @@ public class ScenarioFalsificationReportRunner {
             List<String> targetDirNames = new ArrayList<>();
             if (args != null && args.length > 0) {
                 for (String arg : args) {
-                    if (arg != null && !arg.isBlank()) {
+                    if (arg != null && !arg.isBlank() && !arg.startsWith("--")) {
                         File f = new File(arg);
                         targetDirNames.add(f.isDirectory() ? f.getName() : arg.trim());
                     }
@@ -134,6 +134,12 @@ public class ScenarioFalsificationReportRunner {
             File outReport = new File(reportsDir, "scenario_falsification_report.md");
             try (PrintWriter pw = new PrintWriter(outReport)) {
                 pw.println(audit.reportMarkdown());
+            }
+            if (targetDirNames.size() == 1) {
+                File specificReport = new File(reportsDir, "headless_report_" + targetDirNames.get(0) + ".md");
+                try (PrintWriter pw = new PrintWriter(specificReport)) {
+                    pw.println(audit.reportMarkdown());
+                }
             }
             File scratchReport = new File("scratch/scenario_falsification_report.md");
             scratchReport.getParentFile().mkdirs();

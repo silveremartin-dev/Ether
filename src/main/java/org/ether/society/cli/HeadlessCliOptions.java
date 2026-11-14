@@ -254,16 +254,28 @@ public final class HeadlessCliOptions {
                 o.h3Resolution = Integer.parseInt(args[++i]);
             } else if (a.startsWith("--start-year=")) {
                 o.overrideStartYear = Long.parseLong(a.substring("--start-year=".length()));
+            } else if (a.equals("--start-year") && i + 1 < args.length) {
+                o.overrideStartYear = Long.parseLong(args[++i].trim());
             } else if (a.startsWith("--end-year=")) {
                 o.overrideEndYear = Long.parseLong(a.substring("--end-year=".length()));
+            } else if (a.equals("--end-year") && i + 1 < args.length) {
+                o.overrideEndYear = Long.parseLong(args[++i].trim());
             } else if (a.startsWith("--dt=") || a.startsWith("--temporal-res=")) {
                 o.overrideDt = Double.parseDouble(a.substring(a.indexOf('=') + 1));
+            } else if ((a.equals("--dt") || a.equals("--temporal-res")) && i + 1 < args.length) {
+                o.overrideDt = Double.parseDouble(args[++i].trim());
             } else if (a.startsWith("--initial-pop=") || a.startsWith("--pop=")) {
                 o.overrideInitialPop = Long.parseLong(a.substring(a.indexOf('=') + 1));
+            } else if ((a.equals("--initial-pop") || a.equals("--pop")) && i + 1 < args.length) {
+                o.overrideInitialPop = Long.parseLong(args[++i].trim());
             } else if (a.startsWith("--initial-tech=") || a.startsWith("--tech=")) {
                 o.overrideInitialTech = Integer.parseInt(a.substring(a.indexOf('=') + 1));
+            } else if ((a.equals("--initial-tech") || a.equals("--tech")) && i + 1 < args.length) {
+                o.overrideInitialTech = Integer.parseInt(args[++i].trim());
             } else if (a.startsWith("--seed=")) {
                 o.randomSeed = Long.parseLong(a.substring("--seed=".length()));
+            } else if (a.equals("--seed") && i + 1 < args.length) {
+                o.randomSeed = Long.parseLong(args[++i].trim());
             } else if (a.startsWith("--scenario-suffix=") || a.equals("--scenario-suffix")) {
                 if (!a.contains("=") && i + 1 < args.length && !args[i + 1].startsWith("-")) i++;
             } else if (a.startsWith("--save=")) {

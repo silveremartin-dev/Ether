@@ -30,7 +30,13 @@ public class Main {
                 String arg = args[i].trim();
                 String a = arg.toLowerCase();
 
+                if (a.equals("--falsification-report") || a.equals("--report-only")) {
+                    org.ether.society.analytics.ScenarioFalsificationReportRunner.main(args);
+                    return;
+                }
+
                 if (a.equals("--headless") || a.equals("-h")
+                        || a.startsWith("--scenario") || a.equals("-s")
                         || a.equals("--mode=cluster") || a.equals("--cluster")
                         || a.startsWith("--role=") || a.equals("--master") || a.equals("--worker")
                         || a.equals("--server") || a.equals("--node")

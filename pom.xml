@@ -344,13 +344,13 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>org.ether.society.Main</mainClass>
+                    <mainClass>${mainClass}</mainClass>
                     <commandlineArgs>${exec.commandlineArgs}</commandlineArgs>
                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
-                    <arguments>
-                        <argument>--add-modules</argument>
-                        <argument>jdk.incubator.vector</argument>
-                    </arguments>
+
+
+
+
                 </configuration>
             </plugin>
 
@@ -370,7 +370,7 @@
                             <shadedClassifierName>executable</shadedClassifierName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.ether.society.Main</mainClass>
+                                    <mainClass>${mainClass}</mainClass>
                                 </transformer>
                             </transformers>
                             <filters>
