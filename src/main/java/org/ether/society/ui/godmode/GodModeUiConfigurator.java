@@ -63,6 +63,38 @@ public final class GodModeUiConfigurator {
         brushModeCombo.setTooltip(new Tooltip(org.ether.society.i18n.I18n.getOrDefault("godmode.tooltip.brush_mode", "Select local effect to apply.")));
     }
 
+    public static void configureEventCategoryCombo(ComboBox<org.ether.society.model.EventCategory> categoryCombo) {
+        categoryCombo.getItems().setAll(null, org.ether.society.model.EventCategory.NATURAL, org.ether.society.model.EventCategory.ANTHROPIC);
+        categoryCombo.setPrefWidth(220);
+        categoryCombo.setMaxWidth(280);
+        categoryCombo.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(org.ether.society.model.EventCategory c) {
+                if (c == null) {
+                    return org.ether.society.i18n.I18n.getOrDefault("godmode.category.all", "🌐 Toutes les catégories");
+                }
+                return c.getDisplayName();
+            }
+
+            @Override
+            public org.ether.society.model.EventCategory fromString(String s) {
+                return org.ether.society.model.EventCategory.fromString(s);
+            }
+        });
+        categoryCombo.getSelectionModel().select(0);
+    }
+
+    public static void filterEventTypeCombo(ComboBox<EventTypeItem> eventTypeCombo, List<EventTypeItem> catalogItems, org.ether.society.model.EventCategory category) {
+        EventTypeItem current = eventTypeCombo.getValue();
+        List<EventTypeItem> filtered = (category == null) ? catalogItems : catalogItems.stream().filter(it -> it.category() == category).toList();
+        eventTypeCombo.getItems().setAll(filtered);
+        if (current != null && filtered.contains(current)) {
+            eventTypeCombo.setValue(current);
+        } else if (!filtered.isEmpty()) {
+            eventTypeCombo.setValue(filtered.get(0));
+        }
+    }
+
     public static void configureEventTypeCombo(ComboBox<EventTypeItem> eventTypeCombo, List<EventTypeItem> catalogItems) {
         eventTypeCombo.getItems().addAll(catalogItems);
         eventTypeCombo.setPrefWidth(220);
@@ -144,6 +176,8 @@ public final class GodModeUiConfigurator {
      */
     public static VBox buildInjectorSection(
             Label injectorTitleLabel,
+            Label lblEventCategory,
+            ComboBox<org.ether.society.model.EventCategory> eventCategoryCombo,
             Label lblEventType,
             ComboBox<EventTypeItem> eventTypeCombo,
             Label eventDescriptionLabel,
@@ -185,9 +219,10 @@ public final class GodModeUiConfigurator {
 
         grid.getColumnConstraints().addAll(col0, col1);
 
-        grid.addRow(0, lblEventType, eventTypeCombo);
-        grid.add(eventDescriptionLabel, 1, 1);
-        grid.addRow(2, lblEventTitle, eventNameField);
+        grid.addRow(0, lblEventCategory, eventCategoryCombo);
+        grid.addRow(1, lblEventType, eventTypeCombo);
+        grid.add(eventDescriptionLabel, 1, 2);
+        grid.addRow(3, lblEventTitle, eventNameField);
 
         Label lblM = new Label("M:");
         lblM.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
@@ -196,16 +231,16 @@ public final class GodModeUiConfigurator {
         HBox dateRow = new HBox(6, targetYearSpinner, lblM, targetMonthSpinner, lblJ, targetDaySpinner, targetYearSlider);
         dateRow.setAlignment(Pos.CENTER_LEFT);
         VBox yearBox = new VBox(3, dateRow, dateRangeLabel);
-        grid.addRow(3, lblTargetYear, yearBox);
+        grid.addRow(4, lblTargetYear, yearBox);
 
-        grid.addRow(4, lblLat, latSpinner);
-        grid.addRow(5, lblLng, lngSpinner);
-        grid.addRow(6, lblMag, magnitudeSpinner);
-        grid.addRow(7, lblRadius, radiusKmSpinner);
+        grid.addRow(5, lblLat, latSpinner);
+        grid.addRow(6, lblLng, lngSpinner);
+        grid.addRow(7, lblMag, magnitudeSpinner);
+        grid.addRow(8, lblRadius, radiusKmSpinner);
 
         HBox durationBox = new HBox(8, durationDaysSpinner, lblDurationUnit);
         durationBox.setAlignment(Pos.CENTER_LEFT);
-        grid.addRow(8, lblDurationDays, durationBox);
+        grid.addRow(9, lblDurationDays, durationBox);
 
         HBox btnBox = new HBox(8, scheduleBtn, triggerNowBtn);
         HBox.setHgrow(scheduleBtn, Priority.ALWAYS);

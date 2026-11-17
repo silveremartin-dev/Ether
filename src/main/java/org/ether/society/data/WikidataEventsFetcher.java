@@ -188,14 +188,20 @@ public class WikidataEventsFetcher {
                 if (root.isArray()) {
                     List<ClimateEvent> list = new ArrayList<>();
                     for (JsonNode n : root) {
+                        org.ether.society.model.EventCategory cat = org.ether.society.model.EventCategory.fromString(n.path("category").asText(null));
+                        String type = normalizeEventType(n.path("type").asText("milestone_archaeology"));
                         list.add(new ClimateEvent(
-                                normalizeEventType(n.path("type").asText("milestone_archaeology")),
+                                cat,
+                                type,
                                 n.path("name").asText("Historical Milestone"),
                                 n.path("year").asInt(0),
+                                n.path("month").asInt(1),
+                                n.path("day").asInt(1),
                                 n.path("latitude").asDouble(0.0),
                                 n.path("longitude").asDouble(0.0),
                                 n.path("depth").asDouble(0.0),
-                                n.path("magnitude").asDouble(5.0)
+                                n.path("magnitude").asDouble(5.0),
+                                n.path("durationDays").asInt(ClimateEvent.getDefaultDurationDaysForType(type))
                         ));
                     }
                     logger.info("Loaded {} chronological events from local catalog '{}'.", list.size(), CATALOG_FILE_PATH);
@@ -221,6 +227,49 @@ public class WikidataEventsFetcher {
         saveCatalogToDisk(fullList, catalogFile);
 
         return fullList;
+    }
+
+    /**
+     * Loads purely informative historical milestones for the chronicle from the authoritative catalog.
+     *
+     * @return list of chronological milestone events
+     */
+    public static List<org.ether.society.events.HistoricalEvent> loadChronicleMilestones() {
+        List<ClimateEvent> all = getOrBuildFullCatalog();
+        List<org.ether.society.events.HistoricalEvent> milestones = new ArrayList<>();
+        for (ClimateEvent ce : all) {
+            if (ce == null) continue;
+            if (ce.getCategory() == org.ether.society.model.EventCategory.CHRONICLE_MILESTONE) {
+                String title = ce.getName();
+                String desc = ce.getName();
+                milestones.add(new org.ether.society.events.HistoricalEvent(
+                        ce.getYear(), ce.getMonth(), ce.getDay(), title, desc, ce.getLatitude(), ce.getLongitude()));
+            }
+        }
+        return milestones;
+    }
+
+    /**
+     * Loads physical cataclysms and shocks for scenario initialization.
+     *
+     * @param startYear starting calendar year
+     * @param includeNatural whether to include natural/geophysical events
+     * @param includeAnthropic whether to include anthropic/warfare/technological events
+     * @return filtered list of physical climate events
+     */
+    public static List<ClimateEvent> loadPhysicalEvents(int startYear, boolean includeNatural, boolean includeAnthropic) {
+        List<ClimateEvent> all = getOrBuildFullCatalog();
+        List<ClimateEvent> result = new ArrayList<>();
+        for (ClimateEvent ce : all) {
+            if (ce == null || ce.getYear() < startYear) continue;
+            org.ether.society.model.EventCategory cat = ce.getCategory();
+            if (cat == org.ether.society.model.EventCategory.NATURAL && includeNatural) {
+                result.add(ce);
+            } else if (cat == org.ether.society.model.EventCategory.ANTHROPIC && includeAnthropic) {
+                result.add(ce);
+            }
+        }
+        return result;
     }
 
     /**
@@ -271,7 +320,7 @@ public class WikidataEventsFetcher {
     }
 
     private static List<ClimateEvent> getCoreMilestones() {
-        return DefaultHistoricalMilestonesRegistry.buildComprehensiveCatalog();
+        return List.of();
     }
 }
 

@@ -31,6 +31,8 @@ import java.util.Locale;
 public class ClimateEvent implements Serializable {
     private static final long serialVersionUID = 2L;
 
+    /** Internal state: canonical ontological category (NATURAL, ANTHROPIC, CHRONICLE_MILESTONE). */
+    private EventCategory category;
     /** Internal state: canonical type identifier (VOLCANO, EARTHQUAKE, PANDEMIC, TECH_SINGULARITY, etc.). */
     private String type;
     /** Internal state: descriptive name or historical title. */
@@ -105,6 +107,26 @@ public class ClimateEvent implements Serializable {
      * @param durationDays active duration in simulation days (<= 0 for permanent)
      */
     public ClimateEvent(String type, String name, int year, int month, int day, double latitude, double longitude, double depth, double magnitude, int durationDays) {
+        this(inferCategoryFromType(type), type, name, year, month, day, latitude, longitude, depth, magnitude, durationDays);
+    }
+
+    /**
+     * Constructs a scheduled event with explicit ontological category, temporal coordinates, and duration.
+     *
+     * @param category event category (NATURAL, ANTHROPIC, CHRONICLE_MILESTONE)
+     * @param type event typology
+     * @param name descriptive name
+     * @param year chronological year
+     * @param month chronological month (1-12)
+     * @param day chronological day (1-31)
+     * @param latitude epicenter latitude
+     * @param longitude epicenter longitude
+     * @param depth hypocentral depth in km
+     * @param magnitude intensity or magnitude
+     * @param durationDays active duration in simulation days (<= 0 for permanent)
+     */
+    public ClimateEvent(EventCategory category, String type, String name, int year, int month, int day, double latitude, double longitude, double depth, double magnitude, int durationDays) {
+        this.category = (category != null) ? category : inferCategoryFromType(type);
         this.type = type != null ? type : "GENERIC";
         this.name = name != null ? name : "Event";
         this.year = year;
@@ -115,6 +137,28 @@ public class ClimateEvent implements Serializable {
         this.depth = depth;
         this.magnitude = magnitude;
         this.durationDays = durationDays;
+    }
+
+    public ClimateEvent(EventCategory category, String type, String name, int year, double latitude, double longitude, double depth, double magnitude) {
+        this(category, type, name, year, 1, 1, latitude, longitude, depth, magnitude, getDefaultDurationDaysForType(type));
+    }
+
+    public ClimateEvent(EventCategory category, String type, String name, int year, double latitude, double longitude, double depth, double magnitude, int durationDays) {
+        this(category, type, name, year, 1, 1, latitude, longitude, depth, magnitude, durationDays);
+    }
+
+    public static EventCategory inferCategoryFromType(String type) {
+        if (type == null) return EventCategory.NATURAL;
+        String upper = type.toUpperCase(Locale.ROOT);
+        if (upper.contains("MILESTONE") || upper.contains("HIST") || upper.contains("TECH_SINGULARITY") || upper.contains("RENAISSANCE")) {
+            return EventCategory.CHRONICLE_MILESTONE;
+        }
+        if (upper.contains("NUCLEAR") || upper.contains("WAR") || upper.contains("CRASH") || upper.contains("CYBER")
+                || upper.contains("ACCIDENT") || upper.contains("FIRE") || upper.contains("DAM")
+                || upper.contains("LEADER") || upper.contains("GEOENGINEERING")) {
+            return EventCategory.ANTHROPIC;
+        }
+        return EventCategory.NATURAL;
     }
 
     /**
@@ -256,6 +300,17 @@ public class ClimateEvent implements Serializable {
 
     public void setMagnitude(double magnitude) {
         this.magnitude = magnitude;
+    }
+
+    public EventCategory getCategory() {
+        if (category == null) {
+            category = inferCategoryFromType(type);
+        }
+        return category;
+    }
+
+    public void setCategory(EventCategory category) {
+        this.category = category != null ? category : inferCategoryFromType(type);
     }
 
     public int getDurationDays() {

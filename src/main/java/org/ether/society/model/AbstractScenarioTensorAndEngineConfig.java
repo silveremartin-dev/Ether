@@ -77,6 +77,8 @@ public abstract class AbstractScenarioTensorAndEngineConfig implements Serializa
 
     // Scheduled Climate and Planetary Cataclysm Events
     protected List<ClimateEvent> climateEvents = new ArrayList<>();
+    protected boolean historicalNaturalEventsEnabled = true;
+    protected boolean historicalAnthropicEventsEnabled = true;
 
     // Spatial Clipping & Boundary Conditions
     protected boolean clippingEnabled = false;
@@ -123,6 +125,28 @@ public abstract class AbstractScenarioTensorAndEngineConfig implements Serializa
 
     public double getMaxLng() { return maxLng; }
     public void setMaxLng(double maxLng) { this.maxLng = maxLng; }
+
+    /**
+     * Checks if a geographical coordinate falls within the scenario's spatial boundaries.
+     * If spatial clipping is disabled, all coordinates are considered within bounds.
+     *
+     * @param lat latitude in degrees (-90 to +90)
+     * @param lng longitude in degrees (-180 to +180)
+     * @return true if clipping is disabled or the coordinate is inside [minLat, maxLat] and [minLng, maxLng]
+     */
+    public boolean isCoordinateWithinBounds(double lat, double lng) {
+        if (!clippingEnabled) {
+            return true;
+        }
+        if (lat < minLat || lat > maxLat) {
+            return false;
+        }
+        if (minLng <= maxLng) {
+            return lng >= minLng && lng <= maxLng;
+        } else {
+            return lng >= minLng || lng <= maxLng;
+        }
+    }
 
     public String getBoundaryMode() { return boundaryMode; }
     public void setBoundaryMode(String boundaryMode) { this.boundaryMode = boundaryMode; }
@@ -366,6 +390,12 @@ public abstract class AbstractScenarioTensorAndEngineConfig implements Serializa
         while (list.size() <= index) list.add(null);
         list.set(index, base64);
     }
+
+    public boolean isHistoricalNaturalEventsEnabled() { return historicalNaturalEventsEnabled; }
+    public void setHistoricalNaturalEventsEnabled(boolean v) { this.historicalNaturalEventsEnabled = v; }
+
+    public boolean isHistoricalAnthropicEventsEnabled() { return historicalAnthropicEventsEnabled; }
+    public void setHistoricalAnthropicEventsEnabled(boolean v) { this.historicalAnthropicEventsEnabled = v; }
 
     public List<ClimateEvent> getClimateEvents() { return climateEvents; }
     public void setClimateEvents(List<ClimateEvent> climateEvents) {

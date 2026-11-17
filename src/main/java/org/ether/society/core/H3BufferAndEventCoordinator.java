@@ -182,18 +182,31 @@ public final class H3BufferAndEventCoordinator {
         int currentMonth = timeManager.getCurrentMonth();
         int currentDay = timeManager.getCurrentDay();
         for (ClimateEvent evt : currentScenario.getClimateEvents()) {
+            if (evt == null) continue;
+            org.ether.society.model.EventCategory cat = evt.getCategory();
+            if (cat == org.ether.society.model.EventCategory.NATURAL && !currentScenario.isHistoricalNaturalEventsEnabled()) {
+                continue;
+            }
+            if (cat == org.ether.society.model.EventCategory.ANTHROPIC && !currentScenario.isHistoricalAnthropicEventsEnabled()) {
+                continue;
+            }
+            if (currentScenario.isClippingEnabled() && !currentScenario.isCoordinateWithinBounds(evt.getLatitude(), evt.getLongitude())) {
+                continue;
+            }
             if (evt.isDue(currentYear, currentMonth, currentDay)) {
                 String eventKey = evt.getName() + "_" + evt.getYear() + "_" + evt.getMonth() + "_" + evt.getDay() + "_" + evt.getType();
                 if (!firedScenarioEventKeys.contains(eventKey)) {
                     firedScenarioEventKeys.add(eventKey);
                     String type = evt.getType() != null ? evt.getType().toLowerCase() : "";
                     String displayTitle;
-                    if (type.contains("milestone") || type.contains("hist")) {
+                    if (cat == org.ether.society.model.EventCategory.CHRONICLE_MILESTONE || type.contains("milestone") || type.contains("hist")) {
                         displayTitle = "📜 REPÈRE : " + evt.getName();
                     } else if (type.contains("nuclear") || type.contains("strike")) {
                         displayTitle = "☢️ FRAPPE NUCLÉAIRE : " + evt.getName() + " (Mag: " + evt.getMagnitude() + ")";
+                    } else if (cat == org.ether.society.model.EventCategory.ANTHROPIC) {
+                        displayTitle = "🏭 CATASTROPHE ANTHROPIQUE : " + evt.getName() + " (Mag: " + evt.getMagnitude() + ")";
                     } else {
-                        displayTitle = "🌋 ÉVÉNEMENT : " + evt.getName() + " (" + evt.getType() + " - Mag: " + evt.getMagnitude() + ")";
+                        displayTitle = "🌋 ÉVÉNEMENT NATUREL : " + evt.getName() + " (" + evt.getType() + " - Mag: " + evt.getMagnitude() + ")";
                     }
                     ActiveEvent ae = new ActiveEvent(
                             "SCENARIO_EVT_" + currentYear + "_" + evt.getMonth() + "_" + evt.getDay() + "_" + tickCounter,
@@ -204,9 +217,13 @@ public final class H3BufferAndEventCoordinator {
                             evt.getDurationDays()
                     );
                     eventSystem.recordSpatialEvent(ae);
-                    logger.info("🌋 [Tick {}] Scenario event triggered: {} (Date {}-{:02d}-{:02d}, Duration: {} d)",
-                            tickCounter, evt.getName(), currentYear, evt.getMonth(), evt.getDay(), evt.getDurationDays());
-                    applyClimateEventImpact(evt, cells, worldBuffer, agentBuffer);
+                    logger.info("🌋 [Tick {}] Scenario event triggered: {} (Category: {}, Date {}-{:02d}-{:02d}, Duration: {} d)",
+                            tickCounter, evt.getName(), cat, currentYear, evt.getMonth(), evt.getDay(), evt.getDurationDays());
+
+                    // Chronicle milestones are strictly informative: zero physical shock on grid (AGENTS.md §10)
+                    if (cat != org.ether.society.model.EventCategory.CHRONICLE_MILESTONE) {
+                        applyClimateEventImpact(evt, cells, worldBuffer, agentBuffer);
+                    }
                 }
             }
         }

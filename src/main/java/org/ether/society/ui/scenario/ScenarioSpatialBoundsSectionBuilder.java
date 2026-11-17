@@ -312,4 +312,29 @@ public class ScenarioSpatialBoundsSectionBuilder {
     public Spinner<Double> getMinLngSpinner() { return minLngSpinner; }
     public Spinner<Double> getMaxLngSpinner() { return maxLngSpinner; }
     public ComboBox<String> getBoundaryModeCombo() { return boundaryModeCombo; }
+
+    /**
+     * Checks if given coordinates fall inside the currently configured spatial clipping bounds.
+     *
+     * @param lat latitude in degrees
+     * @param lng longitude in degrees
+     * @return true if clipping is disabled or the coordinate is inside bounds
+     */
+    public boolean isCoordinateWithinBounds(double lat, double lng) {
+        if (!isClippingEnabled()) {
+            return true;
+        }
+        double minLat = getMinLat();
+        double maxLat = getMaxLat();
+        double minLng = getMinLng();
+        double maxLng = getMaxLng();
+        if (lat < minLat || lat > maxLat) {
+            return false;
+        }
+        if (minLng <= maxLng) {
+            return lng >= minLng && lng <= maxLng;
+        } else {
+            return lng >= minLng || lng <= maxLng;
+        }
+    }
 }

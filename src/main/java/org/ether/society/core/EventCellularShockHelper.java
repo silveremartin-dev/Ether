@@ -257,27 +257,21 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "TECH_SINGULARITY", "FUSION", "milestone_technology" -> {
-                double techBonus = (mag / 10.0) * attenuation;
-                double currentCap = cell.getResourceCapitalOr(1000.0);
-                cell.setResourceCapital(currentCap + (5000.0 * techBonus * Math.max(1, prevPop)));
-                cell.setPollutionLevel(Math.max(0.0, cell.getPollutionLevelOr(0.0) * (1.0 - 0.80 * techBonus)));
-                double curFriction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
-                cell.setMovementFriction(Math.max(0.15, curFriction * (1.0 - 0.50 * techBonus)));
+            case "INDUSTRIAL_ACCIDENT", "DAM_FAILURE", "URBAN_FIRE" -> {
+                double destruct = (mag / 10.0) * attenuation;
+                if (cell.getResourceCapital() != null) {
+                    cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.85 * destruct)));
+                }
+                if (upperType.equals("DAM_FAILURE") && cell.getFoodResource() != null) {
+                    cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.70 * destruct)));
+                }
+                if (prevPop > 0) {
+                    lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.15 * destruct)));
+                }
             }
 
-            case "RENAISSANCE_BOOM", "milestone_golden_age" -> {
-                double boomBonus = (mag / 10.0) * attenuation;
-                double curCap = cell.getResourceCapitalOr(500.0);
-                cell.setResourceCapital(curCap * (1.0 + 0.35 * boomBonus));
-                double curFric = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
-                cell.setMovementFriction(Math.max(0.20, curFric * (1.0 - 0.30 * boomBonus)));
-
-                Polity owner = cell.getOwner();
-                if (owner != null) {
-                    owner.setStateCapacity(Math.min(1.0, owner.getStateCapacity() + 0.15 * boomBonus));
-                    owner.setAsabiyyah(Math.min(1.0, owner.getAsabiyyah() + 0.10 * boomBonus));
-                }
+            case "TECH_SINGULARITY", "FUSION", "RENAISSANCE_BOOM" -> {
+                // Informative/ideational milestones: zero physical cheat on cells (AGENTS.md §10)
             }
 
             case "GEOENGINEERING" -> {

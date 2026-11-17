@@ -94,16 +94,17 @@ public final class GodModeInterventionCoordinator {
         }
 
         String daysUnit = durationDays > 1 ? "jours" : "jour";
-        String details = String.format(Locale.ROOT, "Date: %d-%02d-%02d, Lat: %.2fÂ°, Lng: %.2fÂ°, Mag: %.1f, R: %.0fkm, Durée: %d %s",
+        String details = String.format(Locale.ROOT, "Date: %d-%02d-%02d, Lat: %.2f°, Lng: %.2f°, Mag: %.1f, R: %.0fkm, Durée: %d %s",
                 targetYear, targetMonth + 1, targetDay, lat, lng, mag, radiusKm, durationDays, daysUnit);
 
-        timeline.addEntry(targetYear, type, name, details, true, lat, lng, mag, durationDays);
+        org.ether.society.model.EventCategory category = item != null ? item.category() : org.ether.society.model.EventCategory.NATURAL;
+        timeline.addEntry(targetYear, type, name, details, true, lat, lng, mag, durationDays, category);
         if (onTimelineUpdated != null) onTimelineUpdated.run();
 
         if (engine != null && engine.getEventSystem() != null) {
             ActiveEvent ae = new ActiveEvent(
                     "GM_" + System.currentTimeMillis(),
-                    "âš¡ GOD MODE: " + name,
+                    "⚡ GOD MODE: " + name,
                     type, lat, lng, targetYear, targetMonth, targetDay,
                     Math.max(15.0, durationDays * 0.5), mag, durationDays
             );
@@ -130,7 +131,7 @@ public final class GodModeInterventionCoordinator {
                     engine.getCurrentScenario().setClimateEvents(new java.util.ArrayList<>());
                 }
                 engine.getCurrentScenario().getClimateEvents().add(new org.ether.society.model.ClimateEvent(
-                        type, name, targetYear, targetMonth + 1, targetDay, lat, lng, 10.0, mag, durationDays));
+                        category, type, name, targetYear, targetMonth + 1, targetDay, lat, lng, 10.0, mag, durationDays));
             }
             logger.info("God Mode intervention SCHEDULED for Date {}-{:02d}-{:02d}: {} - {}",
                     targetYear, targetMonth + 1, targetDay, name, details);
@@ -169,6 +170,23 @@ public final class GodModeInterventionCoordinator {
      */
     private static boolean validateGeographyCompatibility(
             H3SimulationEngine engine, String type, String name, double lat, double lng) {
+        if (engine != null && engine.getCurrentScenario() != null && engine.getCurrentScenario().isClippingEnabled()) {
+            if (!engine.getCurrentScenario().isCoordinateWithinBounds(lat, lng)) {
+                String warnMsg = String.format(Locale.ROOT,
+                        "L'événement '%s' (Lat: %.2f°, Lng: %.2f°) se situe en dehors du domaine spatial fenêtré [Lat: %.1f° à %.1f°, Lng: %.1f° à %.1f°].",
+                        name, lat, lng,
+                        engine.getCurrentScenario().getMinLat(), engine.getCurrentScenario().getMaxLat(),
+                        engine.getCurrentScenario().getMinLng(), engine.getCurrentScenario().getMaxLng());
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle(I18n.getOrDefault("godmode.out_of_bounds.title", "Coordonnées Hors Limites"));
+                alert.setHeaderText(I18n.getOrDefault("godmode.out_of_bounds.header", "⚠️ Événement hors de la zone fenêtrée"));
+                alert.setContentText(warnMsg);
+                WindowHelper.applyWindowIcon(alert);
+                alert.showAndWait();
+                return false;
+            }
+        }
+
         H3Cell nearestCell = GodModeDisasterExecutor.findNearestCell(engine, lat, lng);
         if (nearestCell == null) return true;
 
@@ -238,7 +256,8 @@ public final class GodModeInterventionCoordinator {
             engine.getHistoryManager().captureWorldSnapshot(engine);
         }
 
-        timeline.addEntry(currentYear, type, title, details, true, lat, lng, mag, durationDays);
+        org.ether.society.model.EventCategory category = org.ether.society.model.PhysicalShockType.inferCategory(type);
+        timeline.addEntry(currentYear, type, title, details, true, lat, lng, mag, durationDays, category);
         if (onTimelineUpdated != null) onTimelineUpdated.run();
 
         if (engine != null && engine.getEventSystem() != null) {
@@ -341,12 +360,15 @@ public final class GodModeInterventionCoordinator {
         int selected = timelineListView.getSelectionModel().getSelectedIndex();
         timelineListView.getItems().clear();
         String yearPrefix = I18n.getOrDefault("godmode.timeline.year_prefix", "Year");
-        String godBadge = I18n.getOrDefault("godmode.timeline.godmode_badge", "âš¡ [GOD MODE]");
+        String godBadge = I18n.getOrDefault("godmode.timeline.godmode_badge", "⚡ [GOD MODE]");
         String histBadge = I18n.getOrDefault("godmode.timeline.historical_badge", " [HISTORICAL]");
+        String natBadge = I18n.getOrDefault("godmode.timeline.natural_badge", "[🌿 NAT]");
+        String antBadge = I18n.getOrDefault("godmode.timeline.anthropic_badge", "[☢️ ANT]");
         for (ScenarioTimeline.TimelineEntry entry : timeline.getEntries()) {
             String badge = entry.isGodModeIntervention() ? godBadge : histBadge;
-            timelineListView.getItems().add(String.format("%s %5d | %s %s : %s",
-                    yearPrefix, entry.year(), badge, entry.title(), entry.details()));
+            String catBadge = (entry.category() == org.ether.society.model.EventCategory.ANTHROPIC) ? antBadge : natBadge;
+            timelineListView.getItems().add(String.format("%s %5d | %s %s %s : %s",
+                    yearPrefix, entry.year(), badge, catBadge, entry.title(), entry.details()));
         }
         if (selected >= 0 && selected < timelineListView.getItems().size()) {
             timelineListView.getSelectionModel().select(selected);

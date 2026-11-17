@@ -138,6 +138,10 @@ public class ScenarioSetupPanel extends BorderPane {
 
     /** Internal model for a scheduled planetary event. */
     public static class ClimateEvent extends ScenarioClimateEventModel {
+        public ClimateEvent(org.ether.society.model.EventCategory category, String type, String name, int year, int month, int day, double lat, double lon, double depth, double mag, int durationDays) {
+            super(category, type, name, year, month, day, lat, lon, depth, mag, durationDays);
+        }
+
         public ClimateEvent(String type, String name, int year, int month, int day, double lat, double lon, double depth, double mag, int durationDays) {
             super(type, name, year, month, day, lat, lon, depth, mag, durationDays);
         }
@@ -153,6 +157,14 @@ public class ScenarioSetupPanel extends BorderPane {
 
     public boolean isDirty() {
         return presetManager != null && presetManager.isDirty();
+    }
+
+    /**
+     * Marks the active scenario preset state as clean.
+     */
+    public void markClean() {
+        if (scenarioPresetBar != null) scenarioPresetBar.markClean();
+        if (presetManager != null) presetManager.markClean();
     }
 
     public boolean promptSaveIfDirty(javafx.stage.Window owner) {

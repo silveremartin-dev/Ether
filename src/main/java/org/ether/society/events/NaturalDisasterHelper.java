@@ -351,7 +351,8 @@ public final class NaturalDisasterHelper {
             H3Cell floodTarget = null;
             if (cells != null && !cells.isEmpty()) {
                 List<H3Cell> candidateLowlands = cells.stream()
-                        .filter(c -> c != null && (c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN)
+                        .filter(c -> c != null && (c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN
+                                && c.getBiome() != Biome.DESERT && c.getBiome() != Biome.GLACIER)
                                 && ((c.getWaterResource() != null && c.getWaterResource() > 0.2)
                                 || (c.getPopulation() != null && c.getPopulation() > 0)
                                 || (c.getElevation() != null && c.getElevation() >= 0 && c.getElevation() < 400)))

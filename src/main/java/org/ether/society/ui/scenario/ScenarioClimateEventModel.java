@@ -8,11 +8,14 @@ package org.ether.society.ui.scenario;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.ether.society.model.ClimateEvent;
+import org.ether.society.model.EventCategory;
 
 /**
  * Observable JavaFX model representing a scheduled biophysical, climatic, or historical planetary event
@@ -22,6 +25,7 @@ import org.ether.society.model.ClimateEvent;
  * @version 1.0.0-beta.3
  */
 public class ScenarioClimateEventModel {
+    private final ObjectProperty<EventCategory> category;
     private final StringProperty type;
     private final StringProperty name;
     private final IntegerProperty year;
@@ -32,6 +36,20 @@ public class ScenarioClimateEventModel {
     private final DoubleProperty depth;
     private final DoubleProperty magnitude;
     private final IntegerProperty durationDays;
+
+    public ScenarioClimateEventModel(EventCategory category, String type, String name, int year, int month, int day, double lat, double lon, double depth, double mag, int durationDays) {
+        this.category = new SimpleObjectProperty<>(category != null ? category : ClimateEvent.inferCategoryFromType(type));
+        this.type = new SimpleStringProperty(type);
+        this.name = new SimpleStringProperty(name);
+        this.year = new SimpleIntegerProperty(year);
+        this.month = new SimpleIntegerProperty(Math.max(1, Math.min(12, month)));
+        this.day = new SimpleIntegerProperty(Math.max(1, Math.min(31, day)));
+        this.latitude = new SimpleDoubleProperty(lat);
+        this.longitude = new SimpleDoubleProperty(lon);
+        this.depth = new SimpleDoubleProperty(depth);
+        this.magnitude = new SimpleDoubleProperty(mag);
+        this.durationDays = new SimpleIntegerProperty(durationDays);
+    }
 
     /**
      * Constructs a scheduled climate/historical event with explicit date and duration.
@@ -48,16 +66,7 @@ public class ScenarioClimateEventModel {
      * @param durationDays active duration in simulation days (<= 0 indicates permanent milestone)
      */
     public ScenarioClimateEventModel(String type, String name, int year, int month, int day, double lat, double lon, double depth, double mag, int durationDays) {
-        this.type = new SimpleStringProperty(type);
-        this.name = new SimpleStringProperty(name);
-        this.year = new SimpleIntegerProperty(year);
-        this.month = new SimpleIntegerProperty(Math.max(1, Math.min(12, month)));
-        this.day = new SimpleIntegerProperty(Math.max(1, Math.min(31, day)));
-        this.latitude = new SimpleDoubleProperty(lat);
-        this.longitude = new SimpleDoubleProperty(lon);
-        this.depth = new SimpleDoubleProperty(depth);
-        this.magnitude = new SimpleDoubleProperty(mag);
-        this.durationDays = new SimpleIntegerProperty(durationDays);
+        this(ClimateEvent.inferCategoryFromType(type), type, name, year, month, day, lat, lon, depth, mag, durationDays);
     }
 
     /**
@@ -80,6 +89,10 @@ public class ScenarioClimateEventModel {
     public ScenarioClimateEventModel(String type, String name, int year, double lat, double lon, double depth, double mag) {
         this(type, name, year, 1, 1, lat, lon, depth, mag, ClimateEvent.getDefaultDurationDaysForType(type));
     }
+
+    public ObjectProperty<EventCategory> categoryProperty() { return category; }
+    public EventCategory getCategory() { return category.get(); }
+    public void setCategory(EventCategory v) { category.set(v != null ? v : EventCategory.NATURAL); }
 
     public StringProperty typeProperty() { return type; }
     public StringProperty nameProperty() { return name; }

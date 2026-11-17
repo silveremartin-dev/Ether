@@ -54,12 +54,21 @@ public class EventSystem {
     private final List<ActiveEvent> recentEventsHistory = new CopyOnWriteArrayList<>();
     private final List<ActiveEvent> chronicleHistory = new CopyOnWriteArrayList<>();
     private org.ether.society.model.ScenarioTimeline timeline;
+    private org.ether.society.model.Scenario currentScenario;
 
     /**
      * Constructs a new {@link EventSystem} and initializes canonical historical events.
      */
     public EventSystem() {
         initializeHistoricalEvents();
+    }
+
+    public org.ether.society.model.Scenario getScenario() {
+        return currentScenario;
+    }
+
+    public void setScenario(org.ether.society.model.Scenario scenario) {
+        this.currentScenario = scenario;
     }
 
     /**
@@ -219,6 +228,10 @@ public class EventSystem {
         if (enableHistoricalMilestones) {
             for (HistoricalEvent event : historicalEvents) {
                 if (event.isDue(year, month, day) && !firedHistoricalEvents.contains(event.title())) {
+                    if (currentScenario != null && currentScenario.isClippingEnabled()
+                            && !currentScenario.isCoordinateWithinBounds(event.latitude(), event.longitude())) {
+                        continue;
+                    }
                     H3Cell cell = naturalDisasterEvaluator.findBestLandCell(cells, event.latitude(), event.longitude());
                     double lat = (cell != null && cell.getLatitude() != null) ? cell.getLatitude() : event.latitude();
                     double lng = (cell != null && cell.getLongitude() != null) ? cell.getLongitude() : event.longitude();
@@ -239,6 +252,10 @@ public class EventSystem {
             List<HistoricalIntervention> starters = historicalCatalog.getInterventionsStartingInYear(year);
             for (HistoricalIntervention hi : starters) {
                 if (!firedInterventionIds.contains(hi.getId())) {
+                    if (currentScenario != null && currentScenario.isClippingEnabled()
+                            && !currentScenario.isCoordinateWithinBounds(hi.getLatitude(), hi.getLongitude())) {
+                        continue;
+                    }
                     activeInterventions.add(hi);
                     firedInterventionIds.add(hi.getId());
                     H3Cell snapCell = naturalDisasterEvaluator.findBestPopulatedOrLandCellNear(cells, hi.getLatitude(), hi.getLongitude());

@@ -181,7 +181,12 @@ public final class H3SimulationEngine implements ISimulationEngine {
         H3EngineLifecycleAndTickCoordinator.initializeFromScenario(this, scenario, cells);
     }
 
-    public void setCurrentScenario(Scenario currentScenario) { this.currentScenario = currentScenario; }
+    public void setCurrentScenario(Scenario currentScenario) {
+        this.currentScenario = currentScenario;
+        if (this.eventSystem != null) {
+            this.eventSystem.setScenario(currentScenario);
+        }
+    }
     public Scenario getCurrentScenario() { return currentScenario; }
 
     public SimulationPerformanceConfig getPerformanceConfig() { return performanceConfig; }

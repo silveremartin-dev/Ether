@@ -18,41 +18,62 @@ import java.util.Locale;
  */
 public enum PhysicalShockType {
 
-    VOLCANO(true, false),
-    NUCLEAR_STRIKE(false, false),
-    NUCLEAR_WINTER(false, false),
-    METEOR(false, false),
-    GEOENGINEERING(false, false),
-    EARTHQUAKE(true, false),
-    TSUNAMI(false, true),
-    PANDEMIC(true, false),
-    FLOOD(true, false),
-    DROUGHT(true, false),
-    FAMINE(true, false),
-    SOLAR_STORM(false, false),
-    WAR(true, false),
-    CLIMATE_ANOMALY(false, false),
-    ECONOMIC_CRASH(true, false),
-    CYBER_ATTACK(true, false),
-    TECH_SINGULARITY(true, false),
-    RENAISSANCE_BOOM(true, false),
-    BIODIVERSITY_COLLAPSE(true, false),
-    UNKNOWN(false, false);
+    VOLCANO(EventCategory.NATURAL),
+    EARTHQUAKE(EventCategory.NATURAL),
+    TSUNAMI(EventCategory.NATURAL),
+    FLOOD(EventCategory.NATURAL),
+    DROUGHT(EventCategory.NATURAL),
+    HEATWAVE(EventCategory.NATURAL),
+    ICE_AGE(EventCategory.NATURAL),
+    METEOR(EventCategory.NATURAL),
+    SOLAR_STORM(EventCategory.NATURAL),
+    SOLAR_EMP(EventCategory.NATURAL),
+    CLIMATE_ANOMALY(EventCategory.NATURAL),
+    FAMINE(EventCategory.NATURAL),
+    PANDEMIC(EventCategory.NATURAL),
 
-    private final boolean terrestrialOnly;
-    private final boolean oceanicOnly;
+    NUCLEAR_STRIKE(EventCategory.ANTHROPIC),
+    NUCLEAR_WINTER(EventCategory.ANTHROPIC),
+    WAR(EventCategory.ANTHROPIC),
+    ECONOMIC_CRASH(EventCategory.ANTHROPIC),
+    CYBER_ATTACK(EventCategory.ANTHROPIC),
+    GEOENGINEERING(EventCategory.ANTHROPIC),
+    BIODIVERSITY_COLLAPSE(EventCategory.ANTHROPIC),
+    INDUSTRIAL_ACCIDENT(EventCategory.ANTHROPIC),
+    URBAN_FIRE(EventCategory.ANTHROPIC),
+    DAM_FAILURE(EventCategory.ANTHROPIC),
 
-    PhysicalShockType(boolean terrestrialOnly, boolean oceanicOnly) {
-        this.terrestrialOnly = terrestrialOnly;
-        this.oceanicOnly = oceanicOnly;
+    TECH_SINGULARITY(EventCategory.CHRONICLE_MILESTONE),
+    RENAISSANCE_BOOM(EventCategory.CHRONICLE_MILESTONE),
+
+    ALIEN_CONTACT(EventCategory.ANTHROPIC),
+    DOME_BREACH(EventCategory.ANTHROPIC),
+    ECLSS_FAILURE(EventCategory.ANTHROPIC),
+    AEROSTAT_PUNCTURE(EventCategory.ANTHROPIC),
+    LAVA_TUBE_COLLAPSE(EventCategory.NATURAL),
+
+    UNKNOWN(EventCategory.NATURAL);
+
+    private final EventCategory defaultCategory;
+
+    PhysicalShockType(EventCategory defaultCategory) {
+        this.defaultCategory = defaultCategory != null ? defaultCategory : EventCategory.NATURAL;
     }
 
-    public boolean isTerrestrialOnly() {
-        return terrestrialOnly;
+    public EventCategory getDefaultCategory() {
+        return defaultCategory;
     }
 
-    public boolean isOceanicOnly() {
-        return oceanicOnly;
+    public EventCategory getCategory() {
+        return defaultCategory;
+    }
+
+    public boolean isNatural() {
+        return defaultCategory == EventCategory.NATURAL;
+    }
+
+    public boolean isAnthropic() {
+        return defaultCategory == EventCategory.ANTHROPIC;
     }
 
     /**
@@ -65,10 +86,26 @@ public enum PhysicalShockType {
         if (rawType == null || rawType.isBlank()) {
             return UNKNOWN;
         }
+        String clean = rawType.trim().toUpperCase(Locale.ROOT);
+        if (clean.startsWith("DISASTER_")) {
+            clean = clean.substring("DISASTER_".length());
+        } else if (clean.startsWith("MILESTONE_")) {
+            clean = clean.substring("MILESTONE_".length());
+        }
         try {
-            return PhysicalShockType.valueOf(rawType.trim().toUpperCase(Locale.ROOT));
+            return PhysicalShockType.valueOf(clean);
         } catch (IllegalArgumentException ex) {
             return UNKNOWN;
         }
+    }
+
+    /**
+     * Infers the event category (NATURAL vs ANTHROPIC) from a raw type string.
+     *
+     * @param rawType raw type string identifier
+     * @return corresponding EventCategory
+     */
+    public static EventCategory inferCategory(String rawType) {
+        return fromString(rawType).getCategory();
     }
 }

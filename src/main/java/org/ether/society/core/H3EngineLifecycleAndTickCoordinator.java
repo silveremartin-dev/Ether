@@ -58,6 +58,9 @@ final class H3EngineLifecycleAndTickCoordinator {
         }
         SimulationPipeline.resetGlobalSimulationState();
         engine.currentScenario = scenario;
+        if (engine.eventSystem != null) {
+            engine.eventSystem.setScenario(scenario);
+        }
         engine.performanceConfig = scenario != null
                 ? scenario.toPerformanceConfig()
                 : new SimulationPerformanceConfig(true);

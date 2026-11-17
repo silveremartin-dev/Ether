@@ -127,6 +127,7 @@ final class ScenarioSetupLayoutAssembler {
 
         if (p.eventsSectionBuilder == null) {
             p.eventsSectionBuilder = new ScenarioEventsSectionBuilder(p.eventsList, p::notifyParamChange);
+            p.eventsSectionBuilder.setBoundsFilter((lat, lng) -> p.spatialBoundsBuilder == null || p.spatialBoundsBuilder.isCoordinateWithinBounds(lat, lng));
         }
         VBox eventsSection = p.eventsSectionBuilder.buildEventsSection(null, null,
                 () -> p.startYearSpinner != null ? p.startYearSpinner.getValue() : -8000);

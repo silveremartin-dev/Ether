@@ -78,6 +78,8 @@ public class GodModePanel extends VBox {
 
     // Injector section labels & buttons
     private final Label injectorTitleLabel;
+    private final Label lblEventCategory;
+    private final ComboBox<org.ether.society.model.EventCategory> eventCategoryCombo;
     private final Label lblEventType;
     private final Label lblEventTitle;
     private final Label lblTargetYear;
@@ -128,6 +130,12 @@ public class GodModePanel extends VBox {
 
         eventTypeCombo = new ComboBox<>();
         GodModeUiConfigurator.configureEventTypeCombo(eventTypeCombo, EVENT_TYPES);
+
+        eventCategoryCombo = new ComboBox<>();
+        GodModeUiConfigurator.configureEventCategoryCombo(eventCategoryCombo);
+        eventCategoryCombo.valueProperty().addListener((obs, oldV, newV) -> {
+            GodModeUiConfigurator.filterEventTypeCombo(eventTypeCombo, EVENT_TYPES, newV);
+        });
 
         eventDescriptionLabel = new Label();
         eventDescriptionLabel.setWrapText(true);
@@ -207,6 +215,7 @@ public class GodModePanel extends VBox {
 
         injectorTitleLabel = new Label();
         injectorTitleLabel.getStyleClass().add("label-section-header");
+        lblEventCategory = GodModeUiConfigurator.createFormLabel(140);
         lblEventType = GodModeUiConfigurator.createFormLabel(140);
         lblEventTitle = GodModeUiConfigurator.createFormLabel(140);
         lblTargetYear = GodModeUiConfigurator.createFormLabel(140);
@@ -229,7 +238,7 @@ public class GodModePanel extends VBox {
         triggerNowBtn.setOnAction(e -> scheduleEvent(true));
 
         VBox injectorBox = GodModeUiConfigurator.buildInjectorSection(
-                injectorTitleLabel, lblEventType, eventTypeCombo, eventDescriptionLabel,
+                injectorTitleLabel, lblEventCategory, eventCategoryCombo, lblEventType, eventTypeCombo, eventDescriptionLabel,
                 lblEventTitle, eventNameField, lblTargetYear, targetYearSpinner, targetMonthSpinner, targetDaySpinner, targetYearSlider, dateRangeLabel,
                 lblLat, latSpinner, lblLng, lngSpinner, lblMag, magnitudeSpinner,
                 lblRadius, radiusKmSpinner, lblDurationDays, durationDaysSpinner, lblDurationUnit,
@@ -400,6 +409,13 @@ public class GodModePanel extends VBox {
     public void updateTexts() {
         headerLabel.setText(I18n.getOrDefault("godmode.title", "⚡ 5. GOD MODE & CHRONOLOGY"));
         pauseNoticeLabel.setText(I18n.getOrDefault("godmode.pause_notice", "⏸️ Simulation is automatically paused on this tab to allow peaceful configuration of climatic disturbances without temporal drift."));
+
+        lblEventCategory.setText(I18n.getOrDefault("godmode.label.category", "Catégorie :"));
+        lblEventCategory.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.category", "Filtrer ou choisir entre catastrophe naturelle ou anthropique.")));
+        eventCategoryCombo.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.category", "Filtrer ou choisir entre catastrophe naturelle ou anthropique.")));
+        if (eventCategoryCombo.getCellFactory() != null) {
+            eventCategoryCombo.setButtonCell(eventCategoryCombo.getCellFactory().call(null));
+        }
 
         eventTypeCombo.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.event_type", "Type of physical or climate disturbance to inject into ecosystem.")));
         eventNameField.setPromptText(I18n.getOrDefault("godmode.prompt.event_title", "Event Title or Name...")); eventNameField.setTooltip(new Tooltip(I18n.getOrDefault("godmode.tooltip.event_title", "Custom title that will appear in chronological log and audit trail.")));

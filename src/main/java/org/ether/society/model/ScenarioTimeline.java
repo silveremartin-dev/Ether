@@ -31,20 +31,28 @@ public class ScenarioTimeline implements Serializable {
         double latitude,
         double longitude,
         double magnitude,
-        int durationDays
+        int durationDays,
+        EventCategory category
     ) implements Serializable {
         /**
-         * Timeline entry.
+         * Timeline entry with default coordinates and category.
          *
          * @param year the year parameter (long)
          * @param eventType the event type parameter (String)
          * @param title the title parameter (String)
          * @param details the details parameter (String)
          * @param isGodModeIntervention the is god mode intervention parameter (boolean)
-         * @return the resulting computation or state reference
          */
         public TimelineEntry(long year, String eventType, String title, String details, boolean isGodModeIntervention) {
-            this(year, eventType, title, details, isGodModeIntervention, 0.0, 0.0, 1.0, 30);
+            this(year, eventType, title, details, isGodModeIntervention, 0.0, 0.0, 1.0, 30, EventCategory.NATURAL);
+        }
+
+        /**
+         * Timeline entry with coordinates and default category.
+         */
+        public TimelineEntry(long year, String eventType, String title, String details, boolean isGodModeIntervention,
+                             double latitude, double longitude, double magnitude, int durationDays) {
+            this(year, eventType, title, details, isGodModeIntervention, latitude, longitude, magnitude, durationDays, EventCategory.NATURAL);
         }
     }
 
@@ -66,12 +74,17 @@ public class ScenarioTimeline implements Serializable {
      * @param isGodModeIntervention the is god mode intervention parameter (boolean)
      */
     public void addEntry(long year, String eventType, String title, String details, boolean isGodModeIntervention) {
-        addEntry(year, eventType, title, details, isGodModeIntervention, 0.0, 0.0, 1.0, 30);
+        addEntry(year, eventType, title, details, isGodModeIntervention, 0.0, 0.0, 1.0, 30, EventCategory.NATURAL);
     }
 
     public void addEntry(long year, String eventType, String title, String details, boolean isGodModeIntervention,
                          double latitude, double longitude, double magnitude, int durationDays) {
-        entries.add(new TimelineEntry(year, eventType, title, details, isGodModeIntervention, latitude, longitude, magnitude, durationDays));
+        addEntry(year, eventType, title, details, isGodModeIntervention, latitude, longitude, magnitude, durationDays, EventCategory.NATURAL);
+    }
+
+    public void addEntry(long year, String eventType, String title, String details, boolean isGodModeIntervention,
+                         double latitude, double longitude, double magnitude, int durationDays, EventCategory category) {
+        entries.add(new TimelineEntry(year, eventType, title, details, isGodModeIntervention, latitude, longitude, magnitude, durationDays, category != null ? category : EventCategory.NATURAL));
         Collections.sort(entries, (a, b) -> Long.compare(a.year(), b.year()));
     }
 

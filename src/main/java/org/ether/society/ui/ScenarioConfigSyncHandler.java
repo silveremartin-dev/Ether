@@ -109,6 +109,14 @@ public class ScenarioConfigSyncHandler {
             if (panel.chronicleObserverCheckBox != null) {
                 panel.chronicleObserverCheckBox.setSelected(s.isChronicleSingularityObserverEnabled());
             }
+            if (panel.eventsSectionBuilder != null) {
+                if (panel.eventsSectionBuilder.getHistoricalNaturalCheckBox() != null) {
+                    panel.eventsSectionBuilder.getHistoricalNaturalCheckBox().setSelected(s.isHistoricalNaturalEventsEnabled());
+                }
+                if (panel.eventsSectionBuilder.getHistoricalAnthropicCheckBox() != null) {
+                    panel.eventsSectionBuilder.getHistoricalAnthropicCheckBox().setSelected(s.isHistoricalAnthropicEventsEnabled());
+                }
+            }
 
             if (panel.demographicSectionBuilder != null && panel.demographicSectionBuilder.getDemoSourceCombo() != null) {
                 String autoSrc = panel.demographicSectionBuilder.pickDemoSourceForEpoch(s.getStartDateYear(), panel.activePlanetPreset);
@@ -119,8 +127,11 @@ public class ScenarioConfigSyncHandler {
                 panel.eventsList.clear();
                 if (s.getClimateEvents() != null && !s.getClimateEvents().isEmpty()) {
                     for (org.ether.society.model.ClimateEvent ce : s.getClimateEvents()) {
+                        if (s.isClippingEnabled() && !s.isCoordinateWithinBounds(ce.getLatitude(), ce.getLongitude())) {
+                            continue;
+                        }
                         panel.eventsList.add(new ScenarioSetupPanel.ClimateEvent(
-                                ce.getType(), ce.getName(), ce.getYear(), ce.getMonth(), ce.getDay(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
+                                ce.getCategory(), ce.getType(), ce.getName(), ce.getYear(), ce.getMonth(), ce.getDay(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
                     }
                 }
             }
@@ -184,12 +195,17 @@ public class ScenarioConfigSyncHandler {
         s.setEarthHistoricalLeadersEnabled(panel.earthLeadersCheckBox != null && panel.earthLeadersCheckBox.isSelected());
         s.setProceduralLeadersEnabled(panel.proceduralLeadersCheckBox != null && panel.proceduralLeadersCheckBox.isSelected());
         s.setChronicleSingularityObserverEnabled(panel.chronicleObserverCheckBox != null && panel.chronicleObserverCheckBox.isSelected());
+        s.setHistoricalNaturalEventsEnabled(panel.eventsSectionBuilder == null || panel.eventsSectionBuilder.getHistoricalNaturalCheckBox() == null || panel.eventsSectionBuilder.getHistoricalNaturalCheckBox().isSelected());
+        s.setHistoricalAnthropicEventsEnabled(panel.eventsSectionBuilder == null || panel.eventsSectionBuilder.getHistoricalAnthropicCheckBox() == null || panel.eventsSectionBuilder.getHistoricalAnthropicCheckBox().isSelected());
 
         if (panel.eventsList != null) {
             List<org.ether.society.model.ClimateEvent> sEvents = new ArrayList<>();
             for (ScenarioSetupPanel.ClimateEvent ce : panel.eventsList) {
+                if (s.isClippingEnabled() && !s.isCoordinateWithinBounds(ce.getLatitude(), ce.getLongitude())) {
+                    continue;
+                }
                 sEvents.add(new org.ether.society.model.ClimateEvent(
-                        ce.getType(), ce.getName(), ce.getYear(), ce.getMonth(), ce.getDay(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
+                        ce.getCategory(), ce.getType(), ce.getName(), ce.getYear(), ce.getMonth(), ce.getDay(), ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
             }
             s.setClimateEvents(sEvents);
         }

@@ -50,17 +50,30 @@ public class ScenarioEventsSectionBuilder {
     private Label title3Events;
     private CheckBox randomBiophysicalEventsCheckBox;
     private CheckBox randomPoliticalEventsCheckBox;
+    private CheckBox historicalNaturalCheckBox;
+    private CheckBox historicalAnthropicCheckBox;
+    private Button loadNaturalEventsBtn;
+    private Button loadAnthropicEventsBtn;
     private CheckBox eventsCheckBox;
     private Button addEventBtn;
     private Button removeEventBtn;
     private Button clearEventsBtn;
     private Button loadEarthEventsBtn;
     private Button loadEarthLeadersBtn;
+    private java.util.function.BiPredicate<Double, Double> boundsFilter;
 
     public ScenarioEventsSectionBuilder(ObservableList<ClimateEvent> eventsList, Runnable onEventsChangedCallback) {
         this.eventsList = eventsList != null ? eventsList : FXCollections.observableArrayList();
         this.eventsTable = new TableView<>(this.eventsList);
         this.onEventsChangedCallback = onEventsChangedCallback;
+    }
+
+    public void setBoundsFilter(java.util.function.BiPredicate<Double, Double> boundsFilter) {
+        this.boundsFilter = boundsFilter;
+    }
+
+    public java.util.function.BiPredicate<Double, Double> getBoundsFilter() {
+        return boundsFilter;
     }
 
     /**
@@ -188,7 +201,25 @@ public class ScenarioEventsSectionBuilder {
         colMag.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         colMag.setPrefWidth(90);
 
-        eventsTable.getColumns().setAll(colType, colName, colYear, colMonth, colDay, colDuration, colLat, colLon, colDepth, colMag);
+        TableColumn<ClimateEvent, org.ether.society.model.EventCategory> colCategory = new TableColumn<>(I18n.getOrDefault("scenario.col.category", "Catégorie"));
+        colCategory.setCellValueFactory(cellData -> cellData.getValue().categoryProperty());
+        colCategory.setCellFactory(ComboBoxTableCell.forTableColumn(
+                new StringConverter<>() {
+                    @Override
+                    public String toString(org.ether.society.model.EventCategory c) {
+                        return c != null ? c.getDisplayName() : "";
+                    }
+
+                    @Override
+                    public org.ether.society.model.EventCategory fromString(String s) {
+                        return org.ether.society.model.EventCategory.fromString(s);
+                    }
+                },
+                FXCollections.observableArrayList(org.ether.society.model.EventCategory.NATURAL, org.ether.society.model.EventCategory.ANTHROPIC)
+        ));
+        colCategory.setPrefWidth(120);
+
+        eventsTable.getColumns().setAll(colCategory, colType, colName, colYear, colMonth, colDay, colDuration, colLat, colLon, colDepth, colMag);
 
         addEventBtn = new Button(I18n.getOrDefault("scenario.btn.add_event", "âž• Add Event"));
         addEventBtn.getStyleClass().add("button-secondary");
@@ -217,14 +248,28 @@ public class ScenarioEventsSectionBuilder {
             }
         });
 
-        loadEarthEventsBtn = new Button(I18n.getOrDefault("scenario.btn.load_earth_events", " Load Terrestrial Disasters"));
+        loadNaturalEventsBtn = new Button(I18n.getOrDefault("scenario.btn.load_natural_events", "🌋 Catastrophes Naturelles"));
+        loadNaturalEventsBtn.getStyleClass().add("button-secondary");
+        loadNaturalEventsBtn.setOnAction(e -> {
+            int yr = startYearSupplier != null ? startYearSupplier.get() : -8000;
+            loadEarthNaturalEvents(yr, true);
+        });
+
+        loadAnthropicEventsBtn = new Button(I18n.getOrDefault("scenario.btn.load_anthropic_events", "☢️ Catastrophes Anthropiques"));
+        loadAnthropicEventsBtn.getStyleClass().add("button-secondary");
+        loadAnthropicEventsBtn.setOnAction(e -> {
+            int yr = startYearSupplier != null ? startYearSupplier.get() : -8000;
+            loadEarthAnthropicEvents(yr, true);
+        });
+
+        loadEarthEventsBtn = new Button(I18n.getOrDefault("scenario.btn.load_earth_events", "🌍 Tout Charger"));
         loadEarthEventsBtn.getStyleClass().add("button-secondary");
         loadEarthEventsBtn.setOnAction(e -> {
             int yr = startYearSupplier != null ? startYearSupplier.get() : -8000;
             loadEarthBiophysicalEvents(yr, true);
         });
 
-        loadEarthLeadersBtn = new Button(I18n.getOrDefault("scenario.btn.load_historical_leaders", " Load Great Historical Leaders"));
+        loadEarthLeadersBtn = new Button(I18n.getOrDefault("scenario.btn.load_historical_leaders", "👑 Figures Historiques"));
         loadEarthLeadersBtn.getStyleClass().add("button-secondary");
         loadEarthLeadersBtn.setOnAction(e -> {
             int yr = startYearSupplier != null ? startYearSupplier.get() : -8000;
@@ -242,15 +287,29 @@ public class ScenarioEventsSectionBuilder {
         eventsCheckBox = new CheckBox(I18n.getOrDefault("scenario.events.enable", " Planifier des événements datés dans le scénario (Calendrier d'événements)"));
         eventsCheckBox.setStyle("-fx-font-weight: bold;");
 
+        historicalNaturalCheckBox = new CheckBox(I18n.getOrDefault("scenario.events.historical_natural_enable", " Événements historiques naturels"));
+        historicalNaturalCheckBox.setSelected(true);
+        historicalNaturalCheckBox.setStyle("-fx-font-size: 11px; -fx-text-fill: #38bdf8;");
+        historicalNaturalCheckBox.setOnAction(e -> notifyChange());
+
+        historicalAnthropicCheckBox = new CheckBox(I18n.getOrDefault("scenario.events.historical_anthropic_enable", " Événements historiques anthropiques"));
+        historicalAnthropicCheckBox.setSelected(true);
+        historicalAnthropicCheckBox.setStyle("-fx-font-size: 11px; -fx-text-fill: #f87171;");
+        historicalAnthropicCheckBox.setOnAction(e -> notifyChange());
+
+        HBox categoriesBox = new HBox(16, historicalNaturalCheckBox, historicalAnthropicCheckBox);
+        categoriesBox.setAlignment(Pos.CENTER_LEFT);
+        categoriesBox.setStyle("-fx-padding: 6 10; -fx-background-color: rgba(255,255,255,0.03); -fx-background-radius: 4;");
+
         HBox btnBarRow1 = new HBox(8, addEventBtn, removeEventBtn, clearEventsBtn);
         btnBarRow1.setAlignment(Pos.CENTER_LEFT);
 
-        HBox btnBarRow2 = new HBox(8, loadEarthEventsBtn, loadEarthLeadersBtn);
+        HBox btnBarRow2 = new HBox(8, loadNaturalEventsBtn, loadAnthropicEventsBtn, loadEarthEventsBtn, loadEarthLeadersBtn);
         btnBarRow2.setAlignment(Pos.CENTER_LEFT);
 
         VBox btnBar = new VBox(6, btnBarRow1, btnBarRow2);
 
-        VBox eventsSubPanel = new VBox(8, btnBar, eventsTable);
+        VBox eventsSubPanel = new VBox(8, categoriesBox, btnBar, eventsTable);
         eventsSubPanel.setStyle("-fx-padding: 8 0 0 12; -fx-border-color: rgba(251,146,60,0.25); -fx-border-radius: 6; -fx-border-width: 0 0 0 3;");
         eventsSubPanel.setVisible(false);
         eventsSubPanel.setManaged(false);
@@ -266,21 +325,40 @@ public class ScenarioEventsSectionBuilder {
         return section;
     }
 
-    public void loadEarthBiophysicalEvents(int startYear, boolean promptConfirmation) {
-        if (eventsList == null) return;
-        boolean replaceAll = promptEventLoadConfirmation(promptConfirmation, "scenario.events.load.biophysical_title");
+    public CheckBox getHistoricalNaturalCheckBox() {
+        return historicalNaturalCheckBox;
+    }
 
+    public CheckBox getHistoricalAnthropicCheckBox() {
+        return historicalAnthropicCheckBox;
+    }
+
+    public void loadEarthBiophysicalEvents(int startYear, boolean promptConfirmation) {
+        loadEarthEvents(startYear, true, true, promptConfirmation, "scenario.events.load.biophysical_title");
+    }
+
+    public void loadEarthNaturalEvents(int startYear, boolean promptConfirmation) {
+        loadEarthEvents(startYear, true, false, promptConfirmation, "scenario.events.load.natural_title");
+    }
+
+    public void loadEarthAnthropicEvents(int startYear, boolean promptConfirmation) {
+        loadEarthEvents(startYear, false, true, promptConfirmation, "scenario.events.load.anthropic_title");
+    }
+
+    private void loadEarthEvents(int startYear, boolean includeNatural, boolean includeAnthropic, boolean promptConfirmation, String titleKey) {
+        if (eventsList == null) return;
+        boolean replaceAll = promptEventLoadConfirmation(promptConfirmation, titleKey);
+
+        List<org.ether.society.model.ClimateEvent> fetched = org.ether.society.data.WikidataEventsFetcher.loadPhysicalEvents(startYear, includeNatural, includeAnthropic);
         List<ClimateEvent> filtered = new ArrayList<>();
-        // Canonical major biophysical events with exact historical dates
-        if (startYear <= -1600) filtered.add(new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 1, 1, 36.4, 25.4, 10.0, 0.95, 365));
-        if (startYear <= 79)    filtered.add(new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 8, 24, 40.8, 14.4, 8.0, 0.85, 365));
-        if (startYear <= 536)   filtered.add(new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 3, 1, 64.0, -18.0, 10.0, 0.90, 365));
-        if (startYear <= 1257)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, 5, 1, -8.4, 116.4, 12.0, 0.98, 365));
-        if (startYear <= 1347)  filtered.add(new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 10, 1, 45.0, 35.0, 0.0, 0.90, 730));
-        if (startYear <= 1783)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 6, 8, 64.0, -18.2, 8.0, 0.88, 365));
-        if (startYear <= 1815)  filtered.add(new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, 4, 10, -8.2, 118.0, 10.0, 0.95, 365));
-        if (startYear <= 1883)  filtered.add(new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, 8, 27, -6.1, 105.4, 10.0, 0.90, 365));
-        if (startYear <= 1918)  filtered.add(new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 3, 4, 39.0, -98.0, 0.0, 0.75, 730));
+        for (org.ether.society.model.ClimateEvent ce : fetched) {
+            if (boundsFilter != null && !boundsFilter.test(ce.getLatitude(), ce.getLongitude())) {
+                continue;
+            }
+            filtered.add(new ClimateEvent(
+                    ce.getCategory(), ce.getType(), ce.getName(), ce.getYear(), ce.getMonth(), ce.getDay(),
+                    ce.getLatitude(), ce.getLongitude(), ce.getDepth(), ce.getMagnitude(), ce.getDurationDays()));
+        }
 
         if (replaceAll) {
             eventsList.setAll(filtered);
@@ -303,6 +381,9 @@ public class ScenarioEventsSectionBuilder {
         List<HistoricalIntervention> allLeaders = HistoricalInterventionRegistry.getInstance().getInterventions();
         for (HistoricalIntervention hi : allLeaders) {
             if (hi.getYearStart() >= startYear) {
+                if (boundsFilter != null && !boundsFilter.test(hi.getLatitude(), hi.getLongitude())) {
+                    continue;
+                }
                 String type = hi.getArchetype() != null ? "LEADER_" + hi.getArchetype().name() : "LEADER_INSTITUTIONAL_REFORMER";
                 String title = (hi.getArchetype() != null ? hi.getArchetype().getIcon() + " " : "") + hi.getName() + " : " + hi.getDescription();
                 filtered.add(new ClimateEvent(type, title, hi.getYearStart(), hi.getLatitude(), hi.getLongitude(), 0.0, hi.getMagnitude(), hi.getDurationYears() * 365));
