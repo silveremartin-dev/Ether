@@ -12,7 +12,7 @@
 
 ---
 
-## âš¡ Instant Standalone Deployment (1-Click) & 100% Offline Capability
+## ⚡ Instant Standalone Deployment (1-Click) & 100% Offline Capability
 
 Ether runs out of the box **without requiring any external database configuration or internet connection**:
 * **100% Offline Operational**: All core baseline historical scenarios, planet archetypes, ecology models, and cliodynamic equations are embedded directly inside the JAR. You can run, experiment, modify parameters, and save completely offline.
@@ -40,7 +40,7 @@ For complete deployment options (standalone, Docker PostGIS, distributed cluster
 
 ---
 
-## ðŸŽ¨ Application Architecture & 7 Core Interface Panels
+## 🎨 Application Architecture & 7 Core Interface Panels
 
 ![Ether Application Showcase](docs/ether_demo.gif)
 
@@ -48,19 +48,19 @@ Ether features an integrated 7-panel JavaFX studio providing end-to-end control 
 
 | Application Panel | Detailed Functionality & Visual Preview |
 | :--- | :--- |
-| **1. ðŸª Biophysical Planet Generator (`PlanetGeneratorPanel`)** | **Procedural World Genesis & Tectonic Modeling**<br>Interactive planet sculptor allowing custom generation of planetary topographies, ocean-to-land ratios, atmospheric pressure, temperature gradients, insolation forcing, mantle heat flux, and soil N-P-K strata.<br><br>![1. Planet Generator Panel](docs/images/screenshots/planet_generator_editor.png) |
-| **2. â›ï¸ Geological Tensors & Resource Distribution (`ResourceDistributionPanel`)** | **8-Layer Geological Tensor Ingestion & Distribution**<br>Ingests empirical spatial datasets (ESRI ASCII Grid `.asc`, GeoJSON, GeoTIFF, WMS) for 8 energy and mineral resource tensors (Coal, Crude Oil, Natural Gas, Uranium, Helium-3, Iron & Copper, REE/Precious Metals, Aquifers) with procedural fallback toggles.<br><br>![2. Resource Distribution Panel](docs/images/screenshots/resources_editor.png) |
-| **3. ðŸŽ›ï¸ Scenario Setup Navigation (`ScenarioSetupPanel`)** | **12-Section Historical & Paleoclimate Setup Navigation**<br>Standardized setup hierarchy to configure temporal horizons (from -300,000 BP to future epochs), paleoclimate radiative forcing, cohort demographic matrices, initial technological diffusion, Asabiyyah social cohesion, and pre-flight JIT thermodynamic viability checks.<br><br>![3. Scenario Setup Panel](docs/images/screenshots/scenario_setup_editor.png) |
-| **4. âš™ï¸ Execution Context & Engine Dispatcher (`ExecutionContextPanel`)** | **Simulation Engine Dispatcher & Multi-Core Hardware Calibration**<br>Manages simulation loop execution parameters, core physical forcing laws, active Type B cliodynamic plugins, thread pool allocation, and micro/macro tick frequencies. Features direct toggling between the **Native Multi-Core Rust Engine**, **Java 21 Incubator Vector SIMD**, **OpenCL GPU Compute Shaders**, and **Deterministic CPU Safe Mode**.<br><br>![4. Execution Context Panel](docs/images/screenshots/execution_context_panel.png) |
-| **5. ðŸŒ Real-Time H3 Simulation Canvas (`H3MapCanvas`)** | **Real-Time 3D/2D H3 Hexagonal Globe & Exogenous Perturbation Console**<br>Renders multi-resolution hexagonal meshes on Uber H3 grid (standard planetary runs at Resolution 3 [41,162 cells] to Resolution 4 [288,122 cells], and fine-grained regional/cradle windows at Resolution 5–6 [~3k to ~28k cells]) with live multi-layer heatmaps (Malthusian Pressure, Biomes, Population, Radiance, Demographics, Asabiyyah), coordinate tracking, and the **Exogenous Perturbation Console** for calibrated systemic shocks, volcanic forcing, and parameter perturbations.<br><br>![5. Simulation Canvas Panel](docs/images/screenshots/h3_map_simulation_3d.png)<br><br>*Exogenous Perturbation & Intervention Console:*<br>![Perturbation Console Panel](docs/images/screenshots/god_mode_panel.png) |
-| **6. ðŸ“Š Cliodynamics Telemetry & Comparative Analytics (`ComparativeAnalyticsPanel`)** | **Planetary Cliodynamics Telemetry & Empirical Fitting**<br>Calculates real-time Root Mean Square Error (RMSE) and $R^2$ historical goodness-of-fit against empirical datasets (Seshat, Maddison, HYDE 3.4), age pyramids, Gini inequality indices, and EROEI net surplus curves.<br><br>![6. Comparative Analytics Panel](docs/images/screenshots/analytics_dashboard.png) |
-| **7. ðŸ”§ Preferences & System Configuration (`PreferencesPanel`)** | **Theme Management, Full i18n & Data Provenance**<br>Controls UI themes (Dark/Light mode), 5-language localization (`EN`, `FR`, `DE`, `ES`, `ZH`), auto-save intervals, external spatial data paths, and SHA-256 cryptographic manifest exports (`provenance.json`).<br><br>![7. Preferences Panel](docs/images/screenshots/preferences_panel.png) |
+| **1. 🪐 Biophysical Planet Generator (`PlanetGeneratorPanel`)** | **Procedural World Genesis & Tectonic Modeling**<br>Interactive planet sculptor allowing custom generation of planetary topographies, ocean-to-land ratios, atmospheric pressure, temperature gradients, insolation forcing, mantle heat flux, and soil N-P-K strata.<br><br>![1. Planet Generator Panel](docs/images/screenshots/planet_generator_editor.png) |
+| **2. ⛏️ Geological Tensors & Resource Distribution (`ResourceDistributionPanel`)** | **8-Layer Geological Tensor Ingestion & Distribution**<br>Ingests empirical spatial datasets (ESRI ASCII Grid `.asc`, GeoJSON, GeoTIFF, WMS) for 8 energy and mineral resource tensors (Coal, Crude Oil, Natural Gas, Uranium, Helium-3, Iron & Copper, REE/Precious Metals, Aquifers) with procedural fallback toggles.<br><br>![2. Resource Distribution Panel](docs/images/screenshots/resources_editor.png) |
+| **3. 🎛️ Scenario Setup Navigation (`ScenarioSetupPanel`)** | **12-Section Historical & Paleoclimate Setup Navigation**<br>Standardized setup hierarchy to configure temporal horizons (from -300,000 BP to future epochs), paleoclimate radiative forcing, cohort demographic matrices, initial technological diffusion, Asabiyyah social cohesion, and pre-flight JIT thermodynamic viability checks.<br><br>![3. Scenario Setup Panel](docs/images/screenshots/scenario_setup_editor.png) |
+| **4. ⚙️ Execution Context & Engine Dispatcher (`ExecutionContextPanel`)** | **Simulation Engine Dispatcher & Multi-Core Hardware Calibration**<br>Manages simulation loop execution parameters, core physical forcing laws, active Type B cliodynamic plugins, thread pool allocation, and micro/macro tick frequencies. Features direct toggling between the **Native Multi-Core Rust Engine**, **Java 21 Incubator Vector SIMD**, **OpenCL GPU Compute Shaders**, and **Deterministic CPU Safe Mode**.<br><br>![4. Execution Context Panel](docs/images/screenshots/execution_context_panel.png) |
+| **5. 🌐 Real-Time H3 Simulation Canvas (`H3MapCanvas`)** | **Real-Time 3D/2D H3 Hexagonal Globe & Exogenous Perturbation Console**<br>Renders multi-resolution hexagonal meshes on Uber H3 grid (standard planetary runs at Resolution 3 [41,162 cells] to Resolution 4 [288,122 cells], and fine-grained regional/cradle windows at Resolution 5–6 [~3k to ~28k cells]) with live multi-layer heatmaps (Population Density, Biomes, Surface Temperature, Malthusian Pressure, Radiance, Demographics, Asabiyyah), coordinate tracking, and the **Exogenous Perturbation Console** for calibrated systemic shocks, volcanic forcing, and parameter perturbations.<br><br>*3D Spherical Globe — Active Population Density & Demographic Settlements:*<br>![5a. 3D Globe Population Density](docs/images/screenshots/h3_map_simulation_3d_density.png)<br><br>*3D Spherical Globe — Topographic Relief, Biomes & Elevation Contours:*<br>![5b. 3D Globe Biomes & Relief](docs/images/screenshots/h3_map_simulation_3d_biomes.png)<br><br>*2D Cylindrical Planar Projection — Multi-Layer Population & Elevation Contours:*<br>![5c. 2D Map Canvas Projection](docs/images/screenshots/h3_map_simulation_2d.png)<br><br>*Exogenous Perturbation & Intervention Console:*<br>![Perturbation Console Panel](docs/images/screenshots/god_mode_panel.png) |
+| **6. 📊 Cliodynamics Telemetry & Comparative Analytics (`ComparativeAnalyticsPanel`)** | **Planetary Cliodynamics Telemetry & Empirical Fitting**<br>Calculates real-time Root Mean Square Error (RMSE) and $R^2$ historical goodness-of-fit against empirical datasets (Seshat, Maddison, HYDE 3.4), age pyramids, Gini inequality indices, and EROEI net surplus curves.<br><br>![6. Comparative Analytics Panel](docs/images/screenshots/analytics_dashboard.png) |
+| **7. 🔧 Preferences & System Configuration (`PreferencesPanel`)** | **Theme Management, Full i18n & Data Provenance**<br>Controls UI themes (Dark/Light mode), 5-language localization (`EN`, `FR`, `DE`, `ES`, `ZH`), auto-save intervals, external spatial data paths, and SHA-256 cryptographic manifest exports (`provenance.json`).<br><br>![7. Preferences Panel](docs/images/screenshots/preferences_panel.png) |
 
 ---
 
-## ðŸŽ›ï¸ Standardized Scenario Setup Navigation (Sections 1 to 12)
+## 🎛️ Standardized Scenario Setup Navigation (Sections 1 to 12)
 
-The `ScenarioSetupPanel` uses a standardized 1â€“12 numerical navigation hierarchy ensuring a seamless configuration workflow across planetary parameters, cliodynamics, and performance toggles:
+The `ScenarioSetupPanel` uses a standardized 1–12 numerical navigation hierarchy ensuring a seamless configuration workflow across planetary parameters, cliodynamics, and performance toggles:
 
 1. **1. Scenario Presets & Historical Archetypes** (Historical eras & benchmark scenario profiles)
 2. **2. Temporal Horizon & Chronology** (Start year, end year, tick rate & calendar sub-steps)
@@ -77,11 +77,11 @@ The `ScenarioSetupPanel` uses a standardized 1â€“12 numerical navigation hi
 
 ---
 
-## ðŸ¦€ High-Throughput Native Rust Engine Architecture (`ether-core-native`)
+## 🦀 High-Throughput Native Rust Engine Architecture (`ether-core-native`)
 
 To enable seamless multi-millennial planetary integrations across fine-grained H3 hexagonal grids (Resolution 3 [41,162 cells] to Resolution 4 [288,122 cells] globally, and up to Resolution 5–6 on regional cradle windows), Ether features a dedicated **Native Parallel Rust Compute Core** (`native/ether-core-native/` compiling to `ether_core_native.dll` / `libether_core_native.so` / `libether_core_native.dylib`):
 
-### ðŸ—ï¸ Data-Oriented Design (DOD) & Parallel Kernel Pipeline
+### 🏗️ Data-Oriented Design (DOD) & Parallel Kernel Pipeline
 * **Flat Memory Contiguity**: Eliminates JVM object-pointer indirection via flat, cache-aligned Structure-of-Arrays (SoA) buffers (`WorldBuffer` and `AgentBuffer`) shared directly across zero-copy FFI boundaries.
 * **Rayon Multi-Threaded Work-Stealing**: Dispatches cell chunks across all CPU cores with lock-free parallel iterators.
 * **Auto-Vectorized SIMD**: Explicit target CPU feature compilation (`target-cpu=native`, AVX2 / AVX-512) providing vectorized evaluation of thermodynamic state transitions.
@@ -93,10 +93,10 @@ Measured on **complete planetary engine steps** (`H3SimulationEngine.stepForward
 
 | Grid Resolution & Scale | Total Cells | Architectural Status | 💻 Local Workstation (4 vCPUs) | ☁️ Google Cloud VM (`c2d-standard-8`) | 100-Year Scenario (Monthly, 1,200 ticks) | 1,000-Year Scenario (Monthly, 12k ticks) | 10,000-Year Deep-Time (Annual, 10k ticks) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Res 4 Canonical Planetary** | 288,122 cells | ⭐ **STANDARD CANONIQUE** | **2,579.6 ms** (0.39 TPS) | **640.1 ms** (1.56 TPS) | **51.6 min** (Local) / **12.8 min** (GCP) | **8.6 hours** (Local) / **2.1 hours** (GCP) | **7.2 hours** (Local) / **1.8 hours** (GCP) |
-| **Res 6 Regional Window** | ~30,060 cells | 🎯 **STANDARD FENÊTRÉ** | **418.1 ms** (2.39 TPS) | **70.0 ms** (14.28 TPS) | **8.4 min** (Local) / **1.4 min** (GCP) | **1.4 hours** (Local) / **14.0 min** (GCP) | **1.2 hours** (Local) / **11.7 min** (GCP) |
+| **Res 4 Canonical Planetary** | 288,122 cells | ⭐ **CANONICAL PLANETARY** | **2,579.6 ms** (0.39 TPS) | **640.1 ms** (1.56 TPS) | **51.6 min** (Local) / **12.8 min** (GCP) | **8.6 hours** (Local) / **2.1 hours** (GCP) | **7.2 hours** (Local) / **1.8 hours** (GCP) |
+| **Res 6 Regional Window** | ~30,060 cells | 🎯 **REGIONAL WINDOWED** | **418.1 ms** (2.39 TPS) | **70.0 ms** (14.28 TPS) | **8.4 min** (Local) / **1.4 min** (GCP) | **1.4 hours** (Local) / **14.0 min** (GCP) | **1.2 hours** (Local) / **11.7 min** (GCP) |
 | **Res 3 Minimum Viable** | 41,162 cells | ⚠️ **Minimum Viable (CI/Smoke)** | **458.1 ms** (2.18 TPS) | **103.2 ms** (9.69 TPS) | **9.2 min** (Local) / **2.1 min** (GCP) | **1.5 hours** (Local) / **20.6 min** (GCP) | **1.3 hours** (Local) / **17.2 min** (GCP) |
-| **Res 2 Coarse Macro** | 5,882 cells | 🚫 **À PROSCRIRE (Aliasing)** | **172.5 ms** (5.80 TPS) | **46.5 ms** (21.49 TPS) | **3.5 min** (Local) / **55 s** (GCP) | **34.5 min** (Local) / **9.3 min** (GCP) | **28.8 min** (Local) / **7.8 min** (GCP) |
+| **Res 2 Coarse Macro** | 5,882 cells | 🚫 **PROHIBITED (Spatial Aliasing)** | **172.5 ms** (5.80 TPS) | **46.5 ms** (21.49 TPS) | **3.5 min** (Local) / **55 s** (GCP) | **34.5 min** (Local) / **9.3 min** (GCP) | **28.8 min** (Local) / **7.8 min** (GCP) |
 
 > ⚠️ **Micro-Benchmark vs. Real Engine Disparity**:
 > Pure in-memory micro-benchmarks (`--benchmark-dod` / `RustVsJavaPerformanceBenchmarkTest`) measure *only 4 isolated primitive float array loops* (streaming arithmetic at bus bandwidth ~49 ns/cell, yielding 70 TPS). Real simulation ticks execute **90 coupled scientific engines** (2D Darcy diffusion, SEIR epidemics, Dijkstra maritime routing, Turchin SDT, cartographic SSIM/IoU raster evaluations, GZIP topology serialization), resulting in **640 ms/tick on GCP (1.56 TPS)** and **2,580 ms/tick on local 4-core hardware (0.39 TPS)**. The 31-second runtime was for 2,160 iterations of isolated array math; a full 2,160-tick multi-scenario historical calibration run takes **~23 to 25 minutes on Google Cloud**.
@@ -132,10 +132,10 @@ Empirically evaluated on full planetary Earth grids (`strictDeterminism = true`)
 
 | Scenario & Grid Level | H3 Resolution | Total Hexagons | Cell Spacing | Architectural Status | 💻 Workstation (4 Cores, 8 GB Heap) | ☁️ GCP VM (`c2d-standard-8`, 24 GB Heap) | Single-Cell Latency (GCP) | 10,000 Ticks Wall-Clock Duration | Snapshot Footprint (24x Cadence) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Canonical Planetary Standard** | **Res 4** | **288,122** | ~16 km | ⭐ **STANDARD CANONIQUE** *(Simulations officielles)* | **0.39 TPS** (2,579.6 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
-| **Regional Windowed Cradle** | **Res 6** | **~28,000** | ~2.3 km | 🎯 **STANDARD FENÊTRÉ** *(Haute résolution régionale)* | **2.39 TPS** (418.1 ms) | **14.28 TPS** (70.0 ms) | 2.50 μs / cell | **11.6 minutes** | **56.0 MB** (2.3 MB / snap) |
-| **Minimum Viable Baseline** | **Res 3** | **41,162** | ~42 km | ⚠️ **Minimum Viable** *(CI & smoke tests rapides)* | **2.18 TPS** (458.1 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
-| **Coarse Global Macro** | **Res 2** | **5,882** | ~110 km | 🚫 **À PROSCRIRE** *(Aliasing spatial inacceptable)* | **5.80 TPS** (172.5 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
+| **Canonical Planetary Standard** | **Res 4** | **288,122** | ~16 km | ⭐ **CANONICAL PLANETARY** *(Official Planetary Benchmarks)* | **0.39 TPS** (2,579.6 ms) | **1.56 TPS** (640.1 ms) | 2.22 μs / cell | **1.8h (106 min)** | **580.3 MB** (24.2 MB / snap) |
+| **Regional Windowed Cradle** | **Res 6** | **~28,000** | ~2.3 km | 🎯 **REGIONAL WINDOWED** *(High-Resolution Regional Cradle)* | **2.39 TPS** (418.1 ms) | **14.28 TPS** (70.0 ms) | 2.50 μs / cell | **11.6 minutes** | **56.0 MB** (2.3 MB / snap) |
+| **Minimum Viable Baseline** | **Res 3** | **41,162** | ~42 km | ⚠️ **Minimum Viable** *(CI & Rapid Smoke Tests)* | **2.18 TPS** (458.1 ms) | **9.69 TPS** (103.2 ms) | 2.51 μs / cell | **17.2 minutes** | **82.9 MB** (3.5 MB / snap) |
+| **Coarse Global Macro** | **Res 2** | **5,882** | ~110 km | 🚫 **PROHIBITED** *(Unacceptable Spatial Aliasing)* | **5.80 TPS** (172.5 ms) | **21.49 TPS** (46.5 ms) | 7.91 μs / cell | **7.8 minutes** | **11.8 MB** (0.5 MB / snap) |
 
 ---
 
@@ -158,8 +158,8 @@ Measured on **Earth Global Res 3 (41,162 Hexagons)** under full simulation tick 
 
 | Backend Architecture Mode | Hardware Threads | 💻 Workstation TPS | 💻 Workstation Latency | ☁️ GCP VM TPS | ☁️ GCP VM Latency | Single-Cell Latency (GCP) | Measured Speedup vs 1C (GCP) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Java JIT (Monocœur, 1 Thread)** | 1 Thread | **3.96 TPS** | 252.6 ms | **15.60 TPS** | 64.1 ms | 1,557.5 ns | **1.00x (Baseline)** |
-| **Java 25 SIMD Vector (Multicœur)** | 4C (Local) / 8C (GCP) | **4.53 TPS** | 220.6 ms | **20.39 TPS** | 49.0 ms | 1,191.2 ns | **1.31x** |
+| **Java JIT (Single-Core, 1 Thread)** | 1 Thread | **3.96 TPS** | 252.6 ms | **15.60 TPS** | 64.1 ms | 1,557.5 ns | **1.00x (Baseline)** |
+| **Java 25 SIMD Vector (Multi-Core)** | 4C (Local) / 8C (GCP) | **4.53 TPS** | 220.6 ms | **20.39 TPS** | 49.0 ms | 1,191.2 ns | **1.31x** |
 | **Native Rust Core (AVX-512 + Rayon)** | 4C (Local) / 8C (GCP) | **3.65 TPS** | 273.8 ms | **16.07 TPS** | 62.2 ms | 1,511.8 ns | **1.03x** |
 
 ---
@@ -205,12 +205,12 @@ Evaluated on the standard reference grid (**Earth Global Res 3, 41,162 Hexagons*
 > While throughput accelerates by **$7.93\times$** (from 0.85 TPS to 6.74 TPS) as cohort granularity moves from the anthropological Dunbar number (150 hab/cohort) to continental macro-cohorts (50,000 hab/cohort), **the emergent demographic trajectory remains invariant to within $< 0.01\%$**. This demonstrates that cohort aggregation is a mathematically sound, non-distortive performance scaling dimension for modern and prospective planetary simulations with multi-billion populations.
 
 > 💡 **Pure In-Memory DOD Micro-Kernels vs. Full Simulation Engine**:  
-> In complete isolation from physical PDE diffusion, cartographic rasters, and disk serialization, pure DOD contiguous array kernels run at **55 to 195 TPS** (Res 2–3) and **7.4 TPS** (Res 4). Real simulation ticks execute **90 coupled scientific engines**, cartographic comparisons, and snapshot compression. See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for the detailed micro-benchmark vs macro-engine distinction and the full code audit.
+> 📖 See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for the detailed micro-benchmark vs macro-engine distinction and the full code audit.
 
 ---
 
 
-## 🖥️ ðŸ–¥ï¸ Command-Line Interface (CLI) & Tab 4 Parity
+## 🖥️ Command-Line Interface (CLI) & Tab 4 Parity
 
 All execution options configured in **Tab 4 (Execution Context Panel)** are 100% controllable via standard command-line flags:
 
@@ -237,8 +237,8 @@ java -jar society-simulation.jar --single-core --safe --res=2 --scenario=OUT_OF_
 | `--rust` / `--native` | `-` | Force Native Rust Core (`ether_core_native.dll`/`.so`/`.dylib` with Rayon + AVX-512) |
 | `--gpu` / `--opencl` | `-` | Force OpenCL GPU Compute Shader Pipeline |
 | `--simd` / `--vector` | `-` | Force Java 21 Incubator Vector SIMD Engine |
-| `--single-core` | `--monocoeur` | Run in single-threaded / single-core mode |
-| `--multi-core` | `--multicoeur` | Run in parallel multi-core mode (all available CPUs) |
+| `--single-core` | `--singlecore` | Run in single-threaded / single-core mode |
+| `--multi-core` | `--multicore` | Run in parallel multi-core mode (all available CPUs) |
 | `--threads=<N>` / `--cores=<N>` | `-` | Explicitly allocate N CPU worker threads |
 | `--mode=<local\|cluster>` | `--cluster` | Select local workstation or distributed network cluster |
 | `--role=<master\|worker>` | `-` | Set node role in cluster mode (Default: `master`) |
@@ -252,11 +252,11 @@ java -jar society-simulation.jar --single-core --safe --res=2 --scenario=OUT_OF_
 
 ---
 
-## â˜ï¸ Google Cloud Platform Distributed Multi-Node Benchmarks
+## ☁️ Google Cloud Platform Distributed Multi-Node Benchmarks
 
 Ether includes high-performance cloud orchestration scripts (`scripts/gcp/`) supporting multi-node distributed simulations on Google Cloud Compute Engine (`c2-standard-16` / `c2-standard-4` Spot cluster: `ether-master` + `ether-worker`) with a live asynchronous **PostgreSQL 15 + PostGIS 3.3** geospatial persistence layer.
 
-> ðŸ“– See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) and [docs/DEPLOYMENT_AND_INFRASTRUCTURE.md](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md) for the exhaustive cost-per-tick matrices, sizing formulas, and multi-node cluster scaling curves.
+> 📖 See [docs/BENCHMARKS.md](docs/BENCHMARKS.md) and [docs/DEPLOYMENT_AND_INFRASTRUCTURE.md](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md) for the exhaustive cost-per-tick matrices, sizing formulas, and multi-node cluster scaling curves.
 
 All snapshots, world state matrices (`topology.bin.gz`, `state.bin.gz`, `metadata.json`, `scenario.json`, `history.json`), and PostGIS spatial tables can be synchronized to the local machine in 1-click via `./scripts/gcp/fetch-results.sh` for seamless interactive replay in the Ether GUI.
 
@@ -286,10 +286,10 @@ Ether couples two rigorous tiers of scientific engines:
   - Viscoelastic Glacial Isostatic Adjustment (GIA) & Positive Degree-Day (PDD) melt
   - Farquhar FvCB photosynthesis, van Genuchten soil water retention, N-P-K nutrient depletion
   - Stull wet-bulb temperature hyperthermia lethality & Gompertz-Makeham cohort demography
-* **Tier 2 â€” Optional Cliodynamic & Institutional Engines (~50+ Engines)**:
+* **Tier 2 — Optional Cliodynamic & Institutional Engines (~50+ Engines)**:
   - Turchin-Goldstone Structural-Demographic Theory (SDT) & Elite Overproduction
   - Tainter diminishing returns on organizational complexity
-  - KÃ¼mmel-Ayres-Warr biophysical exergy growth ($Y = A K^\alpha L^\beta E^\gamma$)
+  - Kümmel-Ayres-Warr biophysical exergy growth ($Y = A K^\alpha L^\beta E^\gamma$)
   - West-Bettencourt urban allometric scaling ($Y \propto N^{1.15}$)
   - NASA HANDY & Limits to Growth (World3) non-linear carrying capacity collapse
   - Price equation multi-level selection of altruism & Boserupian agricultural intensification
@@ -328,92 +328,92 @@ Ether systematically generates and updates publication-grade visual synthesis ch
 
 ---
 
-## ðŸ›ï¸ 4-Axis Scientific Epistemic Falsification & 27 Bifurcation Suite
+## 🔬 4-Axis Scientific Epistemic Falsification & 27 Bifurcation Suite
 
 Ether acts as an **epistemic falsification laboratory** benchmarking competing macroeconomic hypotheses against empirical historical datasets (HYDE 3.4, Maddison 2020, Seshat Databank):
 
 ```
-â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-â•‘                                        ETHER 4-AXIS EMPIRICAL FALSIFICATION & BENCHMARK SUITE                                                â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ 1. Great Men vs. Physical Attractor  â•‘ Falsifies Carlyle's hypothesis: leader shocks relax to baseline (τ_1/2 ≈ 17-25 yr, |ΔK| < 1%)  â•‘
-â•‘                                      â•‘ Ï„_relax â‰¤ 120 years; all leader shocks level out under entropic depreciation (δ = 4%/yr).                 â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ 2. Archaeological Detective Anomaly  â•‘ Monitors spectral discrepancy derivative dÎ©/dt â‰¥ 0.015 yrâ»Â¹ to detect missing historical events          â•‘
-â•‘                                      â•‘ (Harappa -1900 drought, Roman 3rd c. crisis, Maya 800 CE karst collapse).                                 â•‘
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-║ 3. Master 9-Epoch Continuous Mirror  ║ Pure unforced integration across 9 canonical epochs from -100,000 BP to 2025 CE (Option B).               ║
-â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¬â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£
-â•‘ 4. Pluggable Engine Ablation Audit   â•‘ Benchmarks marginal Î”RMSE sensitivity and Î”TPS compute savings of 25+ Tier-2 engines (proving World3 is    â•‘
-â•‘                                      â•‘ vital post-1900 but disabling it pre-1900 saves +18.4% CPU without fidelity loss).                        â•‘
-â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•©â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+┌────────────────────────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ ETHER 4-AXIS EMPIRICAL FALSIFICATION & BENCHMARK SUITE                                                                                     │
+├────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. Great Men vs. Physical Attractor    │ Falsifies Carlyle's hypothesis: leader shocks relax to baseline (τ_1/2 ≈ 17-25 yr, |ΔK| < 1%)    │
+│                                        │ τ_relax ≤ 120 years; all leader shocks level out under entropic depreciation (δ = 4%/yr).        │
+├────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 2. Archaeological Detective Anomaly    │ Monitors spectral discrepancy derivative dΩ/dt ≥ 0.015 yr⁻¹ to detect missing historical events │
+│                                        │ (Harappa -1900 drought, Roman 3rd c. crisis, Maya 800 CE karst collapse).                        │
+├────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 3. Master 9-Epoch Continuous Mirror    │ Pure unforced integration across 9 canonical epochs from -100,000 BP to 2025 CE (Option B).      │
+├────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 4. Pluggable Engine Ablation Audit     │ Benchmarks marginal ΔRMSE sensitivity and ΔTPS compute savings of 25+ Tier-2 engines (proving    │
+│                                        │ World3 is vital post-1900 but disabling it pre-1900 saves +18.4% CPU without fidelity loss).      │
+└────────────────────────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ðŸ—ºï¸ 27 Canonical Historical Bifurcation & Rupture Scenarios
+## 🗺️ 27 Canonical Historical Bifurcation & Rupture Scenarios
 
 Ether formalizes and evaluates 27 canonical historical bifurcation tipping points across three ontological forcing classes (Geophysical, Epidemiological, Socio-Political):
 
 | # | Preset Key & Title | Epoch Window | Forcing Class | Key Biophysical & Cliodynamic Mechanism |
 | :-: | :--- | :---: | :---: | :--- |
-| **01** | `out_of_africa_100k` : Out-of-Africa Dispersal | -100k âž” -50k | Class I (MIS-5) | Coastal foraging corridors & genetic drift |
-| **02** | `toba_cataclysm_74k` : Toba VEI-8 Volcanic Winter | -74k âž” -50k | Class I (Aerosols) | Optical depth $\tau \ge 8$, human bottleneck ($N_e \approx 10\text{k}$) |
-| **03** | `sahul` : Maritime Settlement of Australia | -50k âž” -10k | Class III (Maritime) | Wallace line crossing & fire-stick farming |
-| **04** | `beringia` : Kelp Highway American Colonization | -25k âž” -10k | Class I (LGM Sea) | Beringian standstill & Pacific coast migration |
-| **05** | `lgm_solutrean` : Last Glacial Maximum Refugia | -20k âž” -12k | Class I (Ice Sheet) | Thermal refugia & tailored clothing insulation |
-| **06** | `younger_dryas` : Natufian Agrarian Sedentism | -10.9k âž” -9.5k | Class I (AMOC) | Abrupt cooling & wild cereal storage silos |
-| **07** | `fertile_crescent` : Neolithic Revolution | -8000 âž” -5000 | Class III (Agrarian) | Grain surplus, taxation cages & zoonotic disease |
-| **08** | `green_sahara` : African Humid Period | -6000 âž” -3500 | Class I (Orbital) | Mega-Lake Chad & trans-Saharan pastoral migration |
-| **09** | `ancient_egypt` : Hydraulic Basin Unification | -3000 âž” -1000 | Class III (Hydraulic) | Centralized Nile flood basin coordination |
-| **10** | `assyrian_empire` : Mesopotamian Soil Salinization | -1900 âž” -600 | Class I/III (Salts) | Soil salinization & imperial military expansion |
-| **11** | `bronze_age_collapse_1200bc` : Sea Peoples Rupture | -1200 âž” -900 | Class I/III (Drought) | Cascading Eastern Mediterranean palatial collapse |
-| **12** | `early_iron_age` : Iron Metallurgy Diffusion | -1000 âž” -300 | Class III (Metal) | Democratization of cheap iron tools & weapons |
-| **13** | `alexander_hellenistic_334bc` : Macedonian Conquest | -334 âž” -150 | Class III (Conquest) | Achaemenid bullion monetization & Greek koinÃ¨ |
-| **14** | `maurya_empire` : Ashoka Moral State & Rice | -300 âž” +100 | Class III (Ethics) | Wet-rice surplus & non-violent coordination |
-| **15** | `roman_empire` : Pax Romana & Turchin SDT | 0 âž” +476 | Class III (Institutions)| Maritime trade highways & elite overproduction |
-| **16** | `late_antique_ice_age` : 536 CE Volcanic Anomaly | 536 âž” +650 | Class I/II (Volc+Plague)| Double stratospheric veil & Justinian plague |
-| **17** | `islamic_expansion_632` : Arab Agrarian Revolution | 632 âž” +900 | Class III (Asabiyyah) | Qanat aquifer irrigation & trade unification |
-| **18** | `song_dynasty` : Hydraulic Coal Smelting | 1000 âž” +1279 | Class III (Exergy) | Hydraulic machinery, paper money & coke smelting |
-| **19** | `mongol_conquest_1206` : Steppe Nomad Shock | 1206 âž” +1368 | Class III (Nomad) | Composite bow cavalry & Qanat destructuring |
-| **20** | `mali_empire` : Trans-Saharan Gold/Salt Surge | 1324 âž” +1591 | Class III (Trade) | Trans-Saharan gold monetisation & Mansa Musa |
-| **21** | `black_death_1347` : Yersinia Pestis Rupture | 1347 âž” +1450 | Class II (Pathogen) | -50% labor supply shock & feudal wage inversion |
-| **22** | `americas_1491` : Pre-Columbian Intensive Agro | 1491 âž” +1650 | Class III (Ecosystem) | Chinampas, terra preta & high Andean density |
-| **23** | `columbian_contact` : Virgin Soil Epidemics | 1492 âž” +1650 | Class II (Smallpox) | -90% indigenous mortality & Orbis CO2 dip |
-| **24** | `tokugawa_japan` : Sakoku Autarkic Equilibrium | 1639 âž” +1853 | Class III (Autarky) | Zero-growth circular agro-forestry equilibrium |
-| **25** | `industrial_1800` : Coal & Steam Thermodynamic Leap | 1800 âž” +1900 | Class III (Fossil E) | Escape from organic economy & Jevons paradox |
-| **26** | `world_wars_totalitarian_1914` : Total Industrial War | 1914 âž” +1960 | Class III (Total War) | Haber-Bosch nitrogen, nuclear weapons & state |
-| **27** | `anthropocene_2000` : The Great Acceleration | 2000 âž” +2100 | Class III (Global Net) | Planetary boundary overshoot & EROEI net energy |
+| **01** | `out_of_africa_100k` : Out-of-Africa Dispersal | -100k ➔ -50k | Class I (MIS-5) | Coastal foraging corridors & genetic drift |
+| **02** | `toba_cataclysm_74k` : Toba VEI-8 Volcanic Winter | -74k ➔ -50k | Class I (Aerosols) | Optical depth $\tau \ge 8$, human bottleneck ($N_e \approx 10\text{k}$) |
+| **03** | `sahul` : Maritime Settlement of Australia | -50k ➔ -10k | Class III (Maritime) | Wallace line crossing & fire-stick farming |
+| **04** | `beringia` : Kelp Highway American Colonization | -25k ➔ -10k | Class I (LGM Sea) | Beringian standstill & Pacific coast migration |
+| **05** | `lgm_solutrean` : Last Glacial Maximum Refugia | -20k ➔ -12k | Class I (Ice Sheet) | Thermal refugia & tailored clothing insulation |
+| **06** | `younger_dryas` : Natufian Agrarian Sedentism | -10.9k ➔ -9.5k | Class I (AMOC) | Abrupt cooling & wild cereal storage silos |
+| **07** | `fertile_crescent` : Neolithic Revolution | -8000 ➔ -5000 | Class III (Agrarian) | Grain surplus, taxation cages & zoonotic disease |
+| **08** | `green_sahara` : African Humid Period | -6000 ➔ -3500 | Class I (Orbital) | Mega-Lake Chad & trans-Saharan pastoral migration |
+| **09** | `ancient_egypt` : Hydraulic Basin Unification | -3000 ➔ -1000 | Class III (Hydraulic) | Centralized Nile flood basin coordination |
+| **10** | `assyrian_empire` : Mesopotamian Soil Salinization | -1900 ➔ -600 | Class I/III (Salts) | Soil salinization & imperial military expansion |
+| **11** | `bronze_age_collapse_1200bc` : Sea Peoples Rupture | -1200 ➔ -900 | Class I/III (Drought) | Cascading Eastern Mediterranean palatial collapse |
+| **12** | `early_iron_age` : Iron Metallurgy Diffusion | -1000 ➔ -300 | Class III (Metal) | Democratization of cheap iron tools & weapons |
+| **13** | `alexander_hellenistic_334bc` : Macedonian Conquest | -334 ➔ -150 | Class III (Conquest) | Achaemenid bullion monetization & Greek koinè |
+| **14** | `maurya_empire` : Ashoka Moral State & Rice | -300 ➔ +100 | Class III (Ethics) | Wet-rice surplus & non-violent coordination |
+| **15** | `roman_empire` : Pax Romana & Turchin SDT | 0 ➔ +476 | Class III (Institutions)| Maritime trade highways & elite overproduction |
+| **16** | `late_antique_ice_age` : 536 CE Volcanic Anomaly | 536 ➔ +650 | Class I/II (Volc+Plague)| Double stratospheric veil & Justinian plague |
+| **17** | `islamic_expansion_632` : Arab Agrarian Revolution | 632 ➔ +900 | Class III (Asabiyyah) | Qanat aquifer irrigation & trade unification |
+| **18** | `song_dynasty` : Hydraulic Coal Smelting | 1000 ➔ +1279 | Class III (Exergy) | Hydraulic machinery, paper money & coke smelting |
+| **19** | `mongol_conquest_1206` : Steppe Nomad Shock | 1206 ➔ +1368 | Class III (Nomad) | Composite bow cavalry & Qanat destructuring |
+| **20** | `mali_empire` : Trans-Saharan Gold/Salt Surge | 1324 ➔ +1591 | Class III (Trade) | Trans-Saharan gold monetization & Mansa Musa |
+| **21** | `black_death_1347` : Yersinia Pestis Rupture | 1347 ➔ +1450 | Class II (Pathogen) | -50% labor supply shock & feudal wage inversion |
+| **22** | `americas_1491` : Pre-Columbian Intensive Agro | 1491 ➔ +1650 | Class III (Ecosystem) | Chinampas, terra preta & high Andean density |
+| **23** | `columbian_contact` : Virgin Soil Epidemics | 1492 ➔ +1650 | Class II (Smallpox) | -90% indigenous mortality & Orbis CO2 dip |
+| **24** | `tokugawa_japan` : Sakoku Autarkic Equilibrium | 1639 ➔ +1853 | Class III (Autarky) | Zero-growth circular agro-forestry equilibrium |
+| **25** | `industrial_1800` : Coal & Steam Thermodynamic Leap | 1800 ➔ +1900 | Class III (Fossil E) | Escape from organic economy & Jevons paradox |
+| **26** | `world_wars_totalitarian_1914` : Total Industrial War | 1914 ➔ +1960 | Class III (Total War) | Haber-Bosch nitrogen, nuclear weapons & state |
+| **27** | `anthropocene_2000` : The Great Acceleration | 2000 ➔ +2100 | Class III (Global Net) | Planetary boundary overshoot & EROEI net energy |
 
 See [docs/HISTORICAL_BIFURCATIONS_AND_TESTING.md](docs/HISTORICAL_BIFURCATIONS_AND_TESTING.md) for full historical mechanisms and references.
 
 ---
 
-## ðŸ“ˆ Historical Validation Kernel (`HistoricalValidationKernel`)
+## 📈 Historical Validation Kernel (`HistoricalValidationKernel`)
 
 Ether includes an empirical validation engine computing **Root Mean Square Error (RMSE)** and **Coefficient of Determination ($R^2$)** against empirical historical series from -10,000 BCE to 2025 CE calibrated against **Seshat: Global History Databank**, **Maddison Project Database**, **Correlates of War (COW)**, **HYDE 3.4**, and **PMIP4/CMIP6**.
 
 ---
 
-## ðŸ“„ Master Technical Documentation & Communications
+## 📄 Master Technical Documentation & Communications
 
-- ðŸš€ [Deployment & Infrastructure Guide (Local, Docker & GCP Cloud)](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md)
-- âš¡ [Unified Planetary Benchmark Suite (Single-Node & Cluster Scaling)](docs/BENCHMARKS.md)
-- ðŸ“ [Differential Equations & State Variables Specification](docs/SIMULATION_EQUATIONS_AND_VARIABLES.md)
-- ðŸ—ï¸ [Core System Architecture & Data-Oriented Design](docs/ARCHITECTURE.md)
-- ðŸ”¬ [Scientific Model Evaluation & Falsification Suite](docs/SCIENTIFIC_MODEL_EVALUATION_AND_FALSIFICATION.md)
-- ðŸŒ‹ [Historical Bifurcations, Tipping Points & Empirical Calibration](docs/HISTORICAL_BIFURCATIONS_AND_TESTING.md)
-- ðŸ—ºï¸ [Planetary Cartography, Paleoclimate & GIS Data Pipeline](docs/CARTOGRAPHY_AND_PALEO_DATA.md)
-- [Predictive Benchmark Datasets & Future Projections (2025-2100+)](docs/PREDICTIVE_DATASETS_AND_FUTURE_PROJECTIONS.md)
-- ðŸ“Š [Comparative Analysis vs. Global Systemic Models](docs/MODEL_COMPARISON.md)
-- ðŸ”’ [Security & System Integrity Audit](docs/SECURITY.md)
-- ðŸ“¢ [Reddit Launch Post](docs/posts/REDDIT_POST.md)
-- ðŸ’¼ [LinkedIn Announcement Post](docs/posts/LINKEDIN_POST.md)
-- ðŸ“¦ [Version 1.0.0-beta.3 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
+- 🚀 [Deployment & Infrastructure Guide (Local, Docker & GCP Cloud)](docs/DEPLOYMENT_AND_INFRASTRUCTURE.md)
+- ⚡ [Unified Planetary Benchmark Suite (Single-Node & Cluster Scaling)](docs/BENCHMARKS.md)
+- 📐 [Differential Equations & State Variables Specification](docs/SIMULATION_EQUATIONS_AND_VARIABLES.md)
+- 🏗️ [Core System Architecture & Data-Oriented Design](docs/ARCHITECTURE.md)
+- 🔬 [Scientific Model Evaluation & Falsification Suite](docs/SCIENTIFIC_MODEL_EVALUATION_AND_FALSIFICATION.md)
+- 🌋 [Historical Bifurcations, Tipping Points & Empirical Calibration](docs/HISTORICAL_BIFURCATIONS_AND_TESTING.md)
+- 🗺️ [Planetary Cartography, Paleoclimate & GIS Data Pipeline](docs/CARTOGRAPHY_AND_PALEO_DATA.md)
+- 🔮 [Predictive Benchmark Datasets & Future Projections (2025-2100+)](docs/PREDICTIVE_DATASETS_AND_FUTURE_PROJECTIONS.md)
+- 📊 [Comparative Analysis vs. Global Systemic Models](docs/MODEL_COMPARISON.md)
+- 🔒 [Security & System Integrity Audit](docs/SECURITY.md)
+- 📢 [Reddit Launch Post](docs/posts/REDDIT_POST.md)
+- 💼 [LinkedIn Announcement Post](docs/posts/LINKEDIN_POST.md)
+- 📦 [Version 1.0.0-beta.3 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
 
 ---
 
-## ðŸ“„ License & Authors
+## 📄 License & Authors
 
 Distributed under the **MIT License**.
 
