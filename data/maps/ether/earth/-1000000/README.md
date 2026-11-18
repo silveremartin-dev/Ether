@@ -4,7 +4,9 @@
 * **Planet**: Earth
 * **Epoch Year**: -1000000
 * **Resolution**: 2048 x 1024 (Equirectangular / Plate Carrée)
-* **Cartographic Standard**: 25 High-Definition Physical, Ecological, Cliodynamic, and Geological Resource Rasters.
+* **Cartographic Standard**: 25 High-Definition Physical, Ecological, Cliodynamic, and Geological Resource Rasters:
+  * **19 Continuous Scalar Layers**: **16-bit Grayscale PNG (`TYPE_USHORT_GRAY`, 65,536 levels `[0..65535]`)** (`elevation`, `temperature`, `precipitation`, `seasonality`, `density`, `technology`, `institutional`, `ecological`, `pathogen`, and all 10 geological/hydrological resources).
+  * **6 Categorical / Polychrome Layers**: **24-bit RGB PNG (`TYPE_INT_RGB`)** (`biomes`, `sovereignty`, `isogloss`, `kinship`, `rituals`, `tradenetwork`).
 
 ---
 

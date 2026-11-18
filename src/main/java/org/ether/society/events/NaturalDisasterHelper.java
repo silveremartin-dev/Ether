@@ -386,6 +386,117 @@ public final class NaturalDisasterHelper {
                 }
             }
         }
+
+        // Locust Swarm (Warm, Arid/Semi-Arid, Subtropical belts ONLY)
+        double pLocust = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 801L);
+        if (pLocust < 0.0025 && year >= -5000 && cells != null && !cells.isEmpty()) {
+            List<H3Cell> aridWarmCrops = cells.stream()
+                    .filter(c -> c != null && c.getLatitude() != null && Math.abs(c.getLatitude()) <= 42.0
+                            && c.getTemperatureOr(15.0) >= 15.0
+                            && (c.getBiome() == Biome.DESERT || c.getBiome() == Biome.SAVANNAH || c.getBiome() == Biome.PLAINS)
+                            && c.getBiome() != Biome.GLACIER && c.getBiome() != Biome.TUNDRA && c.getBiome() != Biome.SNOW)
+                    .toList();
+            if (!aridWarmCrops.isEmpty()) {
+                int lIdx = DeterministicPRNG.nextInt(baseSeed, (long) year, stream + 81L, aridWarmCrops.size());
+                H3Cell lCell = aridWarmCrops.get(lIdx);
+                if (lCell.getLatitude() != null && lCell.getLongitude() != null) {
+                    eventSystem.recordSpatialEvent(new ActiveEvent("LOCUST_" + year, "🦗 INVASION ACCRIDIENNE : Un essaim dévastateur de criquets pèlerins dévore cultures et pâturages.", "LOCUST_SWARM", lCell.getLatitude(), lCell.getLongitude(), year, month, 1, 20.0, 6.8, 60));
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "LOCUST_SWARM", "Locust Swarm", 6.8, lCell.getLatitude(), lCell.getLongitude(), 0.0, 0.0, 60);
+                }
+            }
+        }
+
+        // Crop Blight & Rot (Cultivated Agricultural Land, Temperate & Boreal Belts)
+        double pBlight = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 821L);
+        if (pBlight < 0.0025 && year >= -8000 && cells != null && !cells.isEmpty()) {
+            List<H3Cell> cropLands = cells.stream()
+                    .filter(c -> c != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN
+                            && c.getBiome() != Biome.DESERT && c.getBiome() != Biome.GLACIER
+                            && ((c.getBiomassAgriculture() != null && c.getBiomassAgriculture() > 5.0)
+                            || (c.getFoodResource() != null && c.getFoodResource() > 15.0)))
+                    .toList();
+            if (!cropLands.isEmpty()) {
+                int bIdx = DeterministicPRNG.nextInt(baseSeed, (long) year, stream + 83L, cropLands.size());
+                H3Cell bCell = cropLands.get(bIdx);
+                if (bCell.getLatitude() != null && bCell.getLongitude() != null) {
+                    eventSystem.recordSpatialEvent(new ActiveEvent("BLIGHT_" + year, "🌾 NIELLE & POURRITURE : Épiphytie et moisissures détruisant les récoltes sur pied.", "CROP_BLIGHT", bCell.getLatitude(), bCell.getLongitude(), year, month, 1, 20.0, 6.5, 90));
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "CROP_BLIGHT", "Crop Blight", 6.5, bCell.getLatitude(), bCell.getLongitude(), 0.0, 0.0, 90);
+                }
+            }
+        }
+
+        // Wildlife Die-Off & Sylvatic Epizootic (Wild Terrestrial Habitats)
+        double pWildlife = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 841L);
+        if (pWildlife < 0.0020 && cells != null && !cells.isEmpty()) {
+            List<H3Cell> wildHabitats = cells.stream()
+                    .filter(c -> c != null && c.getBiome() != Biome.OCEAN && c.getBiome() != Biome.DEEP_OCEAN && c.getBiome() != Biome.DESERT
+                            && c.getBiomassNatural() != null && c.getBiomassNatural() > 25.0)
+                    .toList();
+            if (!wildHabitats.isEmpty()) {
+                int wIdx = DeterministicPRNG.nextInt(baseSeed, (long) year, stream + 85L, wildHabitats.size());
+                H3Cell wCell = wildHabitats.get(wIdx);
+                if (wCell.getLatitude() != null && wCell.getLongitude() != null) {
+                    eventSystem.recordSpatialEvent(new ActiveEvent("WILDLIFE_" + year, "🦌 ÉPIZOOTIE SAUVAGE : Vague de mortalité aiguë parmi le gibier et les troupeaux.", "WILDLIFE_DIE_OFF", wCell.getLatitude(), wCell.getLongitude(), year, month, 1, 25.0, 6.2, 180));
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "WILDLIFE_DIE_OFF", "Wildlife Die-Off", 6.2, wCell.getLatitude(), wCell.getLongitude(), 0.0, 0.0, 180);
+                }
+            }
+        }
+
+        // Fishery Collapse & Marine Anoxia (STRICTLY Coastal & Marine Oceans)
+        double pFishery = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 861L);
+        if (pFishery < 0.0020 && cells != null && !cells.isEmpty()) {
+            List<H3Cell> marineCoast = cells.stream()
+                    .filter(c -> c != null && ((c.getIsCoastal() != null && c.getIsCoastal())
+                            || c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN
+                            || (c.getBiomassFish() != null && c.getBiomassFish() > 10.0)))
+                    .toList();
+            if (!marineCoast.isEmpty()) {
+                int mIdx = DeterministicPRNG.nextInt(baseSeed, (long) year, stream + 87L, marineCoast.size());
+                H3Cell mCell = marineCoast.get(mIdx);
+                if (mCell.getLatitude() != null && mCell.getLongitude() != null) {
+                    eventSystem.recordSpatialEvent(new ActiveEvent("FISHERY_" + year, "🐟 ANOXIE MARINE : Effondrement abrupt des bancs de poissons et de la pêche.", "FISHERY_COLLAPSE", mCell.getLatitude(), mCell.getLongitude(), year, month, 1, 30.0, 6.5, 365));
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "FISHERY_COLLAPSE", "Fishery Collapse", 6.5, mCell.getLatitude(), mCell.getLongitude(), 0.0, 0.0, 365);
+                }
+            }
+        }
+
+        // Tropical Cyclone / Hurricane (STRICTLY Tropical Coastal / Marine Basins, 5° to 35° Lat)
+        double pCyclone = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 881L);
+        if (pCyclone < 0.0030 && cells != null && !cells.isEmpty()) {
+            List<H3Cell> tropicalWaters = cells.stream()
+                    .filter(c -> c != null && c.getLatitude() != null
+                            && Math.abs(c.getLatitude()) >= 5.0 && Math.abs(c.getLatitude()) <= 35.0
+                            && ((c.getIsCoastal() != null && c.getIsCoastal()) || c.getBiome() == Biome.OCEAN)
+                            && c.getTemperatureOr(15.0) >= 22.0)
+                    .toList();
+            if (!tropicalWaters.isEmpty()) {
+                int cIdx = DeterministicPRNG.nextInt(baseSeed, (long) year, stream + 89L, tropicalWaters.size());
+                H3Cell cycCell = tropicalWaters.get(cIdx);
+                if (cycCell.getLatitude() != null && cycCell.getLongitude() != null) {
+                    eventSystem.recordSpatialEvent(new ActiveEvent("CYCLONE_" + year, "🌀 CYCLONE TROPICAL : Ouragan dévastateur frappant les côtes tropicales.", "TROPICAL_CYCLONE", cycCell.getLatitude(), cycCell.getLongitude(), year, month, 1, 25.0, 7.5, 7));
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "TROPICAL_CYCLONE", "Tropical Cyclone", 7.5, cycCell.getLatitude(), cycCell.getLongitude(), 0.0, 0.0, 7);
+                }
+            }
+        }
+
+        // Natural Wildfire (Densely Vegetated Dry Terrestrial Forests & Savannas)
+        double pFire = DeterministicPRNG.nextDouble(baseSeed, (long) year, stream, 901L);
+        if (pFire < 0.0025 && cells != null && !cells.isEmpty()) {
+            List<H3Cell> dryForests = cells.stream()
+                    .filter(c -> c != null
+                            && (c.getBiome() == Biome.FOREST || c.getBiome() == Biome.JUNGLE
+                            || c.getBiome() == Biome.SAVANNAH || c.getBiome() == Biome.PLAINS)
+                            && c.getBiomassNatural() != null && c.getBiomassNatural() > 30.0)
+                    .toList();
+            if (!dryForests.isEmpty()) {
+                int wfIdx = DeterministicPRNG.nextInt(baseSeed, (long) year, stream + 91L, dryForests.size());
+                H3Cell wfCell = dryForests.get(wfIdx);
+                if (wfCell.getLatitude() != null && wfCell.getLongitude() != null) {
+                    eventSystem.recordSpatialEvent(new ActiveEvent("WILDFIRE_" + year, "🔥 MÉGA-INCENDIE NATUREL : Feux de forêt consumant la biomasse sylvatique.", "WILDFIRE", wfCell.getLatitude(), wfCell.getLongitude(), year, month, 1, 20.0, 6.5, 30));
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "WILDFIRE", "Wildfire", 6.5, wfCell.getLatitude(), wfCell.getLongitude(), 0.0, 0.0, 30);
+                }
+            }
+        }
     }
 
     /**

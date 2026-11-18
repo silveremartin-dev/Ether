@@ -4121,6 +4121,19 @@
     "durationDays": 3
   },
   {
+    "type": "disaster_tropical_cyclone",
+    "name": "Cyclone de Calcutta de 1737 (Onde de Tempête Dévastatrice sur le Delta du Bengale, ~300k Décès)",
+    "year": 1737,
+    "latitude": 22.5,
+    "longitude": 88.3,
+    "depth": 0.0,
+    "magnitude": 8.5,
+    "month": 10,
+    "day": 11,
+    "category": "NATURAL",
+    "durationDays": 7
+  },
+  {
     "type": "disaster_earthquake",
     "name": "Grand Séisme et Mégatsunami de Lima et Callao (M8.6, Submersion du Port de Callao & Destruction de Lima)",
     "year": 1746,
@@ -4379,6 +4392,19 @@
     "day": 10,
     "category": "NATURAL",
     "durationDays": 5
+  },
+  {
+    "type": "disaster_tropical_cyclone",
+    "name": "Grand Ouragan des Antilles de 1780 (Ouragan San Calixto, Vents >320 km/h sur Barbade & Martinique, ~25k Décès)",
+    "year": 1780,
+    "latitude": 13.1,
+    "longitude": -59.5,
+    "depth": 0.0,
+    "magnitude": 9.0,
+    "month": 10,
+    "day": 10,
+    "category": "NATURAL",
+    "durationDays": 7
   },
   {
     "type": "disaster_drought",
@@ -4834,6 +4860,19 @@
     "day": 1,
     "category": "CHRONICLE_MILESTONE",
     "durationDays": -1
+  },
+  {
+    "type": "disaster_wildfire",
+    "name": "Grand Incendie Boréal de Miramichi de 1825 (Méga-Feu de Taïga au Nouveau-Brunswick, 16 000 km² Brûlés)",
+    "year": 1825,
+    "latitude": 47.0,
+    "longitude": -65.5,
+    "depth": 0.0,
+    "magnitude": 8.0,
+    "month": 10,
+    "day": 7,
+    "category": "NATURAL",
+    "durationDays": 21
   },
   {
     "type": "milestone_ethnography",
@@ -9048,6 +9087,19 @@
     "durationDays": 3
   },
   {
+    "type": "disaster_tropical_cyclone",
+    "name": "Typhon de Haïphong de 1881 (Onde de Submersion Cyclonique dans le Golfe du Tonkin, ~300k Décès)",
+    "year": 1881,
+    "latitude": 20.8,
+    "longitude": 106.7,
+    "depth": 0.0,
+    "magnitude": 8.8,
+    "month": 10,
+    "day": 8,
+    "category": "NATURAL",
+    "durationDays": 7
+  },
+  {
     "type": "disaster_volcano",
     "name": "Éruption Cataclysmique & Tsunamis du Krakatoa (VEI-6, Détroit de la Sonde, ~36k Morts)",
     "year": 1883,
@@ -13180,6 +13232,19 @@
     "day": 1,
     "category": "NATURAL",
     "durationDays": 150
+  },
+  {
+    "type": "disaster_wildfire",
+    "name": "Méga-Feux de Taïga de Sibérie Orientale de 1915 (Embrasement Boréal de 140 000 km² de Forêt Primaire)",
+    "year": 1915,
+    "latitude": 60.0,
+    "longitude": 105.0,
+    "depth": 0.0,
+    "magnitude": 8.5,
+    "month": 6,
+    "day": 15,
+    "category": "NATURAL",
+    "durationDays": 60
   },
   {
     "type": "milestone",
@@ -22631,6 +22696,19 @@
     "day": 12,
     "category": "NATURAL",
     "durationDays": 5
+  },
+  {
+    "type": "disaster_tropical_cyclone",
+    "name": "Cyclone de Bhola de 1970 (Cyclone Tropical le Plus Meurtrier de l'Histoire, 300k-500k Décès au Bangladesh)",
+    "year": 1970,
+    "latitude": 22.2,
+    "longitude": 90.5,
+    "depth": 0.0,
+    "magnitude": 9.2,
+    "month": 11,
+    "day": 12,
+    "category": "NATURAL",
+    "durationDays": 7
   },
   {
     "type": "disaster_flood",

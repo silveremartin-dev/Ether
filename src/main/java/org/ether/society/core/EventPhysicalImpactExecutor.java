@@ -131,8 +131,7 @@ public final class EventPhysicalImpactExecutor {
             if (temp < 10.0) return false;
             if (biome == org.ether.society.model.Biome.GLACIER
                     || biome == org.ether.society.model.Biome.SNOW
-                    || biome == org.ether.society.model.Biome.TUNDRA
-                    || biome == org.ether.society.model.Biome.BOREAL_FOREST) {
+                    || biome == org.ether.society.model.Biome.TUNDRA) {
                 return false;
             }
             return true;
@@ -380,4 +379,9 @@ public final class EventPhysicalImpactExecutor {
         }
 
         if (worldBuffer != null && cells != null) {
-            DODDataGenerator.populateWorldBuffer(cells, worldBuffer
+            DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
+        }
+
+        return new HeadlessBrushOutcome(nearest, brushType, brushTitle, brushDesc, brushMag);
+    }
+}

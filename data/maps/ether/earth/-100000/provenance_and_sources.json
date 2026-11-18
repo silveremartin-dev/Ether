@@ -4,9 +4,13 @@
   "planet": "earth",
   "resolution": "2048x1024",
   "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "encoding_standard": {
+    "scalar_layers": "16-bit Grayscale PNG (TYPE_USHORT_GRAY, 65536 levels [0..65535])",
+    "categorical_layers": "24-bit RGB Color PNG (TYPE_INT_RGB)"
+  },
   "overview": {
-    "summary_en": "Standard 25-raster cartographic and cliodynamic tensor suite for epoch -100000.",
-    "summary_fr": "Suite cartographique et tensorielle cliodynamique standard à 25 rasters pour l'époque -100000."
+    "summary_en": "Standard 25-raster cartographic and cliodynamic tensor suite for epoch -100000 (19 scalar 16-bit grayscale DEM/intensity rasters + 6 categorical 24-bit RGB rasters).",
+    "summary_fr": "Suite cartographique et tensorielle cliodynamique standard à 25 rasters pour l'époque -100000 (19 rasters scalaires en niveaux de gris 16-bit [0..65535] + 6 rasters catégoriels RGB 24-bit)."
   },
   "layers": {
     "elevation": {

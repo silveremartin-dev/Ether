@@ -4,6 +4,10 @@
   "planet": "mars",
   "resolution": "2048x1024",
   "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "encoding_standard": {
+    "scalar_layers": "16-bit Grayscale PNG (TYPE_USHORT_GRAY, 65536 levels [0..65535])",
+    "categorical_layers": "24-bit RGB Color PNG (TYPE_INT_RGB)"
+  },
   "overview": {
     "summary_en": "Uninhabited hyperarid terrestrial planet under robotic exploration.",
     "summary_fr": "Modélisation de colonisation spatiale et habitats pressurisés pour mars en 2026."

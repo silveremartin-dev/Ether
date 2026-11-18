@@ -84,6 +84,8 @@ public final class GodModeEventRegistry {
         new EventTypeItem("CROP_BLIGHT", EventCategory.NATURAL, "godmode.type.crop_blight", "godmode.event.crop_blight", "godmode.event.crop_blight.desc", 90, 6.5, false),
         new EventTypeItem("WILDLIFE_DIE_OFF", EventCategory.NATURAL, "godmode.type.wildlife_die_off", "godmode.event.wildlife_die_off", "godmode.event.wildlife_die_off.desc", 180, 6.0, false),
         new EventTypeItem("FISHERY_COLLAPSE", EventCategory.NATURAL, "godmode.type.fishery_collapse", "godmode.event.fishery_collapse", "godmode.event.fishery_collapse.desc", 365, 6.5, false),
+        new EventTypeItem("TROPICAL_CYCLONE", EventCategory.NATURAL, "godmode.type.tropical_cyclone", "godmode.event.tropical_cyclone", "godmode.event.tropical_cyclone.desc", 7, 7.5, false),
+        new EventTypeItem("WILDFIRE", EventCategory.NATURAL, "godmode.type.wildfire", "godmode.event.wildfire", "godmode.event.wildfire.desc", 30, 6.5, false),
         new EventTypeItem("BIODIVERSITY_COLLAPSE", EventCategory.NATURAL, "godmode.type.biodiversity_collapse", "godmode.event.biodiversity_collapse", "godmode.event.biodiversity_collapse.desc", 3650, 6.0, false),
         new EventTypeItem("LAVA_TUBE_COLLAPSE", EventCategory.NATURAL, "godmode.type.lava_tube_collapse", "godmode.event.lava_tube_collapse", "godmode.event.lava_tube_collapse.desc", 1, 9.0, false),
 

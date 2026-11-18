@@ -1,11 +1,167 @@
 {
   "epoch": 1816,
-  "era": "1816 CE - The Year Without a Summer",
+  "era": "Epoch 1816",
   "planet": "earth",
-  "volcanic_forcing": "Mount Tambora VEI-7 (Sumbawa, April 1815), ~100 Tg stratospheric sulfate aerosols",
-  "sources": [
-    "Stothers (1984) Science: The Great Tambora Eruption in 1815 and Its Aftermath",
-    "Oppenheimer (2003) Progress in Physical Geography: Climatic, environmental and human consequences of the largest known historic eruption",
-    "HYDE 3.4 & Maddison Project 2020"
-  ]
+  "resolution": "2048x1024",
+  "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+  "encoding_standard": {
+    "scalar_layers": "16-bit Grayscale PNG (TYPE_USHORT_GRAY, 65536 levels [0..65535])",
+    "categorical_layers": "24-bit RGB Color PNG (TYPE_INT_RGB)"
+  },
+  "overview": {
+    "summary_en": "Standard 25-raster cartographic and cliodynamic tensor suite for epoch 1816 (19 scalar 16-bit grayscale DEM/intensity rasters + 6 categorical 24-bit RGB rasters).",
+    "summary_fr": "Suite cartographique et tensorielle cliodynamique standard à 25 rasters pour l'époque 1816 (19 rasters scalaires en niveaux de gris 16-bit [0..65535] + 6 rasters catégoriels RGB 24-bit)."
+  },
+  "layers": {
+    "elevation": {
+      "filename": "earth_1816_elevation.png",
+      "category": "geophysics",
+      "data_sources": ["NOAA ETOPO 2022 15-arc-second Global Relief Model", "GEBCO 2023 Grid Bathymetric Model"],
+      "reconstitution_rationale": "High-fidelity topography and bathymetry calibrated against epoch eustatic sea level offset."
+    },
+    "biomes": {
+      "filename": "earth_1816_biomes.png",
+      "category": "ecology",
+      "data_sources": ["WorldClim v2.1 Bioclimatic Indicators", "Biome 6000 Project", "CHELSA-Trace21k"],
+      "reconstitution_rationale": "Coupled Holdridge-Whittaker bioclimatic classification driven by empirical temperature and precipitation."
+    },
+    "temperature": {
+      "filename": "earth_1816_temperature.png",
+      "category": "climate",
+      "data_sources": ["WorldClim v2.1 Bio1 (Annual Mean Temperature)", "PMIP4 Paleoclimate Synthesis"],
+      "reconstitution_rationale": "Empirical baseline modulated by continuous 2D orbital and continental paleoclimatic anomaly field."
+    },
+    "precipitation": {
+      "filename": "earth_1816_precipitation.png",
+      "category": "climate",
+      "data_sources": ["WorldClim v2.1 Bio12 (Annual Precipitation)", "Speleothem & Lake Core Records"],
+      "reconstitution_rationale": "Empirical precipitation grid with dynamic ITCZ, monsoonal, and glacial humidity corrections."
+    },
+    "seasonality": {
+      "filename": "earth_1816_seasonality.png",
+      "category": "climate",
+      "data_sources": ["WorldClim v2.1 Bio4 (Temperature Seasonality)", "Milankovitch Astronomical Solutions"],
+      "reconstitution_rationale": "Continuous seasonality amplitude accounting for axial tilt, obliquity, and ocean thermal inertia."
+    },
+    "density": {
+      "filename": "earth_1816_density.png",
+      "category": "demography",
+      "data_sources": ["HYDE 3.4 History Database of the Global Environment", "Seshat Global History Databank"],
+      "reconstitution_rationale": "Empirical demographic density field."
+    },
+    "sovereignty": {
+      "filename": "earth_1816_sovereignty.png",
+      "category": "sociology",
+      "data_sources": ["Seshat Databank Polities (ClioPatria 2023)", "Historical GIS Global Boundary Datasets"],
+      "reconstitution_rationale": "Multi-center polity sovereign domains and political borders."
+    },
+    "isogloss": {
+      "filename": "earth_1816_isogloss.png",
+      "category": "linguistics",
+      "data_sources": ["WALS World Atlas of Language Structures", "Glottolog 4.8", "D-PLACE Ethnolinguistic Database"],
+      "reconstitution_rationale": "Global ethnolinguistic phyla, sub-branches, and dialectal zones."
+    },
+    "kinship": {
+      "filename": "earth_1816_kinship.png",
+      "category": "anthropology",
+      "data_sources": ["D-PLACE Murdock Ethnographic Atlas Kinship Codes", "Todd Anthropological Family Systems Database"],
+      "reconstitution_rationale": "Spatial social structures, descent rules, and kinship organization modes."
+    },
+    "rituals": {
+      "filename": "earth_1816_rituals.png",
+      "category": "anthropology",
+      "data_sources": ["Archaeological Temple & Monumental Site Catalog", "World Religion Sacred Geography Datasets"],
+      "reconstitution_rationale": "Sacred geography, pilgrimage networks, and monumental ritual intensity."
+    },
+    "technology": {
+      "filename": "earth_1816_technology.png",
+      "category": "technology",
+      "data_sources": ["Archaeological Metallurgical & Innovation Datasets", "Maddison Project Historical GDP/Tech"],
+      "reconstitution_rationale": "Technological complexity index and diffusion fronts."
+    },
+    "institutional": {
+      "filename": "earth_1816_institutional.png",
+      "category": "sociology",
+      "data_sources": ["Seshat Complexity Characteristics", "Carneiro Organizational Scale"],
+      "reconstitution_rationale": "Administrative hierarchy levels, legal infrastructure, and state capacity."
+    },
+    "ecological": {
+      "filename": "earth_1816_ecological.png",
+      "category": "ecology",
+      "data_sources": ["Global Land Use Transitions (HYDE 3.4)", "Paleo-Deforestation Surveys"],
+      "reconstitution_rationale": "Anthropogenic ecological footprint, deforestation, and agro-pastoral soil transformation."
+    },
+    "pathogen": {
+      "filename": "earth_1816_pathogen.png",
+      "category": "epidemiology",
+      "data_sources": ["Historical Epidemiology & Paleopathology Catalogs", "Vector Ecology Baseline"],
+      "reconstitution_rationale": "Continuous epidemiological stress field, vector habitats, and zoonotic crowd disease risk."
+    },
+    "tradenetwork": {
+      "filename": "earth_1816_tradenetwork.png",
+      "category": "economy",
+      "data_sources": ["Ancient Trade Routes Geodatabase", "Historical Emporia & Caravan Nexus Catalog"],
+      "reconstitution_rationale": "Maritime trade arteries, overland caravan routes, and commercial centrality hubs."
+    },
+    "coal": {
+      "filename": "earth_1816_coal.png",
+      "category": "geology",
+      "data_sources": ["USGS World Coal Quality Inventory", "Global Coal Basin Assessment"],
+      "reconstitution_rationale": "Dual lithospheric reserve: total Carboniferous/Permian in-situ crustal endowment and surface outcrops."
+    },
+    "oil": {
+      "filename": "earth_1816_oil.png",
+      "category": "geology",
+      "data_sources": ["USGS World Petroleum Assessment", "Petroleum Sedimentary Basin Map"],
+      "reconstitution_rationale": "Crustal hydrocarbons reserve: total in-situ geological traps and surface bitumen seeps."
+    },
+    "gas": {
+      "filename": "earth_1816_gas.png",
+      "category": "geology",
+      "data_sources": ["USGS Conventional and Unconventional Natural Gas Resources"],
+      "reconstitution_rationale": "Crustal conventional and tight gas reservoirs across major sedimentary basins."
+    },
+    "uranium": {
+      "filename": "earth_1816_uranium.png",
+      "category": "geology",
+      "data_sources": ["IAEA NFCIS World Distribution of Uranium Deposits (UDEPO)"],
+      "reconstitution_rationale": "Total crustal radioactive mineral reserves (unconformity, sandstone, and calcrete deposits)."
+    },
+    "helium3": {
+      "filename": "earth_1816_helium3.png",
+      "category": "geology",
+      "data_sources": ["NASA Planetary Surface Composition", "Lunar Regolith He-3 Abundance Models"],
+      "reconstitution_rationale": "Terrestrial abundance is zero; strictly exclusive to solar-wind irradiated airless regoliths."
+    },
+    "iron_copper": {
+      "filename": "earth_1816_iron_copper.png",
+      "category": "geology",
+      "data_sources": ["USGS MRDS Mineral Resources Data System", "Precambrian BIF World Inventory"],
+      "reconstitution_rationale": "Total banded iron formations (BIFs) and porphyry copper belts plus ancient smelting centres."
+    },
+    "precious_metals": {
+      "filename": "earth_1816_precious_metals.png",
+      "category": "geology",
+      "data_sources": ["USGS MRDS Gold, Silver and PGM Deposits", "Ancient Metallurgical Inventories"],
+      "reconstitution_rationale": "Ancient historical mines (Las Médulas, Rio Tinto, Laurion, Roșia Montană, Nubia) and global giant provinces."
+    },
+    "rare_earths": {
+      "filename": "earth_1816_rare_earths.png",
+      "category": "geology",
+      "data_sources": ["USGS Critical Mineral Resources (REE, Lithium, Carbonatite Complexes)"],
+      "reconstitution_rationale": "Intrusive carbonatite complexes, pegmatite dykes, and lithium brine salars."
+    },
+    "geothermal": {
+      "filename": "earth_1816_geothermal.png",
+      "category": "geophysics",
+      "data_sources": ["Davies (2013) Global Mantle Heat Flow Database (IHFC)"],
+      "reconstitution_rationale": "Empirical terrestrial surface heat flow (mW/m²) across mid-ocean ridges, rifts, and cratons."
+    },
+    "aquifers": {
+      "filename": "earth_1816_aquifers.png",
+      "category": "geology",
+      "data_sources": ["UNESCO WHYMAP Global Groundwater Resources of the World 2022"],
+      "reconstitution_rationale": "Major regional sedimentary basin groundwater reservoirs modulated by elevation and lithological texture."
+    }
+  }
 }

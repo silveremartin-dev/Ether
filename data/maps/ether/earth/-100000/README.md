@@ -1,21 +1,23 @@
 # Cartographic & Cliodynamic Tensor Documentation — Epoch -100000
 
-## ðŸŒ Overview
+## 🌍 Overview
 * **Planet**: Earth
 * **Epoch Year**: -100000
 * **Resolution**: 2048 x 1024 (Equirectangular / Plate Carrée)
-* **Cartographic Standard**: 25 High-Definition Physical, Ecological, Cliodynamic, and Geological Resource Rasters.
+* **Cartographic Standard**: 25 High-Definition Physical, Ecological, Cliodynamic, and Geological Resource Rasters:
+  * **19 Continuous Scalar Layers**: **16-bit Grayscale PNG (`TYPE_USHORT_GRAY`, 65,536 levels `[0..65535]`)** (`elevation`, `temperature`, `precipitation`, `seasonality`, `density`, `technology`, `institutional`, `ecological`, `pathogen`, and all 10 geological/hydrological resources).
+  * **6 Categorical / Polychrome Layers**: **24-bit RGB PNG (`TYPE_INT_RGB`)** (`biomes`, `sovereignty`, `isogloss`, `kinship`, `rituals`, `tradenetwork`).
 
 ---
 
-## ðŸ“ Two-Tier Ontological Separation & Reconstitution
+## 🔬 Two-Tier Ontological Separation & Reconstitution
 In accordance with **Rule 6 of AGENTS.md**:
 1. **Static Initial Conditions ($t = t_0$)**: Initial state variables are ingested directly from peer-reviewed empirical datasets (NOAA ETOPO 2022, GEBCO 2023, WorldClim v2.1, UNESCO WHYMAP 2022, HYDE 3.4, Seshat ClioPatria, USGS MRDS, IAEA NFCIS, Davies 2013).
 2. **Dynamic Simulation Ticks ($t > t_0$)**: Simulation engines (Farquhar photosynthesis, Darcy groundwater recharge, Stull wet-bulb mortality, Turchin SDT demographic oscillations, technological diffusion) run dynamically from these base rasters.
 
 ---
 
-## ðŸ—ºï¸ 25 Cartographic Layers & Academic Provenance
+## 🗺️ 25 Cartographic Layers & Academic Provenance
 
 ### A. Geophysical & Ecological Tensors (5 Rasters)
 1. `earth_-100000_elevation.png`: Global Relief & Bathymetry (NOAA ETOPO 2022 / GEBCO 2023).
