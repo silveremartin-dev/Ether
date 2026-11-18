@@ -185,7 +185,7 @@ public class CaptureRealShots extends Application {
                     @SuppressWarnings("unchecked")
                     ComboBox<Integer> resCombo = (ComboBox<Integer>) resComboField.get(setupPanel);
                     if (resCombo != null) {
-                        resCombo.setValue(3);
+                        resCombo.setValue(4);
                     }
                     // Select cold start to ensure fresh computation with full layers
                     Field snapField = ScenarioSetupPanel.class.getDeclaredField("snapshotInspector");
@@ -243,7 +243,7 @@ public class CaptureRealShots extends Application {
                     System.err.println("Simulation Tab reached!");
                     break;
                 }
-                if (System.currentTimeMillis() - startWait > 60000) {
+                if (System.currentTimeMillis() - startWait > 180000) {
                     System.err.println("Timed out waiting for Simulation Tab, forcing selection of Tab 3.");
                     runOnFx(() -> mainTabPane.getSelectionModel().select(3));
                     break;
@@ -337,7 +337,7 @@ public class CaptureRealShots extends Application {
                 mapCanvas.resetView();
                 mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME, DisplayMode.POPULATION));
                 mapCanvas.setShowHexGrid(false);
-                mapCanvas.setShowContours(true);
+                mapCanvas.setShowContours(false);
                 controlPanel.updateActiveLayerUI();
                 mapCanvas.draw();
             });

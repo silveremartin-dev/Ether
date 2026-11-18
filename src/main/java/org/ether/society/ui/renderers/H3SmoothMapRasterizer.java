@@ -10,11 +10,13 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import org.ether.society.database.H3Cell;
+import org.ether.society.model.Biome;
 
 import java.util.List;
 
 /**
  * 2D spatial rasterizer for continuous smooth texture interpolation across H3 cells.
+ * Enforces crisp land/ocean thermodynamic boundaries to prevent cross-coastal biome bleeding.
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
@@ -31,22 +33,27 @@ public final class H3SmoothMapRasterizer {
                                                    double minLat, double maxLat, double minLng, double maxLng) {
         if (cells == null || cells.isEmpty()) return null;
 
-        int width = 720;
-        int height = 360;
+        int width = cells.size() > 100000 ? 1440 : 720;
+        int height = cells.size() > 100000 ? 720 : 360;
         WritableImage img = new WritableImage(width, height);
         PixelWriter pw = img.getPixelWriter();
 
-        float[][] rGrid = new float[height][width];
-        float[][] gGrid = new float[height][width];
-        float[][] bGrid = new float[height][width];
-        float[][] wGrid = new float[height][width];
+        float[][] rLand = new float[height][width];
+        float[][] gLand = new float[height][width];
+        float[][] bLand = new float[height][width];
+        float[][] wLand = new float[height][width];
+
+        float[][] rWater = new float[height][width];
+        float[][] gWater = new float[height][width];
+        float[][] bWater = new float[height][width];
+        float[][] wWater = new float[height][width];
 
         double spanLng = maxLng - minLng;
         double spanLat = maxLat - minLat;
         if (spanLng <= 0) spanLng = 360.0;
         if (spanLat <= 0) spanLat = 180.0;
 
-        double kernelRadiusPx = Math.max(3.0, ((double) width / Math.sqrt(cells.size())) * 1.6);
+        double kernelRadiusPx = Math.max(2.5, ((double) width / Math.sqrt(cells.size())) * 1.5);
         int rInt = (int) Math.ceil(kernelRadiusPx);
 
         for (int i = 0; i < cells.size(); i++) {
@@ -57,6 +64,9 @@ public final class H3SmoothMapRasterizer {
 
             int cx = (int) Math.clamp(Math.floor(((lng - minLng) / spanLng) * width), 0, width - 1);
             int cy = (int) Math.clamp(Math.floor(((maxLat - lat) / spanLat) * height), 0, height - 1);
+
+            Biome biome = cell.getBiome();
+            boolean isWater = (biome == Biome.OCEAN || biome == Biome.DEEP_OCEAN || (cell.getElevation() != null && cell.getElevation() <= 0));
 
             Color col = colorResolver.getBufferOrCellColor(cell);
             if (showHillshading || showSolarTerminator) {
@@ -86,10 +96,17 @@ public final class H3SmoothMapRasterizer {
                     double dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist <= kernelRadiusPx) {
                         float w = (float) Math.pow(1.0 - (dist / kernelRadiusPx), 2.0);
-                        rGrid[py][px] += r * w;
-                        gGrid[py][px] += g * w;
-                        bGrid[py][px] += b * w;
-                        wGrid[py][px] += w;
+                        if (isWater) {
+                            rWater[py][px] += r * w;
+                            gWater[py][px] += g * w;
+                            bWater[py][px] += b * w;
+                            wWater[py][px] += w;
+                        } else {
+                            rLand[py][px] += r * w;
+                            gLand[py][px] += g * w;
+                            bLand[py][px] += b * w;
+                            wLand[py][px] += w;
+                        }
                     }
                 }
             }
@@ -97,11 +114,22 @@ public final class H3SmoothMapRasterizer {
 
         for (int py = 0; py < height; py++) {
             for (int px = 0; px < width; px++) {
-                float w = wGrid[py][px];
-                if (w > 0.0001f) {
-                    float r = Math.min(1.0f, Math.max(0.0f, rGrid[py][px] / w));
-                    float g = Math.min(1.0f, Math.max(0.0f, gGrid[py][px] / w));
-                    float b = Math.min(1.0f, Math.max(0.0f, bGrid[py][px] / w));
+                float wl = wLand[py][px];
+                float ww = wWater[py][px];
+                if (ww > wl && ww > 0.0001f) {
+                    float r = Math.clamp(rWater[py][px] / ww, 0.0f, 1.0f);
+                    float g = Math.clamp(gWater[py][px] / ww, 0.0f, 1.0f);
+                    float b = Math.clamp(bWater[py][px] / ww, 0.0f, 1.0f);
+                    pw.setColor(px, py, Color.color(r, g, b, 1.0));
+                } else if (wl > 0.0001f) {
+                    float r = Math.clamp(rLand[py][px] / wl, 0.0f, 1.0f);
+                    float g = Math.clamp(gLand[py][px] / wl, 0.0f, 1.0f);
+                    float b = Math.clamp(bLand[py][px] / wl, 0.0f, 1.0f);
+                    pw.setColor(px, py, Color.color(r, g, b, 1.0));
+                } else if (ww > 0.0001f) {
+                    float r = Math.clamp(rWater[py][px] / ww, 0.0f, 1.0f);
+                    float g = Math.clamp(gWater[py][px] / ww, 0.0f, 1.0f);
+                    float b = Math.clamp(bWater[py][px] / ww, 0.0f, 1.0f);
                     pw.setColor(px, py, Color.color(r, g, b, 1.0));
                 } else {
                     pw.setColor(px, py, Color.rgb(15, 23, 42));

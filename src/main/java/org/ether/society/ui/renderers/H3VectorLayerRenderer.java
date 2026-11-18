@@ -172,6 +172,9 @@ public class H3VectorLayerRenderer {
                     double nElev = neighbor.getElevation() != null ? neighbor.getElevation() : 0;
                     int nLevel = (int) (nElev / step);
 
+                    // Skip bathymetric contour lines when both cells are submerged
+                    if (elev <= 0 && nElev <= 0) continue;
+
                     if (level > nLevel) {
                         long edge = h3Service.getDirectedEdge(cell.getH3Index(), nIdx);
                         List<LatLng> boundary = h3Service.getEdgeBoundary(edge);
