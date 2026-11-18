@@ -31,11 +31,7 @@ public final class MapComparisonRasterExtractor {
             for (int x = 0; x < subW; x++) {
                 int globalX = minX + x;
                 int srcX = (int) Math.min(imgW - 1, ((long) globalX * imgW) / fullW);
-                int rgb = img.getRGB(srcX, srcY);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
-                grid[idx++] = 0.299 * r + 0.587 * g + 0.114 * b;
+                grid[idx++] = org.ether.society.data.H3RasterBinningCoordinator.sampleBufferedGrayNormalized(img, srcX, srcY) * 255.0;
             }
         }
         return grid;
@@ -46,6 +42,8 @@ public final class MapComparisonRasterExtractor {
         int[] cat = new int[subW * subH];
         int imgW = img.getWidth();
         int imgH = img.getHeight();
+        boolean is16Bit = img.getType() == BufferedImage.TYPE_USHORT_GRAY
+                || (img.getRaster().getNumBands() == 1 && img.getSampleModel().getSampleSize(0) == 16);
         int idx = 0;
         for (int y = 0; y < subH; y++) {
             int globalY = minY + y;
@@ -53,14 +51,18 @@ public final class MapComparisonRasterExtractor {
             for (int x = 0; x < subW; x++) {
                 int globalX = minX + x;
                 int srcX = (int) Math.min(imgW - 1, ((long) globalX * imgW) / fullW);
-                int rgb = img.getRGB(srcX, srcY);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
-                if (r == g && g == b) {
-                    cat[idx++] = (r >= 2) ? 1 : 0;
+                if (is16Bit) {
+                    cat[idx++] = ((img.getRaster().getSample(srcX, srcY, 0) & 0xFFFF) >= 512) ? 1 : 0;
                 } else {
-                    cat[idx++] = rgb;
+                    int rgb = img.getRGB(srcX, srcY);
+                    int r = (rgb >> 16) & 0xFF;
+                    int g = (rgb >> 8) & 0xFF;
+                    int b = rgb & 0xFF;
+                    if (r == g && g == b) {
+                        cat[idx++] = (r >= 2) ? 1 : 0;
+                    } else {
+                        cat[idx++] = rgb;
+                    }
                 }
             }
         }
@@ -76,12 +78,7 @@ public final class MapComparisonRasterExtractor {
             int srcY = (int) Math.min(imgH - 1, ((long) y * imgH) / height);
             for (int x = 0; x < width; x++) {
                 int srcX = (int) Math.min(imgW - 1, ((long) x * imgW) / width);
-                int rgb = img.getRGB(srcX, srcY);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
-                // Standard NTSC Grayscale Luminance Formula
-                grid[idx++] = 0.299 * r + 0.587 * g + 0.114 * b;
+                grid[idx++] = org.ether.society.data.H3RasterBinningCoordinator.sampleBufferedGrayNormalized(img, srcX, srcY) * 255.0;
             }
         }
         return grid;
@@ -91,19 +88,25 @@ public final class MapComparisonRasterExtractor {
         int[] cat = new int[width * height];
         int imgW = img.getWidth();
         int imgH = img.getHeight();
+        boolean is16Bit = img.getType() == BufferedImage.TYPE_USHORT_GRAY
+                || (img.getRaster().getNumBands() == 1 && img.getSampleModel().getSampleSize(0) == 16);
         int idx = 0;
         for (int y = 0; y < height; y++) {
             int srcY = (int) Math.min(imgH - 1, ((long) y * imgH) / height);
             for (int x = 0; x < width; x++) {
                 int srcX = (int) Math.min(imgW - 1, ((long) x * imgW) / width);
-                int rgb = img.getRGB(srcX, srcY);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
-                if (r == g && g == b) {
-                    cat[idx++] = (r >= 2) ? 1 : 0;
+                if (is16Bit) {
+                    cat[idx++] = ((img.getRaster().getSample(srcX, srcY, 0) & 0xFFFF) >= 512) ? 1 : 0;
                 } else {
-                    cat[idx++] = rgb;
+                    int rgb = img.getRGB(srcX, srcY);
+                    int r = (rgb >> 16) & 0xFF;
+                    int g = (rgb >> 8) & 0xFF;
+                    int b = rgb & 0xFF;
+                    if (r == g && g == b) {
+                        cat[idx++] = (r >= 2) ? 1 : 0;
+                    } else {
+                        cat[idx++] = rgb;
+                    }
                 }
             }
         }

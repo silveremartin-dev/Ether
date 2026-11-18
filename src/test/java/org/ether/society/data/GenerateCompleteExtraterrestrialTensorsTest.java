@@ -145,15 +145,15 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
         File refDir = new File("data/maps/ether/" + planet + "/2026");
         copyOrCreatePhysicalLayers(refDir, dir, planet, epoch);
 
-        BufferedImage imgDensity = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage imgDensity = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
         BufferedImage imgSovereignty = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage imgIsogloss = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage imgKinship = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage imgRituals = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        BufferedImage imgTech = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
-        BufferedImage imgInst = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
-        BufferedImage imgEco = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
-        BufferedImage imgPathogen = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage imgTech = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+        BufferedImage imgInst = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+        BufferedImage imgEco = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+        BufferedImage imgPathogen = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
         BufferedImage imgTrade = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 
         for (BufferedImage im : List.of(imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals,
@@ -255,15 +255,28 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
             } catch (Exception ignored) {
             }
         }
-        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        int gray = (int) (defaultVal * 255.0);
-        int rgb = (gray << 16) | (gray << 8) | gray;
-        for (int y = 0; y < HEIGHT; y++) {
-            for (int x = 0; x < WIDTH; x++) {
-                img.setRGB(x, y, rgb);
+        boolean isCategorical = "biomes".equals(layerName);
+        if (isCategorical) {
+            BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+            int gray = (int) (defaultVal * 255.0);
+            int rgb = (gray << 16) | (gray << 8) | gray;
+            for (int y = 0; y < HEIGHT; y++) {
+                for (int x = 0; x < WIDTH; x++) {
+                    img.setRGB(x, y, rgb);
+                }
             }
+            return img;
+        } else {
+            BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            int val16 = (int) Math.clamp(Math.round(defaultVal * 65535.0), 0L, 65535L);
+            var raster = img.getRaster();
+            for (int y = 0; y < HEIGHT; y++) {
+                for (int x = 0; x < WIDTH; x++) {
+                    raster.setSample(x, y, 0, val16);
+                }
+            }
+            return img;
         }
-        return img;
     }
 
     /**
@@ -282,16 +295,26 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
     }
 
     /**
-     * Fills an entire image with a uniform RGB color.
+     * Fills an entire image with a uniform RGB or 16-bit color.
      *
      * @param img target image
      * @param rgb 24-bit RGB fill value
      */
     static void clearImage(BufferedImage img, int rgb) {
-        Graphics2D g = img.createGraphics();
-        g.setColor(new Color(rgb));
-        g.fillRect(0, 0, img.getWidth(), img.getHeight());
-        g.dispose();
+        if (img.getType() == BufferedImage.TYPE_USHORT_GRAY) {
+            var r = img.getRaster();
+            int w = img.getWidth(), h = img.getHeight();
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    r.setSample(x, y, 0, 0);
+                }
+            }
+        } else {
+            Graphics2D g = img.createGraphics();
+            g.setColor(new Color(rgb));
+            g.fillRect(0, 0, img.getWidth(), img.getHeight());
+            g.dispose();
+        }
     }
 
     /**
@@ -321,6 +344,12 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
      * @param coreValue peak intensity {@code [0, 255]} at spot center
      */
     static void drawCircularGradient(BufferedImage img, int cx, int cy, int radius, int coreValue) {
+        boolean is16Bit = img.getType() == BufferedImage.TYPE_USHORT_GRAY;
+        var raster = img.getRaster();
+        int maxVal = is16Bit ? 65535 : 255;
+        double normCore = Math.clamp(coreValue / 255.0, 0.0, 1.0);
+        int targetCore = (int) Math.round(normCore * maxVal);
+
         for (int dy = -radius; dy <= radius; dy++) {
             for (int dx = -radius; dx <= radius; dx++) {
                 double dist = Math.hypot(dx, dy);
@@ -328,10 +357,15 @@ public class GenerateCompleteExtraterrestrialTensorsTest {
                     int px = Math.clamp(cx + dx, 0, WIDTH - 1);
                     int py = Math.clamp(cy + dy, 0, HEIGHT - 1);
                     double falloff = Math.pow(1.0 - (dist / radius), 1.5);
-                    int val = (int) (coreValue * falloff);
-                    int cur = (img.getRGB(px, py) & 0xFF);
-                    int blended = Math.max(cur, val);
-                    img.setRGB(px, py, (blended << 16) | (blended << 8) | blended);
+                    int val = (int) (targetCore * falloff);
+                    if (is16Bit) {
+                        int cur = raster.getSample(px, py, 0);
+                        raster.setSample(px, py, 0, Math.max(cur, val));
+                    } else {
+                        int cur = (img.getRGB(px, py) & 0xFF);
+                        int blended = Math.max(cur, val);
+                        img.setRGB(px, py, (blended << 16) | (blended << 8) | blended);
+                    }
                 }
             }
         }

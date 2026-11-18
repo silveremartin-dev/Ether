@@ -287,20 +287,22 @@ public final class UnescoWhymapAquiferRasterizer {
         int width = 2048, height = 1024;
 
         float[][] baseGrid = getOrComputeBaseWhymapGrid();
-        BufferedImage outImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage outImg = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) outImg.getRaster().getDataBuffer()).getData();
 
+        int idx = 0;
         for (int y = 0; y < height; y++) {
             double lat = 90.0 - (y + 0.5) / height * 180.0;
             for (int x = 0; x < width; x++) {
                 double lon = -180.0 + (x + 0.5) / width * 360.0;
                 if (!HistoricalMapGenerator.isLand(lon, lat)) {
-                    outImg.setRGB(x, y, 0x000000);
+                    data[idx++] = 0;
                     continue;
                 }
                 float rawVal = baseGrid[y][x];
                 double rechargeFactor = getPaleoAquiferRechargeFactor(lon, lat, year);
-                int lum = Math.clamp((int) Math.round(rawVal * rechargeFactor), 0, 255);
-                outImg.setRGB(x, y, (lum << 16) | (lum << 8) | lum);
+                int u16 = (int) Math.clamp(Math.round(((rawVal * rechargeFactor) / 255.0) * 65535.0), 0L, 65535L);
+                data[idx++] = (short) (u16 & 0xFFFF);
             }
         }
         return HistoricalMapGenerator.applyAltimetryCoastlineMask(outImg);

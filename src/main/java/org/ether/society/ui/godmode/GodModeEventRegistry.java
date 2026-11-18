@@ -80,6 +80,10 @@ public final class GodModeEventRegistry {
         new EventTypeItem("METEOR", EventCategory.NATURAL, "godmode.type.meteor", "godmode.event.meteor", "godmode.event.meteor.desc", 7, 9.0, false),
         new EventTypeItem("SOLAR_EMP", EventCategory.NATURAL, "godmode.type.solar_emp", "godmode.event.solar_emp", "godmode.event.solar_emp.desc", 30, 8.5, false),
         new EventTypeItem("PANDEMIC", EventCategory.NATURAL, "godmode.type.pandemic", "godmode.event.pandemic", "godmode.event.pandemic.desc", 730, 8.0, false),
+        new EventTypeItem("LOCUST_SWARM", EventCategory.NATURAL, "godmode.type.locust_swarm", "godmode.event.locust_swarm", "godmode.event.locust_swarm.desc", 60, 6.5, false),
+        new EventTypeItem("CROP_BLIGHT", EventCategory.NATURAL, "godmode.type.crop_blight", "godmode.event.crop_blight", "godmode.event.crop_blight.desc", 90, 6.5, false),
+        new EventTypeItem("WILDLIFE_DIE_OFF", EventCategory.NATURAL, "godmode.type.wildlife_die_off", "godmode.event.wildlife_die_off", "godmode.event.wildlife_die_off.desc", 180, 6.0, false),
+        new EventTypeItem("FISHERY_COLLAPSE", EventCategory.NATURAL, "godmode.type.fishery_collapse", "godmode.event.fishery_collapse", "godmode.event.fishery_collapse.desc", 365, 6.5, false),
         new EventTypeItem("BIODIVERSITY_COLLAPSE", EventCategory.NATURAL, "godmode.type.biodiversity_collapse", "godmode.event.biodiversity_collapse", "godmode.event.biodiversity_collapse.desc", 3650, 6.0, false),
         new EventTypeItem("LAVA_TUBE_COLLAPSE", EventCategory.NATURAL, "godmode.type.lava_tube_collapse", "godmode.event.lava_tube_collapse", "godmode.event.lava_tube_collapse.desc", 1, 9.0, false),
 

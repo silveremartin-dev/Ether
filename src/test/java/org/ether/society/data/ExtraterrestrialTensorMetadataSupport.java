@@ -53,21 +53,36 @@ final class ExtraterrestrialTensorMetadataSupport {
             File titanDir = new File("data/maps/ether/titan/2150");
             titanDir.mkdirs();
 
-            BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+            BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
             BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgPrecip = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgSeason = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgAquifers = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgOil = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgGas = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgCoal = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgHe3 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgIron = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgPrecious = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgUranium = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgRareEarths = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            BufferedImage imgGeothermal = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+            BufferedImage imgTemp = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgPrecip = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgSeason = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgAquifers = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgOil = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgGas = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgCoal = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgHe3 = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgIron = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgPrecious = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgUranium = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgRareEarths = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+            BufferedImage imgGeothermal = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+
+            var rElev = imgElev.getRaster();
+            var rTemp = imgTemp.getRaster();
+            var rPrecip = imgPrecip.getRaster();
+            var rSeason = imgSeason.getRaster();
+            var rAquifers = imgAquifers.getRaster();
+            var rOil = imgOil.getRaster();
+            var rGas = imgGas.getRaster();
+            var rCoal = imgCoal.getRaster();
+            var rHe3 = imgHe3.getRaster();
+            var rIron = imgIron.getRaster();
+            var rPrecious = imgPrecious.getRaster();
+            var rUranium = imgUranium.getRaster();
+            var rRareEarths = imgRareEarths.getRaster();
+            var rGeothermal = imgGeothermal.getRaster();
 
             for (int y = 0; y < HEIGHT; y++) {
                 double vFrac = (double) y / (double) HEIGHT;
@@ -104,7 +119,7 @@ final class ExtraterrestrialTensorMetadataSupport {
                         default -> 95;
                     };
                     int elevByte = Math.clamp((int) Math.round(baseElev + microRelief), 0, 255);
-                    imgElev.setRGB(x, y, grayRgb(elevByte));
+                    rElev.setSample(x, y, 0, u16(elevByte));
 
                     int biomeRGB = switch (unit) {
                         case 1 -> new Color(14, 60, 160).getRGB();
@@ -117,21 +132,21 @@ final class ExtraterrestrialTensorMetadataSupport {
                     imgBiomes.setRGB(x, y, biomeRGB);
 
                     double tempK = 94.0 - Math.abs(lat) / 90.0 * 4.0;
-                    imgTemp.setRGB(x, y, grayRgb(Math.clamp((int) Math.round(((tempK - 70.0) / 40.0) * 255.0), 0, 255)));
-                    imgPrecip.setRGB(x, y, grayRgb((unit == 1 || Math.abs(lat) > 60.0) ? 220 : (Math.abs(lat) < 25.0 ? 20 : 60)));
-                    imgSeason.setRGB(x, y, grayRgb(Math.clamp((int) Math.round((Math.abs(lat) / 90.0) * 255.0), 0, 255)));
-                    imgAquifers.setRGB(x, y, grayRgb(220));
+                    rTemp.setSample(x, y, 0, u16(Math.clamp((int) Math.round(((tempK - 70.0) / 40.0) * 255.0), 0, 255)));
+                    rPrecip.setSample(x, y, 0, u16((unit == 1 || Math.abs(lat) > 60.0) ? 220 : (Math.abs(lat) < 25.0 ? 20 : 60)));
+                    rSeason.setSample(x, y, 0, u16(Math.clamp((int) Math.round((Math.abs(lat) / 90.0) * 255.0), 0, 255)));
+                    rAquifers.setSample(x, y, 0, u16(220));
 
-                    imgOil.setRGB(x, y, grayRgb((unit == 1) ? 255 : (unit == 2 ? 190 : (unit == 0 ? 110 : 25))));
-                    imgGas.setRGB(x, y, grayRgb((unit == 1) ? 255 : (unit == 2 ? 210 : (unit == 0 ? 120 : 35))));
-                    imgCoal.setRGB(x, y, grayRgb((unit == 2 || unit == 0) ? 140 : 20));
+                    rOil.setSample(x, y, 0, u16((unit == 1) ? 255 : (unit == 2 ? 190 : (unit == 0 ? 110 : 25))));
+                    rGas.setSample(x, y, 0, u16((unit == 1) ? 255 : (unit == 2 ? 210 : (unit == 0 ? 120 : 35))));
+                    rCoal.setSample(x, y, 0, u16((unit == 2 || unit == 0) ? 140 : 20));
                     int metalByte = (unit == 4 || unit == 3) ? 120 : 15;
-                    imgIron.setRGB(x, y, grayRgb(metalByte));
-                    imgPrecious.setRGB(x, y, grayRgb(metalByte / 2));
-                    imgUranium.setRGB(x, y, grayRgb(10));
-                    imgRareEarths.setRGB(x, y, grayRgb(metalByte / 3));
-                    imgHe3.setRGB(x, y, grayRgb(20));
-                    imgGeothermal.setRGB(x, y, grayRgb((unit == 3 || unit == 5) ? 90 : 30));
+                    rIron.setSample(x, y, 0, u16(metalByte));
+                    rPrecious.setSample(x, y, 0, u16(metalByte / 2));
+                    rUranium.setSample(x, y, 0, u16(10));
+                    rRareEarths.setSample(x, y, 0, u16(metalByte / 3));
+                    rHe3.setSample(x, y, 0, u16(20));
+                    rGeothermal.setSample(x, y, 0, u16((unit == 3 || unit == 5) ? 90 : 30));
                 }
             }
 
@@ -174,6 +189,10 @@ final class ExtraterrestrialTensorMetadataSupport {
         return (v << 16) | (v << 8) | v;
     }
 
+    static int u16(int byteVal) {
+        return (int) Math.clamp(Math.round((byteVal / 255.0) * 65535.0), 0L, 65535L);
+    }
+
     /**
      * Renders and saves the 10 demographic and cultural tensor layers for Titan 2150 outposts.
      *
@@ -182,15 +201,15 @@ final class ExtraterrestrialTensorMetadataSupport {
      * @throws Exception if PNG writing fails
      */
     private static void renderAndSaveTitanOutposts(File titanDir, List<OutpostSite> titanOutposts) throws Exception {
-        BufferedImage imgDensity = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage imgDensity = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
         BufferedImage imgSovereignty = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage imgIsogloss = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage imgKinship = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         BufferedImage imgRituals = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        BufferedImage imgTech = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        BufferedImage imgInst = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        BufferedImage imgEco = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        BufferedImage imgPathogen = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage imgTech = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+        BufferedImage imgInst = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+        BufferedImage imgEco = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+        BufferedImage imgPathogen = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
         BufferedImage imgTrade = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 
         for (BufferedImage im : List.of(imgDensity, imgSovereignty, imgIsogloss, imgKinship, imgRituals,
@@ -335,6 +354,10 @@ final class ExtraterrestrialTensorMetadataSupport {
                   "planet": "%s",
                   "resolution": "2048x1024",
                   "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+                  "encoding_standard": {
+                    "scalar_layers": "16-bit Grayscale PNG (TYPE_USHORT_GRAY, 65536 levels [0..65535])",
+                    "categorical_layers": "24-bit RGB Color PNG (TYPE_INT_RGB)"
+                  },
                   "overview": {
                     "summary_en": "%s",
                     "summary_fr": "Modélisation de colonisation spatiale et habitats pressurisés pour %s en %d."

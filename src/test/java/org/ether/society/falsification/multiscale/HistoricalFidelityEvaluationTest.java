@@ -122,8 +122,7 @@ public class HistoricalFidelityEvaluationTest {
 
                     // Ground truth
                     int trueSov = imgSovereignty.getRGB(px, py);
-                    int rgbDen = imgDensity.getRGB(px, py);
-                    double trueDen = ((rgbDen >> 16) & 0xFF) / 255.0;
+                    double trueDen = org.ether.society.data.H3RasterBinningCoordinator.sampleBufferedGrayNormalized(imgDensity, px, py);
 
                     // Sample nearest H3 cell center
                     long h3Index = H3Service.getInstance().latLngToH3(lat, lon, res);
@@ -137,7 +136,7 @@ public class HistoricalFidelityEvaluationTest {
                         cx = Math.max(0, Math.min(imgW - 1, cx));
                         cy = Math.max(0, Math.min(imgH - 1, cy));
                         sampledSov = imgSovereignty.getRGB(cx, cy);
-                        sampledDen = (((imgDensity.getRGB(cx, cy)) >> 16) & 0xFF) / 255.0;
+                        sampledDen = org.ether.society.data.H3RasterBinningCoordinator.sampleBufferedGrayNormalized(imgDensity, cx, cy);
                     } else {
                         sampledSov = trueSov;
                         sampledDen = trueDen;

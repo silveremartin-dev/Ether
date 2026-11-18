@@ -1784,19 +1784,23 @@ The numerical solver architecture partitions differential systems based on their
 ## 6. Spatiotemporal Cartographic Tensors & Cultural Affinity Matrix
 
 ### 6.1 Multi-Channel Cartographic Tensor Architecture (2048 x 1024 Equirectangular)
-The simulation state at $T_0$ is initialized from a coupled tensor stack:
-1. **24-bit Categorical RGB Entity Tensors**:
+The simulation state at $T_0$ is initialized from a coupled tensor stack following a strict two-format standard:
+1. **24-bit Categorical & Polychrome RGB Entity Tensors (`TYPE_INT_RGB`)**:
+   - **Biomes (`biomes.png`)**: $\text{RGB}(R,G,B) \leftrightarrow 14\text{ Holdridge-Whittaker Bioclimatic Classes}$.
    - **Tensor 0 (Isoglosses / Languages)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Language Family / Glottolog Clade ID}$.
    - **Tensor 1 (Kinship & Clan Structures)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Lineage System (Patrilineal, Matrilineal, Bilateral Foraging Band)}$.
+   - **Tensor 2 (Rituals / Sacred Geography)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Religious & Ritual Tradition Cluster}$.
    - **Tensor 3 (Politico-Military Sovereignty & Polities)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Polity ID / Sovereign Capital Jurisdiction}$.
-2. **8-bit Continuous Intensity Grayscale Tensors ($[0, 255]$)**:
-   - **Demographic Density**: $\rho(\mathbf{x}) = \rho_{\max} \cdot (G(\mathbf{x}) / 255)^\gamma$.
-   - **Tensor 2 (Rituals / Asabiyyah)**: $A(\mathbf{x}) \in [0, 1]$ social cohesion and sacred norms.
-   - **Tensor 4 (Materiality & Technologies)**: $\tau(\mathbf{x}) \in [0, 1]$ lithic / metallurgical complexity.
-   - **Tensor 5 (Trade Corridors & Hubs)**: $C(\mathbf{x}) \in [0, 1]$ caravan / maritime conductance.
-   - **Tensor 6 (Institutional Complexity)**: $\mathcal{I}(\mathbf{x}) \in [0, 1]$ legal codification and administrative depth (Seshat).
-   - **Tensor 7 (Ecological Footprint & Degradation)**: $D(\mathbf{x}) \in [0, 1]$ soil salinization, erosion, deforestation.
-   - **10 Geological Tensors**: Coal, Oil, Gas, Uranium, He-3, Iron/Copper, Precious Metals, Rare Earths, Geothermal Heat, Aquifers.
+   - **Tensor 5 (Trade Corridors & Hubs)**: $\text{RGB}(R,G,B) \leftrightarrow \text{Overland, Maritime & Riverine Conductance Arteries}$.
+2. **16-bit Continuous Intensity Grayscale Tensors (`TYPE_USHORT_GRAY`, $[0, 65535]$, 65,536 levels)**:
+   - **Elevation & Bathymetry (`elevation.png`)**: $[-11\,000\text{ m}, +8\,848\text{ m}]$ with sea-level ($0\text{ m}$) anchored at normalized datum $0.478$ ($u_{16} = 31\,326$, vertical resolution $\approx 0.26\text{–}0.35\text{ m}$).
+   - **Climate Scalars (`temperature.png`, `precipitation.png`, `seasonality.png`)**: Surface temperature ($[-50\,^\circ\text{C}, +50\,^\circ\text{C}]$, resolution $\approx 0.0015\,^\circ\text{C}$), annual precipitation ($[0, 4\,000\text{ mm/yr}]$, square-root encoded), and seasonal thermal amplitude ($[1, 61\,^\circ\text{C}]$).
+   - **Demographic Density (`density.png`)**: $\rho(\mathbf{x})$ encoded across 65,536 logarithmic grayscale levels from HYDE 3.4 conserved headcounts.
+   - **Tensor 4 (Materiality & Technologies)**: $\tau(\mathbf{x}) \in [0, 1]$ ($u_{16} / 65535$) lithic / metallurgical complexity.
+   - **Tensor 6 (Institutional Complexity)**: $\mathcal{I}(\mathbf{x}) \in [0, 1]$ ($u_{16} / 65535$) legal codification and administrative depth (Seshat).
+   - **Tensor 7 (Ecological Footprint & Degradation)**: $D(\mathbf{x}) \in [0, 1]$ ($u_{16} / 65535$) HYDE 3.4 agro-pastoral land-use strain, soil salinization, and deforestation.
+   - **Tensor 8 (Epidemiological Pathogen Immunity)**: $P(\mathbf{x}) \in [0, 1]$ ($u_{16} / 65535$) endemic vector burden and acquired immunity.
+   - **10 Geological & Hydrological Resource Tensors**: Coal, Oil, Gas, Uranium, He-3, Iron/Copper, Precious Metals, Rare Earths, Geothermal Heat, and Aquifers encoded in 16-bit grayscale ($[0, 65535]$).
 
 ### 6.2 Directed Square Cultural Affinity Matrix & Asymmetric Evolution ($N \times N$)
 Rather than an idealized symmetric or triangular representation, inter-cultural relations in Ether are formalized as a **fully directed, asymmetric $N \times N$ square matrix** $\mathbf{A} \in [0.0, 1.0]^{N \times N}$, where $A_{i \to j}$ denotes the directional affinity, diplomatic tolerance, and assimilation openness expressed by cultural entity $i$ towards entity $j$, and in general $A_{i \to j} \ne A_{j \to i}$.

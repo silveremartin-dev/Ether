@@ -31,6 +31,11 @@ public enum PhysicalShockType {
     CLIMATE_ANOMALY(EventCategory.NATURAL),
     FAMINE(EventCategory.NATURAL),
     LOCUST_SWARM(EventCategory.NATURAL),
+    CROP_BLIGHT(EventCategory.NATURAL),
+    WILDLIFE_DIE_OFF(EventCategory.NATURAL),
+    FISHERY_COLLAPSE(EventCategory.NATURAL),
+    TROPICAL_CYCLONE(EventCategory.NATURAL),
+    WILDFIRE(EventCategory.NATURAL),
     PANDEMIC(EventCategory.NATURAL),
 
     NUCLEAR_STRIKE(EventCategory.ANTHROPIC),
@@ -92,6 +97,12 @@ public enum PhysicalShockType {
             clean = clean.substring("DISASTER_".length());
         } else if (clean.startsWith("MILESTONE_")) {
             clean = clean.substring("MILESTONE_".length());
+        }
+        if (clean.equals("CYCLONE") || clean.equals("HURRICANE") || clean.equals("TYPHOON")) {
+            return TROPICAL_CYCLONE;
+        }
+        if (clean.equals("FOREST_FIRE") || clean.equals("BUSHFIRE")) {
+            return WILDFIRE;
         }
         try {
             return PhysicalShockType.valueOf(clean);

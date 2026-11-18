@@ -49,8 +49,20 @@ public final class EventCellularShockHelper {
         if (upperType.contains("VOLCANO") || upperType.contains("NUCLEAR")) {
             return Math.max(250.0, mag * 200.0);
         }
-        if (upperType.contains("LOCUST")) {
+        if (upperType.contains("LOCUST") || upperType.contains("CROP_BLIGHT") || upperType.contains("BLIGHT")) {
+            return Math.max(200.0, mag * 160.0);
+        }
+        if (upperType.contains("WILDLIFE")) {
             return Math.max(250.0, mag * 180.0);
+        }
+        if (upperType.contains("FISHERY")) {
+            return Math.max(300.0, mag * 220.0);
+        }
+        if (upperType.contains("CYCLONE") || upperType.contains("HURRICANE") || upperType.contains("TYPHOON")) {
+            return Math.max(200.0, mag * 150.0);
+        }
+        if (upperType.contains("WILDFIRE")) {
+            return Math.max(150.0, mag * 120.0);
         }
         if (upperType.contains("EARTHQUAKE") || upperType.contains("TSUNAMI")) {
             return Math.max(150.0, mag * 120.0);
@@ -205,8 +217,84 @@ public final class EventCellularShockHelper {
                 if (cell.getFoodResource() != null) {
                     cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.75 * swarmIntensity)));
                 }
+                if (cell.getBiomassAgriculture() != null) {
+                    cell.setBiomassAgriculture(Math.max(0.0, cell.getBiomassAgriculture() * (1.0 - 0.80 * swarmIntensity)));
+                }
                 if (prevPop > 0 && attenuation > 0.6) {
                     lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.02 * swarmIntensity)));
+                }
+            }
+
+            case "CROP_BLIGHT" -> {
+                double blightIntensity = (mag / 10.0) * attenuation;
+                if (cell.getFoodResource() != null) {
+                    cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.70 * blightIntensity)));
+                }
+                if (cell.getBiomassAgriculture() != null) {
+                    cell.setBiomassAgriculture(Math.max(0.0, cell.getBiomassAgriculture() * (1.0 - 0.85 * blightIntensity)));
+                }
+                if (prevPop > 0 && attenuation > 0.65) {
+                    lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.025 * blightIntensity)));
+                }
+            }
+
+            case "WILDLIFE_DIE_OFF" -> {
+                double wildlifeIntensity = (mag / 10.0) * attenuation;
+                if (cell.getBiomassNatural() != null) {
+                    cell.setBiomassNatural(Math.max(0.0, cell.getBiomassNatural() * (1.0 - 0.65 * wildlifeIntensity)));
+                }
+                if (cell.getFoodResource() != null) {
+                    cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.35 * wildlifeIntensity)));
+                }
+                if (prevPop > 0 && attenuation > 0.75) {
+                    lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.012 * wildlifeIntensity)));
+                }
+            }
+
+            case "FISHERY_COLLAPSE" -> {
+                boolean isMarineOrCoastal = (cell.getIsCoastal() != null && cell.getIsCoastal())
+                        || cell.getBiome() == Biome.OCEAN
+                        || cell.getBiome() == Biome.DEEP_OCEAN;
+                if (isMarineOrCoastal) {
+                    double marineIntensity = (mag / 10.0) * attenuation;
+                    if (cell.getBiomassFish() != null) {
+                        cell.setBiomassFish(Math.max(0.0, cell.getBiomassFish() * (1.0 - 0.75 * marineIntensity)));
+                    }
+                    if (cell.getFoodResource() != null) {
+                        cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.40 * marineIntensity)));
+                    }
+                    if (prevPop > 0 && attenuation > 0.8) {
+                        lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.010 * marineIntensity)));
+                    }
+                }
+            }
+
+            case "TROPICAL_CYCLONE", "CYCLONE", "HURRICANE", "TYPHOON" -> {
+                double cycloneIntensity = (mag / 10.0) * attenuation;
+                if (cell.getResourceCapital() != null) {
+                    cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.35 * cycloneIntensity)));
+                }
+                if (cell.getFoodResource() != null) {
+                    cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.50 * cycloneIntensity)));
+                }
+                if (prevPop > 0 && attenuation > 0.7) {
+                    lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.04 * cycloneIntensity)));
+                }
+            }
+
+            case "WILDFIRE" -> {
+                double fireIntensity = (mag / 10.0) * attenuation;
+                if (cell.getBiomassNatural() != null) {
+                    cell.setBiomassNatural(Math.max(0.0, cell.getBiomassNatural() * (1.0 - 0.70 * fireIntensity)));
+                }
+                if (cell.getWoodResource() != null) {
+                    cell.setWoodResource(Math.max(0.0, cell.getWoodResource() * (1.0 - 0.80 * fireIntensity)));
+                }
+                if (cell.getResourceCapital() != null) {
+                    cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.15 * fireIntensity)));
+                }
+                if (prevPop > 0 && attenuation > 0.8) {
+                    lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.015 * fireIntensity)));
                 }
             }
 

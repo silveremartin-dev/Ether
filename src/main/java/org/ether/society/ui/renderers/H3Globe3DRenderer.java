@@ -310,7 +310,7 @@ public class H3Globe3DRenderer {
 
             polyZBuf[visibleCount] = zrt;
             polyColorBuf[visibleCount] = shadedColor;
-            polyBorderBuf[visibleCount] = showHexGrid && (screenCellRadius > 1.4);
+            polyBorderBuf[visibleCount] = showHexGrid && (screenCellRadius >= 3.0);
             polyIndexBuf[visibleCount] = visibleCount;
 
             visibleCount++;
@@ -325,14 +325,17 @@ public class H3Globe3DRenderer {
         gc.closePath();
         gc.clip();
 
+        double borderAlpha = Math.clamp((screenCellRadius - 3.0) / 3.0 * 0.20, 0.04, 0.20);
+        Color borderColor = Color.rgb(0, 0, 0, borderAlpha);
+
         for (int idx = 0; idx < count; idx++) {
             int i = polyIndexBuf[idx];
             gc.setFill(polyColorBuf[i]);
             gc.fillPolygon(polyPxBuf[i], polyPyBuf[i], 6);
 
             if (polyBorderBuf[i]) {
-                gc.setStroke(Color.rgb(0, 0, 0, 0.20));
-                gc.setLineWidth(0.5);
+                gc.setStroke(borderColor);
+                gc.setLineWidth(0.4);
                 gc.strokePolygon(polyPxBuf[i], polyPyBuf[i], 6);
             }
         }

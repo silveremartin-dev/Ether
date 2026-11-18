@@ -31,24 +31,21 @@ public final class PaleolithicDensityGenerator {
 
         int w = src.getWidth();
         int h = src.getHeight();
-        BufferedImage masked = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        BufferedImage masked = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) masked.getRaster().getDataBuffer()).getData();
 
+        int idx = 0;
         for (int y = 0; y < h; y++) {
             double lat = 90.0 - (y + 0.5) * 180.0 / h;
             for (int x = 0; x < w; x++) {
                 double lon = -180.0 + (x + 0.5) * 360.0 / w;
-                int rgb = src.getRGB(x, y);
-
                 double weight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
                 if (weight > 0.001 && HistoricalMapGenerator.isLand(lon, lat)) {
-                    int r = (rgb >> 16) & 0xFF;
-                    int g = (rgb >> 8) & 0xFF;
-                    int b = rgb & 0xFF;
-                    int lum = (int) ((0.299 * r + 0.587 * g + 0.114 * b) * weight);
-                    lum = Math.clamp(lum, 0, 255);
-                    masked.setRGB(x, y, (lum << 16) | (lum << 8) | lum);
+                    double norm = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(src, x, y);
+                    int u16 = (int) Math.clamp(Math.round(norm * weight * 65535.0), 0L, 65535L);
+                    data[idx++] = (short) (u16 & 0xFFFF);
                 } else {
-                    masked.setRGB(x, y, 0x000000); // Pure black for uninhabited regions & oceans
+                    data[idx++] = 0; // Pure black for uninhabited regions & oceans
                 }
             }
         }
@@ -56,33 +53,36 @@ public final class PaleolithicDensityGenerator {
     }
 
     /**
-     * Generate prehistoric synthetic density map.
+     * Generate prehistoric synthetic density map in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}, [0..65535]).
      *
      * @param year the year parameter (long)
      * @param type the type parameter (String)
      * @return the resulting computation or state reference
      */
     public static BufferedImage generatePrehistoricSyntheticDensityMap(long year, String type) {
-        BufferedImage img = new BufferedImage(HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, BufferedImage.TYPE_INT_RGB);
-        for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
-            double lat = 90.0 - (y + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
-            for (int x = 0; x < HistoricalMapGenerator.WIDTH; x++) {
-                double lng = (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0 - 180.0;
+        int w = HistoricalMapGenerator.WIDTH, h = HistoricalMapGenerator.HEIGHT;
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
+        int idx = 0;
+        for (int y = 0; y < h; y++) {
+            double lat = 90.0 - (y + 0.5) / h * 180.0;
+            for (int x = 0; x < w; x++) {
+                double lng = (x + 0.5) / w * 360.0 - 180.0;
                 boolean isLand = HistoricalMapGenerator.isLand(lng, lat);
                 double weight = HistoricalMapGenerator.getHomininOccupancyWeight(lng, lat, year);
                 if (!isLand || weight <= 0.001) {
-                    img.setRGB(x, y, 0x000000);
+                    data[idx++] = 0;
                     continue;
                 }
 
                 double dens = PaleolithicEpochDensityHelper.computeDensity(lng, lat, year);
                 dens *= weight;
                 if (dens > 0.0005) {
-                    double logNorm = Math.log1p(2.5 * dens) / Math.log1p(2.5 * 35.0); // reference 35.0 hab/km2
-                    int gray = (int) Math.clamp(12.0 + logNorm * 243.0, 12.0, 255.0);
-                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                    double logNorm = Math.clamp(Math.log1p(2.5 * dens) / Math.log1p(2.5 * 35.0), 0.0, 1.0); // reference 35.0 hab/km2
+                    int u16 = (int) Math.clamp(Math.round(((12.0 + logNorm * 243.0) / 255.0) * 65535.0), 3084L, 65535L);
+                    data[idx++] = (short) (u16 & 0xFFFF);
                 } else {
-                    img.setRGB(x, y, 0x000000);
+                    data[idx++] = 0;
                 }
             }
         }

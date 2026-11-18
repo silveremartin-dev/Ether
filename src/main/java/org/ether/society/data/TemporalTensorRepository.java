@@ -404,28 +404,26 @@ public class TemporalTensorRepository {
             File f = new File(dirPath + cName);
             if (f.exists() && f.isFile()) {
                 try {
-                    if ("elevation".equals(tag)) {
-                        BufferedImage bImg = loadExactEpochBufferedImage(p, epoch, tag, null);
-                        if (bImg != null && (bImg.getType() == BufferedImage.TYPE_USHORT_GRAY
-                                || (bImg.getRaster().getNumBands() == 1 && bImg.getSampleModel().getSampleSize(0) == 16))) {
-                            int w = bImg.getWidth();
-                            int h = bImg.getHeight();
-                            javafx.scene.image.WritableImage wImg = new javafx.scene.image.WritableImage(w, h);
-                            javafx.scene.image.PixelWriter pw = wImg.getPixelWriter();
-                            var raster = bImg.getRaster();
-                            for (int y = 0; y < h; y++) {
-                                for (int x = 0; x < w; x++) {
-                                    int g8 = (raster.getSample(x, y, 0) & 0xFFFF) >>> 8;
-                                    pw.setArgb(x, y, (0xFF << 24) | (g8 << 16) | (g8 << 8) | g8);
-                                }
+                    BufferedImage bImg = loadExactEpochBufferedImage(p, epoch, tag, null);
+                    if (bImg != null && (bImg.getType() == BufferedImage.TYPE_USHORT_GRAY
+                            || (bImg.getRaster().getNumBands() == 1 && bImg.getSampleModel().getSampleSize(0) == 16))) {
+                        int w = bImg.getWidth();
+                        int h = bImg.getHeight();
+                        javafx.scene.image.WritableImage wImg = new javafx.scene.image.WritableImage(w, h);
+                        javafx.scene.image.PixelWriter pw = wImg.getPixelWriter();
+                        var raster = bImg.getRaster();
+                        for (int y = 0; y < h; y++) {
+                            for (int x = 0; x < w; x++) {
+                                int g8 = (raster.getSample(x, y, 0) & 0xFFFF) >>> 8;
+                                pw.setArgb(x, y, (0xFF << 24) | (g8 << 16) | (g8 << 8) | g8);
                             }
-                            if (cacheKey != null) {
-                                synchronized (memoryCache) {
-                                    memoryCache.put(cacheKey, wImg);
-                                }
-                            }
-                            return wImg;
                         }
+                        if (cacheKey != null) {
+                            synchronized (memoryCache) {
+                                memoryCache.put(cacheKey, wImg);
+                            }
+                        }
+                        return wImg;
                     }
                     try (InputStream is = new FileInputStream(f)) {
                         Image img = new Image(is);

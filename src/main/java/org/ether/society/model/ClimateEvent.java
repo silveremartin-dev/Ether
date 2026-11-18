@@ -153,9 +153,12 @@ public class ClimateEvent implements Serializable {
         if (upper.contains("MILESTONE") || upper.contains("HIST") || upper.contains("TECH_SINGULARITY") || upper.contains("RENAISSANCE")) {
             return EventCategory.CHRONICLE_MILESTONE;
         }
+        if (upper.contains("WILDFIRE") || upper.contains("BUSHFIRE") || upper.contains("FOREST_FIRE")) {
+            return EventCategory.NATURAL;
+        }
         if (upper.contains("NUCLEAR") || upper.contains("WAR") || upper.contains("CRASH") || upper.contains("CYBER")
-                || upper.contains("ACCIDENT") || upper.contains("FIRE") || upper.contains("DAM")
-                || upper.contains("LEADER") || upper.contains("GEOENGINEERING")) {
+                || upper.contains("ACCIDENT") || upper.contains("URBAN_FIRE") || (upper.contains("FIRE") && !upper.contains("WILD"))
+                || upper.contains("DAM") || upper.contains("LEADER") || upper.contains("GEOENGINEERING")) {
             return EventCategory.ANTHROPIC;
         }
         return EventCategory.NATURAL;
@@ -184,6 +187,12 @@ public class ClimateEvent implements Serializable {
             case "FLOOD", "DISASTER_FLOOD" -> 30; // Seasonal alluvial riverine cresting
             case "DROUGHT", "DISASTER_DROUGHT" -> 180; // Extended 6-month seasonal drought
             case "FAMINE", "DISASTER_FAMINE" -> 180; // Crop deficit season
+            case "LOCUST_SWARM", "DISASTER_LOCUST_SWARM" -> 60; // Desert locust generation swarm
+            case "CROP_BLIGHT", "DISASTER_CROP_BLIGHT" -> 90; // Crop pathogen and harvest rot season
+            case "WILDLIFE_DIE_OFF", "DISASTER_WILDLIFE_DIE_OFF" -> 180; // Epizootic and game collapse
+            case "FISHERY_COLLAPSE", "DISASTER_FISHERY_COLLAPSE" -> 365; // Marine upwelling breakdown
+            case "TROPICAL_CYCLONE", "DISASTER_TROPICAL_CYCLONE", "CYCLONE", "HURRICANE", "TYPHOON" -> 7; // Tropical cyclone landfall
+            case "WILDFIRE", "DISASTER_WILDFIRE", "FOREST_FIRE", "BUSHFIRE" -> 30; // Natural forest conflagration
             case "HEATWAVE", "DISASTER_HEATWAVE" -> 30; // Severe monthly heat dome
             case "PANDEMIC", "DISASTER_PANDEMIC", "EPIDEMIC", "PLAGUE" -> 730; // 2-year SEIR transmission curve
             case "METEOR", "DISASTER_METEOR" -> 7; // Prompt atmospheric shockwave and cratering

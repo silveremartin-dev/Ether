@@ -123,6 +123,21 @@ final class HistoricalScenarioMapOrchestrator {
         if (src == null) return null;
         BufferedImage mask = loadElevationMask();
         int w = src.getWidth(), h = src.getHeight();
+        if (src.getType() == BufferedImage.TYPE_USHORT_GRAY
+                || (src.getRaster().getNumBands() == 1 && src.getSampleModel().getSampleSize(0) == 16)) {
+            BufferedImage out16 = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+            var srcRaster = src.getRaster();
+            var outRaster = out16.getRaster();
+            for (int y = 0; y < h; y++) {
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : h) / h), 0, (mask != null ? mask.getHeight() : h) - 1);
+                for (int x = 0; x < w; x++) {
+                    int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : w) / w), 0, (mask != null ? mask.getWidth() : w) - 1);
+                    int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
+                    outRaster.setSample(x, y, 0, land == 0 ? 0 : (srcRaster.getSample(x, y, 0) & 0xFFFF));
+                }
+            }
+            return out16;
+        }
         BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
         for (int y = 0; y < h; y++) {

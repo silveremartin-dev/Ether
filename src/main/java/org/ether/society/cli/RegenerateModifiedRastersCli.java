@@ -6,9 +6,13 @@
 package org.ether.society.cli;
 
 import org.ether.society.config.EtherPaths;
+import org.ether.society.data.AnalyticalEpidemiologyModel;
 import org.ether.society.data.EtopoGeoTiffReader;
+import org.ether.society.data.GeologicalResourceMapRasterizer;
+import org.ether.society.data.HistoricalEpochMetadataGenerator;
 import org.ether.society.data.HistoricalInstitutionalRasterizer;
 import org.ether.society.data.HistoricalMapGenerator;
+import org.ether.society.data.HistoricalReligiousAndSocietalRasterizer;
 import org.ether.society.data.Hyde34GridReader;
 import org.ether.society.data.Hyde34LandUseReader;
 import org.ether.society.data.PaleoClimateMapRasterizer;
@@ -112,7 +116,24 @@ public final class RegenerateModifiedRastersCli {
         deepTimeDummy.setPopulationDensityType("OUT_OF_AFRICA_100K");
         byte[] deepTimeEcoPng = encodePng(HistoricalInstitutionalRasterizer.rasterizeEcologicalFootprintMap("OUT_OF_AFRICA_100K", deepTimeDummy));
 
-        // 3. Write all 7 updated layers per epoch directory in parallel
+        // Pre-generate 16-bit geological resource layers (USGS MRDS / WHYMAP / Davies heat flow)
+        logger.info("Pre-generating 16-bit geological resource rasters (USGS MRDS / WHYMAP / Davies)...");
+        Scenario geoDummy = new Scenario();
+        geoDummy.setStartDateYear(2025L);
+        geoDummy.setPopulationDensityType("URBAN_CLUSTERS");
+
+        byte[] coalPng = encodePng(GeologicalResourceMapRasterizer.rasterizeCoalMap("URBAN_CLUSTERS", geoDummy));
+        byte[] oilPng = encodePng(GeologicalResourceMapRasterizer.rasterizeOilMap("URBAN_CLUSTERS", geoDummy));
+        byte[] gasPng = encodePng(GeologicalResourceMapRasterizer.rasterizeGasMap("URBAN_CLUSTERS", geoDummy));
+        byte[] uraniumPng = encodePng(GeologicalResourceMapRasterizer.rasterizeUraniumMap("URBAN_CLUSTERS", geoDummy));
+        byte[] he3Png = encodePng(GeologicalResourceMapRasterizer.rasterizeHelium3Map("URBAN_CLUSTERS", geoDummy));
+        byte[] ironCopperPng = encodePng(GeologicalResourceMapRasterizer.rasterizeIronCopperMap("URBAN_CLUSTERS", geoDummy));
+        byte[] preciousMetalsPng = encodePng(GeologicalResourceMapRasterizer.rasterizePreciousMetalsMap("URBAN_CLUSTERS", geoDummy));
+        byte[] rareEarthsPng = encodePng(GeologicalResourceMapRasterizer.rasterizeRareEarthsMap("URBAN_CLUSTERS", geoDummy));
+        byte[] geothermalPng = encodePng(GeologicalResourceMapRasterizer.rasterizeMantleHeatMap("URBAN_CLUSTERS", geoDummy));
+        byte[] aquifersPng = encodePng(GeologicalResourceMapRasterizer.rasterizeAquiferMap("URBAN_CLUSTERS", geoDummy));
+
+        // 3. Write all 25 layers per epoch directory in parallel
         java.util.concurrent.atomic.AtomicInteger count = new java.util.concurrent.atomic.AtomicInteger(0);
         epochYears.parallelStream().forEach(year -> {
             try {
@@ -163,6 +184,36 @@ public final class RegenerateModifiedRastersCli {
                 } else {
                     Files.write(dir.resolve("earth_" + year + "_biomes.png"), encodePngUnchecked(PaleoClimateMapRasterizer.rasterizeBiomesMap(year)));
                 }
+
+                // 10 Geological resource rasters (16-bit USHORT_GRAY)
+                Files.write(dir.resolve("earth_" + year + "_coal.png"), coalPng);
+                Files.write(dir.resolve("earth_" + year + "_oil.png"), oilPng);
+                Files.write(dir.resolve("earth_" + year + "_gas.png"), gasPng);
+                Files.write(dir.resolve("earth_" + year + "_uranium.png"), uraniumPng);
+                Files.write(dir.resolve("earth_" + year + "_helium3.png"), he3Png);
+                Files.write(dir.resolve("earth_" + year + "_iron_copper.png"), ironCopperPng);
+                Files.write(dir.resolve("earth_" + year + "_precious_metals.png"), preciousMetalsPng);
+                Files.write(dir.resolve("earth_" + year + "_rare_earths.png"), rareEarthsPng);
+                Files.write(dir.resolve("earth_" + year + "_geothermal.png"), geothermalPng);
+                Files.write(dir.resolve("earth_" + year + "_aquifers.png"), aquifersPng);
+
+                // Societal & Epidemiological 16-bit rasters
+                Scenario sc = new Scenario();
+                sc.setStartDateYear(year);
+                String densType = (year <= -10000L) ? "OUT_OF_AFRICA_100K" : "URBAN_CLUSTERS";
+                sc.setPopulationDensityType(densType);
+
+                BufferedImage techImg = HistoricalReligiousAndSocietalRasterizer.rasterizeTechnologyMap(densType, sc);
+                Files.write(dir.resolve("earth_" + year + "_technology.png"), encodePngUnchecked(techImg));
+
+                BufferedImage instImg = HistoricalInstitutionalRasterizer.rasterizeInstitutionalComplexityMap(densType, sc);
+                Files.write(dir.resolve("earth_" + year + "_institutional.png"), encodePngUnchecked(instImg));
+
+                BufferedImage pathImg = AnalyticalEpidemiologyModel.generatePathogenMap(year, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, elevImg);
+                Files.write(dir.resolve("earth_" + year + "_pathogen.png"), encodePngUnchecked(pathImg));
+
+                // Refresh metadata, provenance, and README.md
+                HistoricalEpochMetadataGenerator.generateOrUpdateEpochMetadataFiles(dir, year);
 
                 int c = count.incrementAndGet();
                 if (c % 32 == 0 || c == epochYears.size()) {

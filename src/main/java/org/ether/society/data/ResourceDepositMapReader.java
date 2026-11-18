@@ -98,20 +98,21 @@ public class ResourceDepositMapReader {
     }
 
     /**
-     * Converts a 2D double grid matrix into a high-contrast grayscale BufferedImage tensor map.
+     * Converts a 2D double grid matrix into a high-contrast 16-bit grayscale BufferedImage tensor map.
      */
     public static BufferedImage gridToImageTensor(double[][] grid) {
         if (grid == null || grid.length == 0) return null;
         int h = grid.length;
         int w = grid[0].length;
 
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
+        int idx = 0;
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
                 double val = Math.clamp(grid[y][x], 0.0, 1.0);
-                int gray = (int) (val * 255.0);
-                int rgb = (gray << 16) | (gray << 8) | gray;
-                img.setRGB(x, y, rgb);
+                int u16 = (int) Math.clamp(Math.round(val * 65535.0), 0L, 65535L);
+                data[idx++] = (short) (u16 & 0xFFFF);
             }
         }
         return img;
@@ -131,12 +132,7 @@ public class ResourceDepositMapReader {
         int px = Math.clamp((int) (normX * w), 0, w - 1);
         int py = Math.clamp((int) (normY * h), 0, h - 1);
 
-        int rgb = imageMap.getRGB(px, py);
-        int r = (rgb >> 16) & 0xFF;
-        int g = (rgb >> 8) & 0xFF;
-        int b = rgb & 0xFF;
-
-        return ((r + g + b) / 3.0) / 255.0;
+        return H3RasterBinningCoordinator.sampleBufferedGrayNormalized(imageMap, px, py);
     }
 
     /**

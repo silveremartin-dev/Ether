@@ -341,7 +341,7 @@ public final class H3RasterAggregator {
 
                 if (climateBuf != null) {
                     double temp = (areaClim[i] > 0.0) ? (sumTemp[i] / areaClim[i])
-                            : evaluateScalarCubature(climateBuf, lat, lng, fallbackRes, argb -> -50.0 + (((argb >> 16) & 0xFF) / 255.0) * 100.0);
+                            : evaluateScalarCubature(climateBuf, lat, lng, fallbackRes, argb -> -50.0 + H3RasterBinningCoordinator.argbToRedOrGrayNorm(argb) * 100.0);
                     cell.setTemperature(temp);
                     if (rainBuf == null) {
                         double cRain = (areaClim[i] > 0.0) ? (sumClimRain[i] / areaClim[i])
@@ -394,7 +394,7 @@ public final class H3RasterAggregator {
 
             if (climateBuf != null) {
                 double temp = evaluateScalarCubature(climateBuf, lat, lng, res,
-                        argb -> -50.0 + (((argb >> 16) & 0xFF) / 255.0) * 100.0);
+                        argb -> -50.0 + H3RasterBinningCoordinator.argbToRedOrGrayNorm(argb) * 100.0);
                 cell.setTemperature(temp);
                 if (rainBuf == null) {
                     double rain = evaluateScalarCubature(climateBuf, lat, lng, res,

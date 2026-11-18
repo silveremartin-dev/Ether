@@ -2,6 +2,7 @@ package org.ether.society.data;
 
 import org.junit.jupiter.api.Tag;
 
+import org.ether.society.cli.RegenerateModifiedRastersCli;
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -392,6 +393,14 @@ public class BatchRegenerateAllScenarioMapsTest {
             fw.write(md);
         }
     }
+
+    @Test
+    @DisplayName("Regenerate All 16-Bit Grayscale and 24-Bit RGB Cartographic Rasters for Earth and Planetary Epochs")
+    public void testRegenerateAllEarthAndExtraterrestrialRasters16Bit() throws Exception {
+        logger.info("Starting master 16-bit raster regeneration across all Earth epoch directories...");
+        RegenerateModifiedRastersCli.main(new String[0]);
+        logger.info("Earth raster regeneration completed. Starting extraterrestrial planetary raster regeneration...");
+        new GenerateCompleteExtraterrestrialTensorsTest().generateAllExtraterrestrialEpochs();
+        logger.info("Completed master cartographic regeneration across all Earth and extraterrestrial epochs.");
+    }
 }
-
-

@@ -200,6 +200,23 @@ final class ImageMapCodecAndBufferedMapper {
         }
         try {
             byte[] bytes = Base64.getDecoder().decode(base64.trim());
+            BufferedImage bImg = ImageIO.read(new ByteArrayInputStream(bytes));
+            if (bImg != null && (bImg.getType() == BufferedImage.TYPE_USHORT_GRAY
+                    || (bImg.getRaster().getNumBands() == 1 && bImg.getSampleModel().getSampleSize(0) == 16))) {
+                int w = bImg.getWidth();
+                int h = bImg.getHeight();
+                javafx.scene.image.WritableImage wImg = new javafx.scene.image.WritableImage(w, h);
+                javafx.scene.image.PixelWriter pw = wImg.getPixelWriter();
+                var raster = bImg.getRaster();
+                for (int y = 0; y < h; y++) {
+                    for (int x = 0; x < w; x++) {
+                        int g8 = (raster.getSample(x, y, 0) & 0xFFFF) >>> 8;
+                        pw.setArgb(x, y, (0xFF << 24) | (g8 << 16) | (g8 << 8) | g8);
+                    }
+                }
+                base64ImageCache.put(base64, wImg);
+                return wImg;
+            }
             Image img = new Image(new ByteArrayInputStream(bytes));
             base64ImageCache.put(base64, img);
             return img;

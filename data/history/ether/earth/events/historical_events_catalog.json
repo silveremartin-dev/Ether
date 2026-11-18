@@ -3107,6 +3107,19 @@
     "durationDays": 730
   },
   {
+    "type": "disaster_crop_blight",
+    "name": "Grande Famine Européenne de 1315-1317 (Pluies Incessantes, Pourriture Céréalière & Nielle du Seigle en Europe du Nord)",
+    "year": 1315,
+    "latitude": 53.5,
+    "longitude": 10.0,
+    "depth": 0.0,
+    "magnitude": 8.5,
+    "month": 5,
+    "day": 1,
+    "category": "NATURAL",
+    "durationDays": 365
+  },
+  {
     "type": "milestone_golden_age",
     "name": "Apogée de l'Empire du Mali & Pèlerinage de Mansa Musa",
     "year": 1324,
@@ -3952,6 +3965,19 @@
     "durationDays": 3
   },
   {
+    "type": "disaster_crop_blight",
+    "name": "Grande Famine Boréale de Finlande & Suède de 1695-1697 (Gelées Noires Estivales & Pourriture Complète des Récoltes, ~150k Décès)",
+    "year": 1696,
+    "latitude": 61.9,
+    "longitude": 25.7,
+    "depth": 0.0,
+    "magnitude": 8.8,
+    "month": 7,
+    "day": 1,
+    "category": "NATURAL",
+    "durationDays": 365
+  },
+  {
     "type": "milestone_ethnography",
     "name": "Société Traditionnelle : Mi'kmaq [mikm1235] (EA)",
     "year": 1700,
@@ -4706,6 +4732,19 @@
     "durationDays": -1
   },
   {
+    "type": "disaster_fishery_collapse",
+    "name": "Crise Halieutique du Hareng de Mer de Norvège & Bohuslän de 1808 (Disparition Décennale des Bancs Pélagiques par Dérive des Courants)",
+    "year": 1808,
+    "latitude": 58.3,
+    "longitude": 11.2,
+    "depth": 0.0,
+    "magnitude": 7.2,
+    "month": 9,
+    "day": 1,
+    "category": "NATURAL",
+    "durationDays": 365
+  },
+  {
     "type": "disaster_earthquake",
     "name": "Série de Séismes de New Madrid (Inversion Temporaire du Cours du Mississippi, USA, M7.5-7.9)",
     "year": 1811,
@@ -5042,6 +5081,19 @@
     "day": 1,
     "category": "CHRONICLE_MILESTONE",
     "durationDays": -1
+  },
+  {
+    "type": "disaster_crop_blight",
+    "name": "Grande Famine Irlandaise & d'Europe du Nord de 1845 (Mildiou Phytophthora infestans & Anéantissement des Pommes de Terre)",
+    "year": 1845,
+    "latitude": 53.3,
+    "longitude": -7.8,
+    "depth": 0.0,
+    "magnitude": 8.5,
+    "month": 8,
+    "day": 15,
+    "category": "NATURAL",
+    "durationDays": 365
   },
   {
     "type": "disaster_famine",
@@ -7033,6 +7085,19 @@
     "durationDays": -1
   },
   {
+    "type": "disaster_crop_blight",
+    "name": "Famine Boréale de Norvège, Suède & Finlande de 1867-1868 (Gel Tardif des Semences & Pourriture Printanière Nordique)",
+    "year": 1867,
+    "latitude": 63.8,
+    "longitude": 20.2,
+    "depth": 0.0,
+    "magnitude": 7.8,
+    "month": 5,
+    "day": 1,
+    "category": "NATURAL",
+    "durationDays": 240
+  },
+  {
     "type": "milestone_polity",
     "name": "Restauration de Meiji & Modernisation Accélérée du Japon",
     "year": 1868,
@@ -7928,6 +7993,19 @@
     "day": 1,
     "category": "CHRONICLE_MILESTONE",
     "durationDays": -1
+  },
+  {
+    "type": "disaster_wildlife_die_off",
+    "name": "Grande Épizootie Boréale d'Anthrax des Rennes de Sibérie de 1870 (Dégel de Pergélisol & Décimation Massive du Gibier Boréal)",
+    "year": 1870,
+    "latitude": 66.5,
+    "longitude": 70.0,
+    "depth": 0.0,
+    "magnitude": 7.5,
+    "month": 6,
+    "day": 1,
+    "category": "NATURAL",
+    "durationDays": 180
   },
   {
     "type": "disaster_urban_fire",
@@ -9007,6 +9085,19 @@
     "day": 1,
     "category": "CHRONICLE_MILESTONE",
     "durationDays": -1
+  },
+  {
+    "type": "disaster_wildlife_die_off",
+    "name": "Peste Bovine Épizootique & Décimation des Ongulés Sauvages Africains de 1888-1892 (Rinderpest, Perte de 90% du Gibier & Bovidés)",
+    "year": 1889,
+    "latitude": -1.3,
+    "longitude": 36.8,
+    "depth": 0.0,
+    "magnitude": 9.0,
+    "month": 4,
+    "day": 1,
+    "category": "NATURAL",
+    "durationDays": 730
   },
   {
     "type": "disaster_dam_failure",
@@ -22566,6 +22657,19 @@
     "day": 1,
     "category": "CHRONICLE_MILESTONE",
     "durationDays": -1
+  },
+  {
+    "type": "disaster_fishery_collapse",
+    "name": "Effondrement Écologique de l'Upwelling de Humboldt & Pêcherie d'Anchois du Pérou de 1972 (Super El Niño & Anoxie Pélagique)",
+    "year": 1972,
+    "latitude": -12.0,
+    "longitude": -77.5,
+    "depth": 0.0,
+    "magnitude": 8.0,
+    "month": 3,
+    "day": 1,
+    "category": "NATURAL",
+    "durationDays": 365
   },
   {
     "type": "milestone_ethnography",

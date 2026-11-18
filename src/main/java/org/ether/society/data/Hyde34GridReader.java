@@ -231,21 +231,23 @@ public class Hyde34GridReader {
             }
         }
 
-        // 3. Render Logarithmic Grayscale preserving spatial dynamic range
-        BufferedImage img = new BufferedImage(ETHER_WIDTH, ETHER_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        // 3. Render 16-bit Logarithmic Grayscale (TYPE_USHORT_GRAY, [0..65535]) preserving spatial dynamic range
+        BufferedImage img = new BufferedImage(ETHER_WIDTH, ETHER_HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
         double effMax = Math.max(0.1, maxDensity * 0.90);
         double logDenom = Math.log1p(effMax * 4.0);
 
+        int idx = 0;
         for (int y = 0; y < ETHER_HEIGHT; y++) {
             double[] densRow = densityKm2[y];
             for (int x = 0; x < ETHER_WIDTH; x++) {
                 double val = densRow[x];
                 if (val <= 1e-4) {
-                    img.setRGB(x, y, 0x000000);
+                    data[idx++] = 0;
                 } else {
-                    double logNorm = Math.log1p(val * 4.0) / logDenom;
-                    int gray = (int) Math.clamp(Math.round(logNorm * 238.0 + 17.0), 17L, 255L);
-                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                    double logNorm = Math.clamp(Math.log1p(val * 4.0) / logDenom, 0.0, 1.0);
+                    int u16 = (int) Math.clamp(Math.round((logNorm * (238.0 / 255.0) + (17.0 / 255.0)) * 65535.0), 4369L, 65535L);
+                    data[idx++] = (short) (u16 & 0xFFFF);
                 }
             }
         }

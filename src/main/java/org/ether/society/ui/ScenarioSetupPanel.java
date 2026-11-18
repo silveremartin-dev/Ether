@@ -340,7 +340,7 @@ public class ScenarioSetupPanel extends BorderPane {
 
     void loadEarthHistoricalEvents() {
         if (eventsSectionBuilder != null) {
-            eventsSectionBuilder.loadEarthBiophysicalEvents(startYearSpinner != null ? startYearSpinner.getValue() : -8000, true);
+            eventsSectionBuilder.loadEarthBiophysicalEvents(startYearSpinner != null ? startYearSpinner.getValue() : -8000, false);
         }
     }
 

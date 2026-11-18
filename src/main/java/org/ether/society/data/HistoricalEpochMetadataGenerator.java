@@ -50,9 +50,13 @@ public final class HistoricalEpochMetadataGenerator {
               "planet": "earth",
               "resolution": "2048x1024",
               "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
+              "encoding_standard": {
+                "scalar_layers": "16-bit Grayscale PNG (TYPE_USHORT_GRAY, 65536 levels [0..65535])",
+                "categorical_layers": "24-bit RGB Color PNG (TYPE_INT_RGB)"
+              },
               "overview": {
-                "summary_en": "Standard 25-raster cartographic and cliodynamic tensor suite for epoch %d.",
-                "summary_fr": "Suite cartographique et tensorielle cliodynamique standard à 25 rasters pour l'époque %d."
+                "summary_en": "Standard 25-raster cartographic and cliodynamic tensor suite for epoch %d (19 scalar 16-bit grayscale DEM/intensity rasters + 6 categorical 24-bit RGB rasters).",
+                "summary_fr": "Suite cartographique et tensorielle cliodynamique standard à 25 rasters pour l'époque %d (19 rasters scalaires en niveaux de gris 16-bit [0..65535] + 6 rasters catégoriels RGB 24-bit)."
               },
               "layers": {
                 "elevation": {
@@ -239,7 +243,9 @@ public final class HistoricalEpochMetadataGenerator {
             * **Planet**: Earth
             * **Epoch Year**: %d
             * **Resolution**: 2048 x 1024 (Equirectangular / Plate Carrée)
-            * **Cartographic Standard**: 25 High-Definition Physical, Ecological, Cliodynamic, and Geological Resource Rasters.
+            * **Cartographic Standard**: 25 High-Definition Physical, Ecological, Cliodynamic, and Geological Resource Rasters:
+              * **19 Continuous Scalar Layers**: **16-bit Grayscale PNG (`TYPE_USHORT_GRAY`, 65,536 levels `[0..65535]`)** (`elevation`, `temperature`, `precipitation`, `seasonality`, `density`, `technology`, `institutional`, `ecological`, `pathogen`, and all 10 geological/hydrological resources).
+              * **6 Categorical / Polychrome Layers**: **24-bit RGB PNG (`TYPE_INT_RGB`)** (`biomes`, `sovereignty`, `isogloss`, `kinship`, `rituals`, `tradenetwork`).
 
             ---
 

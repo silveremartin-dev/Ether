@@ -38,11 +38,13 @@ public class AnalyticalEpidemiologyModel {
      * @return Grayscale BufferedImage representing pathogen intensity (0-255)
      */
     public static BufferedImage generatePathogenMap(long year, int width, int height, BufferedImage elevationMask) {
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
 
         // Active historical pandemic outbreak pulses
         double[][] activeEpidemics = getEpidemicOutbreaksForYear(year);
 
+        int idx = 0;
         for (int y = 0; y < height; y++) {
             double lat = 90.0 - (y + 0.5) / height * 180.0;
             double absLat = Math.abs(lat);
@@ -55,13 +57,13 @@ public class AnalyticalEpidemiologyModel {
                 int landSample = (elevationMask != null) ? elevationMask.getRaster().getSample(mx, my, 0) : 255;
 
                 if (landSample == 0 || lat < -60.0 || !HistoricalMapGenerator.isLand(lon, lat)) {
-                    img.setRGB(x, y, 0x000000);
+                    data[idx++] = 0;
                     continue;
                 }
 
                 double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
                 if (occWeight <= 0.001) {
-                    img.setRGB(x, y, 0x000000);
+                    data[idx++] = 0;
                     continue;
                 }
 
@@ -143,8 +145,8 @@ public class AnalyticalEpidemiologyModel {
                     totalStress = speciesBaseline + tropicalCore * 90.0;
                 }
 
-                int grayVal = (int) Math.clamp(totalStress * occWeight, 0, 255);
-                img.setRGB(x, y, (grayVal << 16) | (grayVal << 8) | grayVal);
+                int u16 = (int) Math.clamp(Math.round(((totalStress * occWeight) / 255.0) * 65535.0), 0L, 65535L);
+                data[idx++] = (short) (u16 & 0xFFFF);
             }
         }
 

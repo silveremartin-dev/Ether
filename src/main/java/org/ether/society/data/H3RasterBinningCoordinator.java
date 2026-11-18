@@ -257,10 +257,12 @@ public final class H3RasterBinningCoordinator {
                     }
                     if (climateBuf != null) {
                         int argb = sampleNormalized(climateBuf, uNorm, vNorm);
-                        double rNorm = ((argb >> 16) & 0xFF) / 255.0;
+                        double rNorm = argbToRedOrGrayNorm(argb);
                         wTemp[workerId][pos] += (-50.0 + rNorm * 100.0) * areaSub;
                         if (wClimRain != null) {
-                            double gNorm = ((argb >> 8) & 0xFF) / 255.0;
+                            double gNorm = ((argb & SENTINEL_MASK) == USHORT_GRAY_SENTINEL)
+                                    ? ((argb & 0xFFFF) / 65535.0)
+                                    : (((argb >> 8) & 0xFF) / 255.0);
                             wClimRain[workerId][pos] += (gNorm * 3000.0) * areaSub;
                         }
                         aClim[workerId][pos] += areaSub;
@@ -332,6 +334,13 @@ public final class H3RasterBinningCoordinator {
         }
         int r = (argb >> 16) & 0xFF, g = (argb >> 8) & 0xFF, b = argb & 0xFF;
         return Math.max(r, Math.max(g, b)) / 255.0;
+    }
+
+    public static double argbToRedOrGrayNorm(int argb) {
+        if ((argb & SENTINEL_MASK) == USHORT_GRAY_SENTINEL) {
+            return (argb & 0xFFFF) / 65535.0;
+        }
+        return ((argb >> 16) & 0xFF) / 255.0;
     }
 
     /**

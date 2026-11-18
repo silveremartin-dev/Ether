@@ -178,6 +178,8 @@ public class ScenarioSimulationLauncher {
      */
     public void startSimulationDeferred() {
         if (host == null || !host.validateScenarioSetup()) {
+            logger.warn("Cannot start deferred simulation: validateScenarioSetup returned false (host: {}).",
+                    host != null ? host.getClass().getSimpleName() : "null");
             resetStartButtonState();
             return;
         }

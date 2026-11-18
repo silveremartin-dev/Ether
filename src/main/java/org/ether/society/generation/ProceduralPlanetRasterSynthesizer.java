@@ -52,9 +52,12 @@ public final class ProceduralPlanetRasterSynthesizer {
         var elevImg = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
         short[] elevData = ((java.awt.image.DataBufferUShort) elevImg.getRaster().getDataBuffer()).getData();
         var biomeImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        var tempImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        var rainImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        var seasImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        var tempImg = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+        short[] tempData = ((java.awt.image.DataBufferUShort) tempImg.getRaster().getDataBuffer()).getData();
+        var rainImg = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+        short[] rainData = ((java.awt.image.DataBufferUShort) rainImg.getRaster().getDataBuffer()).getData();
+        var seasImg = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+        short[] seasData = ((java.awt.image.DataBufferUShort) seasImg.getRaster().getDataBuffer()).getData();
 
         double minAlt = preset.minAltitudeMeters();
         double maxAlt = preset.maxAltitudeMeters();
@@ -73,16 +76,16 @@ public final class ProceduralPlanetRasterSynthesizer {
                 biomeImg.setRGB(x, y, biomeToStandardRgb(p.biome()));
 
                 double tNorm = Math.clamp((p.temperature() + 50.0) / 100.0, 0.0, 1.0);
-                int tGray = (int) Math.round(tNorm * 255.0);
-                tempImg.setRGB(x, y, (tGray << 16) | (tGray << 8) | tGray);
+                int tU16 = (int) Math.clamp(Math.round(tNorm * 65535.0), 0L, 65535L);
+                tempData[rowOff + x] = (short) (tU16 & 0xFFFF);
 
                 double rNorm = Math.clamp(p.rainfall(), 0.0, 1.0);
-                int rGray = (int) Math.round(rNorm * 255.0);
-                rainImg.setRGB(x, y, (rGray << 16) | (rGray << 8) | rGray);
+                int rU16 = (int) Math.clamp(Math.round(rNorm * 65535.0), 0L, 65535L);
+                rainData[rowOff + x] = (short) (rU16 & 0xFFFF);
 
                 double sNorm = Math.clamp(p.seasonality(), 0.0, 1.0);
-                int sGray = (int) Math.round(sNorm * 255.0);
-                seasImg.setRGB(x, y, (sGray << 16) | (sGray << 8) | sGray);
+                int sU16 = (int) Math.clamp(Math.round(sNorm * 65535.0), 0L, 65535L);
+                seasData[rowOff + x] = (short) (sU16 & 0xFFFF);
             }
         });
 

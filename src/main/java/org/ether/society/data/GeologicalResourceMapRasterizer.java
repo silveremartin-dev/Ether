@@ -167,23 +167,34 @@ public final class GeologicalResourceMapRasterizer {
         int width = img.getWidth();
         int height = img.getHeight();
         float[][] grid = accumulateSpotGrid(width, height, spots, defaultRadiusPx);
+        boolean is16Bit = img.getType() == BufferedImage.TYPE_USHORT_GRAY
+                || (img.getRaster().getNumBands() == 1 && img.getSampleModel().getSampleSize(0) == 16);
+        var raster = img.getRaster();
 
         for (int py = 0; py < height; py++) {
             for (int px = 0; px < width; px++) {
                 float v = grid[py][px];
                 if (v > 0) {
-                    double norm = 1.0 - Math.exp(-v * 0.85);
-                    int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
-                    img.setRGB(px, py, (gray << 16) | (gray << 8) | gray);
+                    double norm = Math.clamp(1.0 - Math.exp(-v * 0.85), 0.0, 1.0);
+                    if (is16Bit) {
+                        raster.setSample(px, py, 0, (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L));
+                    } else {
+                        int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
+                        img.setRGB(px, py, (gray << 16) | (gray << 8) | gray);
+                    }
                 } else {
-                    img.setRGB(px, py, 0x000000);
+                    if (is16Bit) {
+                        raster.setSample(px, py, 0, 0);
+                    } else {
+                        img.setRGB(px, py, 0x000000);
+                    }
                 }
             }
         }
     }
 
     /**
-     * Rasterizes a tiered spot list with intensity-differentiated color thresholds.
+     * Rasterizes a tiered spot list with intensity-differentiated thresholds.
      *
      * @param img destination buffered image
      * @param spots list of coordinate spots [lon, lat, radiusPx, intensity]
@@ -196,23 +207,34 @@ public final class GeologicalResourceMapRasterizer {
         int width = img.getWidth();
         int height = img.getHeight();
         float[][] grid = accumulateSpotGrid(width, height, spots, defaultRadiusPx);
+        boolean is16Bit = img.getType() == BufferedImage.TYPE_USHORT_GRAY
+                || (img.getRaster().getNumBands() == 1 && img.getSampleModel().getSampleSize(0) == 16);
+        var raster = img.getRaster();
 
         for (int py = 0; py < height; py++) {
             for (int px = 0; px < width; px++) {
                 float v = grid[py][px];
                 if (v > 0.005f) {
                     double norm = Math.clamp(1.0 - Math.exp(-v * 0.75), 0.0, 1.0);
-                    int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
-                    img.setRGB(px, py, (gray << 16) | (gray << 8) | gray);
+                    if (is16Bit) {
+                        raster.setSample(px, py, 0, (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L));
+                    } else {
+                        int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
+                        img.setRGB(px, py, (gray << 16) | (gray << 8) | gray);
+                    }
                 } else {
-                    img.setRGB(px, py, 0x000000);
+                    if (is16Bit) {
+                        raster.setSample(px, py, 0, 0);
+                    } else {
+                        img.setRGB(px, py, 0x000000);
+                    }
                 }
             }
         }
     }
 
     /**
-     * Rasterizes the global coal deposit tensor.
+     * Rasterizes the global coal deposit tensor in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}).
      *
      * @param type scenario type
      * @param scenario scenario model
@@ -220,7 +242,7 @@ public final class GeologicalResourceMapRasterizer {
      */
     public static BufferedImage rasterizeCoalMap(String type, Scenario scenario) {
         if (cachedCoalMap != null) return cachedCoalMap;
-        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_USHORT_GRAY);
 
         var spots = EmpiricalGeospatialDatasetIngestion.getEmpiricalCoalOccurrences();
         if (spots.isEmpty()) {
@@ -234,7 +256,7 @@ public final class GeologicalResourceMapRasterizer {
     }
 
     /**
-     * Rasterizes the global petroleum and bitumen deposits tensor.
+     * Rasterizes the global petroleum and bitumen deposits tensor in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}).
      *
      * @param type scenario type
      * @param scenario scenario model
@@ -242,7 +264,7 @@ public final class GeologicalResourceMapRasterizer {
      */
     public static BufferedImage rasterizeOilMap(String type, Scenario scenario) {
         if (cachedOilMap != null) return cachedOilMap;
-        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_USHORT_GRAY);
 
         var spots = new ArrayList<double[]>();
         Collections.addAll(spots, GeologicalResourceProvincesRegistry.MAJOR_CRUSTAL_OIL_BASINS);
@@ -260,7 +282,7 @@ public final class GeologicalResourceMapRasterizer {
     }
 
     /**
-     * Rasterizes the global natural gas deposit tensor.
+     * Rasterizes the global natural gas deposit tensor in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}).
      *
      * @param type scenario type
      * @param scenario scenario model
@@ -268,7 +290,7 @@ public final class GeologicalResourceMapRasterizer {
      */
     public static BufferedImage rasterizeGasMap(String type, Scenario scenario) {
         if (cachedGasMap != null) return cachedGasMap;
-        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_USHORT_GRAY);
 
         var spots = new ArrayList<double[]>();
         Collections.addAll(spots, GeologicalResourceProvincesRegistry.MAJOR_GAS_BASINS);
@@ -284,7 +306,7 @@ public final class GeologicalResourceMapRasterizer {
     }
 
     /**
-     * Rasterizes the global uranium and thorium deposit tensor.
+     * Rasterizes the global uranium and thorium deposit tensor in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}).
      *
      * @param type scenario type
      * @param scenario scenario model
@@ -292,7 +314,7 @@ public final class GeologicalResourceMapRasterizer {
      */
     public static BufferedImage rasterizeUraniumMap(String type, Scenario scenario) {
         if (cachedUraniumMap != null) return cachedUraniumMap;
-        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_USHORT_GRAY);
 
         var spots = loadMRDSDeposits("uranium", "thorium");
         Collections.addAll(spots, GeologicalResourceProvincesRegistry.IAEA_MAJOR_URANIUM_DEPOSITS);
@@ -302,7 +324,7 @@ public final class GeologicalResourceMapRasterizer {
     }
 
     /**
-     * Rasterizes the lunar Helium-3 tensor (grayscale baseline for extraterrestrial bodies).
+     * Rasterizes the lunar Helium-3 tensor (16-bit grayscale baseline for extraterrestrial bodies).
      *
      * @param type scenario type
      * @param scenario scenario model
@@ -310,12 +332,12 @@ public final class GeologicalResourceMapRasterizer {
      */
     public static BufferedImage rasterizeHelium3Map(String type, Scenario scenario) {
         if (cachedHe3Map != null) return cachedHe3Map;
-        cachedHe3Map = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
+        cachedHe3Map = new BufferedImage(2048, 1024, BufferedImage.TYPE_USHORT_GRAY);
         return cachedHe3Map;
     }
 
     /**
-     * Rasterizes the global iron and copper mineral deposit tensor.
+     * Rasterizes the global iron and copper mineral deposit tensor in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}).
      *
      * @param type scenario type
      * @param scenario scenario model
@@ -323,7 +345,7 @@ public final class GeologicalResourceMapRasterizer {
      */
     public static BufferedImage rasterizeIronCopperMap(String type, Scenario scenario) {
         if (cachedIronCopperMap != null) return cachedIronCopperMap;
-        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_USHORT_GRAY);
 
         var spots = loadMRDSDeposits("iron", "copper", "magnetite", "hematite", "chalcopyrite");
         Collections.addAll(spots, GeologicalResourceProvincesRegistry.MAJOR_IRON_COPPER_METALS);
@@ -335,7 +357,7 @@ public final class GeologicalResourceMapRasterizer {
     }
 
     /**
-     * Rasterizes the global precious metals deposit tensor (Gold, Silver, PGEs).
+     * Rasterizes the global precious metals deposit tensor (Gold, Silver, PGEs) in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}).
      *
      * @param type scenario type
      * @param scenario scenario model
@@ -343,7 +365,7 @@ public final class GeologicalResourceMapRasterizer {
      */
     public static BufferedImage rasterizePreciousMetalsMap(String type, Scenario scenario) {
         if (cachedPreciousMetalsMap != null) return cachedPreciousMetalsMap;
-        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_USHORT_GRAY);
 
         var spots = new ArrayList<double[]>();
         for (double[] m : loadMRDSDeposits("gold", "silver", "platinum", "palladium", "electrum")) {
@@ -357,7 +379,7 @@ public final class GeologicalResourceMapRasterizer {
     }
 
     /**
-     * Rasterizes the global rare earth elements and lithium deposit tensor.
+     * Rasterizes the global rare earth elements and lithium deposit tensor in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}).
      *
      * @param type scenario type
      * @param scenario scenario model
@@ -365,7 +387,7 @@ public final class GeologicalResourceMapRasterizer {
      */
     public static BufferedImage rasterizeRareEarthsMap(String type, Scenario scenario) {
         if (cachedRareEarthsMap != null) return cachedRareEarthsMap;
-        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(2048, 1024, BufferedImage.TYPE_USHORT_GRAY);
         var spots = loadMRDSDeposits("rare earth", "bastnasite", "monazite", "xenotime", "neodymium",
                 "dysprosium", "yttrium", "lanthanum", "cerium", "lithium", "spodumene", "carbonatite", "loparite", "allanite");
         Collections.addAll(spots, GeologicalResourceProvincesRegistry.MAJOR_REE_DEPOSITS);

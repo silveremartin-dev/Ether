@@ -35,28 +35,31 @@ public final class HistoricalInstitutionalRasterizer {
      */
     public static BufferedImage rasterizeInstitutionalComplexityMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
-        BufferedImage img = new BufferedImage(HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, BufferedImage.TYPE_INT_RGB);
+        int width = HistoricalMapGenerator.WIDTH, height = HistoricalMapGenerator.HEIGHT;
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
         BufferedImage mask = HistoricalMapGenerator.loadElevationMask();
 
         if (year >= 1900L) {
             BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernInstitutionalMap(
-                    year, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, mask);
+                    year, width, height, mask);
             if (modernImg != null) {
                 return HistoricalMapGenerator.applyAltimetryCoastlineMask(modernImg);
             }
         }
 
-        for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
-            double lat = 90.0 - (y + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
-            for (int x = 0; x < HistoricalMapGenerator.WIDTH; x++) {
-                double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
+        int idx = 0;
+        for (int y = 0; y < height; y++) {
+            double lat = 90.0 - (y + 0.5) / height * 180.0;
+            for (int x = 0; x < width; x++) {
+                double lon = -180.0 + (x + 0.5) / width * 360.0;
 
-                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : HistoricalMapGenerator.WIDTH) / HistoricalMapGenerator.WIDTH), 0, (mask != null ? mask.getWidth() : HistoricalMapGenerator.WIDTH) - 1);
-                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HistoricalMapGenerator.HEIGHT) / HistoricalMapGenerator.HEIGHT), 0, (mask != null ? mask.getHeight() : HistoricalMapGenerator.HEIGHT) - 1);
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : width) / width), 0, (mask != null ? mask.getWidth() : width) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : height) / height), 0, (mask != null ? mask.getHeight() : height) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                 double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
                 if (land == 0 || occWeight <= 0.001) {
-                    img.setRGB(x, y, 0x000000);
+                    data[idx++] = 0;
                     continue;
                 }
 
@@ -77,8 +80,8 @@ public final class HistoricalInstitutionalRasterizer {
                         double natufian = Math.exp(-(Math.pow(lat - 32.5, 2) + Math.pow(lon - 35.5, 2)) / 35.0);
                         socVal = 18.0 + gobekliTepe * 70.0 + natufian * 45.0;
                     }
-                    int gray = Math.clamp((int) (socVal * occWeight), 0, 255);
-                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                    int u16 = (int) Math.clamp(Math.round(((socVal * occWeight) / 255.0) * 65535.0), 0L, 65535L);
+                    data[idx++] = (short) (u16 & 0xFFFF);
                     continue;
                 }
 
@@ -106,15 +109,15 @@ public final class HistoricalInstitutionalRasterizer {
                     complexity += (nwEurope * 240.0 + china * 210.0 + mesoamerica * 130.0 + andes * 120.0);
                 }
 
-                int gray = Math.clamp((int) (complexity * occWeight), 0, 255);
-                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                int u16 = (int) Math.clamp(Math.round(((complexity * occWeight) / 255.0) * 65535.0), 0L, 65535L);
+                data[idx++] = (short) (u16 & 0xFFFF);
             }
         }
         return HistoricalMapGenerator.applyAltimetryCoastlineMask(img);
     }
 
     /**
-     * Rasterizes the global ecological footprint tensor map.
+     * Rasterizes the global ecological footprint tensor map in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}, [0..65535]).
      *
      * @param type     layer type descriptor
      * @param scenario scenario specifying epoch and parameters
@@ -124,7 +127,8 @@ public final class HistoricalInstitutionalRasterizer {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
         int width = HistoricalMapGenerator.WIDTH;
         int height = HistoricalMapGenerator.HEIGHT;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
         BufferedImage mask = HistoricalMapGenerator.loadElevationMask();
 
         // 1. Holocene -> Contemporary (10,000 BCE .. 2024+ CE): derive anthropogenic Anthrome strain
@@ -134,6 +138,7 @@ public final class HistoricalInstitutionalRasterizer {
             Hyde34LandUseReader.LandUseFields lu = Hyde34LandUseReader.loadForYear(Math.min(year, 2024L));
             if (lu != null) {
                 BufferedImage densityGrid = (year <= 2024L) ? Hyde34GridReader.loadForYear(year) : Hyde34GridReader.loadForYear(2024L);
+                int idx = 0;
                 for (int y = 0; y < height; y++) {
                     double lat = 90.0 - (y + 0.5) / height * 180.0;
                     for (int x = 0; x < width; x++) {
@@ -142,7 +147,7 @@ public final class HistoricalInstitutionalRasterizer {
                         int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : height) / height), 0, (mask != null ? mask.getHeight() : height) - 1);
                         int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                         if (land == 0) {
-                            img.setRGB(x, y, 0x000000);
+                            data[idx++] = 0;
                             continue;
                         }
 
@@ -155,15 +160,15 @@ public final class HistoricalInstitutionalRasterizer {
 
                         double popBoost = 0.0;
                         if (densityGrid != null) {
-                            double dNorm = (densityGrid.getRGB(x, y) & 0xFF) / 255.0;
+                            double dNorm = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(densityGrid, x, y);
                             popBoost = 0.18 * dNorm;
                         }
 
                         // Concave power compression preserves early-Holocene extensive gradients alongside modern cities
                         double compressed = Math.pow(Math.clamp(strain + popBoost, 0.0, 1.0), 0.65);
                         double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
-                        int gray = Math.clamp((int) Math.round((12.0 + compressed * 243.0) * occWeight), 0, 255);
-                        img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                        int u16 = (int) Math.clamp(Math.round((((12.0 + compressed * 243.0) * occWeight) / 255.0) * 65535.0), 0L, 65535L);
+                        data[idx++] = (short) (u16 & 0xFFFF);
                     }
                 }
                 return HistoricalMapGenerator.applyAltimetryCoastlineMask(img);
@@ -178,17 +183,18 @@ public final class HistoricalInstitutionalRasterizer {
             }
         }
 
-        for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
-            double lat = 90.0 - (y + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
-            for (int x = 0; x < HistoricalMapGenerator.WIDTH; x++) {
-                double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
+        int idx = 0;
+        for (int y = 0; y < height; y++) {
+            double lat = 90.0 - (y + 0.5) / height * 180.0;
+            for (int x = 0; x < width; x++) {
+                double lon = -180.0 + (x + 0.5) / width * 360.0;
 
-                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : HistoricalMapGenerator.WIDTH) / HistoricalMapGenerator.WIDTH), 0, (mask != null ? mask.getWidth() : HistoricalMapGenerator.WIDTH) - 1);
-                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HistoricalMapGenerator.HEIGHT) / HistoricalMapGenerator.HEIGHT), 0, (mask != null ? mask.getHeight() : HistoricalMapGenerator.HEIGHT) - 1);
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : width) / width), 0, (mask != null ? mask.getWidth() : width) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : height) / height), 0, (mask != null ? mask.getHeight() : height) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                 double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
                 if (land == 0 || occWeight <= 0.001) {
-                    img.setRGB(x, y, 0x000000);
+                    data[idx++] = 0;
                     continue;
                 }
 
@@ -203,8 +209,8 @@ public final class HistoricalInstitutionalRasterizer {
                         double mammothHunt = Math.exp(-(Math.pow(lat - 50.0, 2) + Math.pow(lon - 30.0, 2)) / 300.0);
                         ecoVal = 22.0 + mammothHunt * 35.0;
                     }
-                    int gray = Math.clamp((int) (ecoVal * occWeight), 0, 255);
-                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                    int u16 = (int) Math.clamp(Math.round(((ecoVal * occWeight) / 255.0) * 65535.0), 0L, 65535L);
+                    data[idx++] = (short) (u16 & 0xFFFF);
                     continue;
                 }
 
@@ -220,8 +226,8 @@ public final class HistoricalInstitutionalRasterizer {
                 ecoStrain += (mesopotamia * 180.0 + yellowRiver * 170.0 + ganges * 160.0 +
                               meditteranean * 140.0 + nwEurope * 135.0 + mesoamerica * 120.0 + andes * 120.0);
 
-                int gray = Math.clamp((int) (ecoStrain * occWeight), 0, 255);
-                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                int u16 = (int) Math.clamp(Math.round(((ecoStrain * occWeight) / 255.0) * 65535.0), 0L, 65535L);
+                data[idx++] = (short) (u16 & 0xFFFF);
             }
         }
         return HistoricalMapGenerator.applyAltimetryCoastlineMask(img);

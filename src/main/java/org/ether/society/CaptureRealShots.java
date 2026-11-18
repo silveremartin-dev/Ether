@@ -23,7 +23,9 @@ import org.ether.society.config.ConfigurationLoader;
 import org.ether.society.core.H3SimulationEngine;
 import org.ether.society.i18n.I18n;
 import org.ether.society.i18n.Language;
+import org.ether.society.model.Scenario;
 import org.ether.society.ui.*;
+import org.ether.society.ui.scenario.ScenarioPresetRepository;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -180,6 +182,23 @@ public class CaptureRealShots extends Application {
             runOnFx(() -> {
                 mainTabPane.getSelectionModel().select(2);
                 try {
+                    Field presetMgrField = ScenarioSetupPanel.class.getDeclaredField("presetManager");
+                    presetMgrField.setAccessible(true);
+                    ScenarioPresetRepository presetMgr = (ScenarioPresetRepository) presetMgrField.get(setupPanel);
+                    Scenario targetSc = null;
+                    for (Scenario s : presetMgr.getBuiltInScenarios()) {
+                        if (s != null && (s.getStartDateYear() == 1950 || (s.getName() != null && s.getName().contains("Great Acceleration")))) {
+                            targetSc = s;
+                            break;
+                        }
+                    }
+                    if (targetSc != null) {
+                        System.err.println("Applying scenario directly: " + targetSc.getName());
+                        setupPanel.applyScenarioToUI(targetSc);
+                        presetMgr.markClean(targetSc);
+                        setupPanel.markClean();
+                    }
+
                     Field resComboField = ScenarioSetupPanel.class.getDeclaredField("h3ResolutionCombo");
                     resComboField.setAccessible(true);
                     @SuppressWarnings("unchecked")
@@ -242,22 +261,26 @@ public class CaptureRealShots extends Application {
                 setupPanel.startSimulationDeferred();
             });
 
-            // Wait until Tab 3 (Simulation View) is selected upon completion
+            // Wait until Tab 3 (Simulation View) is selected upon completion and cells are populated
             System.err.println("Waiting for scenario calculation to finish and switch to Simulation Tab (Index 3)...");
             long startWait = System.currentTimeMillis();
             while (true) {
                 final int[] activeIndex = new int[1];
-                runOnFx(() -> activeIndex[0] = mainTabPane.getSelectionModel().getSelectedIndex());
-                if (activeIndex[0] == 3) {
-                    System.err.println("Simulation Tab reached!");
+                final int[] cellCount = new int[1];
+                runOnFx(() -> {
+                    activeIndex[0] = mainTabPane.getSelectionModel().getSelectedIndex();
+                    cellCount[0] = (h3Engine.getCells() != null) ? h3Engine.getCells().size() : 0;
+                });
+                if (activeIndex[0] == 3 && cellCount[0] > 0) {
+                    System.err.println("Simulation Tab reached with " + cellCount[0] + " cells!");
                     break;
                 }
-                if (System.currentTimeMillis() - startWait > 180000) {
-                    System.err.println("Timed out waiting for Simulation Tab, forcing selection of Tab 3.");
+                if (System.currentTimeMillis() - startWait > 300000) {
+                    System.err.println("Timed out waiting for Simulation Tab (300s). Forcing selection of Tab 3.");
                     runOnFx(() -> mainTabPane.getSelectionModel().select(3));
                     break;
                 }
-                sleep(300);
+                sleep(1000);
             }
 
             // Ensure rendering mode is GUI so mapCanvas is visible and managed
@@ -267,14 +290,17 @@ public class CaptureRealShots extends Application {
                 }
                 mapCanvas.setVisible(true);
                 mapCanvas.setTabVisible(true);
+                mapCanvas.setShowHillshading(true);
+                mapCanvas.setShowSolarTerminator(true);
                 try {
-                    h3Engine.stepForward(5);
+                    h3Engine.stepForward(1);
                     mapCanvas.setWorldBuffer(h3Engine.getWorldBuffer());
                     mapCanvas.setCells(h3Engine.getCells());
                 } catch (Exception e) {
                     System.err.println("Non-fatal step exception: " + e.getMessage());
                 }
             });
+            sleep(2000);
             sleep(2000);
 
             // 5a. Simulation Tab - 3D Globe with Population Density Layer
@@ -293,8 +319,10 @@ public class CaptureRealShots extends Application {
                 mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME, DisplayMode.POPULATION));
                 mapCanvas.setShowHexGrid(true);
                 mapCanvas.setShowContours(false);
-                mapCanvas.setCenterView(25.0, 25.0);
-                mapCanvas.setZoomFactor(0.95);
+                mapCanvas.setShowHillshading(true);
+                mapCanvas.setShowSolarTerminator(true);
+                mapCanvas.setCenterView(28.0, 35.0);
+                mapCanvas.setZoomFactor(0.98);
                 controlPanel.updateActiveLayerUI();
                 mapCanvas.draw();
             });
@@ -314,8 +342,10 @@ public class CaptureRealShots extends Application {
                 mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME));
                 mapCanvas.setShowHexGrid(true);
                 mapCanvas.setShowContours(true);
-                mapCanvas.setCenterView(30.0, 45.0);
-                mapCanvas.setZoomFactor(0.95);
+                mapCanvas.setShowHillshading(true);
+                mapCanvas.setShowSolarTerminator(true);
+                mapCanvas.setCenterView(35.0, 60.0);
+                mapCanvas.setZoomFactor(0.98);
                 controlPanel.updateActiveLayerUI();
                 mapCanvas.draw();
             });
@@ -331,8 +361,10 @@ public class CaptureRealShots extends Application {
                 mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME, DisplayMode.TEMPERATURE));
                 mapCanvas.setShowHexGrid(true);
                 mapCanvas.setShowContours(false);
-                mapCanvas.setCenterView(15.0, 15.0);
-                mapCanvas.setZoomFactor(0.95);
+                mapCanvas.setShowHillshading(true);
+                mapCanvas.setShowSolarTerminator(true);
+                mapCanvas.setCenterView(20.0, 15.0);
+                mapCanvas.setZoomFactor(0.98);
                 controlPanel.updateActiveLayerUI();
                 mapCanvas.draw();
             });
@@ -347,6 +379,8 @@ public class CaptureRealShots extends Application {
                 mapCanvas.setActiveDisplayModes(List.of(DisplayMode.BIOME, DisplayMode.POPULATION));
                 mapCanvas.setShowHexGrid(false);
                 mapCanvas.setShowContours(false);
+                mapCanvas.setShowHillshading(true);
+                mapCanvas.setShowSolarTerminator(false);
                 controlPanel.updateActiveLayerUI();
                 mapCanvas.draw();
             });
@@ -417,8 +451,8 @@ public class CaptureRealShots extends Application {
             }
         });
         try {
-            if (!latch.await(15, TimeUnit.SECONDS)) {
-                System.err.println("WARNING: runOnFx timed out after 15 seconds!");
+            if (!latch.await(120, TimeUnit.SECONDS)) {
+                System.err.println("WARNING: runOnFx timed out after 120 seconds!");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

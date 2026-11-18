@@ -352,81 +352,87 @@ public final class PaleoClimateMapRasterizer {
     }
 
     /**
-     * Rasterizes the global surface temperature map normalized to grayscale.
+     * Rasterizes the global surface temperature map normalized to 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}, [0..65535]).
      *
      * @param year historical epoch year
-     * @return grayscale RGB raster
+     * @return 16-bit grayscale temperature raster
      */
     public static BufferedImage rasterizeTemperatureMap(long year) {
         int w = HistoricalMapGenerator.WIDTH, h = HistoricalMapGenerator.HEIGHT;
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(w, h);
         BufferedImage mask = HistoricalMapGenerator.loadElevationMask();
 
         IntStream.range(0, h).parallel().forEach(y -> {
             double lat = 90.0 - (y + 0.5) / h * 180.0;
+            int rowOff = y * w;
             for (int x = 0; x < w; x++) {
                 double lon = -180.0 + (x + 0.5) / w * 360.0;
                 double elevM = (etopo != null) ? etopo[y][x] : ((mask != null && (mask.getRaster().getSample(x, y, 0) > 0)) ? 100.0 : -100.0);
 
                 double tempC = WorldClimEmpiricalRasterLoader.getTemperature(lat, lon, elevM, year);
                 double norm = Math.clamp((tempC + 50.0) / 100.0, 0.0, 1.0);
-                int gray = (int) Math.round(norm * 255.0);
-                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                int u16 = (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L);
+                data[rowOff + x] = (short) (u16 & 0xFFFF);
             }
         });
         return img;
     }
 
     /**
-     * Rasterizes the global precipitation map with perceptual square-root scaling.
+     * Rasterizes the global precipitation map in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}, [0..65535]) with perceptual square-root scaling.
      *
      * @param year historical epoch year
-     * @return grayscale RGB raster
+     * @return 16-bit grayscale precipitation raster
      */
     public static BufferedImage rasterizePrecipitationMap(long year) {
         int w = HistoricalMapGenerator.WIDTH, h = HistoricalMapGenerator.HEIGHT;
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(w, h);
         BufferedImage mask = HistoricalMapGenerator.loadElevationMask();
 
         IntStream.range(0, h).parallel().forEach(y -> {
             double lat = 90.0 - (y + 0.5) / h * 180.0;
+            int rowOff = y * w;
             for (int x = 0; x < w; x++) {
                 double lon = -180.0 + (x + 0.5) / w * 360.0;
                 double elevM = (etopo != null) ? etopo[y][x] : ((mask != null && (mask.getRaster().getSample(x, y, 0) > 0)) ? 100.0 : -100.0);
 
                 double rainMm = WorldClimEmpiricalRasterLoader.getPrecipitation(lat, lon, elevM, year);
                 double norm = Math.clamp(Math.sqrt(rainMm / 4000.0), 0.0, 1.0);
-                int gray = (int) Math.round(norm * 255.0);
-                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                int u16 = (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L);
+                data[rowOff + x] = (short) (u16 & 0xFFFF);
             }
         });
         return img;
     }
 
     /**
-     * Rasterizes the global seasonality amplitude map.
+     * Rasterizes the global seasonality amplitude map in 16-bit grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}, [0..65535]).
      *
      * @param year historical epoch year
-     * @return grayscale RGB raster
+     * @return 16-bit grayscale seasonality raster
      */
     public static BufferedImage rasterizeSeasonalityMap(long year) {
         int w = HistoricalMapGenerator.WIDTH, h = HistoricalMapGenerator.HEIGHT;
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(w, h);
         BufferedImage mask = HistoricalMapGenerator.loadElevationMask();
 
         IntStream.range(0, h).parallel().forEach(y -> {
             double lat = 90.0 - (y + 0.5) / h * 180.0;
+            int rowOff = y * w;
             for (int x = 0; x < w; x++) {
                 double lon = -180.0 + (x + 0.5) / w * 360.0;
                 double elevM = (etopo != null) ? etopo[y][x] : ((mask != null && (mask.getRaster().getSample(x, y, 0) > 0)) ? 100.0 : -100.0);
 
                 double ampC = WorldClimEmpiricalRasterLoader.getSeasonality(lat, lon, elevM, year);
                 double norm = Math.clamp((ampC - 1.0) / 60.0, 0.0, 1.0);
-                int gray = (int) Math.round(norm * 255.0);
-                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                int u16 = (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L);
+                data[rowOff + x] = (short) (u16 & 0xFFFF);
             }
         });
         return img;

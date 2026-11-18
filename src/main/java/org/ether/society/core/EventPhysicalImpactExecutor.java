@@ -88,7 +88,10 @@ public final class EventPhysicalImpactExecutor {
     public static boolean isTerrestrialEventType(String type) {
         if (type == null) return false;
         String u = type.toUpperCase(Locale.ROOT);
-        return u.contains("EARTHQUAKE") || u.contains("VOLCANO") || u.contains("FLOOD") || u.contains("DROUGHT") || u.contains("HEATWAVE") || u.contains("LOCUST");
+        return u.contains("EARTHQUAKE") || u.contains("VOLCANO") || u.contains("FLOOD")
+                || u.contains("DROUGHT") || u.contains("HEATWAVE") || u.contains("LOCUST")
+                || u.contains("CROP_BLIGHT") || u.contains("BLIGHT") || u.contains("WILDLIFE")
+                || u.contains("WILDFIRE");
     }
 
     /**
@@ -96,7 +99,95 @@ public final class EventPhysicalImpactExecutor {
      */
     public static boolean isOceanicEventType(String type) {
         if (type == null) return false;
-        return type.toUpperCase(Locale.ROOT).contains("TSUNAMI");
+        String u = type.toUpperCase(Locale.ROOT);
+        return u.contains("TSUNAMI") || u.contains("FISHERY")
+                || u.contains("CYCLONE") || u.contains("HURRICANE") || u.contains("TYPHOON");
+    }
+
+    /**
+     * Checks if a cell is bioclimatically and geographically plausible for a physical event type.
+     * Prevents biological, geographical, and physical anomalies (e.g. desert locusts in arctic tundra,
+     * fishery collapses in landlocked deserts, tsunamis on high mountains, or wildfires in open ocean).
+     *
+     * @param upperType uppercase event type string
+     * @param cell simulation cell
+     * @return true if shock can physically manifest on this cell
+     */
+    public static boolean isBioclimaticallyPlausible(String upperType, H3Cell cell) {
+        if (cell == null || upperType == null) return true;
+
+        double lat = Math.abs(cell.getLatitudeOr(0.0));
+        double temp = cell.getTemperatureOr(15.0);
+        org.ether.society.model.Biome biome = cell.getBiome();
+        double elev = cell.getElevationOr(0.0);
+        boolean isCoastal = (cell.getIsCoastal() != null && cell.getIsCoastal()) || elev <= 25.0;
+        boolean isWater = biome == org.ether.society.model.Biome.OCEAN || biome == org.ether.society.model.Biome.DEEP_OCEAN;
+
+        if (upperType.contains("LOCUST")) {
+            // Desert locusts (Schistocerca gregaria) require warm arid/semi-arid/subtropical conditions.
+            // Biologically impossible in polar, glacial, tundra, or freezing boreal zones.
+            if (isWater) return false;
+            if (lat > 45.0) return false;
+            if (temp < 10.0) return false;
+            if (biome == org.ether.society.model.Biome.GLACIER
+                    || biome == org.ether.society.model.Biome.SNOW
+                    || biome == org.ether.society.model.Biome.TUNDRA
+                    || biome == org.ether.society.model.Biome.BOREAL_FOREST) {
+                return false;
+            }
+            return true;
+        }
+
+        if (upperType.contains("FISHERY")) {
+            // Fishery collapses occur strictly in marine, coastal, or large aquatic environments.
+            // Physically impossible in landlocked deserts, mountain ranges, or dry continental interiors.
+            if (!isWater && !isCoastal) return false;
+            if (!isWater && elev > 150.0) return false;
+            return true;
+        }
+
+        if (upperType.contains("TSUNAMI")) {
+            // Tsunamis strictly affect marine and low-lying coastal cells.
+            if (!isWater && !isCoastal && elev > 35.0) return false;
+            return true;
+        }
+
+        if (upperType.contains("CROP_BLIGHT") || upperType.contains("BLIGHT")) {
+            // Crop blights affect cultivated crops and standing agricultural biomass.
+            // Impossible in open deep oceans, barren salt flats, or polar ice caps.
+            if (isWater) return false;
+            if (biome == org.ether.society.model.Biome.GLACIER || biome == org.ether.society.model.Biome.SNOW || biome == org.ether.society.model.Biome.DESERT) {
+                double ag = cell.getBiomassAgricultureOr(0.0);
+                return ag > 5.0;
+            }
+            return true;
+        }
+
+        if (upperType.contains("WILDLIFE")) {
+            // Wildlife die-offs affect terrestrial fauna, game, and herds.
+            // Impossible in open oceans.
+            if (isWater) return false;
+            return true;
+        }
+
+        if (upperType.contains("CYCLONE") || upperType.contains("HURRICANE") || upperType.contains("TYPHOON")) {
+            // Tropical cyclones form in warm tropical/subtropical waters (5° to 38° latitude).
+            // Impossible in polar zones or deep inland continental interiors.
+            if (lat < 4.0 || lat > 42.0) return false;
+            if (!isWater && !isCoastal && elev > 400.0) return false;
+            return true;
+        }
+
+        if (upperType.contains("WILDFIRE")) {
+            // Wildfires consume terrestrial vegetation (forests, savannas, grasslands, taiga).
+            // Impossible in open oceans, glaciers, or barren rocky deserts without biomass.
+            if (isWater) return false;
+            if (biome == org.ether.society.model.Biome.GLACIER || biome == org.ether.society.model.Biome.SNOW) return false;
+            double nat = cell.getBiomassNaturalOr(0.0);
+            return nat > 5.0;
+        }
+
+        return true;
     }
 
     /**
@@ -173,6 +264,9 @@ public final class EventPhysicalImpactExecutor {
             double distance3dKm = Math.hypot(distKm, Math.max(0.0, depth));
 
             if (distance3dKm <= effectiveRadiusKm) {
+                if (!isBioclimaticallyPlausible(upperType, cell)) {
+                    continue;
+                }
                 double attenuation = Math.max(0.0, 1.0 - (distance3dKm / effectiveRadiusKm));
                 int prevPop = cell.getPopulationOr(0);
 
@@ -198,6 +292,10 @@ public final class EventPhysicalImpactExecutor {
                     if (cell.getResourceCapital() != null) worldBuffer.getResourceCapital()[i] = cell.getResourceCapital().floatValue();
                     if (cell.getFoodResource() != null) worldBuffer.getFoodResource()[i] = cell.getFoodResource().floatValue();
                     if (cell.getPopulation() != null) worldBuffer.getBiomassHuman()[i] = cell.getPopulation().floatValue();
+                    if (cell.getBiomassAgriculture() != null) worldBuffer.getBiomassAgriculture()[i] = cell.getBiomassAgriculture().floatValue();
+                    if (cell.getBiomassNatural() != null) worldBuffer.getBiomassNatural()[i] = cell.getBiomassNatural().floatValue();
+                    if (cell.getBiomassFish() != null) worldBuffer.getBiomassFish()[i] = cell.getBiomassFish().floatValue();
+                    if (cell.getBiomassLivestock() != null) worldBuffer.getBiomassLivestock()[i] = cell.getBiomassLivestock().floatValue();
                 }
             }
         }
@@ -282,9 +380,4 @@ public final class EventPhysicalImpactExecutor {
         }
 
         if (worldBuffer != null && cells != null) {
-            DODDataGenerator.populateWorldBuffer(cells, worldBuffer);
-        }
-
-        return new HeadlessBrushOutcome(nearest, brushType, brushTitle, brushDesc, brushMag);
-    }
-}
+            DODDataGenerator.populateWorldBuffer(cells, worldBuffer

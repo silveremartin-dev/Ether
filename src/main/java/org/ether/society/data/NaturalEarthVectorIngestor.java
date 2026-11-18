@@ -430,18 +430,39 @@ public class NaturalEarthVectorIngestor {
     private static BufferedImage rasterizeScalarMap(java.util.function.ToIntFunction<CountryFeature> levelFunc, int width, int height, BufferedImage elevationMask) {
         List<CountryFeature> countries = getCountries(width, height);
         if (countries.isEmpty()) return null;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = img.createGraphics();
+        BufferedImage img8 = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = img8.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, width, height);
         for (CountryFeature c : countries) {
-            int v = levelFunc.applyAsInt(c);
+            int v = Math.clamp(levelFunc.applyAsInt(c), 0, 255);
             g.setColor(new Color(v, v, v));
             for (Path2D p : c.paths) g.fill(p);
         }
         g.dispose();
-        return applyElevationMask(img, elevationMask);
+
+        BufferedImage img16 = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img16.getRaster().getDataBuffer()).getData();
+        int ew = elevationMask != null ? elevationMask.getWidth() : width;
+        int eh = elevationMask != null ? elevationMask.getHeight() : height;
+        int idx = 0;
+        for (int y = 0; y < height; y++) {
+            double lat = 90.0 - (y + 0.5) / height * 180.0;
+            int my = Math.clamp(y * eh / height, 0, eh - 1);
+            for (int x = 0; x < width; x++) {
+                int mx = Math.clamp(x * ew / width, 0, ew - 1);
+                int land = elevationMask != null ? elevationMask.getRaster().getSample(mx, my, 0) : 255;
+                if (land == 0 || lat < -60.0) {
+                    data[idx++] = 0;
+                } else {
+                    int v8 = (img8.getRGB(x, y) >> 16) & 0xFF;
+                    int u16 = (v8 * 65535 + 127) / 255;
+                    data[idx++] = (short) (u16 & 0xFFFF);
+                }
+            }
+        }
+        return img16;
     }
 
     public static BufferedImage rasterizeModernInstitutionalMap(long year, int width, int height, BufferedImage elevationMask) {

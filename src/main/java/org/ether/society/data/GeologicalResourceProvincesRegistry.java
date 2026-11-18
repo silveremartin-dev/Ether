@@ -243,7 +243,8 @@ final class GeologicalResourceProvincesRegistry {
         if (Files.exists(csvPath)) {
             try {
                 int width = 2048, height = 1024;
-                BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+                short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
                 float[][] grid = new float[90][180];
                 boolean[][] filled = new boolean[90][180];
 
@@ -298,8 +299,8 @@ final class GeologicalResourceProvincesRegistry {
                         if (hfInterp <= 0) hfInterp = 65.0f;
 
                         double norm = Math.clamp((hfInterp - 35.0) / 110.0, 0.0, 1.0);
-                        int gray = (int) Math.clamp(norm * 255.0, 0, 255);
-                        img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                        int u16 = (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L);
+                        data[y * width + x] = (short) (u16 & 0xFFFF);
                     }
                 }
                 logger.info("Successfully generated 9th geology tensor (Mantle Heat Flux) with seamless 2D Bilinear Interpolation from Davies 2013 CSV.");
@@ -310,7 +311,7 @@ final class GeologicalResourceProvincesRegistry {
         }
 
         int width = 2048, height = 1024;
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
         double[][] spots = {
             {-155.5, 19.8, 30, 1.2}, {-178.0, -29.0, 45, 1.1}, {-72.0, -15.0, 60, 1.2},
             {140.0, 36.0, 50, 1.1}, {43.0, 11.5, 40, 1.2}, {-25.0, 64.8, 45, 1.1}, {14.0, 40.8, 35, 1.0}

@@ -374,12 +374,14 @@ public final class HistoricalReligiousAndSocietalRasterizer {
     // --- 6. TECHNOLOGY & SUBSISTENCE TENSOR MAP ---
     public static BufferedImage rasterizeTechnologyMap(String type, Scenario scenario) {
         long year = (scenario != null) ? scenario.getStartDateYear() : 1000L;
-        BufferedImage img = new BufferedImage(HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, BufferedImage.TYPE_INT_RGB);
+        int width = HistoricalMapGenerator.WIDTH, height = HistoricalMapGenerator.HEIGHT;
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
         BufferedImage mask = HistoricalMapGenerator.loadElevationMask();
 
         // 1. Ingest authentic capital intensity & innovation index for modern / contemporary epochs (1900-2060)
         if (year >= 1900L) {
-            BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernTechnologyMap(year, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT, mask);
+            BufferedImage modernImg = NaturalEarthVectorIngestor.rasterizeModernTechnologyMap(year, width, height, mask);
             if (modernImg != null) {
                 return HistoricalMapGenerator.applyAltimetryCoastlineMask(modernImg);
             }
@@ -399,24 +401,25 @@ public final class HistoricalReligiousAndSocietalRasterizer {
         else if (year <= 1950L) baseTech = 215.0;
         else baseTech = 240.0;
 
-        for (int y = 0; y < HistoricalMapGenerator.HEIGHT; y++) {
-            double lat = 90.0 - (y + 0.5) / HistoricalMapGenerator.HEIGHT * 180.0;
-            for (int x = 0; x < HistoricalMapGenerator.WIDTH; x++) {
-                double lon = -180.0 + (x + 0.5) / HistoricalMapGenerator.WIDTH * 360.0;
+        int idx = 0;
+        for (int y = 0; y < height; y++) {
+            double lat = 90.0 - (y + 0.5) / height * 180.0;
+            for (int x = 0; x < width; x++) {
+                double lon = -180.0 + (x + 0.5) / width * 360.0;
 
-                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : HistoricalMapGenerator.WIDTH) / HistoricalMapGenerator.WIDTH), 0, (mask != null ? mask.getWidth() : HistoricalMapGenerator.WIDTH) - 1);
-                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : HistoricalMapGenerator.HEIGHT) / HistoricalMapGenerator.HEIGHT), 0, (mask != null ? mask.getHeight() : HistoricalMapGenerator.HEIGHT) - 1);
+                int mx = Math.clamp((int) ((x + 0.5) * (mask != null ? mask.getWidth() : width) / width), 0, (mask != null ? mask.getWidth() : width) - 1);
+                int my = Math.clamp((int) ((y + 0.5) * (mask != null ? mask.getHeight() : height) / height), 0, (mask != null ? mask.getHeight() : height) - 1);
                 int land = (mask != null) ? mask.getRaster().getSample(mx, my, 0) : 255;
                 double occWeight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
                 if (land == 0 || occWeight <= 0.001) {
-                    img.setRGB(x, y, 0x000000);
+                    data[idx++] = 0;
                     continue;
                 }
 
                 if (year <= -70000L) {
                     double techVal = HistoricalMapGenerator.blendPaleoTraits(lon, lat, 130.0, 112.0, 92.0);
-                    int gray = Math.clamp((int) (techVal * occWeight), 0, 255);
-                    img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                    int u16 = (int) Math.clamp(Math.round(((techVal * occWeight) / 255.0) * 65535.0), 0L, 65535L);
+                    data[idx++] = (short) (u16 & 0xFFFF);
                     continue;
                 }
 
@@ -424,9 +427,9 @@ public final class HistoricalReligiousAndSocietalRasterizer {
 
                 // Boserup-Kremer urban agglomeration scaling derived from empirical HYDE 3.4 density
                 if (densityGrid != null) {
-                    int densSample = densityGrid.getRGB(x, y) & 0xFF;
-                    if (densSample > 0) {
-                        double urbanBonus = 42.0 * Math.log(1.0 + densSample * 2.0) / Math.log(512.0);
+                    double dNorm = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(densityGrid, x, y);
+                    if (dNorm > 0.0) {
+                        double urbanBonus = 42.0 * Math.log(1.0 + dNorm * 510.0) / Math.log(512.0);
                         tech += urbanBonus;
                     }
                 }
@@ -459,8 +462,8 @@ public final class HistoricalReligiousAndSocietalRasterizer {
                     tech += (europeCore * 25.0 + chinaCore * 25.0);
                 }
 
-                int gray = Math.clamp((int) (tech * occWeight), 0, 255);
-                img.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                int u16 = (int) Math.clamp(Math.round(((tech * occWeight) / 255.0) * 65535.0), 0L, 65535L);
+                data[idx++] = (short) (u16 & 0xFFFF);
             }
         }
         return HistoricalMapGenerator.applyAltimetryCoastlineMask(img);
