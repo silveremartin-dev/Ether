@@ -21,8 +21,34 @@ import java.util.Set;
 public class NormalizePlanetaryElevationTest {
 
     @Test
-    @DisplayName("Normalize All Extraterrestrial Elevation Rasters to Grayscale DEMs")
-    public void testNormalizeExtraterrestrialElevationRasters() {
+    @DisplayName("Normalize All Planetary Elevation Rasters (Earth ETOPO 2022 + Extraterrestrial) to 16-bit Grayscale DEMs")
+    public void testNormalizeExtraterrestrialElevationRasters() throws Exception {
+        // 1. Regenerate 16-bit ETOPO 2022 elevation baseline for Earth across all epoch folders
+        float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT);
+        if (etopo != null) {
+            BufferedImage elev16 = EtopoGeoTiffReader.renderGrayscaleElevationImage(
+                    etopo, HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT);
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            ImageIO.write(elev16, "png", baos);
+            byte[] elevPng = baos.toByteArray();
+
+            File earthDir = new File("data/maps/ether/earth");
+            if (earthDir.isDirectory()) {
+                java.nio.file.Files.write(earthDir.toPath().resolve("earth_elevation.png"), elevPng);
+                File[] subDirs = earthDir.listFiles(File::isDirectory);
+                if (subDirs != null) {
+                    for (File d : subDirs) {
+                        try {
+                            long year = Long.parseLong(d.getName());
+                            java.nio.file.Files.write(d.toPath().resolve("earth_" + year + "_elevation.png"), elevPng);
+                        } catch (NumberFormatException ignored) {
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Convert extraterrestrial elevation rasters to 16-bit TYPE_USHORT_GRAY
         PlanetaryElevationGrayscaleNormalizer.normalizeAllExtraterrestrialElevationRasters();
     }
 

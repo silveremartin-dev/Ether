@@ -109,12 +109,32 @@ public final class TemporalRasterInterpolator {
         t = Math.clamp(t, 0.0, 1.0);
         int w = Math.min(img0.getWidth(), img1.getWidth());
         int h = Math.min(img0.getHeight(), img1.getHeight());
+        double invT = 1.0 - t;
+
+        boolean is16Bit0 = img0.getType() == BufferedImage.TYPE_USHORT_GRAY
+                || (img0.getRaster().getNumBands() == 1 && img0.getSampleModel().getSampleSize(0) == 16);
+        boolean is16Bit1 = img1.getType() == BufferedImage.TYPE_USHORT_GRAY
+                || (img1.getRaster().getNumBands() == 1 && img1.getSampleModel().getSampleSize(0) == 16);
+        if (is16Bit0 && is16Bit1) {
+            BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+            var r0 = img0.getRaster();
+            var r1 = img1.getRaster();
+            var rOut = result.getRaster();
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    int s0 = r0.getSample(x, y, 0) & 0xFFFF;
+                    int s1 = r1.getSample(x, y, 0) & 0xFFFF;
+                    int sOut = Math.clamp((int) Math.round(s0 * invT + s1 * t), 0, 65535);
+                    rOut.setSample(x, y, 0, sOut);
+                }
+            }
+            return result;
+        }
 
         BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         int[] line0 = new int[w];
         int[] line1 = new int[w];
         int[] lineOut = new int[w];
-        double invT = 1.0 - t;
 
         for (int y = 0; y < h; y++) {
             img0.getRGB(0, y, w, 1, line0, 0, w);

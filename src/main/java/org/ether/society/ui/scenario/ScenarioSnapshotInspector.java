@@ -245,7 +245,6 @@ public class ScenarioSnapshotInspector {
         if (!filteredSaves.isEmpty()) {
             if (radioResumeSnapshot != null) {
                 radioResumeSnapshot.setDisable(false);
-                radioResumeSnapshot.setSelected(true);
             }
             snapshotCombo.setValue(filteredSaves.get(0));
             updateSnapshotDetailsDisplay(filteredSaves.get(0));

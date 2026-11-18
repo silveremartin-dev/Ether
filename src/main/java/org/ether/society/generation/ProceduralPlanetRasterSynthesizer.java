@@ -49,7 +49,8 @@ public final class ProceduralPlanetRasterSynthesizer {
             ProceduralGenerator generator, PlanetPreset preset, int width, int height) {
         int w = width > 0 ? width : 2048;
         int h = height > 0 ? height : 1024;
-        var elevImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        var elevImg = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+        short[] elevData = ((java.awt.image.DataBufferUShort) elevImg.getRaster().getDataBuffer()).getData();
         var biomeImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         var tempImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         var rainImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
@@ -57,17 +58,17 @@ public final class ProceduralPlanetRasterSynthesizer {
 
         double minAlt = preset.minAltitudeMeters();
         double maxAlt = preset.maxAltitudeMeters();
-        double altRange = Math.max(1.0, maxAlt - minAlt);
 
         IntStream.range(0, h).parallel().forEach(y -> {
             double lat = 90.0 - ((y + 0.5) / h) * 180.0;
+            int rowOff = y * w;
             for (int x = 0; x < w; x++) {
                 double lon = -180.0 + ((x + 0.5) / w) * 360.0;
                 ProceduralGenerator.PlanetPoint p = generator.getPlanetPoint(lat, lon, preset);
 
-                double elevNorm = Math.clamp((p.elevationMeters() - minAlt) / altRange, 0.0, 1.0);
-                int eGray = (int) Math.round(elevNorm * 255.0);
-                elevImg.setRGB(x, y, (eGray << 16) | (eGray << 8) | eGray);
+                double elevNorm = Math.clamp(PlanetPreset.metersToWaterLevel(p.elevationMeters(), minAlt, maxAlt), 0.0, 1.0);
+                int eU16 = (int) Math.clamp(Math.round(elevNorm * 65535.0), 0L, 65535L);
+                elevData[rowOff + x] = (short) (eU16 & 0xFFFF);
 
                 biomeImg.setRGB(x, y, biomeToStandardRgb(p.biome()));
 

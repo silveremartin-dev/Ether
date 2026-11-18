@@ -203,13 +203,17 @@ public final class EtopoGeoTiffReader {
     }
 
     /**
-     * Renders pure grayscale elevation image [0..255] where:
-     * - Bathymetry [-11000m .. 0m] -> [0 .. 122]
-     * - Topography [0m .. +8848m] -> [122 .. 255]
-     * Sea level (0m) is exactly 122 (normalized 0.478).
+     * Renders high-precision 16-bit grayscale elevation image ({@link BufferedImage#TYPE_USHORT_GRAY}, [0..65535]) where:
+     * <ul>
+     *   <li>Bathymetry [-11000m .. 0m] &rarr; [0 .. 31326] (~0.35 m vertical resolution)</li>
+     *   <li>Topography [0m .. +8848m] &rarr; [31326 .. 65535] (~0.26 m vertical resolution)</li>
+     * </ul>
+     * Sea level (0m) is calibrated at normalized datum 0.478 (u16 = 31326).
      */
     public static BufferedImage renderGrayscaleElevationImage(float[][] etopoGrid, int width, int height) {
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+        short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
+        int idx = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 float altM = etopoGrid[y][x];
@@ -219,8 +223,8 @@ public final class EtopoGeoTiffReader {
                 } else {
                     norm = 0.478 + 0.522 * Math.min(1.0, altM / 8848.0);
                 }
-                int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
-                img.getRaster().setSample(x, y, 0, gray);
+                int u16 = (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L);
+                data[idx++] = (short) (u16 & 0xFFFF);
             }
         }
         return img;

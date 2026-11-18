@@ -30,6 +30,7 @@ public enum PhysicalShockType {
     SOLAR_EMP(EventCategory.NATURAL),
     CLIMATE_ANOMALY(EventCategory.NATURAL),
     FAMINE(EventCategory.NATURAL),
+    LOCUST_SWARM(EventCategory.NATURAL),
     PANDEMIC(EventCategory.NATURAL),
 
     NUCLEAR_STRIKE(EventCategory.ANTHROPIC),

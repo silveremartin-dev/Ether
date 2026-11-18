@@ -88,7 +88,7 @@ public final class EventPhysicalImpactExecutor {
     public static boolean isTerrestrialEventType(String type) {
         if (type == null) return false;
         String u = type.toUpperCase(Locale.ROOT);
-        return u.contains("EARTHQUAKE") || u.contains("VOLCANO") || u.contains("FLOOD") || u.contains("DROUGHT") || u.contains("HEATWAVE");
+        return u.contains("EARTHQUAKE") || u.contains("VOLCANO") || u.contains("FLOOD") || u.contains("DROUGHT") || u.contains("HEATWAVE") || u.contains("LOCUST");
     }
 
     /**

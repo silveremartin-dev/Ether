@@ -63,7 +63,7 @@ public final class ExtraterrestrialPlanetaryRasterSampler {
             } catch (Exception ignored) {
             }
         }
-        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
         for (int y = 0; y < HEIGHT; y++) {
             double lat = 90.0 - (y / (double) HEIGHT) * 180.0;
             for (int x = 0; x < WIDTH; x++) {
@@ -74,15 +74,14 @@ public final class ExtraterrestrialPlanetaryRasterSampler {
                     int sy = (int) ((y / (double) HEIGHT) * srcLola.getHeight());
                     sx = Math.clamp(sx, 0, srcLola.getWidth() - 1);
                     sy = Math.clamp(sy, 0, srcLola.getHeight() - 1);
-                    Color c = new Color(srcLola.getRGB(sx, sy));
-                    norm = (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114) / 255.0;
+                    norm = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(srcLola, sx, sy);
                 } else {
                     double spaDist = Math.hypot((lon - 180.0) * Math.cos(Math.toRadians(lat)), lat - (-53.0));
                     double spaDepression = Math.max(0.0, 1.0 - spaDist / 45.0) * 0.35;
                     norm = 0.52 - spaDepression + 0.10 * Math.sin(Math.toRadians(lon * 4.0)) * Math.cos(Math.toRadians(lat * 3.0));
                 }
-                int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
-                imgElev.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                int u16 = (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L);
+                imgElev.getRaster().setSample(x, y, 0, u16);
             }
         }
         saveMapImage(imgElev, "moon_elevation.png", "moon");
@@ -166,11 +165,7 @@ public final class ExtraterrestrialPlanetaryRasterSampler {
                 if (Math.abs(lat) > 87.5) {
                     biomeColor = BIOME_SNOW;
                 } else {
-                    int elevRgb = imgElev.getRGB(x, y);
-                    int r = (elevRgb >> 16) & 0xFF;
-                    int g = (elevRgb >> 8) & 0xFF;
-                    int b = elevRgb & 0xFF;
-                    double brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255.0;
+                    double brightness = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(imgElev, x, y);
                     biomeColor = (brightness < 0.46) ? BIOME_PLAINS : (brightness < 0.70 ? BIOME_HILLS : BIOME_MOUNTAINS);
                 }
                 imgBiomes.setRGB(x, y, biomeColor);
@@ -195,7 +190,7 @@ public final class ExtraterrestrialPlanetaryRasterSampler {
             }
         }
 
-        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
         double[][] molaAltGrid = new double[HEIGHT][WIDTH];
 
         for (int y = 0; y < HEIGHT; y++) {
@@ -209,8 +204,7 @@ public final class ExtraterrestrialPlanetaryRasterSampler {
                     double syNorm = Math.clamp(yNorm, safeTop, safeBot);
                     int sx = Math.clamp((int) ((x / (double) WIDTH) * srcMola.getWidth()), 0, srcMola.getWidth() - 1);
                     int sy = Math.clamp((int) (syNorm * srcMola.getHeight()), 0, srcMola.getHeight() - 1);
-                    Color c = new Color(srcMola.getRGB(sx, sy));
-                    norm = (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114) / 255.0;
+                    norm = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(srcMola, sx, sy);
                     if (yNorm < safeTop) {
                         double blend = Math.clamp(1.0 - yNorm / safeTop, 0.0, 1.0);
                         norm = norm + blend * (0.85 - norm);
@@ -223,8 +217,8 @@ public final class ExtraterrestrialPlanetaryRasterSampler {
                 }
 
                 molaAltGrid[y][x] = norm;
-                int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
-                imgElev.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                int u16 = (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L);
+                imgElev.getRaster().setSample(x, y, 0, u16);
             }
         }
         saveMapImage(imgElev, "mars_elevation.png", "mars");

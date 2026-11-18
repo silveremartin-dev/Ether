@@ -95,7 +95,7 @@ public class TitanMapIngestorTest {
             mapY1 = (int) (imgTopo.getHeight() * 0.94);
         }
 
-        BufferedImage elevOut = new BufferedImage(outW, outH, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage elevOut = new BufferedImage(outW, outH, BufferedImage.TYPE_USHORT_GRAY);
 
         for (int y = 0; y < outH; y++) {
             double v = (double) y / (outH - 1);
@@ -134,12 +134,10 @@ public class TitanMapIngestorTest {
                     elevMeters = 600.0 - (frac * 450.0); // +600 to +150
                 }
 
-                // Strictly map [-1800m, +600m] to 8-bit [0, 255]
-                double normalized = (elevMeters - (-1800.0)) / (600.0 - (-1800.0));
-                int grayVal = Math.clamp((int) Math.round(normalized * 255.0), 0, 255);
-
-                int grayRgb = (grayVal << 16) | (grayVal << 8) | grayVal;
-                elevOut.setRGB(x, y, grayRgb);
+                // Strictly map [-1800m, +600m] to 16-bit [0, 65535]
+                double normalized = Math.clamp((elevMeters - (-1800.0)) / (600.0 - (-1800.0)), 0.0, 1.0);
+                int u16 = (int) Math.clamp(Math.round(normalized * 65535.0), 0L, 65535L);
+                elevOut.getRaster().setSample(x, y, 0, u16);
             }
         }
 

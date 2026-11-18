@@ -59,7 +59,7 @@ final class InnerSolarPlanetRasterHelper {
             } catch (Exception ignored) {
             }
         }
-        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
                 double norm = 0.5;
@@ -68,11 +68,10 @@ final class InnerSolarPlanetRasterHelper {
                     int sy = (int) ((y / (double) HEIGHT) * srcMagellan.getHeight());
                     sx = Math.clamp(sx, 0, srcMagellan.getWidth() - 1);
                     sy = Math.clamp(sy, 0, srcMagellan.getHeight() - 1);
-                    Color c = new Color(srcMagellan.getRGB(sx, sy));
-                    norm = (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114) / 255.0;
+                    norm = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(srcMagellan, sx, sy);
                 }
-                int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
-                imgElev.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                int u16 = (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L);
+                imgElev.getRaster().setSample(x, y, 0, u16);
             }
         }
         saveMapImage(imgElev, "venus_elevation.png", "venus");
@@ -91,11 +90,7 @@ final class InnerSolarPlanetRasterHelper {
         BufferedImage imgBiomes = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
-                int elevRgb = imgElev.getRGB(x, y);
-                int r = (elevRgb >> 16) & 0xFF;
-                int g = (elevRgb >> 8) & 0xFF;
-                int b = elevRgb & 0xFF;
-                double brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255.0;
+                double brightness = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(imgElev, x, y);
                 int biomeColor = (brightness > 0.75) ? BIOME_MOUNTAINS : (brightness > 0.55 ? BIOME_HILLS : BIOME_PLAINS);
                 imgBiomes.setRGB(x, y, biomeColor);
             }
@@ -172,7 +167,7 @@ final class InnerSolarPlanetRasterHelper {
             } catch (Exception ignored) {
             }
         }
-        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage imgElev = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
                 double norm = 0.5;
@@ -181,11 +176,10 @@ final class InnerSolarPlanetRasterHelper {
                     int sy = (int) ((y / (double) HEIGHT) * srcMessenger.getHeight());
                     sx = Math.clamp(sx, 0, srcMessenger.getWidth() - 1);
                     sy = Math.clamp(sy, 0, srcMessenger.getHeight() - 1);
-                    Color c = new Color(srcMessenger.getRGB(sx, sy));
-                    norm = (c.getRed() * 0.299 + c.getGreen() * 0.587 + c.getBlue() * 0.114) / 255.0;
+                    norm = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(srcMessenger, sx, sy);
                 }
-                int gray = (int) Math.clamp(norm * 255.0, 0.0, 255.0);
-                imgElev.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
+                int u16 = (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L);
+                imgElev.getRaster().setSample(x, y, 0, u16);
             }
         }
         saveMapImage(imgElev, "mercury_elevation.png", "mercury");

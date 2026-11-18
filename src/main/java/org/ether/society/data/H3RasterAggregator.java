@@ -64,7 +64,9 @@ public final class H3RasterAggregator {
     public record RasterArgbBuffer(int width, int height, int[] argb) {
 
         /**
-         * Extracts a flat ARGB pixel buffer from a headless {@link BufferedImage}.
+         * Extracts a flat ARGB (or 16-bit tagged grayscale) pixel buffer from a headless {@link BufferedImage}.
+         * Preserves full 16-bit unsigned resolution (65,536 levels) when the source image is
+         * {@link BufferedImage#TYPE_USHORT_GRAY}.
          *
          * @param img source buffered image (may be {@code null})
          * @return extracted buffer, or {@code null} when input is null/empty
@@ -74,6 +76,18 @@ public final class H3RasterAggregator {
             int w = img.getWidth();
             int h = img.getHeight();
             int[] pixels = new int[w * h];
+            if (img.getType() == BufferedImage.TYPE_USHORT_GRAY
+                    || (img.getRaster().getNumBands() == 1 && img.getSampleModel().getSampleSize(0) == 16)) {
+                var raster = img.getRaster();
+                int idx = 0;
+                for (int y = 0; y < h; y++) {
+                    for (int x = 0; x < w; x++) {
+                        int u16 = raster.getSample(x, y, 0) & 0xFFFF;
+                        pixels[idx++] = H3RasterBinningCoordinator.USHORT_GRAY_SENTINEL | u16;
+                    }
+                }
+                return new RasterArgbBuffer(w, h, pixels);
+            }
             img.getRGB(0, 0, w, h, pixels, 0, w);
             return new RasterArgbBuffer(w, h, pixels);
         }

@@ -437,7 +437,8 @@ public record PlanetPreset(
      * Converts a physical sea level in meters into a normalized waterLevel threshold [0..1].
      */
     public static double metersToWaterLevel(double seaLevelMeters, double minAltMeters, double maxAltMeters) {
-        if (minAltMeters < 0 && maxAltMeters > 0) {
+        boolean isEarthDatum = Math.abs(minAltMeters - (-11000.0)) < 10.0 && Math.abs(maxAltMeters - 8848.0) < 10.0;
+        if (isEarthDatum) {
             double datum = 0.478;
             if (seaLevelMeters <= 0.0) {
                 double fraction = 1.0 + Math.max(minAltMeters, seaLevelMeters) / Math.abs(minAltMeters);
@@ -448,7 +449,7 @@ public record PlanetPreset(
             }
         } else {
             if (Math.abs(maxAltMeters - minAltMeters) < 1e-6) return 0.0;
-            return (seaLevelMeters - minAltMeters) / (maxAltMeters - minAltMeters);
+            return Math.clamp((seaLevelMeters - minAltMeters) / (maxAltMeters - minAltMeters), 0.0, 1.0);
         }
     }
 

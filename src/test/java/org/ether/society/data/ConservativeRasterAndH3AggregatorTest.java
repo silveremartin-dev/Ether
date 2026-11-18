@@ -192,6 +192,41 @@ class ConservativeRasterAndH3AggregatorTest {
     }
 
     @Test
+    @DisplayName("4b. H3RasterAggregator preserves 16-bit TYPE_USHORT_GRAY sub-meter elevation resolution (65,536 levels)")
+    void test16BitUShortGrayElevationSubMeterResolution() {
+        int w = 512, h = 256;
+        float[][] gridA = new float[h][w];
+        float[][] gridB = new float[h][w];
+        // Two elevations separated by only 2.0 meters (impossible to distinguish in 8-bit 80m steps, resolved in 16-bit ~0.26m steps)
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                gridA[y][x] = 123.0f;
+                gridB[y][x] = 125.0f;
+            }
+        }
+
+        BufferedImage imgA = EtopoGeoTiffReader.renderGrayscaleElevationImage(gridA, w, h);
+        BufferedImage imgB = EtopoGeoTiffReader.renderGrayscaleElevationImage(gridB, w, h);
+        assertEquals(BufferedImage.TYPE_USHORT_GRAY, imgA.getType());
+
+        List<H3Cell> cellsA = ProceduralGenerator.getInstance().generatePlanet(PlanetPreset.EARTH_LIKE.withResolution(1));
+        List<H3Cell> cellsB = ProceduralGenerator.getInstance().generatePlanet(PlanetPreset.EARTH_LIKE.withResolution(1));
+
+        H3RasterAggregator.mapRastersToCells(
+                cellsA, H3RasterAggregator.RasterArgbBuffer.fromBufferedImage(imgA),
+                null, null, null, null, null, -11000.0, 8848.0);
+        H3RasterAggregator.mapRastersToCells(
+                cellsB, H3RasterAggregator.RasterArgbBuffer.fromBufferedImage(imgB),
+                null, null, null, null, null, -11000.0, 8848.0);
+
+        double elevA = cellsA.get(0).getElevation();
+        double elevB = cellsB.get(0).getElevation();
+        assertEquals(123.0, elevA, 0.35, "16-bit elevation must resolve 123.0m within ~0.26m quantization step");
+        assertEquals(125.0, elevB, 0.35, "16-bit elevation must resolve 125.0m within ~0.26m quantization step");
+        assertTrue(elevB - elevA > 1.5 && elevB - elevA < 2.5, "2.0m delta must be cleanly discriminated");
+    }
+
+    @Test
     @DisplayName("5. HYDE 3.4 Land-Use Reader integrates anthropogenic footprint and biome modulation")
     void testHyde34LandUseIntegration() {
         // Deep Paleolithic invariant: land use must be null before 10,000 BCE

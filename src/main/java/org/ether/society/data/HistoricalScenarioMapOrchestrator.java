@@ -99,11 +99,7 @@ final class HistoricalScenarioMapOrchestrator {
                     for (int x = 0; x < tw; x++) {
                         int sx = Math.clamp((int) ((x / (double) tw) * elev.getWidth()), 0, elev.getWidth() - 1);
                         int sy = Math.clamp((int) ((y / (double) th) * elev.getHeight()), 0, elev.getHeight() - 1);
-                        int rgb = elev.getRGB(sx, sy);
-                        int r = (rgb >> 16) & 0xFF;
-                        int gr = (rgb >> 8) & 0xFF;
-                        int b = rgb & 0xFF;
-                        double lum = (0.299 * r + 0.587 * gr + 0.114 * b) / 255.0;
+                        double lum = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(elev, sx, sy);
                         mask.getRaster().setSample(x, y, 0, (lum >= 0.478) ? 255 : 0);
                     }
                 }

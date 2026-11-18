@@ -49,6 +49,9 @@ public final class EventCellularShockHelper {
         if (upperType.contains("VOLCANO") || upperType.contains("NUCLEAR")) {
             return Math.max(250.0, mag * 200.0);
         }
+        if (upperType.contains("LOCUST")) {
+            return Math.max(250.0, mag * 180.0);
+        }
         if (upperType.contains("EARTHQUAKE") || upperType.contains("TSUNAMI")) {
             return Math.max(150.0, mag * 120.0);
         }
@@ -194,6 +197,16 @@ public final class EventCellularShockHelper {
                 }
                 if (prevPop > 0 && upperType.equals("FAMINE")) {
                     lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.06 * droughtIntensity)));
+                }
+            }
+
+            case "LOCUST_SWARM" -> {
+                double swarmIntensity = (mag / 10.0) * attenuation;
+                if (cell.getFoodResource() != null) {
+                    cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.75 * swarmIntensity)));
+                }
+                if (prevPop > 0 && attenuation > 0.6) {
+                    lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.02 * swarmIntensity)));
                 }
             }
 

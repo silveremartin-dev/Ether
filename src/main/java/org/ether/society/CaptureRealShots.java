@@ -226,9 +226,18 @@ public class CaptureRealShots extends Application {
             });
 
             // 5. Trigger Scenario Generation from Tab 2
-            System.err.println("Launching scenario calculation from Tab 2...");
+            System.err.println("Launching scenario calculation from Tab 2 (forcing H3 Resolution 4 & cold start)...");
             runOnFx(() -> {
                 mainTabPane.getSelectionModel().select(2);
+                try {
+                    Field resComboField = ScenarioSetupPanel.class.getDeclaredField("h3ResolutionCombo");
+                    resComboField.setAccessible(true);
+                    @SuppressWarnings("unchecked")
+                    ComboBox<Integer> resCombo = (ComboBox<Integer>) resComboField.get(setupPanel);
+                    if (resCombo != null) {
+                        resCombo.setValue(4);
+                    }
+                } catch (Exception ignored) {}
                 setupPanel.markClean();
                 setupPanel.startSimulationDeferred();
             });

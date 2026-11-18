@@ -31,6 +31,12 @@ public final class H3RasterBinningCoordinator {
         11.5, 4.35, 1.64, 0.62, 0.235, 0.089, 0.0335, 0.0127, 0.0048, 0.0018, 0.00068
     };
 
+    /** High-byte tag marking a packed 16-bit unsigned grayscale sample [0..65535] inside an int buffer. */
+    public static final int USHORT_GRAY_SENTINEL = 0x41000000;
+
+    /** Bitmask isolating the top sentinel byte of a packed raster sample. */
+    public static final int SENTINEL_MASK = 0xFF000000;
+
     private H3RasterBinningCoordinator() {
         // Pure static utility coordinator
     }
@@ -313,13 +319,41 @@ public final class H3RasterBinningCoordinator {
     }
 
     public static double argbToGrayNorm(int argb) {
+        if ((argb & SENTINEL_MASK) == USHORT_GRAY_SENTINEL) {
+            return (argb & 0xFFFF) / 65535.0;
+        }
         int r = (argb >> 16) & 0xFF, g = (argb >> 8) & 0xFF, b = argb & 0xFF;
         return ((r + g + b) / 3.0) / 255.0;
     }
 
     public static double argbToMaxChannelNorm(int argb) {
+        if ((argb & SENTINEL_MASK) == USHORT_GRAY_SENTINEL) {
+            return (argb & 0xFFFF) / 65535.0;
+        }
         int r = (argb >> 16) & 0xFF, g = (argb >> 8) & 0xFF, b = argb & 0xFF;
         return Math.max(r, Math.max(g, b)) / 255.0;
+    }
+
+    /**
+     * Samples the normalized grayscale value {@code [0.0, 1.0]} of a pixel at {@code (x, y)} from a
+     * {@link java.awt.image.BufferedImage}, preserving linear 16-bit precision for {@code TYPE_USHORT_GRAY}
+     * without AWT sRGB gamma distortion.
+     *
+     * @param img source buffered image
+     * @param x   pixel column index
+     * @param y   pixel row index
+     * @return normalized scalar in {@code [0.0, 1.0]}
+     */
+    public static double sampleBufferedGrayNormalized(java.awt.image.BufferedImage img, int x, int y) {
+        if (img.getType() == java.awt.image.BufferedImage.TYPE_USHORT_GRAY
+                || (img.getRaster().getNumBands() == 1 && img.getSampleModel().getSampleSize(0) == 16)) {
+            return (img.getRaster().getSample(x, y, 0) & 0xFFFF) / 65535.0;
+        }
+        int rgb = img.getRGB(x, y);
+        int r = (rgb >> 16) & 0xFF;
+        int g = (rgb >> 8) & 0xFF;
+        int b = rgb & 0xFF;
+        return (0.299 * r + 0.587 * g + 0.114 * b) / 255.0;
     }
 
     public static double normalizeLon(double lon) {

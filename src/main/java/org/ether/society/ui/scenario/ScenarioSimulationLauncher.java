@@ -380,11 +380,11 @@ public class ScenarioSimulationLauncher {
             else if (mapSource.equals("titan") || presetName.contains("titan")) pKey = "titan";
 
             long targetYear = s != null ? s.getStartDateYear() : 2026L;
-            Image elevImg = ImageMapLoader.loadMapImage(pKey, targetYear, "elevation.png");
-            Image biomeImg = ImageMapLoader.loadMapImage(pKey, targetYear, "biomes.png");
+            java.awt.image.BufferedImage elevImg = ImageMapLoader.loadMapBufferedImage(pKey, targetYear, "elevation.png");
+            java.awt.image.BufferedImage biomeImg = ImageMapLoader.loadMapBufferedImage(pKey, targetYear, "biomes.png");
 
             if (elevImg != null || biomeImg != null) {
-                new ImageMapLoader().mapImagesToCells(cells, elevImg, biomeImg, null, cfg.minAltitudeMeters(), cfg.maxAltitudeMeters());
+                new ImageMapLoader().mapBufferedImagesToCells(cells, elevImg, biomeImg, null, null, null, null, cfg.minAltitudeMeters(), cfg.maxAltitudeMeters());
             } else {
                 logger.debug("No precalculated map found for preset {}, using physical terrain generator", pKey);
             }

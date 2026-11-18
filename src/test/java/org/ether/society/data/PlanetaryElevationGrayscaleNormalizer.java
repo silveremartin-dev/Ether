@@ -102,7 +102,7 @@ public final class PlanetaryElevationGrayscaleNormalizer {
     }
 
     /**
-     * Converts a single elevation raster file to pure 1D grayscale [0..255].
+     * Converts a single elevation raster file to 16-bit 1D grayscale ({@link BufferedImage#TYPE_USHORT_GRAY}, [0..65535]).
      *
      * @param file target image file to convert in-place
      */
@@ -114,24 +114,33 @@ public final class PlanetaryElevationGrayscaleNormalizer {
 
             int w = src.getWidth();
             int h = src.getHeight();
-            BufferedImage grayImg = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+            BufferedImage grayImg = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_GRAY);
+            short[] data = ((java.awt.image.DataBufferUShort) grayImg.getRaster().getDataBuffer()).getData();
+            boolean srcIs16Bit = src.getType() == BufferedImage.TYPE_USHORT_GRAY
+                    || (src.getRaster().getNumBands() == 1 && src.getSampleModel().getSampleSize(0) == 16);
 
+            int idx = 0;
             for (int y = 0; y < h; y++) {
                 for (int x = 0; x < w; x++) {
-                    int rgb = src.getRGB(x, y);
-                    int r = (rgb >> 16) & 0xFF;
-                    int g = (rgb >> 8) & 0xFF;
-                    int b = rgb & 0xFF;
-
-                    double norm = decodeHypsometricRgbToNorm(r, g, b);
-                    int gray = Math.clamp((int) Math.round(norm * 255.0), 0, 255);
-                    int grayRgb = (gray << 16) | (gray << 8) | gray;
-                    grayImg.setRGB(x, y, grayRgb);
+                    double norm;
+                    if (srcIs16Bit) {
+                        norm = (src.getRaster().getSample(x, y, 0) & 0xFFFF) / 65535.0;
+                    } else if (src.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+                        norm = (src.getRaster().getSample(x, y, 0) & 0xFF) / 255.0;
+                    } else {
+                        int rgb = src.getRGB(x, y);
+                        int r = (rgb >> 16) & 0xFF;
+                        int g = (rgb >> 8) & 0xFF;
+                        int b = rgb & 0xFF;
+                        norm = decodeHypsometricRgbToNorm(r, g, b);
+                    }
+                    int u16 = (int) Math.clamp(Math.round(norm * 65535.0), 0L, 65535L);
+                    data[idx++] = (short) (u16 & 0xFFFF);
                 }
             }
 
             ImageIO.write(grayImg, "PNG", file);
-            logger.info("Successfully converted elevation raster {} ({}x{}) to 1D Grayscale DEM.", file.getName(), w, h);
+            logger.info("Successfully converted elevation raster {} ({}x{}) to 16-bit Grayscale DEM.", file.getName(), w, h);
         } catch (Exception e) {
             logger.error("Failed to convert elevation raster {}: {}", file.getAbsolutePath(), e.getMessage());
         }
