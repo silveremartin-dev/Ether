@@ -87,6 +87,8 @@ public class MacroHistoricalEpochsFalsificationTest {
                     536, 556, 4, false, "data/maps/ether/earth/536/earth_536_density.png"),
             new ScenarioRunConfig("islamic_expansion_632", "Islamic Expansion & Caliphal Commercial Revolution (632 CE)",
                     632, 652, 4, false, "data/maps/ether/earth/632/earth_632_density.png"),
+            new ScenarioRunConfig("carolingian_800", "Carolingian Renaissance and Caliphal Apex (800 CE)",
+                    800, 820, 4, false, "data/maps/ether/earth/820/earth_820_density.png"),
             new ScenarioRunConfig("song_dynasty", "Song Dynasty & Hydraulic Pre-Industrialization (1000 CE)",
                     1000, 1020, 4, false, "data/maps/ether/earth/1000/earth_1000_density.png"),
             new ScenarioRunConfig("black_death_1347", "The Black Death & Post-Feudal Economic Inversion (1347 CE)",
@@ -138,7 +140,8 @@ public class MacroHistoricalEpochsFalsificationTest {
             System.out.println("================================================================================");
 
             Scenario s = allScenarios.stream()
-                    .filter(sc -> cfg.presetKey().equalsIgnoreCase(sc.getPresetKey()))
+                    .filter(sc -> cfg.presetKey().equalsIgnoreCase(sc.getPresetKey())
+                            || (sc.getPresetKey() != null && sc.getPresetKey().toLowerCase().contains(cfg.presetKey().toLowerCase())))
                     .findFirst()
                     .orElse(null);
 

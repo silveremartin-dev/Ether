@@ -248,6 +248,7 @@
   "earthHistoricalLeadersEnabled" : true,
   "proceduralLeadersEnabled" : true,
   "chronicleSingularityObserverEnabled" : false,
+  "presetKey" : "carolingian_800",
   "displayName" : "Carolingian Renaissance and Caliphal Apex (800 CE)",
   "displayDescription" : "HISTORICAL SCENARIO: Carolingian Renaissance and Caliphal Apex (800 CE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nCoronation of Charlemagne (800 CE) in Rome as Emperor of the Romans, consolidating Western European administrative capitularies, silver denier monetary reform, and monastic educational revival. Concurrently, the Abbasid Caliphate under Harun al-Rashid in Baghdad reaches its cultural and commercial zenith."
 }
