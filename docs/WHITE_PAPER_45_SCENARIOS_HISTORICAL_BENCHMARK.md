@@ -1,7 +1,7 @@
 # ðŸ“˜ WHITE PAPER: EMPIRICAL BENCHMARKING & BIFURCATION AUDIT OF 45 PLANETARY SIMULATION RUNS
 
 **Author**: Antigravity Cliodynamics Core Team & SilvÃ¨re Martin-Michiellot  
-**Date**: 2026-11-21 14:30:26  
+**Date**: 2026-11-21 19:09:59  
 **Engine**: Ether Planetary Simulation Laboratory (Version 1.0.0-beta.3)  
 **Benchmark Ground Truth**: Seshat Databank, HYDE 3.4, Maddison Project, EPICA Ice Cores, NOAA ETOPO 2022  
 
