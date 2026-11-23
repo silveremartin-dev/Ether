@@ -32,11 +32,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Java 21 (Temurin)
+      - name: Set up Java 25 (Oracle)
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: '25'
+          distribution: 'oracle'
           cache: 'maven'
 
       - name: Extract Version Tag

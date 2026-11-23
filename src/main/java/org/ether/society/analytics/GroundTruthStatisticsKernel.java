@@ -65,6 +65,9 @@ public final class GroundTruthStatisticsKernel {
     public static double normalizeExtractedMetric(String id, double v) {
         if ("zeroContainmentScore".equals(id) && v > 1.0) return v / 100.0;
         if ("asabiyyahSocialCohesion".equals(id) && v > 1.0) return v / 100.0;
+        if (("grossWorldProduct".equals(id) || "gdp".equals(id) || "gdpTotal".equals(id)) && v > 1e6) {
+            return v / 1e9;
+        }
         if ("primaryEnergy".equals(id)) {
             if (v > 1e12) return v / 1e18;
             if (v > 1e4) return v * 3.15576e-5;
