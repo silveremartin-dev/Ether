@@ -2186,4 +2186,49 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
     5. **Contemporary, Great Acceleration & Off-Earth Habitat Engines ($[1900 / 1950\text{ CE}, 2200\text{ CE}]$, 12 engines)**: Unchecked (`false`) prior to the 20th century on Earth; bounded 20th/21st-century regimes deactivate at their physical horizon (`KurzweilAcceleratingReturnsEngine` $[1990\text{ CE}, 2060\text{ CE}]$ at atomic/Landauer silicon limits, `World3CouplingEngine` $[1950\text{ CE}, 2100\text{ CE}]$ at the MIT Club of Rome horizon), long-term modern couplings remain active up to $2200\text{ CE}$ (`PhysicalLeontiefInputOutputEngine`, `PhysicalSupplyChainEngine`, `EcotoxicologyFertilityEngine`, `NuclearSafetyRadiotoxicityEngine`, `InformationEntropyEngine`, etc.), and `IsruAutarkyAndSpaceColonizationEngine` is unchecked (`false`) on Earth and active (`true`) only on off-Earth outposts (`moon`, `mars`) with sealed pressurized domes.
     6. **Specialized Regional, Counterfactual, Speculative & Pure-Theory Sandbox Engines (16 engines)**: Systematically unchecked (`false`) by default on general global auto-scenarios (`AmerindianEcosystemEngine`, `RomanImperialCliodynamicEngine`, `EdoJapanIsolationEngine`, `MonasticDemographicBufferEngine`, `World3PureEngine`, `HandyNasaPureEngine`, `NordhausDiceHybridEngine`, `NordhausDicePureEngine`, `NuclearWarfareClimateEngine`, `GeoengineeringAlbedoFeedbackEngine`, `TerraformingEngine`, `BifurcationChaosEngine`, etc.), and enabled only in their dedicated regional/thematic presets or when explicitly checked by the user.
 
+#### 34. Simulation Temporal Event Architecture & Two-Phase Radioecological Contamination Decay (`SimulationDate.java`, `SimulationTemporalEvent.java`, `EventPhysicalImpactExecutor.java`, `EcologicalDegradationEngine.java`)
+* **Model Classification**: Tier 1 Invariant Geophysical & Temporal Event Framework (`AGENTS.md` §3, §7, §8, §10)
+* **Academic Literature Reference**:
+  * Kooijman, S. A. L. M. (2010). *Summary of concepts and terms in Dynamic Energy Budget theory*;
+  * Steinhauser, G., Brandl, A., & Johnson, T. E. (2014). *Comparison of the Chernobyl and Fukushima nuclear accidents: a review of the environmental impacts*. Science of the Total Environment, 470, 800-817;
+  * Robock, A., Oman, L., & Stenchikov, G. L. (2007). *Nuclear winter revisited with a modern climate model and current nuclear arsenals: Still catastrophic consequences*. J. Geophys. Res., 112, D13107;
+  * Keeling, M. J., & Rohani, P. (2008). *Modeling Infectious Diseases in Humans and Animals*. Princeton University Press.
+* **Governing Temporal Architecture**:
+  * **Canonical 360-Day Simulation Date Coordinate**:
+    Continuous linear calendar coordinate representation without proleptic Gregorian discontinuities across the full $-3\,000\,000\text{ BP}$ to $+10\,000\text{ CE}$ epoch spectrum:
+    $$D_{\text{sim}}(y, m, d) = 360 \cdot y + 30 \cdot (m - 1) + (d - 1)$$
+    Implemented within the immutable domain value record `SimulationDate` and enforced by `SimulationTemporalEvent` across all event records (`ClimateEvent`, `HistoricalEvent`).
+  * **Event Triggering and Expiration Criteria**:
+    An event with start coordinate $D_{\text{start}}$ and duration $\Delta D_{\text{days}}$ satisfies:
+    $$\text{isDue}(D_{\text{sim}}) \iff D_{\text{sim}} \ge D_{\text{start}}$$
+    $$\text{isActive}(D_{\text{sim}}) \iff D_{\text{start}} \le D_{\text{sim}} < D_{\text{start}} + \max(1, \Delta D_{\text{days}})$$
+    $$\text{isExpired}(D_{\text{sim}}) \iff D_{\text{sim}} \ge D_{\text{start}} + \max(1, \Delta D_{\text{days}})$$
+
+* **Mathematical Event Temporal Profiles**:
+  * **Volcanic Eruptions & Atmospheric Aerosols** (`VOLCANO`, `CLIMATE_ANOMALY`):
+    Impulsive sulfur/soot injection into the stratosphere adding optical depth $\Delta \tau = 0.05 \cdot \text{magnitude}$. Attenuates global top-of-atmosphere solar irradiance according to Beer-Lambert radiation law:
+    $$S(t) = S_0 \cdot \exp(-\tau(t))$$
+    Causing planetary surface cooling $\Delta T_{\text{global}} = -12.0 \cdot (1 - \exp(-0.85 \cdot \tau))$ in `AlbedoClimateEngine.java`, with stratospheric aerosol washout half-life $T_{1/2} = 1.0\text{ year}$.
+  * **Seismic Shocks & Tsunamis** (`EARTHQUAKE`, `TSUNAMI`):
+    Instantaneous Dirac impulse $I(t) = \delta(t - t_0)$. Produces instantaneous physical capital destruction:
+    $$K(t^+) = K(t^-) \cdot \exp(-\alpha \cdot I_{\text{seismic}})$$
+    followed by endogenous economic capital reconstruction governed by cellular saving/investment rates.
+  * **Hydrological Droughts & Inundations** (`DROUGHT`, `FLOOD`, `HEATWAVE`, `FAMINE`):
+    Progressive draw-down and recovery curves. Droughts trigger logistic freshwater aquifer depletion $W_{\text{aquifer}}(t)$ and food yield depression. Floods apply an acute pulse (1-3 days) followed by an alluvial silt fertilization recharge ($N\text{-}P\text{-}K$ soil enhancement).
+  * **Biological Pathogens & Pestilence** (`PANDEMIC`, `EPIDEMIC`, `PLAGUE`, `LOCUST_SWARM`, `CROP_BLIGHT`):
+    Seeding of active infectious compartments $I_0 = N \cdot \min(0.25, \text{virulence} \cdot \text{attenuation})$ coupled to `SpatialMetapopulationSEIREngine.java`. Drives epidemiological transmission along trade networks and spatial neighbor rings, peaking according to reproduction number $\mathcal{R}_0$ before herd immunity and recovery phase.
+  * **Anthropic Cataclysms & Radiotoxicity** (`NUCLEAR_STRIKE`, `NUCLEAR_WINTER`, `INDUSTRIAL_ACCIDENT`):
+    High-intensity kinetic and radiotoxic shocks injecting localized radiotoxic pollution $P \ge 12\,000\text{ units}$.
+
+* **Two-Phase Radioecological Contamination Decay** (`EcologicalDegradationEngine.java`):
+  * **Standard Chemical / Industrial Pollution ($P \le 1000\text{ units}$)**:
+    Attenuates rapidly through atmospheric dispersion, sedimentation, and microbial biodegradation:
+    $$P_{\text{chem}}(t + \Delta t) = \max\left(0.0, \; P_{\text{chem}}(t) \cdot 0.92^{\Delta t_{\text{months}}} - 1.2 \cdot \Delta t_{\text{months}}\right)$$
+  * **Persistent Radiotoxic Fission Fallout ($P > 1000\text{ units}$, Chernobyl, Fukushima, Nuclear Strikes)**:
+    Governed by long-lived radioactive fission isotopes ($^{137}\text{Cs}$, $^{90}\text{Sr}$) with half-life $T_{1/2} = 30.0\text{ years}$ ($\lambda_{\text{nuclear}} = \frac{\ln 2}{30.0} \approx 0.023105\text{ year}^{-1}$):
+    $$P_{\text{nuclear}}(t + \Delta t) = (P(t) - 1000.0) \cdot \exp(-\lambda_{\text{nuclear}} \cdot \Delta t_{\text{years}})$$
+    $$P_{\text{total}}(t + \Delta t) = P_{\text{chem}}(t + \Delta t) + P_{\text{nuclear}}(t + \Delta t)$$
+  * **Human Exclusion Zone & Habitability Threshold**:
+    Any spatial cell where $P > 1500\text{ units}$ represents a lethal radiotoxic exclusion zone. In `ThermodynamicMigrationEngine.java`, settlement probability $p_{\text{accept}} = 0.0$ and emigrant chemical potential drives total human evacuation. Because $P_{\text{nuclear}}$ requires $80\text{ to }90\text{ years}$ to decay from $12\,000$ to under $1\,500$, sites like Chernobyl (1986) remain strictly uninhabitable across multi-decadal simulation spans.
+
 ---

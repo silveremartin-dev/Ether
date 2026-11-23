@@ -137,9 +137,10 @@ public final class EventCellularShockHelper {
             int prevPop) {
 
         int lostPop = 0;
+        org.ether.society.model.PhysicalShockType shockType = org.ether.society.model.PhysicalShockType.fromString(upperType);
 
-        switch (upperType) {
-            case "VOLCANO" -> {
+        switch (shockType) {
+            case VOLCANO -> {
                 double localTempDrop = 0.85 * (mag / 10.0) * attenuation;
                 cell.setTemperature(Math.max(-50.0, cell.getTemperatureOr(15.0) - localTempDrop));
                 if (cell.getFoodResource() != null) {
@@ -153,7 +154,7 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "EARTHQUAKE" -> {
+            case EARTHQUAKE -> {
                 double seismicIntensity = (mag / 10.0) * attenuation;
                 if (cell.getResourceCapital() != null) {
                     cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.25 * seismicIntensity)));
@@ -163,7 +164,7 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "TSUNAMI" -> {
+            case TSUNAMI -> {
                 boolean isCoastalOrLow = (cell.getIsCoastal() != null && cell.getIsCoastal())
                         || cell.getBiome() == Biome.OCEAN
                         || cell.getBiome() == Biome.DEEP_OCEAN
@@ -183,7 +184,7 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "FLOOD" -> {
+            case FLOOD -> {
                 double floodIntensity = (mag / 10.0) * attenuation;
                 if (cell.getFoodResource() != null) {
                     cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.45 * floodIntensity)));
@@ -196,7 +197,7 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "DROUGHT", "HEATWAVE", "FAMINE" -> {
+            case DROUGHT, HEATWAVE, FAMINE -> {
                 double droughtIntensity = (mag / 10.0) * attenuation;
                 if (cell.getFreshwaterAquifer() != null) {
                     cell.setFreshwaterAquifer(Math.max(0.0, cell.getFreshwaterAquifer() * (1.0 - 0.50 * droughtIntensity)));
@@ -204,15 +205,15 @@ public final class EventCellularShockHelper {
                 if (cell.getFoodResource() != null) {
                     cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.65 * droughtIntensity)));
                 }
-                if (upperType.equals("HEATWAVE")) {
+                if (shockType == org.ether.society.model.PhysicalShockType.HEATWAVE) {
                     cell.setTemperature(cell.getTemperatureOr(15.0) + 1.2 * mag * attenuation);
                 }
-                if (prevPop > 0 && upperType.equals("FAMINE")) {
+                if (prevPop > 0 && shockType == org.ether.society.model.PhysicalShockType.FAMINE) {
                     lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.06 * droughtIntensity)));
                 }
             }
 
-            case "LOCUST_SWARM" -> {
+            case LOCUST_SWARM -> {
                 double swarmIntensity = (mag / 10.0) * attenuation;
                 if (cell.getFoodResource() != null) {
                     cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.75 * swarmIntensity)));
@@ -225,7 +226,7 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "CROP_BLIGHT" -> {
+            case CROP_BLIGHT -> {
                 double blightIntensity = (mag / 10.0) * attenuation;
                 if (cell.getFoodResource() != null) {
                     cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.70 * blightIntensity)));
@@ -238,7 +239,7 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "WILDLIFE_DIE_OFF" -> {
+            case WILDLIFE_DIE_OFF -> {
                 double wildlifeIntensity = (mag / 10.0) * attenuation;
                 if (cell.getBiomassNatural() != null) {
                     cell.setBiomassNatural(Math.max(0.0, cell.getBiomassNatural() * (1.0 - 0.65 * wildlifeIntensity)));
@@ -251,7 +252,7 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "FISHERY_COLLAPSE" -> {
+            case FISHERY_COLLAPSE -> {
                 boolean isMarineOrCoastal = (cell.getIsCoastal() != null && cell.getIsCoastal())
                         || cell.getBiome() == Biome.OCEAN
                         || cell.getBiome() == Biome.DEEP_OCEAN;
@@ -269,7 +270,7 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "TROPICAL_CYCLONE", "CYCLONE", "HURRICANE", "TYPHOON" -> {
+            case TROPICAL_CYCLONE -> {
                 double cycloneIntensity = (mag / 10.0) * attenuation;
                 if (cell.getResourceCapital() != null) {
                     cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.35 * cycloneIntensity)));
@@ -282,7 +283,7 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "WILDFIRE" -> {
+            case WILDFIRE -> {
                 double fireIntensity = (mag / 10.0) * attenuation;
                 if (cell.getBiomassNatural() != null) {
                     cell.setBiomassNatural(Math.max(0.0, cell.getBiomassNatural() * (1.0 - 0.70 * fireIntensity)));
@@ -298,7 +299,7 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "PANDEMIC", "EPIDEMIC", "PLAGUE" -> {
+            case PANDEMIC -> {
                 double virulence = 0.12;
                 if (lowerName.contains("grippe") || lowerName.contains("influenza") || lowerName.contains("flu")) {
                     virulence = 0.035;
@@ -322,7 +323,17 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "NUCLEAR_STRIKE", "NUCLEAR_WINTER" -> {
+            case WAR -> {
+                double warIntensity = (mag / 10.0) * attenuation;
+                if (cell.getResourceCapital() != null) {
+                    cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.25 * warIntensity)));
+                }
+                if (prevPop > 0) {
+                    lostPop = (int) Math.round(prevPop * (1.0 - Math.exp(-0.08 * warIntensity)));
+                }
+            }
+
+            case NUCLEAR_STRIKE, NUCLEAR_WINTER -> {
                 double blast = (mag / 10.0) * attenuation;
                 if (prevPop > 0) {
                     lostPop = (int) Math.round(prevPop * Math.min(0.98, 0.90 * blast));
@@ -333,11 +344,12 @@ public final class EventCellularShockHelper {
                 if (cell.getFoodResource() != null) {
                     cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * Math.exp(-1.8 * blast)));
                 }
-                cell.setPollutionLevel(Math.min(1.0, cell.getPollutionLevelOr(0.0) + 0.85 * blast));
+                // Inject heavy radiotoxic contamination creating genuine exclusion zone (> 1500)
+                cell.setPollutionLevel(cell.getPollutionLevelOr(0.0) + 12000.0 * blast);
                 cell.setTemperature(Math.max(-50.0, cell.getTemperatureOr(15.0) - 1.5 * blast));
             }
 
-            case "METEOR" -> {
+            case METEOR -> {
                 double impactBlast = (mag / 10.0) * attenuation;
                 if (prevPop > 0) {
                     lostPop = (int) Math.round(prevPop * Math.min(0.99, 0.95 * impactBlast));
@@ -351,19 +363,19 @@ public final class EventCellularShockHelper {
                 cell.setElevation(Math.max(-500.0, cell.getElevationOr(0.0) - 150.0 * impactBlast));
             }
 
-            case "SOLAR_EMP", "CYBER_ATTACK", "ECONOMIC_CRASH" -> {
+            case SOLAR_EMP, CYBER_ATTACK, ECONOMIC_CRASH -> {
                 double disruption = (mag / 10.0) * attenuation;
                 if (cell.getResourceCapital() != null) {
                     cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * (1.0 - 0.40 * disruption)));
                 }
             }
 
-            case "INDUSTRIAL_ACCIDENT", "DAM_FAILURE", "URBAN_FIRE" -> {
+            case INDUSTRIAL_ACCIDENT, DAM_FAILURE, URBAN_FIRE -> {
                 double destruct = (mag / 10.0) * attenuation;
                 if (cell.getResourceCapital() != null) {
                     cell.setResourceCapital(Math.max(0.0, cell.getResourceCapital() * Math.exp(-0.85 * destruct)));
                 }
-                if (upperType.equals("DAM_FAILURE") && cell.getFoodResource() != null) {
+                if (shockType == org.ether.society.model.PhysicalShockType.DAM_FAILURE && cell.getFoodResource() != null) {
                     cell.setFoodResource(Math.max(0.0, cell.getFoodResource() * (1.0 - 0.70 * destruct)));
                 }
                 if (prevPop > 0) {
@@ -371,11 +383,11 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "TECH_SINGULARITY", "FUSION", "RENAISSANCE_BOOM" -> {
+            case TECH_SINGULARITY, RENAISSANCE_BOOM -> {
                 // Informative/ideational milestones: zero physical cheat on cells (AGENTS.md §10)
             }
 
-            case "GEOENGINEERING" -> {
+            case GEOENGINEERING -> {
                 double geoMag = (mag / 10.0) * attenuation;
                 cell.setTemperature(cell.getTemperatureOr(15.0) - 1.5 * geoMag);
                 if (cell.getRainfall() != null) {
@@ -383,21 +395,21 @@ public final class EventCellularShockHelper {
                 }
             }
 
-            case "ALIEN_CONTACT" -> {
+            case ALIEN_CONTACT -> {
                 double alienBonus = (mag / 10.0) * attenuation;
                 double cap = cell.getResourceCapitalOr(1000.0);
                 cell.setResourceCapital(cap * (1.0 + 1.2 * alienBonus));
                 cell.setPollutionLevel(0.0);
             }
 
-            case "DOME_BREACH" -> {
+            case DOME_BREACH -> {
                 double breachBlast = (mag / 10.0) * attenuation;
                 cell.setHabitatIntegrity(0.0);
                 if (prevPop > 0) {
                     lostPop = (int) Math.round(prevPop * (1.0 - 0.90 * breachBlast));
                 }
             }
-            case "ECLSS_FAILURE" -> {
+            case ECLSS_FAILURE -> {
                 double eclssBlast = (mag / 10.0) * attenuation;
                 double curInteg = cell.getHabitatIntegrity() != null ? cell.getHabitatIntegrity() : 1.0;
                 cell.setHabitatIntegrity(Math.max(0.05, curInteg - 0.70 * eclssBlast));
@@ -405,7 +417,7 @@ public final class EventCellularShockHelper {
                     lostPop = (int) Math.round(prevPop * (1.0 - 0.65 * eclssBlast));
                 }
             }
-            case "AEROSTAT_PUNCTURE" -> {
+            case AEROSTAT_PUNCTURE -> {
                 double aeroBlast = (mag / 10.0) * attenuation;
                 cell.setHabitatIntegrity(0.0);
                 cell.setHabitatType(HabitatType.NONE);
@@ -413,7 +425,7 @@ public final class EventCellularShockHelper {
                     lostPop = (int) Math.round(prevPop * (1.0 - 0.95 * aeroBlast));
                 }
             }
-            case "LAVA_TUBE_COLLAPSE" -> {
+            case LAVA_TUBE_COLLAPSE -> {
                 double collapseBlast = (mag / 10.0) * attenuation;
                 cell.setHabitatIntegrity(0.0);
                 if (prevPop > 0) {
@@ -422,7 +434,7 @@ public final class EventCellularShockHelper {
             }
 
             default -> {
-                if (upperType.startsWith("LEADER_")) {
+                if (upperType != null && upperType.startsWith("LEADER_")) {
                     applyLeaderArchetypeForcing(cell, upperType, mag, attenuation);
                 }
             }

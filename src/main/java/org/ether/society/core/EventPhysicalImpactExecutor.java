@@ -302,6 +302,9 @@ public final class EventPhysicalImpactExecutor {
                     if (cell.getBiomassNatural() != null) worldBuffer.getBiomassNatural()[i] = cell.getBiomassNatural().floatValue();
                     if (cell.getBiomassFish() != null) worldBuffer.getBiomassFish()[i] = cell.getBiomassFish().floatValue();
                     if (cell.getBiomassLivestock() != null) worldBuffer.getBiomassLivestock()[i] = cell.getBiomassLivestock().floatValue();
+                    if (cell.getPollutionLevel() != null && worldBuffer.getPollutionLevel() != null) {
+                        worldBuffer.getPollutionLevel()[i] = cell.getPollutionLevel().floatValue();
+                    }
                 }
             }
         }
