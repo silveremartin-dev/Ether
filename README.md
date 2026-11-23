@@ -16,7 +16,7 @@
 
 Ether runs out of the box **without requiring any external database configuration or internet connection**:
 * **100% Offline Operational**: All core baseline historical scenarios, planet archetypes, ecology models, and cliodynamic equations are embedded directly inside the JAR. You can run, experiment, modify parameters, and save completely offline.
-* **Ultra-Lightweight Distribution (~44 MB)**: Portable standalone distribution package (`dist/Ether-v1.0.0-beta.3-standalone.zip`).
+* **Ultra-Lightweight Distribution (~44 MB)**: Portable standalone distribution package (`dist/Ether-v1.0.0-beta.4-standalone.zip`).
 * **Non-Blocking Background Sync (Optional)**: When connected to the internet, official extra scenarios, maps (`data/ether/**`), chronicles (`data/ether/earth/events/`), and snapshots (`saves/**`) sync automatically in the background without stalling the interface.
 * **Branch & Customization Protection**: Local user edits (changed H3 resolution, cohort size, time steps, custom scenarios, user saves) are protected via SHA-256 and are **never overwritten**. Reference scenarios always remain accessible alongside user custom presets.
 
@@ -327,7 +327,12 @@ Ether systematically generates and updates publication-grade visual synthesis ch
 
 **Full Academic Paper & 8-Pillar Benchmark Monograph**:
 * **[`docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md`](docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md)** (10-Chapter Classical Scientific Structure & 8 Bottom-Up Epistemological Pillars)
-* **[`docs/paper/WHITE_PAPER_45_SCENARIOS_HISTORICAL_BENCHMARK.md`](docs/paper/WHITE_PAPER_45_SCENARIOS_HISTORICAL_BENCHMARK.md)** (Complete 45-Scenario Synthesis & Partitioning Audit)
+* **[`docs/WHITE_PAPER_45_SCENARIOS_HISTORICAL_BENCHMARK.md`](docs/WHITE_PAPER_45_SCENARIOS_HISTORICAL_BENCHMARK.md)** (Complete 45-Scenario Synthesis & Partitioning Audit — 51 Validated Simulation Runs)
+* **Detailed Empirical Synthesis Reports by Horizon**:
+  * [Phase 1 Historical Synthesis (10 Canonical Eras, -20k BP to 1914 CE)](docs/reports/scenario_phase1_falsification_synthesis.md)
+  * [Phase 2 Expansion Synthesis (8 Imperial & Global Eras, -100k BP to 1950 CE)](docs/reports/scenario_phase2_falsification_synthesis.md)
+  * [Phase 3 Deep-Time & Protohistory Synthesis (14 Deep-Time Corridors, -74k BP to 2000 CE)](docs/reports/scenario_phase3_falsification_synthesis.md)
+  * [Phase 4 Prospective & Exoplanetary Synthesis (17 Future Trajectories & Off-Earth Colonies, 2025 to 2240 CE)](docs/reports/scenario_phase4_future_and_exo_synthesis.md)
 
 ---
 
@@ -412,7 +417,7 @@ Ether includes an empirical validation engine computing **Root Mean Square Error
 - 🔒 [Security & System Integrity Audit](docs/SECURITY.md)
 - 📢 [Reddit Launch Post](docs/posts/REDDIT_POST.md)
 - 💼 [LinkedIn Announcement Post](docs/posts/LINKEDIN_POST.md)
-- 📦 [Version 1.0.0-beta.3 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
+- 📦 [Version 1.0.0-beta.4 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
 
 ---
 
