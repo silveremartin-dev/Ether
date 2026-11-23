@@ -23,7 +23,7 @@ package org.ether.society.events;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
  */
-public record HistoricalEvent(int year, int month, int day, String title, String message, double latitude, double longitude) {
+public record HistoricalEvent(int year, int month, int day, String title, String message, double latitude, double longitude) implements SimulationTemporalEvent {
 
     /**
      * Constructs a historical event with year, title, and message, defaulting to January 1st at coordinates (0.0, 0.0).
@@ -63,6 +63,70 @@ public record HistoricalEvent(int year, int month, int day, String title, String
         return ((long) year * 360L) + ((long) m * 30L) + d;
     }
 
+    @Override
+    public String getId() {
+        return "HIST_" + year + "_" + month + "_" + day + "_" + (title != null ? title.hashCode() : 0);
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public org.ether.society.model.EventCategory getCategory() {
+        return org.ether.society.model.EventCategory.CHRONICLE_MILESTONE;
+    }
+
+    @Override
+    public int getYear() {
+        return year;
+    }
+
+    @Override
+    public int getMonth() {
+        return month;
+    }
+
+    @Override
+    public int getDay() {
+        return day;
+    }
+
+    @Override
+    public int getDurationDays() {
+        return 1;
+    }
+
+    @Override
+    public long getAbsoluteStartDays() {
+        return toAbsoluteDays(this.year, this.month, this.day);
+    }
+
+    @Override
+    public long getAbsoluteEndDays() {
+        return getAbsoluteStartDays() + 1L;
+    }
+
+    @Override
+    public boolean isActive(int currentYear, int currentMonth, int currentDay) {
+        int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
+        long currentSimDays = toAbsoluteDays(currentYear, normSimMonth, currentDay);
+        return currentSimDays == getAbsoluteStartDays();
+    }
+
+    @Override
+    public boolean isExpired(int currentYear, int currentMonth, int currentDay) {
+        int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
+        long currentSimDays = toAbsoluteDays(currentYear, normSimMonth, currentDay);
+        return currentSimDays > getAbsoluteStartDays();
+    }
+
+    @Override
+    public double getTemporalIntensity(int currentYear, int currentMonth, int currentDay) {
+        return isActive(currentYear, currentMonth, currentDay) ? 1.0 : 0.0;
+    }
+
     /**
      * Checks if this historical milestone is due based on continuous linear date comparison.
      *
@@ -71,6 +135,7 @@ public record HistoricalEvent(int year, int month, int day, String title, String
      * @param currentDay current simulation day of month (1-31)
      * @return {@code true} if the current simulation date has reached or passed this event date
      */
+    @Override
     public boolean isDue(int currentYear, int currentMonth, int currentDay) {
         int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
         long currentSimDays = toAbsoluteDays(currentYear, normSimMonth, currentDay);

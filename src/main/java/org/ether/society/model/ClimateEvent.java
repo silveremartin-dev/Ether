@@ -28,7 +28,7 @@ import java.util.Locale;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
  */
-public class ClimateEvent implements Serializable {
+public class ClimateEvent implements Serializable, org.ether.society.events.SimulationTemporalEvent {
     private static final long serialVersionUID = 2L;
 
     /** Internal state: canonical ontological category (NATURAL, ANTHROPIC, CHRONICLE_MILESTONE). */
@@ -388,6 +388,41 @@ public class ClimateEvent implements Serializable {
 
     public void setDurationDays(int durationDays) {
         this.durationDays = durationDays;
+    }
+
+    @Override
+    public String getId() {
+        return (type != null ? type : "EVENT") + "_" + year + "_" + month + "_" + day + "_" + (name != null ? name.hashCode() : 0);
+    }
+
+    @Override
+    public String getTitle() {
+        return name != null ? name : type;
+    }
+
+    @Override
+    public double getTemporalIntensity(int currentYear, int currentMonth, int currentDay) {
+        if (!isActive(currentYear, currentMonth, currentDay)) {
+            return 0.0;
+        }
+        if (durationDays <= 0) {
+            return 1.0;
+        }
+        int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
+        long elapsedDays = toAbsoluteDays(currentYear, normSimMonth, currentDay) - getAbsoluteStartDays();
+        double progress = Math.clamp((double) elapsedDays / (double) durationDays, 0.0, 1.0);
+
+        String upperType = type != null ? type.toUpperCase(Locale.ROOT) : "";
+        if (upperType.contains("PANDEMIC") || upperType.contains("PLAGUE")) {
+            // Realistic epidemiological bell curve: sin^2(pi * progress)
+            return Math.sin(Math.PI * progress);
+        } else if (upperType.contains("VOLCANO") || upperType.contains("NUCLEAR")) {
+            // Stratospheric exponential decay: max at inception, then exponential decay
+            return Math.exp(-2.5 * progress);
+        } else {
+            // Smooth C1 Hermite envelope
+            return 1.0 - (progress * progress * (3.0 - 2.0 * progress));
+        }
     }
 
     @Override

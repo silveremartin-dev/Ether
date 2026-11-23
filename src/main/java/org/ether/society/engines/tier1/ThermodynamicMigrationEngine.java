@@ -104,6 +104,7 @@ public class ThermodynamicMigrationEngine extends AbstractSimulationEngine {
         float[] waterArr = worldBuffer.getWaterResource();
         float[] elevArr = worldBuffer.getElevation();
         float[] capArr = worldBuffer.getResourceCapital();
+        float[] pollutionArr = worldBuffer.getPollutionLevel();
         byte[] biomes = worldBuffer.getBiomes();
 
         byte oceanOrd = (byte) Biome.OCEAN.ordinal();
@@ -119,9 +120,12 @@ public class ThermodynamicMigrationEngine extends AbstractSimulationEngine {
 
             double foodOrigin = foodArr[i] + agriArr[i] * 0.0105 + natArr[i] * 0.12;
             double waterOrigin = waterArr[i];
-            double phiOrigin = (foodOrigin + waterOrigin * 0.2) / (popOrigin + 1.0);
+            double polOrigin = (pollutionArr != null) ? pollutionArr[i] : 0.0;
+            // Severe radiotoxicity or industrial pollution forces human evacuation
+            double pollutionPenalty = (polOrigin > 100.0) ? Math.max(0.01, 1.0 - Math.min(0.99, polOrigin / 5000.0)) : 1.0;
+            double phiOrigin = ((foodOrigin + waterOrigin * 0.2) / (popOrigin + 1.0)) * pollutionPenalty;
 
-            if (phiOrigin >= PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * 1.15) {
+            if (polOrigin <= 100.0 && phiOrigin >= PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ * 1.15) {
                 continue;
             }
 
@@ -135,6 +139,11 @@ public class ThermodynamicMigrationEngine extends AbstractSimulationEngine {
                 if (destIdx < 0 || destIdx >= n) continue;
                 byte destBiome = biomes[destIdx];
                 double waterDest = waterArr[destIdx];
+                double polDest = (pollutionArr != null) ? pollutionArr[destIdx] : 0.0;
+                // Humans avoid settling in highly irradiated or contaminated exclusion zones
+                if (polDest > 1500.0) {
+                    continue;
+                }
                 if (destBiome == oceanOrd
                         || destBiome == deepOceanOrd
                         || destBiome == glacierOrd
