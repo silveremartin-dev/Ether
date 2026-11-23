@@ -265,18 +265,26 @@ public class ClimateEvent implements Serializable {
 
     /**
      * Checks if this climate event is due to trigger at the given simulation date.
+     * Evaluates monotonically so that discrete multi-day steps (e.g. 7-day or 30-day ticks)
+     * do not skip events whose scheduled day/month falls within or prior to the current tick.
      *
      * @param currentYear simulation year
      * @param currentMonth simulation month (0-11 or 1-12)
      * @param currentDay simulation day of month (1-30/31)
-     * @return {@code true} if current date matches the event date
+     * @return {@code true} if current date reaches or passes the event date
      */
     public boolean isDue(int currentYear, int currentMonth, int currentDay) {
         if (this.year != currentYear) {
             return false;
         }
         int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
-        return this.month == normSimMonth && (this.day == currentDay || currentDay <= 0);
+        if (normSimMonth > this.month) {
+            return true;
+        }
+        if (normSimMonth == this.month) {
+            return currentDay >= this.day || currentDay <= 1;
+        }
+        return false;
     }
 
     public double getLatitude() {
