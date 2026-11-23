@@ -56,6 +56,16 @@ Write-Host "✔ Part 2 size: $size2 MB" -ForegroundColor Green
 
 if ($Upload) {
     Write-Host "Uploading to GitHub Release v$Version..." -ForegroundColor Cyan
+    if (-not $env:GH_TOKEN) {
+        try {
+            $cred = ("protocol=https`nhost=github.com`n`n" | git credential fill 2>$null | Out-String)
+            $tokenLine = ($cred -split "`n" | Where-Object { $_ -like "password=*" })
+            if ($tokenLine) {
+                $env:GH_TOKEN = $tokenLine.Substring(9).Trim()
+            }
+        } catch {}
+    }
+
     $ghCmd = "gh"
     $ghAvailable = $false
     if (Get-Command "gh" -ErrorAction SilentlyContinue) {
