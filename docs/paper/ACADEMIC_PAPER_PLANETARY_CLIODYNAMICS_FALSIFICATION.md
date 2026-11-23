@@ -643,6 +643,27 @@ Across the 32 master historical epochs executed over 20-year horizons ($240\text
 | **Gross World Product ($\text{GWP}$)** | **$0.000$** ($\sigma = 0.00$) | $17.2\%\text{--}99.8\%$ | **$0.0\%$** | $0.000$ | **Headless Telemetry Subscription Bug**: `HeadlessBatchRunner` omitted `setHeadlessTelemetrySubscribed(true)`, leaving `currentGDP`, `currentGini`, and `currentLifeExpectancy` frozen at $t_0$. |
 | **Fossil Energy Share ($\text{Fossil\%}$)** | **$-0.840\text{ to }-0.963$** (`1800–1914 CE`) | $88.4\%\text{--}100.0\%$ | $0.0\%\text{--}3.7\%$ | **$-0.920\text{ to }+0.707$** | `CliodynamicAnalyticalFormulasCatalog.computeFossilSharePrimaryEnergy` requires $\Phi_{\text{exergy}} \ge 2.80$, leaving 1914 CE at **$1.27\%$** vs **$78.66\%$** empirical. |
 | **Urbanization Rate ($U$)** | **$-0.915\text{ to }-0.977$** *(exc. 165 CE: $+0.980$)* | $0.2\%\text{--}88.0\%$ | $0.0\%\text{--}48.8\%$ | **$-0.925\text{ to }+0.922$** | Over 20-year transient windows, post-initialization cellular settlement relaxation opposes secular HYDE interpolation slopes. |
+
+##### Table 7.4.A3: Master Phase-4 Prospective Pathways & Exoplanetary Counterfactuals Evaluation (2025–2240 CE)
+| # | Prospective / Off-Earth Scenario | Calendar Window | Planetary Domain | H3 Mesh Res | Physical Ticks | TPS (it/s) | Latency / Cell | Peak Heap | Emergent Macroscopic Dynamic |
+|---|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---|
+| 1 | **Earth BAU Trend Trajectory** | $2025\text{–}2045\text{ CE}$ | Earth | Res 4 (288k) | 244 | **0.14** | **25.3 µs** | 5.5 GB | Standard demographic leveling |
+| 2 | **Ether Prospective Projection** | $2026\text{–}2046\text{ CE}$ | Earth | Res 4 (288k) | 244 | **0.23** | **14.9 µs** | 4.5 GB | Coupled biophysical transition |
+| 3 | **SSP5-8.5 Fossil-Fueled Warming** | $2026\text{–}2046\text{ CE}$ | Earth | Res 4 (288k) | 244 | **0.17** | **20.2 µs** | 4.6 GB | Accelerated carbon pulse & warming |
+| 4 | **Nuclear Winter & Solar Dimming** | $2035\text{–}2055\text{ CE}$ | Earth | Res 4 (288k) | 1,044 (wk) | **0.02** | **962.0 µs** | 4.8 GB | Abrupt stratospheric freeze & front warfare |
+| 5 | **Technological Singularity & Fusion** | $2045\text{–}2065\text{ CE}$ | Earth | Res 4 (288k) | 244 | **0.18** | **19.5 µs** | 4.5 GB | Exergy inflection & automated capital |
+| 6 | **Mineral Phosphate Cliff (N-P-K)** | $2050\text{–}2070\text{ CE}$ | Earth | Res 4 (288k) | 244 | **0.14** | **25.4 µs** | 4.8 GB | Agricultural involution & nutrient squeeze |
+| 7 | **Supervolcano Cataclysm (VEI-8)** | $2060\text{–}2080\text{ CE}$ | Earth | Res 4 (288k) | 1,044 (wk) | **0.02** | **892.5 µs** | 5.3 GB | Multi-annual tephra cooling & refugia |
+| 8 | **Shackleton Lunar Base** | $2035\text{–}2055\text{ CE}$ | Moon | Res 4 (288k) | 244 | **0.36** | **9.7 µs** | 5.7 GB | High-vacuum autarky & Marius lava tubes |
+| 9 | **Martian Settlement (Jezero/Chryse)** | $2050\text{–}2070\text{ CE}$ | Mars | Res 4 (288k) | 244 | **0.50** | **6.9 µs** | 5.2 GB | Perchlorate extraction & dome agriculture |
+| 10 | **Archipelago Seasteading** | $2055\text{–}2075\text{ CE}$ | Earth | Res 4 (288k) | 244 | **0.73** | **4.7 µs** | 4.6 GB | Polycentric oceanic confederation |
+| 11 | **Venusian Floating Aerostats** | $2080\text{–}2100\text{ CE}$ | Venus | Res 4 (288k) | 244 | **0.75** | **4.6 µs** | 4.9 GB | 55 km mesospheric thermal equilibrium |
+| 12 | **Oceania Abyssal Domed Cities** | $2100\text{–}2120\text{ CE}$ | Ocean | Res 4 (288k) | 244 | **0.74** | **4.7 µs** | 4.8 GB | Hydrostatic hydrothermal energy tapping |
+| 13 | **Glacial World Boreas Havens** | $2120\text{–}2140\text{ CE}$ | Boreas | Res 4 (288k) | 244 | **0.73** | **4.8 µs** | 4.6 GB | Subglacial geothermal enclave ecology |
+| 14 | **Caloris Forge of Mercury** | $2120\text{–}2140\text{ CE}$ | Mercury | Res 4 (288k) | 244 | **0.71** | **4.9 µs** | 5.4 GB | Concentrated solar smelting & railgun launch |
+| 15 | **Titan Hydrocarbon Seas (Kraken)** | $2150\text{–}2170\text{ CE}$ | Titan | Res 4 (288k) | 244 | **0.76** | **4.6 µs** | 5.4 GB | Cryogenic methane/ethane thermodynamics |
+| 16 | **Interstellar Ark: Gaia Prime** | $2200\text{–}2220\text{ CE}$ | Gaia | Res 4 (288k) | 244 | **0.61** | **5.7 µs** | 5.1 GB | Virgin biosphere colonization & succession |
+| 17 | **Tidally Locked World: Twilight Ring** | $2220\text{–}2240\text{ CE}$ | Eyeball | Res 4 (288k) | 244 | **0.63** | **5.5 µs** | 5.1 GB | Habitable terminator circumpolar wind belt |
 | **Information Speed & Metallurgy** | **$-0.856\text{ to }-1.000$** | $68.8\%\text{--}98.8\%$ | $0.0\%\text{--}6.1\%$ | $-0.600\text{ to }+0.963$ | Electromagnetic threshold ($\Phi_{\text{exergy}} \ge 3.80$) is uncrossed in `1914 CE` ($71.1$ sim vs $1.41 \times 10^7$ obs). |
 | **9D Geocultural Dim 7 (Ecological)** | **$0.0000$** (all 9 epochs) | N/A (Spatial) | N/A | N/A | `CellularMapComparisonMetrics` evaluates `soilOrganicCarbon` which defaults uniformly to `25.0` across uninitialized cells ($\text{Var}_A = 0 \implies r = 0$). |
 
