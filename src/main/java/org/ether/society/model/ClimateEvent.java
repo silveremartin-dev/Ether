@@ -135,7 +135,7 @@ public class ClimateEvent implements Serializable {
         this.latitude = latitude;
         this.longitude = longitude;
         this.depth = depth;
-        this.magnitude = magnitude;
+        this.magnitude = (magnitude > 0.0 && magnitude <= 1.0) ? (magnitude * 10.0) : magnitude;
         this.durationDays = durationDays;
     }
 
@@ -316,7 +316,7 @@ public class ClimateEvent implements Serializable {
     }
 
     public void setMagnitude(double magnitude) {
-        this.magnitude = magnitude;
+        this.magnitude = (magnitude > 0.0 && magnitude <= 1.0) ? (magnitude * 10.0) : magnitude;
     }
 
     public EventCategory getCategory() {

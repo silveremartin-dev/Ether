@@ -286,6 +286,13 @@ public final class EventPhysicalImpactExecutor {
                     }
                 }
 
+                if (cell.getEpidemicInfectedOr(0) > 0) {
+                    var seirMod = org.ether.society.core.engine.SimulationEngineRegistry.getInstance().getEngine("SpatialMetapopulationSEIREngine");
+                    if (seirMod instanceof org.ether.society.engines.tier2.theories.SpatialMetapopulationSEIREngine seir) {
+                        seir.seedInfection(i, (float) cell.getEpidemicInfectedOr(0));
+                    }
+                }
+
                 if (worldBuffer != null && i < worldBuffer.getCapacity()) {
                     if (cell.getTemperature() != null) worldBuffer.getTemperature()[i] = cell.getTemperature().floatValue();
                     if (cell.getResourceCapital() != null) worldBuffer.getResourceCapital()[i] = cell.getResourceCapital().floatValue();

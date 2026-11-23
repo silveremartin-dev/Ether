@@ -371,17 +371,17 @@ final class PreComputeClimateAndResourceHelper {
             scenario.setClimateEvents(events);
         }
 
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 36.4, 25.4, 10.0, 0.95, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 40.8, 14.4, 8.0, 0.85, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Antonine (Variole dans l'Empire Romain)", 165, 41.9, 12.5, 0.0, 0.85, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 64.0, -18.0, 10.0, 0.90, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste de Justinien (Yersinia Pestis)", 541, 41.0, 29.0, 0.0, 0.90, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, -8.4, 116.4, 12.0, 0.98, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 45.0, 35.0, 0.0, 0.90, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 64.0, -18.2, 8.0, 0.88, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, -8.2, 118.0, 10.0, 0.95, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, -6.1, 105.4, 10.0, 0.90, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 39.0, -98.0, 0.0, 0.75, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 36.4, 25.4, 10.0, 9.5, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 40.8, 14.4, 8.0, 8.5, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Antonine (Variole dans l'Empire Romain)", 165, 41.9, 12.5, 0.0, 8.5, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 64.0, -18.0, 10.0, 9.0, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste de Justinien (Yersinia Pestis)", 541, 41.0, 29.0, 0.0, 9.0, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, -8.4, 116.4, 12.0, 9.8, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 10, 1, 38.19, 15.55, 0.0, 9.8, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 64.0, -18.2, 8.0, 8.8, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, -8.2, 118.0, 10.0, 9.5, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, -6.1, 105.4, 10.0, 9.0, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 39.0, -98.0, 0.0, 7.5, 730));
     }
 
     private static void addEventIfInRange(List<ClimateEvent> events, long startYear, long endYear, ClimateEvent ev) {

@@ -56,8 +56,17 @@ Write-Host "✔ Part 2 size: $size2 MB" -ForegroundColor Green
 
 if ($Upload) {
     Write-Host "Uploading to GitHub Release v$Version..." -ForegroundColor Cyan
-    if (Get-Command gh -ErrorAction SilentlyContinue) {
-        & gh release upload "v$Version" $part1Archive $part2Archive --clobber
+    $ghCmd = "gh"
+    $ghAvailable = $false
+    if (Get-Command "gh" -ErrorAction SilentlyContinue) {
+        $ghAvailable = $true
+    } elseif (Test-Path "C:\Program Files\GitHub CLI\gh.exe") {
+        $ghCmd = "C:\Program Files\GitHub CLI\gh.exe"
+        $ghAvailable = $true
+    }
+
+    if ($ghAvailable) {
+        & $ghCmd release upload "v$Version" $part1Archive $part2Archive --clobber
         Write-Host "✔ Upload complete via GitHub CLI!" -ForegroundColor Green
     } else {
         Write-Host "⚠ 'gh' CLI not found. Artifacts ready in dist/ for CI/manual upload." -ForegroundColor Yellow
