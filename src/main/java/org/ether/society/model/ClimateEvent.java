@@ -264,27 +264,79 @@ public class ClimateEvent implements Serializable {
     }
 
     /**
-     * Checks if this climate event is due to trigger at the given simulation date.
-     * Evaluates monotonically so that discrete multi-day steps (e.g. 7-day or 30-day ticks)
-     * do not skip events whose scheduled day/month falls within or prior to the current tick.
+     * Converts a calendar date into an absolute continuous simulation day index.
+     * Uses a canonical 360-day calendar (12 months of 30 days) matching {@link org.ether.society.core.SimulationTimeCoordinator}.
+     *
+     * @param year calendar year (negative for BCE)
+     * @param month calendar month (1-12)
+     * @param day calendar day of month (1-30)
+     * @return absolute simulation day index
+     */
+    public static long toAbsoluteDays(int year, int month, int day) {
+        int m = (month > 0 && month <= 12) ? (month - 1) : 0;
+        int d = (day > 0 && day <= 30) ? (day - 1) : 0;
+        return ((long) year * 360L) + ((long) m * 30L) + d;
+    }
+
+    /**
+     * Returns the absolute simulation start day index.
+     *
+     * @return absolute start day
+     */
+    public long getAbsoluteStartDays() {
+        return toAbsoluteDays(this.year, this.month, this.day);
+    }
+
+    /**
+     * Returns the absolute simulation expiration day index.
+     *
+     * @return absolute end day
+     */
+    public long getAbsoluteEndDays() {
+        return getAbsoluteStartDays() + Math.max(1, this.durationDays);
+    }
+
+    /**
+     * Checks if this event is due based on continuous linear date comparison.
+     * Guaranteed to trigger even with coarse discrete time steps (e.g. 7-day or 30-day ticks).
      *
      * @param currentYear simulation year
      * @param currentMonth simulation month (0-11 or 1-12)
      * @param currentDay simulation day of month (1-30/31)
-     * @return {@code true} if current date reaches or passes the event date
+     * @return {@code true} if current date reaches or passes the event start date
      */
     public boolean isDue(int currentYear, int currentMonth, int currentDay) {
-        if (this.year != currentYear) {
-            return false;
-        }
         int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
-        if (normSimMonth > this.month) {
-            return true;
-        }
-        if (normSimMonth == this.month) {
-            return currentDay >= this.day || currentDay <= 1;
-        }
-        return false;
+        long currentSimDays = toAbsoluteDays(currentYear, normSimMonth, currentDay);
+        return currentSimDays >= getAbsoluteStartDays();
+    }
+
+    /**
+     * Checks if this event is still actively ongoing at the given simulation date.
+     *
+     * @param currentYear simulation year
+     * @param currentMonth simulation month (0-11 or 1-12)
+     * @param currentDay simulation day of month (1-30/31)
+     * @return {@code true} if within active start and end date window
+     */
+    public boolean isActive(int currentYear, int currentMonth, int currentDay) {
+        int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
+        long currentSimDays = toAbsoluteDays(currentYear, normSimMonth, currentDay);
+        return currentSimDays >= getAbsoluteStartDays() && currentSimDays < getAbsoluteEndDays();
+    }
+
+    /**
+     * Checks if this event has fully expired and should cease affecting the simulation.
+     *
+     * @param currentYear simulation year
+     * @param currentMonth simulation month (0-11 or 1-12)
+     * @param currentDay simulation day of month (1-30/31)
+     * @return {@code true} if simulation date has reached or passed expiration date
+     */
+    public boolean isExpired(int currentYear, int currentMonth, int currentDay) {
+        int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
+        long currentSimDays = toAbsoluteDays(currentYear, normSimMonth, currentDay);
+        return currentSimDays >= getAbsoluteEndDays();
     }
 
     public double getLatitude() {

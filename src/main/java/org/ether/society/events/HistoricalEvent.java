@@ -50,26 +50,32 @@ public record HistoricalEvent(int year, int month, int day, String title, String
     }
 
     /**
-     * Checks if this historical event matches the given temporal coordinate.
+     * Converts calendar date coordinates into an absolute linear simulation day index.
+     *
+     * @param year calendar year (negative for BCE)
+     * @param month calendar month (1-12)
+     * @param day calendar day of month (1-30)
+     * @return absolute simulation day index
+     */
+    public static long toAbsoluteDays(int year, int month, int day) {
+        int m = (month > 0 && month <= 12) ? (month - 1) : 0;
+        int d = (day > 0 && day <= 30) ? (day - 1) : 0;
+        return ((long) year * 360L) + ((long) m * 30L) + d;
+    }
+
+    /**
+     * Checks if this historical milestone is due based on continuous linear date comparison.
      *
      * @param currentYear current simulation calendar year
      * @param currentMonth current simulation month index (0-11) or (1-12)
      * @param currentDay current simulation day of month (1-31)
-     * @return {@code true} if the current tick matches or reaches this event date
+     * @return {@code true} if the current simulation date has reached or passed this event date
      */
     public boolean isDue(int currentYear, int currentMonth, int currentDay) {
-        if (this.year != currentYear) {
-            return false;
-        }
-        // Normalize simulation month: SimulationTimeCoordinator uses 0-11, calendar uses 1-12
         int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
-        if (normSimMonth > this.month) {
-            return true;
-        }
-        if (normSimMonth == this.month) {
-            return currentDay >= this.day || currentDay <= 1;
-        }
-        return false;
+        long currentSimDays = toAbsoluteDays(currentYear, normSimMonth, currentDay);
+        long startDays = toAbsoluteDays(this.year, this.month, this.day);
+        return currentSimDays >= startDays;
     }
 }
 

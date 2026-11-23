@@ -63,6 +63,16 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
         double capRetention = Math.exp(-4.2801 * dtSafe);
         double waterRetention = Math.exp(-8.3178 * dtSafe);
 
+        // Coupled Stratospheric Aerosol & Volcanic Winter Cooling (Robock 2000, Sigl et al. 2015 Nature)
+        double tau = NuclearWarfareClimateEngine.getGlobalSootOpticalDepth();
+        double aerosolCooling = 0.0;
+        if (tau > 0.001) {
+            double transmittance = Math.exp(-0.85 * tau);
+            aerosolCooling = -12.0 * (1.0 - transmittance);
+            // Stratospheric residence time: exponential decay with ~1.0 year half-life
+            NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(tau * Math.exp(-0.693 * dtSafe));
+        }
+
         for (int i = 0; i < n; i++) {
             float elev = elevArr[i];
             byte biome = biomes[i];
@@ -73,7 +83,7 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
             double currentTemp = tempArr[i];
             double equilibriumTempAnomaly = (0.30 - albedo) * 6.0;
             double baselineTemp = 22.0 - 0.0065 * Math.max(0.0, elev);
-            double targetTemp = baselineTemp + equilibriumTempAnomaly;
+            double targetTemp = baselineTemp + equilibriumTempAnomaly + aerosolCooling;
             double updatedTemp = currentTemp + (targetTemp - currentTemp) * thermalRelaxationFactor;
             tempArr[i] = (float) Math.clamp(updatedTemp, -250.0, 600.0);
 

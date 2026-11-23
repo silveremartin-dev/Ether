@@ -371,17 +371,17 @@ final class PreComputeClimateAndResourceHelper {
             scenario.setClimateEvents(events);
         }
 
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 36.4, 25.4, 10.0, 9.5, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 40.8, 14.4, 8.0, 8.5, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste Antonine (Variole dans l'Empire Romain)", 165, 41.9, 12.5, 0.0, 8.5, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 64.0, -18.0, 10.0, 9.0, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Peste de Justinien (Yersinia Pestis)", 541, 41.0, 29.0, 0.0, 9.0, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, -8.4, 116.4, 12.0, 9.8, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 5, 15, 36.40, 25.40, 10.0, 9.5, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 10, 24, 40.82, 14.43, 8.0, 8.5, 180));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Peste Antonine (Variole dans l'Empire Romain)", 165, 4, 15, 41.90, 12.50, 0.0, 8.5, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 3, 1, 64.00, -18.00, 10.0, 9.0, 540));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Peste de Justinien (Yersinia Pestis)", 541, 7, 15, 31.05, 32.55, 0.0, 9.0, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, 6, 1, -8.41, 116.47, 12.0, 9.8, 730));
         addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 10, 1, 38.19, 15.55, 0.0, 9.8, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Laki (Islande)", 1783, 64.0, -18.2, 8.0, 8.8, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Éruption du Tambora (Année sans été)", 1815, -8.2, 118.0, 10.0, 9.5, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, -6.1, 105.4, 10.0, 9.0, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent("PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 39.0, -98.0, 0.0, 7.5, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Éruption du Laki (Islande)", 1783, 6, 8, 64.06, -18.23, 8.0, 8.8, 240));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Éruption du Tambora (Année sans été)", 1815, 4, 10, -8.25, 118.00, 10.0, 9.5, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, 8, 27, -6.10, 105.42, 10.0, 9.0, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 3, 4, 39.10, -96.77, 0.0, 7.5, 730));
     }
 
     private static void addEventIfInRange(List<ClimateEvent> events, long startYear, long endYear, ClimateEvent ev) {
