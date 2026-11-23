@@ -6,6 +6,7 @@
  */
 package org.ether.society.model;
 
+import org.ether.society.core.time.SimulationDate;
 import java.io.Serializable;
 import java.util.Locale;
 
@@ -263,9 +264,19 @@ public class ClimateEvent implements Serializable, org.ether.society.events.Simu
         this.day = Math.max(1, Math.min(31, day));
     }
 
+    @Override
+    public SimulationDate getStartDate() {
+        return SimulationDate.of(this.year, this.month, this.day);
+    }
+
+    @Override
+    public SimulationDate getEndDate() {
+        return getStartDate().plusDays(Math.max(1, this.durationDays));
+    }
+
     /**
      * Converts a calendar date into an absolute continuous simulation day index.
-     * Uses a canonical 360-day calendar (12 months of 30 days) matching {@link org.ether.society.core.SimulationTimeCoordinator}.
+     * Uses a canonical 360-day calendar matching {@link SimulationDate}.
      *
      * @param year calendar year (negative for BCE)
      * @param month calendar month (1-12)
@@ -273,9 +284,7 @@ public class ClimateEvent implements Serializable, org.ether.society.events.Simu
      * @return absolute simulation day index
      */
     public static long toAbsoluteDays(int year, int month, int day) {
-        int m = (month > 0 && month <= 12) ? (month - 1) : 0;
-        int d = (day > 0 && day <= 30) ? (day - 1) : 0;
-        return ((long) year * 360L) + ((long) m * 30L) + d;
+        return SimulationDate.of(year, month, day).toAbsoluteDays();
     }
 
     /**
@@ -283,8 +292,9 @@ public class ClimateEvent implements Serializable, org.ether.society.events.Simu
      *
      * @return absolute start day
      */
+    @Override
     public long getAbsoluteStartDays() {
-        return toAbsoluteDays(this.year, this.month, this.day);
+        return getStartDate().toAbsoluteDays();
     }
 
     /**
@@ -292,8 +302,9 @@ public class ClimateEvent implements Serializable, org.ether.society.events.Simu
      *
      * @return absolute end day
      */
+    @Override
     public long getAbsoluteEndDays() {
-        return getAbsoluteStartDays() + Math.max(1, this.durationDays);
+        return getEndDate().toAbsoluteDays();
     }
 
     /**
@@ -305,10 +316,11 @@ public class ClimateEvent implements Serializable, org.ether.society.events.Simu
      * @param currentDay simulation day of month (1-30/31)
      * @return {@code true} if current date reaches or passes the event start date
      */
+    @Override
     public boolean isDue(int currentYear, int currentMonth, int currentDay) {
         int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
-        long currentSimDays = toAbsoluteDays(currentYear, normSimMonth, currentDay);
-        return currentSimDays >= getAbsoluteStartDays();
+        SimulationDate current = SimulationDate.of(currentYear, normSimMonth, currentDay);
+        return current.isAtOrAfter(getStartDate());
     }
 
     /**
@@ -319,10 +331,11 @@ public class ClimateEvent implements Serializable, org.ether.society.events.Simu
      * @param currentDay simulation day of month (1-30/31)
      * @return {@code true} if within active start and end date window
      */
+    @Override
     public boolean isActive(int currentYear, int currentMonth, int currentDay) {
         int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
-        long currentSimDays = toAbsoluteDays(currentYear, normSimMonth, currentDay);
-        return currentSimDays >= getAbsoluteStartDays() && currentSimDays < getAbsoluteEndDays();
+        SimulationDate current = SimulationDate.of(currentYear, normSimMonth, currentDay);
+        return current.isAtOrAfter(getStartDate()) && current.isBefore(getEndDate());
     }
 
     /**
@@ -330,13 +343,14 @@ public class ClimateEvent implements Serializable, org.ether.society.events.Simu
      *
      * @param currentYear simulation year
      * @param currentMonth simulation month (0-11 or 1-12)
-     * @param currentDay simulation day of month (1-30/31)
+     * @param currentDay simulation day of month (1-30)
      * @return {@code true} if simulation date has reached or passed expiration date
      */
+    @Override
     public boolean isExpired(int currentYear, int currentMonth, int currentDay) {
         int normSimMonth = (currentMonth < 12) ? (currentMonth + 1) : currentMonth;
-        long currentSimDays = toAbsoluteDays(currentYear, normSimMonth, currentDay);
-        return currentSimDays >= getAbsoluteEndDays();
+        SimulationDate current = SimulationDate.of(currentYear, normSimMonth, currentDay);
+        return current.isAtOrAfter(getEndDate());
     }
 
     public double getLatitude() {

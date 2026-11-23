@@ -5,6 +5,8 @@
  */
 package org.ether.society.events;
 
+import org.ether.society.core.time.SimulationDate;
+
 /**
  * <h1>Historical Event</h1>
  * <p>
@@ -76,6 +78,16 @@ public record HistoricalEvent(int year, int month, int day, String title, String
     @Override
     public org.ether.society.model.EventCategory getCategory() {
         return org.ether.society.model.EventCategory.CHRONICLE_MILESTONE;
+    }
+
+    @Override
+    public SimulationDate getStartDate() {
+        return SimulationDate.of(this.year, this.month, this.day);
+    }
+
+    @Override
+    public SimulationDate getEndDate() {
+        return getStartDate().plusDays(1);
     }
 
     @Override

@@ -6,6 +6,7 @@
  */
 package org.ether.society.events;
 
+import org.ether.society.core.time.SimulationDate;
 import org.ether.society.model.EventCategory;
 
 /**
@@ -42,6 +43,20 @@ public interface SimulationTemporalEvent {
      * @return non-null category
      */
     EventCategory getCategory();
+
+    /**
+     * Dedicated start date object.
+     *
+     * @return non-null start SimulationDate
+     */
+    SimulationDate getStartDate();
+
+    /**
+     * Dedicated expiration date object.
+     *
+     * @return non-null expiration SimulationDate
+     */
+    SimulationDate getEndDate();
 
     /**
      * Event start year (negative for BCE).
