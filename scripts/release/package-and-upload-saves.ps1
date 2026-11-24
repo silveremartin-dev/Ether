@@ -28,6 +28,7 @@ $part2Dirs = New-Object System.Collections.Generic.List[string]
 
 Get-ChildItem -Directory $savesDir | ForEach-Object {
     $name = $_.Name
+    if (-not ($name -like "RUN-*")) { return }
     # Part 1: Ancient, Prehistoric, Classical, Medieval (<= 1400 CE)
     if ($name -match "OUT-OF-AFRICA|TOBA|SAHUL|BERINGIA|SOLUTREAN|YOUNGER-DRYAS|FERTILE-CRESCENT|GREEN-SAHARA|ANCIENT-EGYPT|BRONZE|RAMESSES|IRON-AGE|HELLENISTIC|MAURYA|PAX-ROMANA|ANTONINE|LATE-ANTIQUE|ISLAMIC|CAROLINGIAN|SONG|MONGOL|MALI|BLACK-DEATH|MESOAMERICAN") {
         $part1Dirs.Add("saves/$name")
