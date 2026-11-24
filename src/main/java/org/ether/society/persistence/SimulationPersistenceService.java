@@ -126,9 +126,11 @@ public class SimulationPersistenceService {
             Path snapshotsDir = savePath.resolve(SNAPSHOTS_DIR);
             Files.createDirectories(snapshotsDir);
 
-            // 1. Save Static Spatial Topology (topology.bin.gz)
+            // 1. Save Static Spatial Topology (topology.bin.gz) only once per save directory
             Path topologyPath = savePath.resolve(TOPOLOGY_FILE);
-            CellTopologyWireCodec.saveToFile(topologyPath, cells);
+            if (!Files.exists(topologyPath)) {
+                CellTopologyWireCodec.saveToFile(topologyPath, cells);
+            }
 
             // 2. Save Active WorldBuffer State (state.bin.gz)
             WorldBuffer worldBuffer = engine.getWorldBuffer();

@@ -31,6 +31,14 @@ import java.util.Map;
 public class HeadlessBatchRunner {
     private static final Logger logger = LoggerFactory.getLogger(HeadlessBatchRunner.class);
 
+    /** Background autonomous worker for non-blocking asynchronous snapshot disk streaming */
+    private static final java.util.concurrent.ExecutorService SNAPSHOT_IO_EXECUTOR =
+            java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "Headless-Snapshot-IO-Worker");
+                t.setDaemon(true);
+                return t;
+            });
+
     @FunctionalInterface
     public interface BatchProgressListener {
         void onProgress(Scenario scenario, double progress, int currentYear, int endYear);
@@ -293,8 +301,9 @@ public class HeadlessBatchRunner {
         long totalDays = (long) (durationYears * 365.25);
         long totalTicks = Math.max(1, (long) Math.ceil(totalDays / stepDays));
 
-        // Sample telemetry periodically across scenario duration (e.g. every 1 to 20 years)
-        long sampleIntervalYears = Math.max(1, Math.min(20, durationYears / 25));
+        // Sample telemetry periodically across scenario duration (~10 snapshots per 20-year window)
+        int targetSnapshots = Math.max(10, (int) Math.round((durationYears / 20.0) * 10));
+        long sampleIntervalYears = Math.max(1, Math.min(20, (long) Math.ceil((double) durationYears / targetSnapshots)));
         int ticksPerSampleInterval = Math.max(1, (int) Math.round((sampleIntervalYears * 365.25) / stepDays));
         TelemetrySubscription effectiveSub = (customSubscription != null)
                 ? customSubscription.withSamplingInterval(ticksPerSampleInterval)
@@ -337,6 +346,17 @@ public class HeadlessBatchRunner {
                     record.addSpatialSnapshot((int) currentSimYear, engine.getCells());
                 }
                 lastSampledYear = currentSimYear;
+
+                // Stream snapshot checkpoint to disk asynchronously in autonomous background worker
+                if (persistToDisk && engine.getSimulationSaveManager() != null) {
+                    SNAPSHOT_IO_EXECUTOR.submit(() -> {
+                        try {
+                            engine.getSimulationSaveManager().saveSimulation(engine, runId, scenario.getName());
+                        } catch (Exception ex) {
+                            logger.debug("Asynchronous intermediate headless checkpoint failed: {}", ex.getMessage());
+                        }
+                    });
+                }
             }
 
             double progress = Math.min(1.0, (double) ticksExecuted / (double) Math.max(1, totalTicks));
@@ -357,7 +377,10 @@ public class HeadlessBatchRunner {
         // Persist full simulation state, spatial topology, and intermediate snapshots to saves/RUN-*
         if (persistToDisk && engine.getSimulationSaveManager() != null) {
             try {
-                engine.getSimulationSaveManager().saveSimulation(engine, runId, scenario.getName());
+                java.util.concurrent.Future<?> finalSave = SNAPSHOT_IO_EXECUTOR.submit(() -> {
+                    engine.getSimulationSaveManager().saveSimulation(engine, runId, scenario.getName());
+                });
+                finalSave.get(60, java.util.concurrent.TimeUnit.SECONDS);
             } catch (Exception ex) {
                 logger.warn("Could not persist full headless run to disk: {}", ex.getMessage());
             }
