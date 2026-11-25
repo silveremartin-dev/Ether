@@ -89,7 +89,7 @@ public final class ScenarioArchetypeAuditRegistry {
             "Maritime island hopping across Wallacea and colonization of the joined Australian-Tasmanian-New Guinean landmass (Sahul).",
             "Bifurcation at -42,000 BP: Anthropogenic fire-stick farming altered Australian monsoon moisture recycling, causing rapid desiccation of the interior lake systems (Lake Eyre) and swift extinction of Diprotodon and Genyornis.",
             "SSIM: 0.745 | Density RMSE: 0.142 | Fire Regime Jaccard: 0.710 | Megafauna Pearson r: 0.680.",
-            "Bug: Wallace line water crossing permitted teleportation without boat technology prerequisites. Remediation: Enforce navigation tech gate (tech >= 1.2) in MarineTraversalEngine."
+            "Bug: Wallace line water crossing permitted teleportation across open ocean without physical craft friction. Remediation: Enforce open-water distance limits (< 100 km water gap) and coastal foraging density in MarineTraversalEngine, adhering to physical observables rather than arbitrary tech flags."
         ));
 
         register(new ScenarioDetail(
@@ -111,7 +111,7 @@ public final class ScenarioArchetypeAuditRegistry {
             "Maximum extent of Northern Hemisphere continental ice sheets, severe global cooling, and demographic retreat into Franco-Cantabrian refugia.",
             "Bifurcation at -19,000 BP: Thermal compression pushed human densities into high-relief microclimates. Cave art, spear-throwers (atlatl), and pressure flaking emerged as risk-buffering social cohesion mechanisms.",
             "SSIM: 0.835 | Glacial Extent Jaccard: 0.892 | Refugial Density Pearson r: 0.795 | Temperature RMSE: 0.078.",
-            "Bug: Albedo feedback produced a runaway freezing loop. Remediation: Clamp maximum sea ice albedo at 0.72 in EnergyBalanceModel."
+            "Bug: Albedo feedback produced a runaway freezing loop due to lack of meridional oceanic heat transport negative feedback. Remediation: Couple dynamic AMOC heat convergence and temperature-dependent snow aging albedo (Warren & Wiscombe) in EnergyBalanceModel."
         ));
 
         register(new ScenarioDetail(
