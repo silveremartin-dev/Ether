@@ -2,11 +2,11 @@
 
 **Scenario**: `SSP5-8.5 Fossil-Fueled Development & Warming (2026-2046)`
 
-**Simulation Run Identifier**: `RUN-BUSINESS-AS-USUAL--FOSSIL-FUEL-RELIANCE---WARMING--SSP5-8-5--7849`
+**Simulation Run Identifier**: `RUN-BUSINESS-AS-USUAL--FOSSIL-FUEL-RELIANCE---WARMING--SSP5-8-5--2075`
 
 **Domain**: H3 Resolution 4 (Planetary Mesh)
 
-**Execution Duration**: 1397.0 s
+**Execution Duration**: 848.0 s
 
 ## ⚡ 1. Simulation Engine Execution & Computational Throughput Performance
 
@@ -14,10 +14,10 @@
 |---|:---:|:---:|:---:|
 | **Active Hexagonal Cells** | **288,122** | Computational Mesh Vertices | 📦 Cell Domain |
 | **Temporal Integration Steps** | **240** | Monthly Ticks (Δt = 30 days) | ⏱️ Temporal Depth |
-| **Total Physics Run Time** | **1397.03 s** | Wall-clock execution duration | ⏳ Wall Time |
-| **Simulation Throughput (TPS)** | **0.17** | Ticks Per Second | 🟡 Nominal Real-Time |
-| **Mean Step Latency (ms/tick)** | **5820.94 ms** | Mean execution per monthly tick | 🟡 Heavy Physical Iteration |
-| **Per-Cell Latency** | **20.203 μs** | Microseconds per cell per tick | 🚀 Micro-Scaling |
-| **Cellular Processing Throughput** | **49,498** | Cells Evaluated / Second | 📈 Compute Density |
-| **JVM Heap Allocation** | **4,567 MB / 8,192 MB** | Used Memory / Max Available Heap | 💾 Memory Footprint |
+| **Total Physics Run Time** | **847.98 s** | Wall-clock execution duration | ⏳ Wall Time |
+| **Simulation Throughput (TPS)** | **0.28** | Ticks Per Second | 🟡 Nominal Real-Time |
+| **Mean Step Latency (ms/tick)** | **3533.24 ms** | Mean execution per monthly tick | 🟡 Heavy Physical Iteration |
+| **Per-Cell Latency** | **12.263 μs** | Microseconds per cell per tick | 🚀 Micro-Scaling |
+| **Cellular Processing Throughput** | **81,546** | Cells Evaluated / Second | 📈 Compute Density |
+| **JVM Heap Allocation** | **3,956 MB / 8,192 MB** | Used Memory / Max Available Heap | 💾 Memory Footprint |
 

@@ -1,7 +1,7 @@
 # ðŸ“˜ WHITE PAPER: EMPIRICAL BENCHMARKING & BIFURCATION AUDIT OF 45 PLANETARY SIMULATION RUNS
 
 **Author**: Antigravity Cliodynamics Core Team & SilvÃ¨re Martin-Michiellot  
-**Date**: 2026-11-24 13:47:34  
+**Date**: 2026-11-25 20:39:04  
 **Engine**: Ether Planetary Simulation Laboratory (Version 1.0.0-beta.3)  
 **Benchmark Ground Truth**: Seshat Databank, HYDE 3.4, Maddison Project, EPICA Ice Cores, NOAA ETOPO 2022  
 
@@ -60,51 +60,51 @@ Simulated time-series are evaluated against continuous benchmark trajectories re
 
 | # | Scenario Key & Title | Epoch Horizon | Grid Resolution | Fidelity Score | Global MAPE | Primary Rupture (T_div) | Diagnostic Status |
 |---|---|:---:|:---:|:---:|:---:|:---:|---|
-| 🥇 1 | **Last Glacial Maximum (LGM) & Solutrean Refugia (-20,000 -> -12,000 BP)** (`earth_-20000_lgm_solutrean`) | -20000 -> -12000 | H3 Res 3/4 | **83.8%** | 16.2% | -20000 CE | 🟡 Moderate Drift |
-| 🥈 2 | **Business As Usual: Fossil-Fueled Development SSP5-8.5 (2026 -> 2100 CE)** (`earth_+2026_ssp5_85`) | 2026 -> 2100 | H3 Res 3/4 | **83.1%** | 16.9% | 2026 CE | 🟡 Moderate Drift |
-| 🥉 3 | **The Anthropocene & The Great Acceleration (2000 -> 2100 CE)** (`earth_+2000_anthropocene_2000`) | 2000 -> 2100 | H3 Res 3/4 | **79.3%** | 20.7% | 2000 CE | 🟡 Moderate Drift |
-| • 4 | **Green Sahara Humid Period & Desiccation Collapse (-6,000 -> -3,500 BCE)** (`earth_-6000_green_sahara`) | -6000 -> -3500 | H3 Res 3/4 | **74.7%** | 25.3% | -6000 CE | 🟡 Moderate Drift |
-| • 5 | **Earth 2025-2055: Business As Usual Trend Trajectory (2025 -> 2055 CE)** (`earth_+2025_business_as_usual`) | 2025 -> 2055 | H3 Res 3/4 | **71.1%** | 28.9% | 2025 CE | 🟡 Moderate Drift |
-| • 6 | **Nuclear Winter & Stratospheric Soot Veil (2035 -> 2085 CE)** (`earth_+2035_nuclear_winter_2035`) | 2035 -> 2085 | H3 Res 3/4 | **70.7%** | 29.3% | 2035 CE | 🟡 Moderate Drift |
+| 🥇 1 | **Business As Usual: Fossil-Fueled Development SSP5-8.5 (2026 -> 2100 CE)** (`earth_+2026_ssp5_85`) | 2026 -> 2100 | H3 Res 3/4 | **84.7%** | 15.3% | 2026 CE | 🟡 Moderate Drift |
+| 🥈 2 | **Last Glacial Maximum (LGM) & Solutrean Refugia (-20,000 -> -12,000 BP)** (`earth_-20000_lgm_solutrean`) | -20000 -> -12000 | H3 Res 3/4 | **83.9%** | 16.1% | -20000 CE | 🟡 Moderate Drift |
+| 🥉 3 | **The Anthropocene & The Great Acceleration (2000 -> 2100 CE)** (`earth_+2000_anthropocene_2000`) | 2000 -> 2100 | H3 Res 3/4 | **79.4%** | 20.6% | 2000 CE | 🟡 Moderate Drift |
+| • 4 | **Green Sahara Humid Period & Desiccation Collapse (-6,000 -> -3,500 BCE)** (`earth_-6000_green_sahara`) | -6000 -> -3500 | H3 Res 3/4 | **74.6%** | 25.4% | -6000 CE | 🟡 Moderate Drift |
+| • 5 | **Earth 2025-2055: Business As Usual Trend Trajectory (2025 -> 2055 CE)** (`earth_+2025_business_as_usual`) | 2025 -> 2055 | H3 Res 3/4 | **71.0%** | 29.0% | 2025 CE | 🟡 Moderate Drift |
+| • 6 | **Nuclear Winter & Stratospheric Soot Veil (2035 -> 2085 CE)** (`earth_+2035_nuclear_winter_2035`) | 2035 -> 2085 | H3 Res 3/4 | **68.9%** | 31.1% | 2035 CE | 🟡 Moderate Drift |
 | • 7 | **Fertile Crescent Neolithic Revolution & Agrarian Sedentism (-8,000 -> -5,000 BCE)** (`earth_-8000_fertile_crescent`) | -8000 -> -5000 | H3 Res 3/4 | **68.8%** | 31.2% | -8000 CE | 🟡 Moderate Drift |
 | • 8 | **Late Bronze Age Collapse & Palatial Systemic Rupture (-1,200 -> -900 BCE)** (`earth_-1200_bronze_age_collapse_1200bc`) | -1200 -> -900 | H3 Res 3/4 | **66.6%** | 33.4% | -1200 CE | 🟡 Moderate Drift |
 | • 9 | **Mongol Conquests & Pax Mongolica Eurasian Rupture (1206 -> 1368 CE)** (`earth_+1206_mongol_conquest_1206`) | 1206 -> 1368 | H3 Res 3/4 | **66.1%** | 33.9% | 1206 CE | 🟡 Moderate Drift |
-| • 10 | **Yellowstone Super-Eruption & Abrupt Volcanic Winter (2060 -> 2110 CE)** (`earth_+2060_supervolcano_2060`) | 2060 -> 2110 | H3 Res 3/4 | **65.1%** | 34.9% | 2060 CE | 🟡 Moderate Drift |
-| • 11 | **Maurya Empire & Arthashastra Statecraft (-300 -> 100 CE)** (`earth_-300_maurya_empire`) | -300 -> 100 | H3 Res 3/4 | **65.0%** | 35.0% | -300 CE | 🔴 Structural Bifurcation |
-| • 12 | **Hellenistic Surge & Alexander the Great Conquests (-334 -> -150 BCE)** (`earth_-334_alexander_hellenistic_334bc`) | -334 -> -150 | H3 Res 3/4 | **64.8%** | 35.2% | -334 CE | 🔴 Structural Bifurcation |
+| • 10 | **Maurya Empire & Arthashastra Statecraft (-300 -> 100 CE)** (`earth_-300_maurya_empire`) | -300 -> 100 | H3 Res 3/4 | **65.2%** | 34.8% | -300 CE | 🟡 Moderate Drift |
+| • 11 | **Yellowstone Super-Eruption & Abrupt Volcanic Winter (2060 -> 2110 CE)** (`earth_+2060_supervolcano_2060`) | 2060 -> 2110 | H3 Res 3/4 | **65.1%** | 34.9% | 2060 CE | 🟡 Moderate Drift |
+| • 12 | **Hellenistic Surge & Alexander the Great Conquests (-334 -> -150 BCE)** (`earth_-334_alexander_hellenistic_334bc`) | -334 -> -150 | H3 Res 3/4 | **65.0%** | 35.0% | -334 CE | 🔴 Structural Bifurcation |
 | • 13 | **Beringian Standstill & First Peopling of the Americas (-25,000 -> -10,000 BP)** (`earth_-25000_beringia`) | -25000 -> -10000 | H3 Res 3/4 | **64.2%** | 35.8% | -25000 CE | 🔴 Structural Bifurcation |
-| • 14 | **Sahul First Peopling & Australian Mega-Continent (-50,000 -> -10,000 BP)** (`earth_-50000_sahul`) | -50000 -> -10000 | H3 Res 3/4 | **62.1%** | 37.9% | -50000 CE | 🔴 Structural Bifurcation |
-| • 15 | **Early Islamic Expansion & Caliphate Commercial Revolution (632 -> 900 CE)** (`earth_+632_islamic_expansion_632`) | 632 -> 900 | H3 Res 3/4 | **59.3%** | 40.7% | 632 CE | 🔴 Structural Bifurcation |
-| • 16 | **Younger Dryas Cold Shock & Natufian Pre-Agrarian Adaptation (-10,900 -> -9,500 BP)** (`earth_-10900_younger_dryas`) | -10900 -> -9500 | H3 Res 3/4 | **58.1%** | 41.9% | -10900 CE | 🔴 Structural Bifurcation |
-| • 17 | **Early Iron Age & Mediterranean Commercial Resurgence (-1,000 -> -300 BCE)** (`earth_-1000_early_iron_age`) | -1000 -> -300 | H3 Res 3/4 | **57.6%** | 42.4% | -1000 CE | 🔴 Structural Bifurcation |
-| • 18 | **Technological Singularity, ASI & Fusion Power (2045 -> 2100 CE)** (`earth_+2045_singularity_2045`) | 2045 -> 2100 | H3 Res 3/4 | **57.0%** | 43.0% | 2045 CE | 🔴 Structural Bifurcation |
-| • 19 | **Roman Empire & Pax Romana (Year 0 -> 476 CE)** (`earth_+0_roman_empire`) | 0 -> 476 | H3 Res 3/4 | **56.5%** | 43.5% | 0 CE | 🔴 Structural Bifurcation |
+| • 14 | **Sahul First Peopling & Australian Mega-Continent (-50,000 -> -10,000 BP)** (`earth_-50000_sahul`) | -50000 -> -10000 | H3 Res 3/4 | **62.2%** | 37.8% | -50000 CE | 🔴 Structural Bifurcation |
+| • 15 | **Early Islamic Expansion & Caliphate Commercial Revolution (632 -> 900 CE)** (`earth_+632_islamic_expansion_632`) | 632 -> 900 | H3 Res 3/4 | **59.0%** | 41.0% | 632 CE | 🔴 Structural Bifurcation |
+| • 16 | **Technological Singularity, ASI & Fusion Power (2045 -> 2100 CE)** (`earth_+2045_singularity_2045`) | 2045 -> 2100 | H3 Res 3/4 | **58.8%** | 41.2% | 2045 CE | 🔴 Structural Bifurcation |
+| • 17 | **Younger Dryas Cold Shock & Natufian Pre-Agrarian Adaptation (-10,900 -> -9,500 BP)** (`earth_-10900_younger_dryas`) | -10900 -> -9500 | H3 Res 3/4 | **58.1%** | 41.9% | -10900 CE | 🔴 Structural Bifurcation |
+| • 18 | **Early Iron Age & Mediterranean Commercial Resurgence (-1,000 -> -300 BCE)** (`earth_-1000_early_iron_age`) | -1000 -> -300 | H3 Res 3/4 | **58.1%** | 41.9% | -1000 CE | 🔴 Structural Bifurcation |
+| • 19 | **Roman Empire & Pax Romana (Year 0 -> 476 CE)** (`earth_+0_roman_empire`) | 0 -> 476 | H3 Res 3/4 | **56.8%** | 43.2% | 0 CE | 🔴 Structural Bifurcation |
 | • 20 | **Late Antique Little Ice Age (LALIA) & Justinian Plague (536 -> 650 CE)** (`earth_+536_late_antique_ice_age`) | 536 -> 650 | H3 Res 3/4 | **56.4%** | 43.6% | 536 CE | 🔴 Structural Bifurcation |
-| • 21 | **Mineral Phosphate Cliff & Global N-P-K Crisis (2050 -> 2150 CE)** (`earth_+2050_peak_phosphate_2050`) | 2050 -> 2150 | H3 Res 3/4 | **54.3%** | 45.7% | 2050 CE | 🔴 Structural Bifurcation |
-| • 22 | **Mesoamerican Civilizations: Olmec Foundations & Classic Maya (-1,500 BCE -> 900 CE)** (`earth_-1500_mesoamerica`) | -1500 -> 900 | H3 Res 3/4 | **51.5%** | 48.5% | -1500 CE | 🔴 Structural Bifurcation |
-| • 23 | **Columbian Exchange & Microbial Demographic Collapse (1492 -> 1650 CE)** (`earth_+1492_columbian_contact`) | 1492 -> 1650 | H3 Res 3/4 | **51.3%** | 48.7% | 1492 CE | 🔴 Structural Bifurcation |
-| • 24 | **Middle Bronze Age Mesopotamia & Assyrian Commercial Networks (-1,900 -> -600 BCE)** (`earth_-1900_assyrian_empire`) | -1900 -> -600 | H3 Res 3/4 | **49.6%** | 50.4% | -1900 CE | 🔴 Structural Bifurcation |
-| • 25 | **Pre-Columbian Americas & Agro-Forestry Civilizations (1491 -> 1650 CE)** (`earth_+1491_americas_1491`) | 1491 -> 1650 | H3 Res 3/4 | **49.1%** | 50.9% | 1491 CE | 🔴 Structural Bifurcation |
-| • 26 | **Song Dynasty & Hydraulic Pre-Industrialization (1000 -> 1279 CE)** (`earth_+1000_song_dynasty`) | 1000 -> 1279 | H3 Res 3/4 | **47.8%** | 52.2% | 1000 CE | 🔴 Structural Bifurcation |
+| • 21 | **Mineral Phosphate Cliff & Global N-P-K Crisis (2050 -> 2150 CE)** (`earth_+2050_peak_phosphate_2050`) | 2050 -> 2150 | H3 Res 3/4 | **54.4%** | 45.6% | 2050 CE | 🔴 Structural Bifurcation |
+| • 22 | **Ramesses II, Pax Aegyptiaca & Monumental Builders (-1,279 -> -1,200 BCE)** (`earth_-1279_ramesses_ii`) | -1279 -> -1200 | H3 Res 3/4 | **51.8%** | 48.2% | -1279 CE | 🔴 Structural Bifurcation |
+| • 23 | **Mesoamerican Civilizations: Olmec Foundations & Classic Maya (-1,500 BCE -> 900 CE)** (`earth_-1500_mesoamerica`) | -1500 -> 900 | H3 Res 3/4 | **51.4%** | 48.6% | -1500 CE | 🔴 Structural Bifurcation |
+| • 24 | **Columbian Exchange & Microbial Demographic Collapse (1492 -> 1650 CE)** (`earth_+1492_columbian_contact`) | 1492 -> 1650 | H3 Res 3/4 | **51.3%** | 48.7% | 1492 CE | 🔴 Structural Bifurcation |
+| • 25 | **Middle Bronze Age Mesopotamia & Assyrian Commercial Networks (-1,900 -> -600 BCE)** (`earth_-1900_assyrian_empire`) | -1900 -> -600 | H3 Res 3/4 | **50.0%** | 50.0% | -1900 CE | 🔴 Structural Bifurcation |
+| • 26 | **Pre-Columbian Americas & Agro-Forestry Civilizations (1491 -> 1650 CE)** (`earth_+1491_americas_1491`) | 1491 -> 1650 | H3 Res 3/4 | **49.1%** | 50.9% | 1491 CE | 🔴 Structural Bifurcation |
 | • 27 | **Tokugawa Japan & Sakoku Island Autarky (1639 -> 1853 CE)** (`earth_+1639_tokugawa_japan`) | 1639 -> 1853 | H3 Res 3/4 | **47.7%** | 52.3% | 1639 CE | 🔴 Structural Bifurcation |
 | • 28 | **The Black Death & Post-Feudal Economic Inversion (1347 -> 1492 CE)** (`earth_+1347_black_death_1347`) | 1347 -> 1492 | H3 Res 3/4 | **47.5%** | 52.5% | 1347 CE | 🔴 Structural Bifurcation |
 | • 29 | **Mali Empire & Trans-Saharan Gold Trade (1324 -> 1591 CE)** (`earth_+1324_mali_empire`) | 1324 -> 1591 | H3 Res 3/4 | **47.3%** | 52.7% | 1324 CE | 🔴 Structural Bifurcation |
-| • 30 | **Ancient Egypt Early Dynastic Unification & Nile Irrigation (-3,000 -> -1,000 BCE)** (`earth_-3000_ancient_egypt`) | -3000 -> -1000 | H3 Res 3/4 | **46.7%** | 53.3% | -3000 CE | 🔴 Structural Bifurcation |
-| • 31 | **Super-Earth: Gaia Prime Superdense Biosphere (2200 -> 2300 CE)** (`super_earth_+2200_gaia_2200`) | 2200 -> 2300 | H3 Res 4 | **46.2%** | 53.8% | 2200 CE | 🔴 Structural Bifurcation |
-| • 32 | **Out of Africa: Modern Human Dispersal (-100,000 -> -20,000 BP)** (`earth_-100000_out_of_africa`) | -100000 -> -20000 | H3 Res 3/4 | **39.3%** | 60.7% | -100000 CE | 🔴 Structural Bifurcation |
-| • 33 | **World Wars, Totalitarian Crisis & Nuclear Dawn (1914 -> 1960 CE)** (`earth_+1914_world_wars_totalitarian_1914`) | 1914 -> 1960 | H3 Res 3/4 | **29.9%** | 70.1% | 1914 CE | 🔴 Structural Bifurcation |
-| • 34 | **Industrial Revolution & Coal Transition (1800 -> 1900 CE)** (`earth_+1800_industrial_1800`) | 1800 -> 1900 | H3 Res 3/4 | **26.6%** | 73.4% | 1800 CE | 🔴 Structural Bifurcation |
-| • 35 | **Moon: Shackleton Crater Polar Base (2035 -> 2085 CE)** (`moon_+2035_shackleton_2035`) | 2035 -> 2085 | H3 Res 4 | **0.0%** | 100.0% | 2035 CE | 🔴 Structural Bifurcation |
-| • 36 | **Mars: First Autonomous Colony & Biosphere Dome (2050 -> 2150 CE)** (`mars_+2050_colony_2050`) | 2050 -> 2150 | H3 Res 4 | **0.0%** | 100.0% | 2050 CE | 🔴 Structural Bifurcation |
-| • 37 | **Venus: Stratospheric Aerostat Cloud Habitats (2080 -> 2180 CE)** (`venus_+2080_cloud_cities_2080`) | 2080 -> 2180 | H3 Res 4 | **0.0%** | 100.0% | 2080 CE | 🔴 Structural Bifurcation |
-| • 38 | **Mercury: Caloris Basin Solar Forge & Metallurgy (2120 -> 2220 CE)** (`mercury_+2120_caloris_forge_2120`) | 2120 -> 2220 | H3 Res 4 | **0.0%** | 100.0% | 2120 CE | 🔴 Structural Bifurcation |
-| • 39 | **Titan: Hydrocarbon Seas & Cryo-Methane Extraction (2150 -> 2250 CE)** (`moon_+2150_cryo_methane_2150`) | 2150 -> 2250 | H3 Res 4 | **0.0%** | 100.0% | 2150 CE | 🔴 Structural Bifurcation |
-| • 40 | **Eyeball World: Tidally Locked Twilight Ring Colony (2220 -> 2320 CE)** (`eyeball_world_+2220_twilight_2220`) | 2220 -> 2320 | H3 Res 4 | **0.0%** | 100.0% | 2220 CE | 🔴 Structural Bifurcation |
-| • 41 | **Oceania: Deep Abyssal Aquapolis Federation (2100 -> 2200 CE)** (`oceania_+2100_aquapolis_2100`) | 2100 -> 2200 | H3 Res 4 | **0.0%** | 100.0% | 2100 CE | 🔴 Structural Bifurcation |
-| • 42 | **Boreas: Geothermal Subglacial Havens (2120 -> 2220 CE)** (`boreas_+2120_subglacial_2120`) | 2120 -> 2220 | H3 Res 4 | **0.0%** | 100.0% | 2120 CE | 🔴 Structural Bifurcation |
-| • 43 | **Archipelago 2055: Equatorial Floating Ocean Cities (2055 -> 2150 CE)** (`archipelago_+2055_seasteading_2055`) | 2055 -> 2150 | H3 Res 4 | **0.0%** | 100.0% | 2055 CE | 🔴 Structural Bifurcation |
-| • 44 | **Toba Supervolcano Cataclysm & Genetic Bottleneck (-74,000 -> -50,000 BP)** (`earth_-74000_toba_cataclysm_74k`) | -74000 -> -50000 | H3 Res 3/4 | **0.0%** | 130.8% | -74000 CE | 🔴 Structural Bifurcation |
-| • 45 | **Ramesses II, Pax Aegyptiaca & Monumental Builders (-1,279 -> -1,200 BCE)** (`earth_-1279_ramesses_ii`) | -1279 -> -1200 | H3 Res 3/4 | **0.0%** | 184.9% | -1279 CE | 🔴 Structural Bifurcation |
+| • 30 | **Ancient Egypt Early Dynastic Unification & Nile Irrigation (-3,000 -> -1,000 BCE)** (`earth_-3000_ancient_egypt`) | -3000 -> -1000 | H3 Res 3/4 | **47.2%** | 52.8% | -3000 CE | 🔴 Structural Bifurcation |
+| • 31 | **Song Dynasty & Hydraulic Pre-Industrialization (1000 -> 1279 CE)** (`earth_+1000_song_dynasty`) | 1000 -> 1279 | H3 Res 3/4 | **46.5%** | 53.5% | 1000 CE | 🔴 Structural Bifurcation |
+| • 32 | **Super-Earth: Gaia Prime Superdense Biosphere (2200 -> 2300 CE)** (`super_earth_+2200_gaia_2200`) | 2200 -> 2300 | H3 Res 4 | **46.2%** | 53.8% | 2200 CE | 🔴 Structural Bifurcation |
+| • 33 | **Out of Africa: Modern Human Dispersal (-100,000 -> -20,000 BP)** (`earth_-100000_out_of_africa`) | -100000 -> -20000 | H3 Res 3/4 | **39.4%** | 60.6% | -100000 CE | 🔴 Structural Bifurcation |
+| • 34 | **World Wars, Totalitarian Crisis & Nuclear Dawn (1914 -> 1960 CE)** (`earth_+1914_world_wars_totalitarian_1914`) | 1914 -> 1960 | H3 Res 3/4 | **29.9%** | 70.1% | 1914 CE | 🔴 Structural Bifurcation |
+| • 35 | **Industrial Revolution & Coal Transition (1800 -> 1900 CE)** (`earth_+1800_industrial_1800`) | 1800 -> 1900 | H3 Res 3/4 | **26.6%** | 73.4% | 1800 CE | 🔴 Structural Bifurcation |
+| • 36 | **Moon: Shackleton Crater Polar Base (2035 -> 2085 CE)** (`moon_+2035_shackleton_2035`) | 2035 -> 2085 | H3 Res 4 | **0.0%** | 100.0% | 2035 CE | 🔴 Structural Bifurcation |
+| • 37 | **Mars: First Autonomous Colony & Biosphere Dome (2050 -> 2150 CE)** (`mars_+2050_colony_2050`) | 2050 -> 2150 | H3 Res 4 | **0.0%** | 100.0% | 2050 CE | 🔴 Structural Bifurcation |
+| • 38 | **Venus: Stratospheric Aerostat Cloud Habitats (2080 -> 2180 CE)** (`venus_+2080_cloud_cities_2080`) | 2080 -> 2180 | H3 Res 4 | **0.0%** | 100.0% | 2080 CE | 🔴 Structural Bifurcation |
+| • 39 | **Mercury: Caloris Basin Solar Forge & Metallurgy (2120 -> 2220 CE)** (`mercury_+2120_caloris_forge_2120`) | 2120 -> 2220 | H3 Res 4 | **0.0%** | 100.0% | 2120 CE | 🔴 Structural Bifurcation |
+| • 40 | **Titan: Hydrocarbon Seas & Cryo-Methane Extraction (2150 -> 2250 CE)** (`moon_+2150_cryo_methane_2150`) | 2150 -> 2250 | H3 Res 4 | **0.0%** | 100.0% | 2150 CE | 🔴 Structural Bifurcation |
+| • 41 | **Eyeball World: Tidally Locked Twilight Ring Colony (2220 -> 2320 CE)** (`eyeball_world_+2220_twilight_2220`) | 2220 -> 2320 | H3 Res 4 | **0.0%** | 100.0% | 2220 CE | 🔴 Structural Bifurcation |
+| • 42 | **Oceania: Deep Abyssal Aquapolis Federation (2100 -> 2200 CE)** (`oceania_+2100_aquapolis_2100`) | 2100 -> 2200 | H3 Res 4 | **0.0%** | 100.0% | 2100 CE | 🔴 Structural Bifurcation |
+| • 43 | **Boreas: Geothermal Subglacial Havens (2120 -> 2220 CE)** (`boreas_+2120_subglacial_2120`) | 2120 -> 2220 | H3 Res 4 | **0.0%** | 100.0% | 2120 CE | 🔴 Structural Bifurcation |
+| • 44 | **Archipelago 2055: Equatorial Floating Ocean Cities (2055 -> 2150 CE)** (`archipelago_+2055_seasteading_2055`) | 2055 -> 2150 | H3 Res 4 | **0.0%** | 100.0% | 2055 CE | 🔴 Structural Bifurcation |
+| • 45 | **Toba Supervolcano Cataclysm & Genetic Bottleneck (-74,000 -> -50,000 BP)** (`earth_-74000_toba_cataclysm_74k`) | -74000 -> -50000 | H3 Res 3/4 | **0.0%** | 130.8% | -74000 CE | 🔴 Structural Bifurcation |
 
 ---
 
@@ -136,25 +136,25 @@ Every scenario is analyzed with its complete six-fold epistemic card:
 | ðŸ‘¥ Population (worldPopulation) | 233.46% | 🔴 Severe drift | 100000 BCE | 240.6% (99980 BCE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 3.11% | 🟢 Calibrated | — | 3.1% (99980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 84.11% | 🟢 Trajectory Aligned (T0 Offset) | 100000 BCE | 84.6% (100000 BCE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 84.11% | 🟢 Trajectory Aligned (T0 Offset) | 100000 BCE | 84.6% (100000 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 1.67% | 🔴 Severe drift | — | 1.8% (99980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ“– Literacy Rate (literacyRate) | 1.17% | 🔴 Severe drift | — | 2.2% (99980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 193.01% | 🟢 Trajectory Aligned (T0 Offset) | 100000 BCE | 257.5% (99980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 192.25% | 🟢 Trajectory Aligned (T0 Offset) | 100000 BCE | 257.5% (99980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.00% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.0% (99980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 216.42 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 71852.941 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 472.00 | 472.00 ± 0.00 | [472.00 ; 472.00] | 472.00 [472.00 - 472.00] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 0.01 | 0.05 ± 0.00 | [0.05 ; 0.05] | 0.05 [0.05 - 0.05] | 79.168 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 100.00 | 96.89 ± 0.00 | [96.89 ; 96.89] | 96.89 [96.89 - 96.89] | 3499.184 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 263.978 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 0.00 | 1.67 ± 0.08 | [1.64 ; 1.71] | 1.70 [1.61 - 1.74] | 29.208 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 0.00 | 1.17 ± 0.80 | [0.83 ; 1.51] | 1.30 [0.46 - 1.87] | 2.065 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 5.00 | 14.65 ± 2.77 | [13.46 ; 15.84] | 15.47 [12.63 - 16.98] | 4.918 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 1.00 | 1.00 ± 0.00 | [1.00 ; 1.00] | 1.00 [1.00 - 1.00] | 0.000 | ns |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 216.42 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 67212.271 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 472.00 | 472.00 ± 0.00 | [472.00 ; 472.00] | 472.00 [472.00 - 472.00] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 0.01 | 0.05 ± 0.00 | [0.05 ; 0.05] | 0.05 [0.05 - 0.05] | 74.158 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 100.00 | 96.89 ± 0.00 | [96.89 ; 96.89] | 96.89 [96.89 - 96.89] | 3277.612 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 249.764 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.00 | 1.67 ± 0.09 | [1.62 ; 1.72] | 1.70 [1.59 - 1.74] | 27.518 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 0.00 | 1.17 ± 0.84 | [0.67 ; 1.67] | 1.30 [0.27 - 1.96] | 1.968 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 5.00 | 14.61 ± 2.93 | [12.88 ; 16.34] | 15.47 [11.80 - 17.20] | 4.639 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 1.00 | 1.00 ± 0.00 | [1.00 ; 1.00] | 1.00 [1.00 - 1.00] | 0.000 | ns |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -287,28 +287,28 @@ public void calibrate_earth__74000_toba_cataclysm_74k() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 7.32% | 🟢 Calibrated | — | 7.3% (49980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (50000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 93.91% | 🔴 Severe drift | 50000 BCE | 94.0% (49996 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 93.90% | 🔴 Severe drift | 50000 BCE | 94.0% (49996 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 0.28% | 🟢 Calibrated | — | 0.3% (49980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
 | âš¡ Primary Energy (primaryEnergy) | 94.31% | 🟢 Trajectory Aligned (T0 Offset) | 50000 BCE | 94.5% (49996 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 1.67% | 🔴 Severe drift | — | 1.8% (49980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 1.13% | 🔴 Severe drift | — | 2.1% (49980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 142.35% | 🟢 Trajectory Aligned (T0 Offset) | 50000 BCE | 193.8% (49980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 1.12% | 🔴 Severe drift | — | 2.1% (49980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 141.33% | 🟢 Trajectory Aligned (T0 Offset) | 50000 BCE | 193.3% (49980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.47% | 🟡 Moderate Trend Alignment | — | 0.5% (49980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 205.00 | 220.00 ± 0.00 | [220.00 ; 220.00] | 220.00 [220.00 - 220.00] | 13294.610 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 465.00 | 465.00 ± 0.00 | [465.00 ; 465.00] | 465.00 [465.00 - 465.00] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 0.50 | 0.03 ± 0.00 | [0.03 ; 0.03] | 0.03 [0.03 - 0.03] | 1675.762 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 95.00 | 94.73 ± 0.00 | [94.73 ; 94.73] | 94.73 [94.73 - 94.73] | 149.808 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.01 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 871.871 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 0.00 | 1.67 ± 0.08 | [1.64 ; 1.70] | 1.70 [1.61 - 1.73] | 29.890 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 0.00 | 1.13 ± 0.77 | [0.80 ; 1.46] | 1.26 [0.45 - 1.81] | 2.077 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 6.00 | 14.54 ± 2.70 | [13.39 ; 15.70] | 15.36 [12.58 - 16.81] | 4.476 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 1.00 | 1.00 ± 0.00 | [1.00 ; 1.00] | 1.00 [1.00 - 1.00] | 4722.334 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 205.00 | 220.00 ± 0.00 | [220.00 ; 220.00] | 220.00 [220.00 - 220.00] | 12435.969 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 465.00 | 465.00 ± 0.00 | [465.00 ; 465.00] | 465.00 [465.00 - 465.00] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 0.50 | 0.03 ± 0.00 | [0.03 ; 0.03] | 0.03 [0.03 - 0.03] | 1613.007 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 95.00 | 94.73 ± 0.00 | [94.73 ; 94.73] | 94.73 [94.73 - 94.73] | 141.748 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.01 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 843.600 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.00 | 1.67 ± 0.08 | [1.62 ; 1.72] | 1.70 [1.59 - 1.74] | 28.297 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 0.00 | 1.12 ± 0.80 | [0.65 ; 1.59] | 1.25 [0.26 - 1.87] | 1.977 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 6.00 | 14.48 ± 2.84 | [12.80 ; 16.16] | 15.33 [11.75 - 16.98] | 4.224 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 1.00 | 1.00 ± 0.00 | [1.00 ; 1.00] | 1.00 [1.00 - 1.00] | 4417.339 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -370,22 +370,22 @@ public void calibrate_earth__50000_sahul() {
 | âš¡ Primary Energy (primaryEnergy) | 98.93% | 🟢 Trajectory Aligned (T0 Offset) | 25000 BCE | 99.0% (24996 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 1.66% | 🔴 Severe drift | — | 1.7% (24980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ“– Literacy Rate (literacyRate) | 1.04% | 🔴 Severe drift | — | 2.0% (24980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 108.14% | 🟢 Trajectory Aligned (T0 Offset) | 24997 BCE | 151.4% (24980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 107.67% | 🟢 Trajectory Aligned (T0 Offset) | 24996 BCE | 151.4% (24980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 1.28% | 🟡 Moderate Trend Alignment | — | 1.3% (24980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 190.93 | 205.00 ± 0.00 | [205.00 ; 205.00] | 205.00 [205.00 - 205.00] | 9112.055 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 451.48 | 451.48 ± 0.01 | [451.48 ; 451.48] | 451.48 [451.47 - 451.49] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 1.50 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 4955.177 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 72.89 | 69.25 ± 0.01 | [69.24 ; 69.25] | 69.25 [69.24 - 69.26] | 300.420 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.02 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 3395.441 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 0.00 | 1.66 ± 0.08 | [1.63 ; 1.69] | 1.69 [1.60 - 1.73] | 30.839 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 0.00 | 1.04 ± 0.71 | [0.73 ; 1.34] | 1.16 [0.40 - 1.67] | 2.054 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 6.86 | 14.28 ± 2.57 | [13.18 ; 15.38] | 15.05 [12.37 - 16.46] | 4.075 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.99 | 1.00 ± 0.00 | [1.00 ; 1.00] | 1.00 [1.00 - 1.00] | 6799.972 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 190.93 | 205.00 ± 0.00 | [205.00 ; 205.00] | 205.00 [205.00 - 205.00] | 8523.547 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 451.48 | 451.48 ± 0.01 | [451.48 ; 451.49] | 451.48 [451.47 - 451.49] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 1.50 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 4665.101 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 72.89 | 69.25 ± 0.01 | [69.24 ; 69.26] | 69.25 [69.24 - 69.26] | 281.175 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.02 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 3215.317 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.00 | 1.66 ± 0.08 | [1.61 ; 1.71] | 1.69 [1.58 - 1.73] | 29.078 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 0.00 | 1.04 ± 0.75 | [0.60 ; 1.48] | 1.16 [0.22 - 1.74] | 1.962 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 6.86 | 14.25 ± 2.71 | [12.64 ; 15.85] | 15.05 [11.59 - 16.65] | 3.851 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.99 | 1.00 ± 0.00 | [1.00 ; 1.00] | 1.00 [1.00 - 1.00] | 6360.791 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -441,28 +441,28 @@ public void calibrate_earth__25000_beringia() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 0.00% | 🟢 Calibrated | — | 0.0% (19980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (20000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 1.30% | 🟢 Calibrated | — | 3.2% (19980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 1.32% | 🟢 Calibrated | — | 3.2% (19980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 10.35% | 🟡 Moderate drift | — | 10.4% (19980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 7.34% | 🟢 Trajectory Aligned (T0 Offset) | — | 11.4% (19997 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 1.70% | 🔴 Severe drift | — | 1.8% (19980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 7.28% | 🟢 Trajectory Aligned (T0 Offset) | — | 11.3% (19996 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 1.69% | 🔴 Severe drift | — | 1.8% (19980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ“– Literacy Rate (literacyRate) | 1.51% | 🔴 Severe drift | — | 2.9% (19980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 121.71% | 🟢 Trajectory Aligned (T0 Offset) | 19997 BCE | 178.1% (19980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 121.05% | 🟢 Trajectory Aligned (T0 Offset) | 19996 BCE | 178.1% (19980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 1.50% | 🟡 Moderate Trend Alignment | — | 1.5% (19980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 190.00 | 190.00 ± 0.00 | [190.00 ; 190.00] | 190.00 [190.00 - 190.00] | 1.504 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 460.02 | 460.02 ± 0.01 | [460.02 ; 460.03] | 460.02 [460.01 - 460.03] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 1.80 | 1.81 ± 0.03 | [1.79 ; 1.82] | 1.80 [1.78 - 1.83] | 0.277 | * (p < 0.05) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 62.48 | 56.01 ± 0.05 | [55.99 ; 56.03] | 56.02 [55.97 - 56.05] | 185.919 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.02 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 3.103 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 0.00 | 1.70 ± 0.09 | [1.66 ; 1.74] | 1.73 [1.63 - 1.77] | 25.352 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 0.00 | 1.51 ± 1.05 | [1.06 ; 1.96] | 1.65 [0.57 - 2.44] | 2.039 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 7.00 | 15.52 ± 3.32 | [14.10 ; 16.94] | 16.43 [13.05 - 18.33] | 3.633 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.99 | 1.00 ± 0.00 | [1.00 ; 1.00] | 1.00 [1.00 - 1.00] | 7207.093 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 190.00 | 190.00 ± 0.00 | [190.00 ; 190.00] | 190.00 [190.00 - 190.00] | 1.438 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 460.02 | 460.02 ± 0.01 | [460.01 ; 460.03] | 460.02 [460.01 - 460.03] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 1.80 | 1.81 ± 0.03 | [1.79 ; 1.82] | 1.80 [1.78 - 1.83] | 0.314 | * (p < 0.05) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 62.48 | 56.01 ± 0.05 | [55.98 ; 56.04] | 56.02 [55.96 - 56.05] | 176.666 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.02 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 2.947 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.00 | 1.69 ± 0.10 | [1.63 ; 1.75] | 1.73 [1.60 - 1.78] | 23.851 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 0.00 | 1.51 ± 1.10 | [0.86 ; 2.16] | 1.65 [0.34 - 2.56] | 1.941 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 7.00 | 15.47 ± 3.51 | [13.40 ; 17.55] | 16.43 [12.13 - 18.60] | 3.415 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.99 | 1.00 ± 0.00 | [1.00 ; 1.00] | 1.00 [1.00 - 1.00] | 6741.618 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -522,24 +522,24 @@ public void calibrate_earth__20000_lgm_solutrean() {
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 75.45% | 🔴 Severe drift | 10900 BCE | 75.7% (10880 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
 | âš¡ Primary Energy (primaryEnergy) | 98.49% | 🟢 Trajectory Aligned (T0 Offset) | 10900 BCE | 98.5% (10896 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 1.66% | 🔴 Severe drift | — | 1.7% (10880 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 1.65% | 🔴 Severe drift | — | 1.7% (10880 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ“– Literacy Rate (literacyRate) | 0.95% | 🔴 Severe drift | — | 1.8% (10880 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 95.59% | 🟢 Trajectory Aligned (T0 Offset) | 10896 BCE | 135.4% (10880 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 95.22% | 🟢 Trajectory Aligned (T0 Offset) | 10896 BCE | 135.4% (10880 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 1.99% | 🟡 Moderate Trend Alignment | — | 2.0% (10880 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 257.24 | 245.00 ± 0.00 | [245.00 ; 245.00] | 245.00 [245.00 - 245.00] | 622.261 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 523.69 | 523.69 ± 0.02 | [523.69 ; 523.70] | 523.69 [523.68 - 523.71] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 3.67 | 0.06 ± 0.00 | [0.06 ; 0.06] | 0.06 [0.06 - 0.06] | 2142.660 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 22.31 | 39.14 ± 0.01 | [39.14 ; 39.15] | 39.14 [39.13 - 39.15] | 911.338 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.05 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 2227.795 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 0.00 | 1.66 ± 0.07 | [1.62 ; 1.69] | 1.68 [1.60 - 1.72] | 31.985 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 0.00 | 0.95 ± 0.66 | [0.66 ; 1.23] | 1.05 [0.35 - 1.53] | 2.029 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 7.17 | 14.02 ± 2.45 | [12.97 ; 15.06] | 14.73 [12.17 - 16.09] | 3.961 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.98 | 1.00 ± 0.00 | [1.00 ; 1.00] | 1.00 [1.00 - 1.00] | 7942.925 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 257.24 | 245.00 ± 0.00 | [245.00 ; 245.00] | 245.00 [245.00 - 245.00] | 582.072 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 523.69 | 523.69 ± 0.02 | [523.68 ; 523.70] | 523.69 [523.68 - 523.71] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 3.67 | 0.06 ± 0.00 | [0.06 ; 0.06] | 0.06 [0.06 - 0.06] | 2010.313 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 22.31 | 39.14 ± 0.01 | [39.13 ; 39.15] | 39.14 [39.13 - 39.15] | 852.867 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.05 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 2102.305 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.00 | 1.65 ± 0.08 | [1.61 ; 1.70] | 1.68 [1.58 - 1.72] | 30.169 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 0.00 | 0.95 ± 0.69 | [0.54 ; 1.35] | 1.05 [0.19 - 1.60] | 1.943 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 7.17 | 13.99 ± 2.57 | [12.47 ; 15.51] | 14.73 [11.43 - 16.28] | 3.751 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.98 | 1.00 ± 0.00 | [1.00 ; 1.00] | 1.00 [1.00 - 1.00] | 7429.926 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -595,28 +595,28 @@ public void calibrate_earth__10900_younger_dryas() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 0.91% | 🟢 Calibrated | — | 0.9% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (8000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 96.38% | 🔴 Severe drift | 8000 BCE | 96.4% (7995 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 96.37% | 🔴 Severe drift | 8000 BCE | 96.4% (7996 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 0.98% | 🟢 Calibrated | — | 1.0% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
 | âš¡ Primary Energy (primaryEnergy) | 96.65% | 🟢 Trajectory Aligned (T0 Offset) | 8000 BCE | 96.8% (8000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 1.65% | 🔴 Severe drift | — | 1.7% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ“– Literacy Rate (literacyRate) | 0.84% | 🔴 Severe drift | — | 1.8% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 81.43% | 🟢 Trajectory Aligned (T0 Offset) | 7995 BCE | 122.5% (7980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 81.32% | 🟢 Trajectory Aligned (T0 Offset) | 7994 BCE | 122.5% (7980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 2.11% | 🟢 Trajectory Aligned (T0 Offset) | — | 2.1% (7980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 262.38 | 260.00 ± 0.00 | [260.00 ; 260.00] | 260.00 [260.00 - 260.00] | 619.468 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 514.94 | 514.94 ± 0.04 | [514.93 ; 514.96] | 514.94 [514.91 - 514.97] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 5.01 | 0.18 ± 0.00 | [0.18 ; 0.18] | 0.18 [0.18 - 0.18] | 1672.278 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 18.39 | 18.21 ± 0.01 | [18.21 ; 18.21] | 18.21 [18.21 - 18.22] | 34.372 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.06 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 1209.521 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 0.00 | 1.65 ± 0.08 | [1.61 ; 1.68] | 1.67 [1.58 - 1.72] | 30.216 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 0.00 | 0.84 ± 0.65 | [0.56 ; 1.12] | 0.89 [0.17 - 1.42] | 1.819 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 7.50 | 13.61 ± 2.48 | [12.55 ; 14.68] | 14.20 [11.33 - 15.80] | 3.478 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.98 | 0.96 ± 0.00 | [0.96 ; 0.96] | 0.96 [0.96 - 0.96] | 214.367 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 262.38 | 260.00 ± 0.00 | [260.00 ; 260.00] | 260.00 [260.00 - 260.00] | 579.459 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 514.94 | 514.94 ± 0.04 | [514.92 ; 514.97] | 514.94 [514.91 - 514.98] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 5.01 | 0.18 ± 0.00 | [0.18 ; 0.18] | 0.18 [0.18 - 0.18] | 1576.090 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 18.39 | 18.21 ± 0.01 | [18.21 ; 18.21] | 18.21 [18.21 - 18.22] | 32.152 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.06 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 1137.848 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.00 | 1.65 ± 0.08 | [1.60 ; 1.69] | 1.67 [1.56 - 1.72] | 28.757 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 0.00 | 0.84 ± 0.68 | [0.44 ; 1.24] | 0.89 [0.02 - 1.50] | 1.738 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 7.50 | 13.60 ± 2.59 | [12.07 ; 15.14] | 14.20 [10.53 - 16.02] | 3.328 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.98 | 0.96 ± 0.00 | [0.96 ; 0.96] | 0.96 [0.96 - 0.96] | 200.522 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -675,25 +675,25 @@ public void calibrate_earth__8000_fertile_crescent() {
 | ðŸ‘¥ Population (worldPopulation) | 98.75% | 🔴 Severe drift | 6000 BCE | 98.8% (5996 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 1.75% | 🟢 Calibrated | — | 1.8% (5980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 98.95% | 🟢 Trajectory Aligned (T0 Offset) | 6000 BCE | 99.0% (5997 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 98.95% | 🟢 Trajectory Aligned (T0 Offset) | 6000 BCE | 99.0% (5996 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 1.67% | 🔴 Severe drift | — | 1.7% (5980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ“– Literacy Rate (literacyRate) | 1.07% | 🔴 Severe drift | — | 2.0% (5980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 19.32% | 🟡 Moderate Trend Alignment | — | 31.6% (5980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 19.80% | 🟡 Moderate Trend Alignment | — | 31.6% (5980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 5.86% | 🟢 Trajectory Aligned (T0 Offset) | — | 5.9% (5980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 264.01 | 265.00 ± 0.00 | [265.00 ; 265.00] | 265.00 [265.00 - 265.00] | 257.159 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 501.37 | 501.37 ± 0.04 | [501.35 ; 501.39] | 501.37 [501.34 - 501.41] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 6.09 | 0.08 ± 0.00 | [0.08 ; 0.08] | 0.08 [0.08 - 0.08] | 1910.333 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 16.72 | 16.43 ± 0.01 | [16.43 ; 16.43] | 16.43 [16.43 - 16.44] | 55.739 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.08 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 1155.503 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 0.00 | 1.67 ± 0.07 | [1.64 ; 1.70] | 1.69 [1.62 - 1.73] | 32.668 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 0.00 | 1.07 ± 0.69 | [0.78 ; 1.37] | 1.21 [0.50 - 1.67] | 2.195 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 13.01 | 14.42 ± 2.47 | [13.37 ; 15.48] | 15.21 [12.78 - 16.47] | 0.810 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.97 | 0.91 ± 0.00 | [0.91 ; 0.91] | 0.91 [0.91 - 0.91] | 581.433 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 264.01 | 265.00 ± 0.00 | [265.00 ; 265.00] | 265.00 [265.00 - 265.00] | 240.550 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 501.37 | 501.37 ± 0.05 | [501.35 ; 501.40] | 501.37 [501.33 - 501.42] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 6.09 | 0.08 ± 0.00 | [0.08 ; 0.08] | 0.08 [0.08 - 0.08] | 1788.740 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 16.72 | 16.43 ± 0.01 | [16.43 ; 16.44] | 16.43 [16.43 - 16.44] | 52.139 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.08 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 1082.021 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.00 | 1.67 ± 0.08 | [1.62 ; 1.71] | 1.69 [1.59 - 1.73] | 30.692 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 0.00 | 1.07 ± 0.73 | [0.64 ; 1.49] | 1.21 [0.32 - 1.74] | 2.074 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 13.01 | 14.38 ± 2.62 | [12.83 ; 15.93] | 15.21 [12.06 - 16.64] | 0.740 | ** (p < 0.01) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.97 | 0.91 ± 0.00 | [0.91 ; 0.91] | 0.91 [0.91 - 0.91] | 543.881 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -749,28 +749,28 @@ public void calibrate_earth__6000_green_sahara() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 2.50% | 🟢 Calibrated | — | 2.5% (3000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (3000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 89.22% | 🔴 Severe drift | 3000 BCE | 89.4% (2996 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 89.21% | 🔴 Severe drift | 3000 BCE | 89.4% (2996 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 5.77% | 🟢 Calibrated | — | 5.8% (2980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 92.33% | 🟢 Trajectory Aligned (T0 Offset) | 3000 BCE | 92.8% (2998 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 32.91% | 🟢 Trajectory Aligned (T0 Offset) | — | 35.9% (2980 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 37.48% | 🟢 Trajectory Aligned (T0 Offset) | 2987 BCE | 66.3% (2980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 209.02% | 🟡 Moderate Trend Alignment | 2999 BCE | 255.5% (2989 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 92.31% | 🟢 Trajectory Aligned (T0 Offset) | 3000 BCE | 92.8% (2998 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 32.88% | 🟢 Trajectory Aligned (T0 Offset) | — | 35.9% (2980 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 37.38% | 🟢 Trajectory Aligned (T0 Offset) | 2986 BCE | 66.3% (2980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 204.58% | 🟡 Moderate Trend Alignment | 2998 BCE | 255.4% (2988 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 10.78% | 🟢 Trajectory Aligned (T0 Offset) | — | 10.8% (2980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 268.29 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 913.919 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 484.95 | 484.95 ± 0.03 | [484.94 ; 484.96] | 484.95 [484.92 - 484.97] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 14.06 | 1.52 ± 0.03 | [1.50 ; 1.53] | 1.51 [1.49 - 1.54] | 379.720 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 14.60 | 13.76 ± 0.01 | [13.76 ; 13.76] | 13.76 [13.76 - 13.77] | 177.354 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.23 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 253.161 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 0.10 | 1.75 ± 0.10 | [1.70 ; 1.79] | 1.76 [1.69 - 1.82] | 22.563 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 0.20 | 2.05 ± 1.18 | [1.54 ; 2.55] | 2.31 [1.11 - 3.07] | 2.210 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 28.13 | 86.93 ± 21.01 | [77.94 ; 95.91] | 98.94 [83.19 - 100.00] | 3.957 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.95 | 0.85 ± 0.00 | [0.85 ; 0.85] | 0.85 [0.85 - 0.85] | 996.674 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 268.29 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 854.894 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 484.95 | 484.95 ± 0.03 | [484.93 ; 484.97] | 484.95 [484.92 - 484.98] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 14.06 | 1.52 ± 0.03 | [1.50 ; 1.53] | 1.51 [1.49 - 1.54] | 356.913 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 14.60 | 13.76 ± 0.01 | [13.76 ; 13.77] | 13.76 [13.76 - 13.77] | 165.899 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.23 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 233.740 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.10 | 1.75 ± 0.11 | [1.68 ; 1.81] | 1.76 [1.66 - 1.84] | 20.883 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 0.20 | 2.04 ± 1.25 | [1.30 ; 2.77] | 2.31 [0.84 - 3.18] | 2.080 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 28.13 | 85.68 ± 23.54 | [71.77 ; 99.59] | 98.94 [72.93 - 100.00] | 3.457 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.95 | 0.85 ± 0.00 | [0.85 ; 0.85] | 0.85 [0.85 - 0.85] | 932.303 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -830,24 +830,24 @@ public void calibrate_earth__3000_ancient_egypt() {
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 9.27% | 🟢 Calibrated | — | 9.3% (1880 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
 | âš¡ Primary Energy (primaryEnergy) | 98.06% | 🟢 Trajectory Aligned (T0 Offset) | 1900 BCE | 98.1% (1898 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 25.04% | 🟢 Trajectory Aligned (T0 Offset) | — | 27.0% (1880 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 27.81% | 🟢 Trajectory Aligned (T0 Offset) | 1880 BCE | 50.8% (1880 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 182.47% | 🟡 Moderate Trend Alignment | 1898 BCE | 218.1% (1893 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 25.01% | 🟢 Trajectory Aligned (T0 Offset) | — | 27.0% (1880 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 28.06% | 🟢 Trajectory Aligned (T0 Offset) | 1880 BCE | 50.8% (1880 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 178.72% | 🟡 Moderate Trend Alignment | 1898 BCE | 218.1% (1892 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11.25% | 🟢 Trajectory Aligned (T0 Offset) | — | 11.2% (1900 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 269.74 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 1461.870 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 479.45 | 479.45 ± 0.03 | [479.44 ; 479.46] | 479.45 [479.42 - 479.47] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 28.79 | 0.61 ± 0.01 | [0.60 ; 0.61] | 0.60 [0.60 - 0.61] | 399.174 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 14.09 | 12.78 ± 0.01 | [12.78 ; 12.79] | 12.78 [12.78 - 12.79] | 318.929 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.36 | 0.01 ± 0.00 | [0.01 ; 0.01] | 0.01 [0.01 - 0.01] | 578.513 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 0.48 | 1.73 ± 0.08 | [1.70 ; 1.76] | 1.75 [1.69 - 1.79] | 21.892 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 0.59 | 1.88 ± 1.00 | [1.45 ; 2.31] | 2.09 [1.13 - 2.73] | 1.810 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 31.44 | 88.71 ± 20.89 | [79.78 ; 97.64] | 100.00 [87.90 - 100.00] | 3.877 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.93 | 0.82 ± 0.00 | [0.82 ; 0.82] | 0.82 [0.82 - 0.82] | 672.335 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 269.74 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 1367.455 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 479.45 | 479.45 ± 0.03 | [479.43 ; 479.47] | 479.45 [479.42 - 479.48] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 28.79 | 0.61 ± 0.01 | [0.60 ; 0.61] | 0.60 [0.60 - 0.61] | 373.443 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 14.09 | 12.78 ± 0.01 | [12.78 ; 12.79] | 12.78 [12.78 - 12.79] | 298.331 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.36 | 0.01 ± 0.00 | [0.01 ; 0.01] | 0.01 [0.01 - 0.01] | 541.207 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.48 | 1.73 ± 0.09 | [1.68 ; 1.78] | 1.75 [1.67 - 1.80] | 20.199 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 0.59 | 1.86 ± 1.07 | [1.23 ; 2.49] | 2.09 [0.90 - 2.83] | 1.677 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 31.44 | 87.43 ± 23.59 | [73.49 ; 101.37] | 100.00 [76.87 - 100.00] | 3.356 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.93 | 0.82 ± 0.00 | [0.82 ; 0.82] | 0.82 [0.82 - 0.82] | 628.912 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -903,28 +903,28 @@ public void calibrate_earth__1900_assyrian_empire() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 1.86% | 🟢 Calibrated | — | 1.9% (1500 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1500 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 91.47% | 🔴 Severe drift | 1500 BCE | 91.6% (1497 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 91.47% | 🔴 Severe drift | 1500 BCE | 91.6% (1496 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11.30% | 🟡 Moderate drift | — | 11.4% (1480 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 91.08% | 🟢 Trajectory Aligned (T0 Offset) | 1500 BCE | 91.9% (1499 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 91.05% | 🟢 Trajectory Aligned (T0 Offset) | 1500 BCE | 91.9% (1500 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 22.44% | 🟢 Trajectory Aligned (T0 Offset) | — | 26.6% (1480 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ“– Literacy Rate (literacyRate) | 35.36% | 🟢 Trajectory Aligned (T0 Offset) | 1486 BCE | 61.2% (1480 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 172.36% | 🟡 Moderate Trend Alignment | 1498 BCE | 213.2% (1486 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 172.70% | 🟡 Moderate Trend Alignment | 1498 BCE | 213.2% (1490 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11.07% | 🟢 Trajectory Aligned (T0 Offset) | — | 11.1% (1500 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 269.97 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 3683.732 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 477.45 | 477.45 ± 0.03 | [477.44 ; 477.46] | 477.45 [477.42 - 477.47] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 35.76 | 3.05 ± 0.07 | [3.02 ; 3.08] | 3.03 [2.99 - 3.10] | 323.189 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 14.01 | 12.43 ± 0.01 | [12.43 ; 12.43] | 12.43 [12.42 - 12.43] | 402.843 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.41 | 0.04 ± 0.00 | [0.03 ; 0.04] | 0.04 [0.03 - 0.04] | 138.314 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 0.68 | 1.81 ± 0.12 | [1.76 ; 1.86] | 1.80 [1.73 - 1.88] | 13.572 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 0.83 | 2.53 ± 1.14 | [2.04 ; 3.02] | 2.83 [1.72 - 3.45] | 2.112 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 31.93 | 86.81 ± 20.26 | [78.14 ; 95.47] | 95.65 [87.16 - 100.00] | 3.830 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.92 | 0.81 ± 0.00 | [0.81 ; 0.81] | 0.81 [0.81 - 0.81] | 626.456 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 269.97 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 3445.806 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 477.45 | 477.45 ± 0.03 | [477.43 ; 477.47] | 477.45 [477.42 - 477.48] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 35.76 | 3.05 ± 0.07 | [3.01 ; 3.09] | 3.03 [2.99 - 3.11] | 302.914 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 14.01 | 12.43 ± 0.01 | [12.42 ; 12.43] | 12.43 [12.42 - 12.43] | 376.825 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.41 | 0.04 ± 0.00 | [0.03 ; 0.04] | 0.04 [0.03 - 0.04] | 127.616 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.68 | 1.81 ± 0.13 | [1.73 ; 1.88] | 1.80 [1.71 - 1.91] | 12.435 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 0.83 | 2.51 ± 1.21 | [1.79 ; 3.23] | 2.83 [1.44 - 3.57] | 1.950 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 31.93 | 86.77 ± 23.31 | [73.00 ; 100.55] | 100.00 [77.23 - 100.00] | 3.328 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.92 | 0.81 ± 0.00 | [0.81 ; 0.81] | 0.81 [0.81 - 0.82] | 585.996 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -978,30 +978,30 @@ public void calibrate_earth__1500_mesoamerica() {
 
 | Metric Indicator | MAPE (%) | Calibration Status | T_div (Onset) | Peak Discrepancy | Temporal Trajectory | Suspect Engine |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 1.83% | 🟢 Calibrated | — | 1.9% (995 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 1.85% | 🟢 Calibrated | — | 1.9% (1259 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1279 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 90.84% | 🔴 Severe drift | 1279 BCE | 97.3% (1279 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 14.10% | 🟡 Moderate drift | — | 15.3% (778 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 91.30% | 🔴 Severe drift | 1279 BCE | 91.5% (1277 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 12.64% | 🟡 Moderate drift | — | 12.7% (1259 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 57.08% | 🟡 Moderate Trend Alignment | 1279 BCE | 97.3% (1279 BCE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 528.32% | 🟢 Trajectory Aligned (T0 Offset) | 1218 BCE | 848.3% (791 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 881.61% | 🟢 Trajectory Aligned (T0 Offset) | 1259 BCE | 1572.7% (791 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 79.95% | 🔴 Severe drift | 1259 BCE | 194.5% (1239 BCE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 10.64% | 🟢 Trajectory Aligned (T0 Offset) | — | 11.0% (1279 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 90.14% | 🟢 Trajectory Aligned (T0 Offset) | 1279 BCE | 91.3% (1279 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 20.41% | 🟢 Trajectory Aligned (T0 Offset) | — | 24.9% (1259 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 34.61% | 🟢 Trajectory Aligned (T0 Offset) | 1263 BCE | 59.2% (1259 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 172.25% | 🟡 Moderate Trend Alignment | 1277 BCE | 212.8% (1259 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 10.95% | 🟢 Trajectory Aligned (T0 Offset) | — | 11.0% (1279 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 26 | 270.08 | 275.01 ± 0.01 | [275.00 ; 275.01] | 275.00 [275.00 - 275.01] | 52.459 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 26 | 475.13 | 475.13 ± 0.77 | [474.83 ; 475.42] | 475.17 [474.47 - 475.78] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 26 | 50.74 | 5.09 ± 4.04 | [3.54 ; 6.64] | 3.79 [1.83 - 7.49] | 7.379 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 26 | 13.99 | 12.01 ± 0.14 | [11.96 ; 12.07] | 12.02 [11.90 - 12.13] | 19.880 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 26 | 0.52 | 0.35 ± 0.34 | [0.22 ; 0.48] | 0.25 [0.07 - 0.57] | 0.670 | ** (p < 0.01) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 26 | 1.01 | 27.42 ± 14.26 | [21.95 ; 32.90] | 32.04 [17.66 - 39.68] | 2.620 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 26 | 1.44 | 45.48 ± 29.21 | [34.25 ; 56.71] | 54.77 [14.50 - 72.64] | 2.132 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 26 | 30.70 | 40.13 ± 29.42 | [28.82 ; 51.44] | 37.50 [20.72 - 60.50] | 0.453 | * (p < 0.05) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 26 | 0.90 | 0.80 ± 0.00 | [0.80 ; 0.81] | 0.80 [0.80 - 0.81] | 19.270 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 270.00 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 1222355.161 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 476.34 | 476.34 ± 0.03 | [476.32 ; 476.36] | 476.34 [476.31 - 476.37] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 41.00 | 3.57 ± 0.09 | [3.52 ; 3.62] | 3.55 [3.49 - 3.65] | 262.750 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 14.00 | 12.23 ± 0.01 | [12.23 ; 12.23] | 12.23 [12.23 - 12.24] | 423.873 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.44 | 0.04 ± 0.01 | [0.04 ; 0.05] | 0.04 [0.04 - 0.05] | 102.385 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 0.81 | 1.83 ± 0.13 | [1.75 ; 1.91] | 1.81 [1.73 - 1.93] | 10.798 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 1.01 | 2.65 ± 1.17 | [1.95 ; 3.34] | 2.97 [1.64 - 3.67] | 1.973 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 31.99 | 86.77 ± 23.31 | [72.99 ; 100.54] | 100.00 [77.21 - 100.00] | 3.324 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.91 | 0.81 ± 0.00 | [0.81 ; 0.81] | 0.81 [0.81 - 0.81] | 569.985 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -1134,28 +1134,28 @@ public void calibrate_earth__1200_bronze_age_collapse_1200bc() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 2.96% | 🟢 Calibrated | — | 3.0% (1000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 59.22% | 🔴 Severe drift | 1000 BCE | 60.3% (997 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 59.19% | 🔴 Severe drift | 1000 BCE | 60.3% (998 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 14.41% | 🟡 Moderate drift | — | 14.5% (980 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 46.16% | 🟢 Trajectory Aligned (T0 Offset) | 1000 BCE | 56.0% (1000 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 18.71% | 🟢 Trajectory Aligned (T0 Offset) | — | 27.7% (980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 33.74% | 🟢 Trajectory Aligned (T0 Offset) | 984 BCE | 56.8% (980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 195.45% | 🔴 Severe drift | 999 BCE | 233.3% (992 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 45.90% | 🟢 Trajectory Aligned (T0 Offset) | 1000 BCE | 56.0% (1000 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 18.79% | 🟢 Trajectory Aligned (T0 Offset) | — | 27.7% (980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 34.04% | 🟢 Trajectory Aligned (T0 Offset) | 984 BCE | 56.8% (980 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 191.15% | 🔴 Severe drift | 998 BCE | 233.3% (992 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 10.63% | 🟢 Trajectory Aligned (T0 Offset) | — | 10.6% (1000 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 270.00 | 278.00 ± 0.00 | [278.00 ; 278.00] | 278.00 [278.00 - 278.00] | 8902.998 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 474.95 | 474.95 ± 0.03 | [474.94 ; 474.96] | 474.95 [474.93 - 474.98] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 50.43 | 20.57 ± 0.63 | [20.30 ; 20.84] | 20.41 [19.98 - 21.03] | 61.158 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 14.00 | 11.98 ± 0.01 | [11.98 ; 11.98] | 11.98 [11.98 - 11.99] | 516.185 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 0.50 | 0.27 ± 0.05 | [0.25 ; 0.29] | 0.24 [0.23 - 0.31] | 6.259 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 1.01 | 1.95 ± 0.22 | [1.85 ; 2.04] | 1.89 [1.78 - 2.09] | 6.005 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 1.52 | 3.04 ± 1.18 | [2.54 ; 3.54] | 3.36 [2.31 - 4.00] | 1.833 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 30.00 | 88.64 ± 20.64 | [79.81 ; 97.47] | 100.00 [86.83 - 100.00] | 4.017 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.90 | 0.80 ± 0.00 | [0.80 ; 0.80] | 0.80 [0.80 - 0.80] | 470.716 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 270.00 | 278.00 ± 0.00 | [278.00 ; 278.00] | 278.00 [278.00 - 278.00] | 8309.370 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 474.95 | 474.95 ± 0.03 | [474.93 ; 474.97] | 474.95 [474.92 - 474.98] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 50.43 | 20.58 ± 0.67 | [20.19 ; 20.98] | 20.41 [19.96 - 21.17] | 57.451 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 14.00 | 11.98 ± 0.01 | [11.98 ; 11.99] | 11.98 [11.98 - 11.99] | 482.843 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 0.50 | 0.27 ± 0.06 | [0.24 ; 0.31] | 0.24 [0.23 - 0.33] | 5.851 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 1.01 | 1.95 ± 0.24 | [1.81 ; 2.09] | 1.89 [1.76 - 2.14] | 5.540 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 1.52 | 3.01 ± 1.26 | [2.26 ; 3.76] | 3.36 [1.99 - 4.09] | 1.673 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 30.00 | 87.35 ± 23.29 | [73.59 ; 101.12] | 100.00 [79.10 - 100.00] | 3.482 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.90 | 0.80 ± 0.00 | [0.80 ; 0.80] | 0.80 [0.80 - 0.80] | 440.315 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -1211,28 +1211,28 @@ public void calibrate_earth__1000_early_iron_age() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 1.82% | 🟢 Calibrated | — | 1.8% (334 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (334 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 63.92% | 🔴 Severe drift | 334 BCE | 65.1% (332 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 63.89% | 🔴 Severe drift | 334 BCE | 65.1% (332 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 15.09% | 🟡 Moderate drift | — | 15.1% (334 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 51.07% | 🟢 Trajectory Aligned (T0 Offset) | 334 BCE | 63.6% (334 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 13.28% | 🟢 Trajectory Aligned (T0 Offset) | — | 20.8% (334 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 25.23% | 🟡 Moderate Trend Alignment | — | 45.2% (314 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 137.46% | 🟡 Moderate Trend Alignment | 332 BCE | 183.3% (314 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 50.80% | 🟢 Trajectory Aligned (T0 Offset) | 334 BCE | 63.6% (334 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 13.32% | 🟢 Trajectory Aligned (T0 Offset) | — | 20.8% (334 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 25.82% | 🟡 Moderate Trend Alignment | — | 45.2% (314 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 135.35% | 🟡 Moderate Trend Alignment | 332 BCE | 183.3% (314 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 8.93% | 🟢 Trajectory Aligned (T0 Offset) | — | 9.0% (334 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 273.02 | 278.00 ± 0.00 | [278.00 ; 278.00] | 278.00 [278.00 - 278.00] | 170.468 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 471.62 | 471.62 ± 0.03 | [471.61 ; 471.64] | 471.62 [471.60 - 471.65] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 130.04 | 46.93 ± 1.91 | [46.12 ; 47.75] | 46.52 [45.20 - 48.35] | 52.830 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 13.41 | 11.39 ± 0.01 | [11.39 ; 11.39] | 11.39 [11.39 - 11.39] | 287.771 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 1.40 | 0.69 ± 0.17 | [0.61 ; 0.76] | 0.65 [0.53 - 0.82] | 5.806 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 2.89 | 2.28 ± 0.45 | [2.09 ; 2.47] | 2.13 [1.93 - 2.52] | 1.941 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 2.55 | 3.55 ± 1.03 | [3.11 ; 3.99] | 3.85 [2.97 - 4.33] | 1.367 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 33.74 | 79.81 ± 16.67 | [72.68 ; 86.93] | 84.62 [81.01 - 89.56] | 3.909 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.87 | 0.79 ± 0.00 | [0.79 ; 0.79] | 0.79 [0.79 - 0.79] | 307.448 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 273.02 | 278.00 ± 0.00 | [278.00 ; 278.00] | 278.00 [278.00 - 278.00] | 159.459 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 471.62 | 471.62 ± 0.03 | [471.60 ; 471.64] | 471.62 [471.59 - 471.65] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 130.04 | 46.97 ± 2.03 | [45.78 ; 48.17] | 46.52 [45.02 - 48.77] | 49.594 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 13.41 | 11.39 ± 0.01 | [11.39 ; 11.39] | 11.39 [11.38 - 11.40] | 269.186 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 1.40 | 0.69 ± 0.19 | [0.58 ; 0.80] | 0.65 [0.52 - 0.85] | 5.418 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 2.89 | 2.29 ± 0.49 | [2.01 ; 2.58] | 2.13 [1.91 - 2.64] | 1.732 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 2.55 | 3.52 ± 1.12 | [2.86 ; 4.19] | 3.85 [2.71 - 4.42] | 1.225 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 33.74 | 78.80 ± 19.25 | [67.43 ; 90.18] | 84.62 [76.58 - 90.69] | 3.310 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.87 | 0.79 ± 0.00 | [0.79 ; 0.79] | 0.79 [0.79 - 0.79] | 287.591 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -1288,28 +1288,28 @@ public void calibrate_earth__334_alexander_hellenistic_334bc() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 1.74% | 🟢 Calibrated | — | 1.8% (300 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (300 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 61.83% | 🔴 Severe drift | 300 BCE | 63.1% (297 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 61.79% | 🔴 Severe drift | 300 BCE | 63.1% (298 BCE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 15.03% | 🟡 Moderate drift | — | 15.0% (300 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 0.00% | ⚪ N/A | — | — | — | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 48.76% | 🟢 Trajectory Aligned (T0 Offset) | 300 BCE | 61.6% (300 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 16.26% | 🟢 Trajectory Aligned (T0 Offset) | — | 24.8% (300 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 24.48% | 🟡 Moderate Trend Alignment | — | 43.5% (280 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 138.20% | 🟡 Moderate Trend Alignment | 298 BCE | 182.4% (280 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 48.47% | 🟢 Trajectory Aligned (T0 Offset) | 300 BCE | 61.6% (300 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 16.28% | 🟢 Trajectory Aligned (T0 Offset) | — | 24.8% (300 BCE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 25.02% | 🟡 Moderate Trend Alignment | — | 43.5% (280 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 136.24% | 🟡 Moderate Trend Alignment | 298 BCE | 182.4% (280 BCE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 8.82% | 🟢 Trajectory Aligned (T0 Offset) | — | 8.9% (300 BCE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 273.25 | 278.00 ± 0.00 | [278.00 ; 278.00] | 278.00 [278.00 - 278.00] | 163.362 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 471.45 | 471.45 ± 0.03 | [471.44 ; 471.47] | 471.45 [471.43 - 471.48] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 136.20 | 52.00 ± 2.04 | [51.13 ; 52.87] | 51.53 [50.14 - 53.51] | 51.495 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 13.37 | 11.36 ± 0.01 | [11.36 ; 11.36] | 11.36 [11.36 - 11.36] | 285.021 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 1.47 | 0.75 ± 0.19 | [0.67 ; 0.83] | 0.70 [0.58 - 0.90] | 5.361 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 3.09 | 2.29 ± 0.44 | [2.10 ; 2.48] | 2.14 [1.95 - 2.54] | 2.544 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 2.60 | 3.47 ± 1.09 | [3.00 ; 3.94] | 3.79 [2.86 - 4.31] | 1.125 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 33.86 | 80.32 ± 16.27 | [73.36 ; 87.28] | 84.62 [81.01 - 89.56] | 4.037 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.87 | 0.79 ± 0.00 | [0.79 ; 0.79] | 0.79 [0.79 - 0.79] | 303.441 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 273.25 | 278.00 ± 0.00 | [278.00 ; 278.00] | 278.00 [278.00 - 278.00] | 152.812 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 471.45 | 471.45 ± 0.03 | [471.43 ; 471.47] | 471.45 [471.42 - 471.48] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 136.20 | 52.05 ± 2.17 | [50.77 ; 53.33] | 51.53 [49.96 - 53.97] | 48.347 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 13.37 | 11.36 ± 0.01 | [11.36 ; 11.36] | 11.36 [11.35 - 11.37] | 266.613 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 1.47 | 0.76 ± 0.20 | [0.64 ; 0.88] | 0.70 [0.58 - 0.93] | 5.001 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 3.09 | 2.30 ± 0.48 | [2.02 ; 2.59] | 2.14 [1.92 - 2.65] | 2.286 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 2.60 | 3.44 ± 1.19 | [2.74 ; 4.14] | 3.79 [2.57 - 4.39] | 1.003 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 33.86 | 79.35 ± 18.99 | [68.13 ; 90.58] | 84.62 [80.46 - 90.69] | 3.388 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.87 | 0.79 ± 0.00 | [0.79 ; 0.79] | 0.79 [0.79 - 0.79] | 283.843 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -1365,29 +1365,29 @@ public void calibrate_earth__300_maurya_empire() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 0.02% | 🟢 Calibrated | — | 0.0% (20 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (0 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 66.35% | 🔴 Severe drift | 0 CE | 67.7% (1 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 66.34% | 🔴 Severe drift | 0 CE | 67.7% (2 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 14.60% | 🟡 Moderate drift | — | 14.6% (0 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 60.41% | 🟢 Trajectory Aligned (T0 Offset) | 1 CE | 64.3% (1 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 62.24% | 🟢 Trajectory Aligned (T0 Offset) | 0 CE | 68.3% (0 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 36.76% | 🔴 Severe drift | — | 40.6% (0 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 12.04% | 🟢 Trajectory Aligned (T0 Offset) | — | 21.8% (20 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 174.81% | 🔴 Severe drift | 1 CE | 203.0% (8 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 60.19% | 🟢 Trajectory Aligned (T0 Offset) | 2 CE | 64.0% (2 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 62.17% | 🟢 Trajectory Aligned (T0 Offset) | 0 CE | 68.3% (0 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 36.72% | 🔴 Severe drift | — | 40.6% (0 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 12.14% | 🟢 Trajectory Aligned (T0 Offset) | — | 21.8% (20 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 171.48% | 🔴 Severe drift | 2 CE | 203.0% (8 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 7.92% | 🟢 Trajectory Aligned (T0 Offset) | — | 8.0% (0 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 275.05 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 2.045 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 469.95 | 469.95 ± 0.03 | [469.94 ; 469.97] | 469.95 [469.93 - 469.98] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 170.96 | 57.53 ± 2.06 | [56.64 ; 58.41] | 57.37 [55.69 - 59.18] | 74.064 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 12.99 | 11.09 ± 0.01 | [11.09 ; 11.10] | 11.09 [11.09 - 11.10] | 294.662 | *** (p < 0.001) |
-| ðŸ’° Gross World Product (grossWorldProduct) | 20 | 18.90 | 7.49 ± 0.59 | [7.23 ; 7.75] | 7.52 [7.02 - 8.05] | 25.277 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 2.02 | 0.76 ± 0.11 | [0.71 ; 0.81] | 0.74 [0.66 - 0.86] | 15.988 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 4.00 | 2.16 ± 0.15 | [2.10 ; 2.22] | 2.14 [2.04 - 2.28] | 17.873 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 3.01 | 3.56 ± 0.44 | [3.38 ; 3.75] | 3.65 [3.26 - 3.94] | 1.775 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 33.01 | 90.47 ± 19.32 | [82.21 ; 98.73] | 100.00 [93.61 - 100.00] | 4.207 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.85 | 0.78 ± 0.00 | [0.78 ; 0.78] | 0.78 [0.78 - 0.78] | 283.013 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 275.05 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 1.913 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 469.95 | 469.95 ± 0.03 | [469.94 ; 469.97] | 469.95 [469.92 - 469.98] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 170.96 | 57.55 ± 2.18 | [56.26 ; 58.84] | 57.37 [55.39 - 59.55] | 69.875 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 12.99 | 11.09 ± 0.01 | [11.09 ; 11.10] | 11.09 [11.09 - 11.10] | 275.634 | *** (p < 0.001) |
+| ðŸ’° Gross World Product (grossWorldProduct) | 10 | 18.92 | 7.54 ± 0.61 | [7.16 ; 7.92] | 7.62 [7.02 - 8.05] | 24.477 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 2.02 | 0.76 ± 0.12 | [0.69 ; 0.83] | 0.74 [0.65 - 0.88] | 15.134 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 4.00 | 2.16 ± 0.15 | [2.07 ; 2.25] | 2.14 [2.02 - 2.30] | 16.768 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 3.01 | 3.55 ± 0.47 | [3.28 ; 3.83] | 3.65 [3.17 - 3.98] | 1.626 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 33.01 | 89.15 ± 22.36 | [75.93 ; 102.37] | 100.00 [91.27 - 100.00] | 3.550 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.85 | 0.78 ± 0.00 | [0.78 ; 0.78] | 0.78 [0.78 - 0.78] | 264.735 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -1521,29 +1521,29 @@ public void calibrate_earth_+536_late_antique_ice_age() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 0.11% | 🟢 Calibrated | — | 0.1% (652 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (632 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 9.76% | 🟢 Calibrated | — | 20.2% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 9.77% | 🟢 Calibrated | — | 20.1% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 15.01% | 🟡 Moderate drift | — | 15.0% (652 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 66.60% | 🟢 Trajectory Aligned (T0 Offset) | 642 CE | 227.1% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 82.80% | 🟢 Trajectory Aligned (T0 Offset) | 639 CE | 190.5% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 63.06% | 🟡 Moderate Trend Alignment | 643 CE | 215.4% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 24.55% | 🟢 Trajectory Aligned (T0 Offset) | 649 CE | 60.3% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 138.60% | 🔴 Severe drift | 634 CE | 176.4% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 68.63% | 🟢 Trajectory Aligned (T0 Offset) | 642 CE | 223.3% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 82.93% | 🟢 Trajectory Aligned (T0 Offset) | 640 CE | 189.4% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 65.38% | 🟡 Moderate Trend Alignment | 644 CE | 214.7% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 24.79% | 🟢 Trajectory Aligned (T0 Offset) | 650 CE | 59.9% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 136.56% | 🔴 Severe drift | 634 CE | 176.4% (652 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 6.38% | 🟢 Trajectory Aligned (T0 Offset) | — | 6.4% (632 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 278.30 | 278.00 ± 0.00 | [278.00 ; 278.00] | 278.00 [278.00 - 278.00] | 13.440 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 466.70 | 466.70 ± 0.03 | [466.69 ; 466.72] | 466.70 [466.68 - 466.73] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 201.34 | 221.02 ± 13.00 | [215.46 ; 226.58] | 219.67 [209.33 - 231.61] | 2.139 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 12.39 | 10.53 ± 0.01 | [10.53 ; 10.53] | 10.53 [10.53 - 10.53] | 308.665 | *** (p < 0.001) |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 23.53 | 39.27 ± 14.21 | [33.19 ; 45.35] | 34.50 [28.99 - 44.49] | 1.567 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 2.41 | 4.42 ± 1.46 | [3.79 ; 5.04] | 4.20 [3.25 - 5.54] | 1.941 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 4.01 | 7.09 ± 3.39 | [5.64 ; 8.54] | 5.91 [4.34 - 9.05] | 1.289 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 3.61 | 4.79 ± 0.96 | [4.38 ; 5.20] | 4.66 [4.11 - 5.45] | 1.725 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 35.00 | 83.07 ± 16.91 | [75.84 ; 90.30] | 88.47 [85.76 - 92.17] | 4.019 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.82 | 0.77 ± 0.00 | [0.77 ; 0.77] | 0.77 [0.77 - 0.77] | 222.043 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 278.30 | 278.00 ± 0.00 | [278.00 ; 278.00] | 278.00 [278.00 - 278.00] | 12.571 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 466.70 | 466.70 ± 0.03 | [466.68 ; 466.72] | 466.70 [466.67 - 466.73] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 201.34 | 221.05 ± 13.67 | [212.97 ; 229.12] | 219.53 [207.59 - 233.83] | 2.037 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 12.39 | 10.53 ± 0.01 | [10.53 ; 10.53] | 10.53 [10.53 - 10.54] | 288.728 | *** (p < 0.001) |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 23.53 | 39.76 ± 15.73 | [30.46 ; 49.05] | 34.39 [28.05 - 47.61] | 1.459 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 2.41 | 4.42 ± 1.55 | [3.51 ; 5.34] | 4.18 [3.06 - 5.81] | 1.831 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 4.01 | 7.20 ± 3.67 | [5.03 ; 9.36] | 5.90 [4.15 - 9.90] | 1.230 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 3.61 | 4.79 ± 1.04 | [4.17 ; 5.40] | 4.65 [3.98 - 5.63] | 1.593 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 35.00 | 81.95 ± 19.74 | [70.29 ; 93.62] | 88.47 [83.43 - 93.02] | 3.364 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.82 | 0.77 ± 0.00 | [0.77 ; 0.77] | 0.77 [0.77 - 0.77] | 207.701 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -1599,29 +1599,29 @@ public void calibrate_earth_+632_islamic_expansion_632() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 0.02% | 🟢 Calibrated | — | 0.0% (1020 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1000 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 19.54% | 🟡 Moderate drift | — | 29.9% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 19.60% | 🟡 Moderate drift | — | 29.9% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 14.87% | 🟡 Moderate drift | — | 14.9% (1000 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 113.07% | 🟡 Moderate Trend Alignment | 1007 CE | 542.9% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 102.46% | 🟢 Trajectory Aligned (T0 Offset) | 1004 CE | 217.6% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 117.34% | 🟢 Trajectory Aligned (T0 Offset) | 1006 CE | 354.0% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 26.57% | 🟢 Trajectory Aligned (T0 Offset) | 1014 CE | 74.7% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 123.72% | 🟡 Moderate Trend Alignment | 1002 CE | 165.9% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 122.36% | 🟡 Moderate Trend Alignment | 1008 CE | 542.9% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 102.95% | 🟢 Trajectory Aligned (T0 Offset) | 1004 CE | 217.6% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 120.57% | 🟢 Trajectory Aligned (T0 Offset) | 1006 CE | 354.0% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 27.32% | 🟡 Moderate Trend Alignment | 1014 CE | 74.7% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 122.43% | 🟡 Moderate Trend Alignment | 1002 CE | 165.9% (1020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 4.86% | 🟢 Trajectory Aligned (T0 Offset) | — | 4.9% (1000 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 280.04 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 2.164 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 464.96 | 464.96 ± 0.03 | [464.95 ; 464.97] | 464.96 [464.93 - 464.98] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 268.30 | 320.87 ± 19.85 | [312.38 ; 329.36] | 319.57 [303.10 - 337.58] | 3.724 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 11.99 | 10.20 ± 0.01 | [10.20 ; 10.21] | 10.20 [10.20 - 10.21] | 234.530 | *** (p < 0.001) |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 35.54 | 76.15 ± 51.31 | [54.20 ; 98.10] | 54.69 [44.18 - 82.62] | 1.119 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 3.54 | 7.19 ± 2.42 | [6.16 ; 8.22] | 6.88 [5.13 - 9.12] | 2.133 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 4.42 | 10.29 ± 5.45 | [7.96 ; 12.62] | 8.53 [5.78 - 13.56] | 1.523 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 4.02 | 5.30 ± 1.22 | [4.78 ; 5.82] | 5.03 [4.34 - 6.11] | 1.479 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 36.05 | 80.11 ± 16.72 | [72.96 ; 87.26] | 84.86 [81.21 - 89.83] | 3.727 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.80 | 0.76 ± 0.00 | [0.76 ; 0.76] | 0.76 [0.76 - 0.76] | 125.980 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 280.04 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 2.023 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 464.96 | 464.96 ± 0.03 | [464.94 ; 464.97] | 464.96 [464.93 - 464.98] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 268.31 | 321.04 ± 20.96 | [308.65 ; 333.43] | 319.57 [300.28 - 341.03] | 3.537 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 11.99 | 10.20 ± 0.01 | [10.20 ; 10.21] | 10.20 [10.20 - 10.21] | 219.383 | *** (p < 0.001) |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 35.54 | 79.53 ± 59.20 | [44.55 ; 114.52] | 54.69 [42.67 - 95.30] | 1.051 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 3.54 | 7.21 ± 2.58 | [5.69 ; 8.73] | 6.88 [4.89 - 9.60] | 2.010 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 4.42 | 10.45 ± 5.88 | [6.97 ; 13.92] | 8.53 [5.45 - 14.98] | 1.451 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 4.02 | 5.32 ± 1.32 | [4.54 ; 6.10] | 5.03 [4.23 - 6.39] | 1.388 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 36.05 | 79.15 ± 19.33 | [67.73 ; 90.57] | 84.86 [78.21 - 90.97] | 3.154 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.80 | 0.76 ± 0.00 | [0.76 ; 0.76] | 0.76 [0.76 - 0.76] | 117.840 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -1755,29 +1755,29 @@ public void calibrate_earth_+1206_mongol_conquest_1206() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 0.58% | 🟢 Calibrated | — | 0.6% (1344 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1324 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 97.12% | 🔴 Severe drift | 1324 CE | 97.2% (1327 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 97.12% | 🔴 Severe drift | 1324 CE | 97.2% (1326 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 12.46% | 🟡 Moderate drift | — | 12.5% (1324 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 98.09% | 🟢 Trajectory Aligned (T0 Offset) | 1324 CE | 98.4% (1324 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 97.04% | 🟢 Trajectory Aligned (T0 Offset) | 1324 CE | 97.6% (1324 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 61.77% | 🟢 Trajectory Aligned (T0 Offset) | 1324 CE | 66.5% (1324 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 46.00% | 🟢 Trajectory Aligned (T0 Offset) | 1324 CE | 74.7% (1324 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 111.24% | 🟡 Moderate Trend Alignment | 1324 CE | 143.8% (1344 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 97.03% | 🟢 Trajectory Aligned (T0 Offset) | 1324 CE | 97.6% (1324 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 61.69% | 🟢 Trajectory Aligned (T0 Offset) | 1324 CE | 66.5% (1324 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 46.36% | 🟢 Trajectory Aligned (T0 Offset) | 1324 CE | 74.7% (1324 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 110.56% | 🟡 Moderate Trend Alignment | 1324 CE | 143.8% (1344 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 3.08% | 🟢 Trajectory Aligned (T0 Offset) | — | 3.2% (1324 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 281.65 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 97.267 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 463.73 | 463.73 ± 0.02 | [463.72 ; 463.74] | 463.73 [463.71 - 463.75] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 433.18 | 12.46 ± 0.44 | [12.28 ; 12.65] | 12.39 [12.07 - 12.80] | 117.523 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 11.33 | 9.91 ± 0.01 | [9.91 ; 9.92] | 9.91 [9.91 - 9.92] | 145.038 | *** (p < 0.001) |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 84.78 | 1.62 ± 0.19 | [1.54 ; 1.70] | 1.60 [1.46 - 1.76] | 454.803 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 5.70 | 0.17 ± 0.03 | [0.16 ; 0.18] | 0.16 [0.14 - 0.20] | 140.139 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 5.17 | 1.98 ± 0.20 | [1.89 ; 2.06] | 1.92 [1.81 - 2.12] | 22.202 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 6.29 | 3.40 ± 0.84 | [3.04 ; 3.76] | 3.62 [2.91 - 4.08] | 4.858 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 39.79 | 83.19 ± 18.06 | [75.47 ; 90.91] | 90.77 [81.96 - 93.74] | 3.400 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.78 | 0.75 ± 0.00 | [0.75 ; 0.75] | 0.75 [0.75 - 0.75] | 46.299 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 281.65 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 90.985 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 463.73 | 463.73 ± 0.03 | [463.72 ; 463.75] | 463.73 [463.71 - 463.75] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 433.10 | 12.47 ± 0.46 | [12.20 ; 12.75] | 12.39 [12.02 - 12.89] | 110.198 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 11.33 | 9.91 ± 0.01 | [9.91 ; 9.92] | 9.91 [9.91 - 9.92] | 135.673 | *** (p < 0.001) |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 84.77 | 1.62 ± 0.20 | [1.50 ; 1.74] | 1.60 [1.44 - 1.80] | 425.334 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 5.70 | 0.17 ± 0.03 | [0.15 ; 0.19] | 0.16 [0.14 - 0.20] | 131.490 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 5.17 | 1.98 ± 0.22 | [1.85 ; 2.11] | 1.92 [1.79 - 2.16] | 20.579 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 6.29 | 3.38 ± 0.91 | [2.84 ; 3.92] | 3.62 [2.71 - 4.14] | 4.515 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 39.79 | 82.12 ± 20.69 | [69.89 ; 94.34] | 90.77 [77.43 - 94.42] | 2.893 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.78 | 0.75 ± 0.00 | [0.75 ; 0.75] | 0.75 [0.75 - 0.75] | 43.306 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -1911,29 +1911,29 @@ public void calibrate_earth_+1347_black_death_1347() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 0.71% | 🟢 Calibrated | — | 0.7% (1499 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1491 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 85.30% | 🔴 Severe drift | 1491 CE | 85.8% (1494 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 85.29% | 🔴 Severe drift | 1491 CE | 85.8% (1493 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11.19% | 🟡 Moderate drift | — | 11.3% (1491 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 92.90% | 🟢 Trajectory Aligned (T0 Offset) | 1491 CE | 94.3% (1491 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 86.69% | 🟢 Trajectory Aligned (T0 Offset) | 1491 CE | 90.3% (1491 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 66.19% | 🟢 Trajectory Aligned (T0 Offset) | 1491 CE | 73.8% (1491 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 55.11% | 🟢 Trajectory Aligned (T0 Offset) | 1491 CE | 83.9% (1491 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 110.56% | 🟡 Moderate Trend Alignment | 1491 CE | 128.6% (1498 CE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.65% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.9% (1505 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 92.88% | 🟢 Trajectory Aligned (T0 Offset) | 1491 CE | 94.3% (1491 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 86.60% | 🟢 Trajectory Aligned (T0 Offset) | 1491 CE | 90.3% (1491 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 65.92% | 🟢 Trajectory Aligned (T0 Offset) | 1491 CE | 73.8% (1491 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 55.43% | 🟢 Trajectory Aligned (T0 Offset) | 1491 CE | 83.9% (1491 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 109.94% | 🟡 Moderate Trend Alignment | 1491 CE | 128.4% (1499 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.64% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.9% (1505 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 282.00 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 412.740 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 462.99 | 462.99 ± 0.03 | [462.98 ; 463.01] | 462.99 [462.97 - 463.02] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 426.26 | 62.67 ± 2.63 | [61.55 ; 63.80] | 62.09 [60.28 - 64.63] | 88.255 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 11.00 | 9.77 ± 0.01 | [9.76 ; 9.77] | 9.77 [9.76 - 9.77] | 100.004 | *** (p < 0.001) |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 120.10 | 8.54 ± 1.43 | [7.93 ; 9.15] | 8.28 [7.35 - 9.55] | 73.312 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 7.01 | 0.94 ± 0.25 | [0.83 ; 1.04] | 0.88 [0.70 - 1.12] | 33.509 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 7.00 | 2.37 ± 0.53 | [2.14 ; 2.60] | 2.18 [1.96 - 2.64] | 12.325 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 8.01 | 3.60 ± 1.06 | [3.15 ; 4.06] | 3.90 [3.01 - 4.39] | 5.874 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 43.84 | 91.10 ± 19.35 | [82.82 ; 99.38] | 100.00 [97.85 - 100.00] | 3.454 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.74 | 0.74 ± 0.01 | [0.73 ; 0.74] | 0.74 [0.73 - 0.74] | 0.657 | ** (p < 0.01) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 281.99 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 374.968 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 462.99 | 462.99 ± 0.03 | [462.97 ; 463.01] | 462.99 [462.96 - 463.03] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 426.30 | 62.73 ± 2.80 | [61.08 ; 64.39] | 62.09 [60.03 - 65.21] | 82.371 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 11.00 | 9.77 ± 0.01 | [9.76 ; 9.77] | 9.77 [9.76 - 9.77] | 93.590 | *** (p < 0.001) |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 120.09 | 8.57 ± 1.54 | [7.66 ; 9.48] | 8.28 [7.20 - 9.85] | 68.227 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 7.01 | 0.94 ± 0.27 | [0.78 ; 1.10] | 0.88 [0.69 - 1.17] | 31.386 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 7.00 | 2.39 ± 0.58 | [2.05 ; 2.73] | 2.18 [1.94 - 2.78] | 11.187 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 8.01 | 3.58 ± 1.15 | [2.90 ; 4.26] | 3.90 [2.75 - 4.49] | 5.428 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 43.84 | 89.70 ± 22.44 | [76.44 ; 102.96] | 100.00 [92.97 - 100.00] | 2.890 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.74 | 0.74 ± 0.01 | [0.73 ; 0.74] | 0.74 [0.73 - 0.75] | 0.609 | ** (p < 0.01) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -1987,31 +1987,31 @@ public void calibrate_earth_+1491_americas_1491() {
 
 | Metric Indicator | MAPE (%) | Calibration Status | T_div (Onset) | Peak Discrepancy | Temporal Trajectory | Suspect Engine |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 0.71% | 🟢 Calibrated | — | 0.7% (1499 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 0.71% | 🟢 Calibrated | — | 0.7% (1500 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1492 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 85.27% | 🔴 Severe drift | 1492 CE | 85.8% (1494 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 85.25% | 🔴 Severe drift | 1492 CE | 85.8% (1494 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11.18% | 🟡 Moderate drift | — | 11.3% (1492 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 92.77% | 🟢 Trajectory Aligned (T0 Offset) | 1492 CE | 94.2% (1492 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 86.30% | 🟢 Trajectory Aligned (T0 Offset) | 1492 CE | 90.2% (1492 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 65.21% | 🟢 Trajectory Aligned (T0 Offset) | 1492 CE | 73.3% (1492 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 53.48% | 🟢 Trajectory Aligned (T0 Offset) | 1492 CE | 80.1% (1492 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 91.56% | 🔴 Severe drift | 1492 CE | 116.5% (1508 CE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.68% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.9% (1505 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 92.75% | 🟢 Trajectory Aligned (T0 Offset) | 1492 CE | 94.2% (1492 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 86.22% | 🟢 Trajectory Aligned (T0 Offset) | 1492 CE | 90.2% (1492 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 64.89% | 🟢 Trajectory Aligned (T0 Offset) | 1492 CE | 73.3% (1492 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 53.76% | 🟢 Trajectory Aligned (T0 Offset) | 1492 CE | 80.1% (1492 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 91.80% | 🔴 Severe drift | 1492 CE | 116.5% (1508 CE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.66% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.9% (1506 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 281.99 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 339.829 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 462.99 | 462.99 ± 0.03 | [462.98 ; 463.00] | 462.99 [462.96 - 463.02] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 427.14 | 62.96 ± 2.81 | [61.76 ; 64.16] | 62.39 [60.42 - 65.07] | 85.071 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 10.99 | 9.77 ± 0.01 | [9.76 ; 9.77] | 9.77 [9.76 - 9.77] | 99.614 | *** (p < 0.001) |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 120.36 | 8.72 ± 1.51 | [8.07 ; 9.36] | 8.44 [7.46 - 9.77] | 72.760 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 7.02 | 0.96 ± 0.26 | [0.85 ; 1.08] | 0.92 [0.71 - 1.15] | 31.612 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 7.01 | 2.44 ± 0.59 | [2.19 ; 2.69] | 2.23 [1.98 - 2.74] | 10.931 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 8.02 | 3.74 ± 0.98 | [3.32 ; 4.16] | 3.99 [3.17 - 4.46] | 6.140 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 43.87 | 82.80 ± 16.81 | [75.62 ; 89.99] | 90.81 [80.22 - 92.76] | 3.276 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.74 | 0.74 ± 0.01 | [0.73 ; 0.74] | 0.74 [0.73 - 0.74] | 0.665 | ** (p < 0.01) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 281.99 | 280.00 ± 0.00 | [280.00 ; 280.00] | 280.00 [280.00 - 280.00] | 310.628 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 462.99 | 462.99 ± 0.03 | [462.97 ; 463.01] | 462.99 [462.96 - 463.02] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 427.18 | 63.02 ± 2.98 | [61.26 ; 64.78] | 62.39 [60.14 - 65.68] | 79.442 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 10.99 | 9.77 ± 0.01 | [9.76 ; 9.77] | 9.77 [9.76 - 9.77] | 93.222 | *** (p < 0.001) |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 120.35 | 8.75 ± 1.62 | [7.79 ; 9.71] | 8.44 [7.30 - 10.09] | 67.674 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 7.02 | 0.97 ± 0.28 | [0.80 ; 1.14] | 0.92 [0.70 - 1.21] | 29.622 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 7.01 | 2.46 ± 0.65 | [2.08 ; 2.85] | 2.23 [1.95 - 2.89] | 9.918 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 8.02 | 3.72 ± 1.07 | [3.08 ; 4.35] | 3.99 [2.95 - 4.56] | 5.657 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 43.87 | 81.77 ± 19.63 | [70.17 ; 93.37] | 90.81 [80.22 - 93.22] | 2.731 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.74 | 0.74 ± 0.01 | [0.73 ; 0.74] | 0.74 [0.73 - 0.74] | 0.606 | ** (p < 0.01) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -2067,29 +2067,29 @@ public void calibrate_earth_+1492_columbian_contact() {
 |---|:---:|:---:|:---:|:---:|:---:|---|
 | ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 0.87% | 🟢 Calibrated | — | 1.0% (1639 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (1639 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 94.68% | 🔴 Severe drift | 1639 CE | 95.1% (1639 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 94.67% | 🔴 Severe drift | 1639 CE | 95.1% (1639 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 8.40% | 🟢 Calibrated | — | 8.7% (1639 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 97.03% | 🟢 Trajectory Aligned (T0 Offset) | 1639 CE | 97.7% (1639 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 94.24% | 🟢 Trajectory Aligned (T0 Offset) | 1639 CE | 96.3% (1639 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 66.94% | 🟢 Trajectory Aligned (T0 Offset) | 1639 CE | 75.8% (1639 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 57.26% | 🟢 Trajectory Aligned (T0 Offset) | 1639 CE | 68.2% (1639 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 80.69% | 🟡 Moderate Trend Alignment | 1639 CE | 101.4% (1659 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 97.02% | 🟢 Trajectory Aligned (T0 Offset) | 1639 CE | 97.7% (1639 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 94.22% | 🟢 Trajectory Aligned (T0 Offset) | 1639 CE | 96.3% (1639 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 66.65% | 🟢 Trajectory Aligned (T0 Offset) | 1639 CE | 75.8% (1639 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 57.31% | 🟢 Trajectory Aligned (T0 Offset) | 1639 CE | 68.2% (1639 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 81.47% | 🟡 Moderate Trend Alignment | 1639 CE | 101.4% (1659 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 22.56% | 🟢 Trajectory Aligned (T0 Offset) | 1639 CE | 22.7% (1639 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 279.43 | 277.00 ± 0.00 | [277.00 ; 277.00] | 277.00 [277.00 - 277.00] | 24.017 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 462.13 | 462.13 ± 0.04 | [462.11 ; 462.14] | 462.13 [462.09 - 462.16] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 545.74 | 29.05 ± 1.65 | [28.34 ; 29.75] | 28.87 [27.58 - 30.35] | 397.596 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 10.52 | 9.63 ± 0.01 | [9.63 ; 9.64] | 9.63 [9.63 - 9.64] | 45.119 | *** (p < 0.001) |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 144.81 | 4.30 ± 0.77 | [3.98 ; 4.63] | 4.18 [3.67 - 4.83] | 158.444 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 8.57 | 0.50 ± 0.13 | [0.44 ; 0.55] | 0.48 [0.39 - 0.59] | 70.809 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 7.71 | 2.55 ± 0.66 | [2.27 ; 2.83] | 2.34 [2.03 - 2.90] | 11.044 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 9.98 | 4.27 ± 0.62 | [4.01 ; 4.54] | 4.30 [3.88 - 4.72] | 12.828 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 48.26 | 85.57 ± 17.79 | [77.96 ; 93.18] | 92.31 [88.87 - 94.78] | 2.965 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.44 | 0.54 ± 0.01 | [0.54 ; 0.54] | 0.54 [0.53 - 0.55] | 13.616 | *** (p < 0.001) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 279.43 | 277.00 ± 0.00 | [277.00 ; 277.00] | 277.00 [277.00 - 277.00] | 22.470 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 462.13 | 462.13 ± 0.04 | [462.10 ; 462.15] | 462.13 [462.09 - 462.17] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 545.80 | 29.07 ± 1.75 | [28.04 ; 30.11] | 28.87 [27.37 - 30.67] | 370.952 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 10.52 | 9.63 ± 0.01 | [9.63 ; 9.64] | 9.63 [9.63 - 9.64] | 42.201 | *** (p < 0.001) |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 144.81 | 4.32 ± 0.83 | [3.83 ; 4.81] | 4.18 [3.58 - 4.99] | 147.772 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 8.57 | 0.50 ± 0.14 | [0.41 ; 0.58] | 0.48 [0.37 - 0.62] | 66.276 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 7.71 | 2.57 ± 0.72 | [2.15 ; 3.00] | 2.34 [1.98 - 3.07] | 10.070 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 9.98 | 4.27 ± 0.67 | [3.87 ; 4.66] | 4.30 [3.76 - 4.82] | 11.829 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 48.26 | 84.42 ± 20.67 | [72.21 ; 96.63] | 92.31 [85.95 - 95.35] | 2.474 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.44 | 0.54 ± 0.01 | [0.54 ; 0.55] | 0.54 [0.53 - 0.55] | 12.735 | *** (p < 0.001) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -2299,31 +2299,31 @@ public void calibrate_earth_+1914_world_wars_totalitarian_1914() {
 
 | Metric Indicator | MAPE (%) | Calibration Status | T_div (Onset) | Peak Discrepancy | Temporal Trajectory | Suspect Engine |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 5.21% | 🟢 Calibrated | 2015 CE | 10.7% (2020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 5.22% | 🟢 Calibrated | 2016 CE | 10.7% (2020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (2000 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 9.32% | 🟢 Calibrated | 2009 CE | 18.7% (2020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 9.70% | 🟢 Calibrated | 2000 CE | 10.7% (2007 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 28.94% | 🟡 Moderate Trend Alignment | 2000 CE | 73.4% (2020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 5.35% | 🟢 Trajectory Aligned (T0 Offset) | 2015 CE | 13.0% (2020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 7.66% | 🟡 Moderate Trend Alignment | 2011 CE | 15.2% (2020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 36.56% | 🟢 Trajectory Aligned (T0 Offset) | 2000 CE | 72.4% (2000 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 98.44% | 🔴 Severe drift | 2000 CE | 131.6% (2005 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 5.41% | 🟢 Trajectory Aligned (T0 Offset) | — | 6.8% (2000 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 9.33% | 🟢 Calibrated | 2010 CE | 18.7% (2020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 9.62% | 🟢 Calibrated | 2000 CE | 10.7% (2008 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 29.74% | 🟡 Moderate Trend Alignment | 2000 CE | 73.4% (2020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 5.53% | 🟢 Trajectory Aligned (T0 Offset) | 2016 CE | 13.1% (2020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 7.75% | 🔴 Severe drift | 2012 CE | 15.2% (2020 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 36.69% | 🟢 Trajectory Aligned (T0 Offset) | 2000 CE | 72.4% (2000 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 96.56% | 🔴 Severe drift | 2000 CE | 128.8% (2006 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 5.38% | 🟢 Trajectory Aligned (T0 Offset) | — | 6.8% (2000 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 390.02 | 369.25 ± 0.16 | [369.18 ; 369.32] | 369.24 [369.11 - 369.38] | 2.089 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 458.83 | 458.83 ± 0.12 | [458.78 ; 458.88] | 458.83 [458.73 - 458.92] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 6,943.48 | 6,269.69 ± 74.10 | [6,238.00 ; 6,301.38] | 6,297.34 [6,219.24 - 6,334.80] | 1.871 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 1.88 | 2.07 ± 0.22 | [1.97 ; 2.16] | 2.07 [1.89 - 2.24] | 0.907 | *** (p < 0.001) |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 61,075.53 | 79,005.34 ± 37,118.06 | [63,129.68 ; 94,881.00] | 73,437.72 [46,644.72 - 108,045.86] | 0.635 | ** (p < 0.01) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 508.86 | 480.14 ± 31.99 | [466.45 ; 493.82] | 496.71 [466.33 - 503.56] | 0.691 | ** (p < 0.01) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 51.55 | 47.53 ± 0.12 | [47.48 ; 47.59] | 47.58 [47.48 - 47.63] | 1.971 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 83.70 | 53.73 ± 22.49 | [44.11 ; 63.35] | 52.41 [33.49 - 73.59] | 1.877 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 42.09 | 83.10 ± 16.45 | [76.06 ; 90.13] | 90.16 [89.79 - 90.60] | 3.429 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.06 | 0.06 ± 0.01 | [0.06 ; 0.06] | 0.06 [0.05 - 0.07] | 0.407 | * (p < 0.05) |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 390.10 | 369.25 ± 0.17 | [369.14 ; 369.35] | 369.24 [369.08 - 369.41] | 1.963 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 458.82 | 458.82 ± 0.12 | [458.75 ; 458.90] | 458.83 [458.71 - 458.94] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 6,944.72 | 6,267.53 ± 78.46 | [6,221.16 ; 6,313.90] | 6,297.07 [6,198.61 - 6,336.96] | 1.751 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 1.88 | 2.07 ± 0.23 | [1.93 ; 2.21] | 2.07 [1.85 - 2.28] | 0.844 | *** (p < 0.001) |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 61,067.15 | 79,469.38 ± 39,528.24 | [56,109.69 ; 102,829.08] | 73,436.39 [42,634.97 - 115,524.22] | 0.612 | ** (p < 0.01) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 508.47 | 478.71 ± 34.60 | [458.26 ; 499.16] | 496.61 [455.44 - 503.83] | 0.667 | ** (p < 0.01) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 51.56 | 47.54 ± 0.11 | [47.47 ; 47.61] | 47.58 [47.47 - 47.63] | 1.845 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 83.67 | 53.80 ± 23.74 | [39.77 ; 67.83] | 52.41 [30.68 - 77.25] | 1.772 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 42.14 | 81.91 ± 19.21 | [70.56 ; 93.26] | 90.16 [86.10 - 90.69] | 2.860 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.06 | 0.06 ± 0.01 | [0.06 ; 0.07] | 0.06 [0.05 - 0.07] | 0.380 | * (p < 0.05) |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -2377,31 +2377,31 @@ public void calibrate_earth_+2000_anthropocene_2000() {
 
 | Metric Indicator | MAPE (%) | Calibration Status | T_div (Onset) | Peak Discrepancy | Temporal Trajectory | Suspect Engine |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 5.76% | 🟢 Calibrated | 2039 CE | 10.4% (2045 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 5.79% | 🟢 Calibrated | 2039 CE | 10.4% (2045 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (2025 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 7.50% | 🟢 Calibrated | 2036 CE | 14.6% (2045 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 0.06% | 🟢 Calibrated | — | 1.3% (2025 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 70.17% | 🔴 Severe drift | 2025 CE | 81.4% (2045 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 23.99% | 🟡 Moderate Trend Alignment | 2026 CE | 38.4% (2045 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 24.17% | 🟡 Moderate Trend Alignment | 2025 CE | 29.9% (2045 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 75.08% | 🟡 Moderate Trend Alignment | 2025 CE | 79.7% (2045 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 81.80% | 🔴 Severe drift | 2025 CE | 81.8% (2026 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.03% | 🟡 Moderate Trend Alignment | — | 0.6% (2025 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 7.69% | 🟢 Calibrated | 2035 CE | 14.9% (2045 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 0.12% | 🟢 Calibrated | — | 1.3% (2025 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 70.19% | 🔴 Severe drift | 2025 CE | 81.6% (2045 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 24.42% | 🟡 Moderate Trend Alignment | 2027 CE | 38.9% (2045 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 24.57% | 🟡 Moderate Trend Alignment | 2025 CE | 30.2% (2045 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 75.21% | 🟡 Moderate Trend Alignment | 2025 CE | 79.9% (2045 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 81.79% | 🔴 Severe drift | 2025 CE | 81.8% (2027 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.06% | 🟡 Moderate Trend Alignment | — | 0.6% (2025 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 446.35 | 420.20 ± 0.11 | [420.16 ; 420.25] | 420.22 [420.12 - 420.30] | 2.554 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 8,837.43 | 8,156.90 ± 38.61 | [8,140.38 ; 8,173.41] | 8,165.38 [8,127.94 - 8,192.32] | 2.281 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 1.50 | 1.50 ± 0.01 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.161 | ns |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 140,788.75 | 40,110.19 ± 5,131.86 | [37,915.26 ; 42,305.12] | 39,539.75 [35,919.28 - 43,895.05] | 6.184 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 704.95 | 530.97 ± 29.48 | [518.36 ; 543.57] | 531.99 [507.53 - 554.75] | 4.141 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 62.42 | 47.21 ± 0.25 | [47.10 ; 47.32] | 47.23 [47.05 - 47.34] | 7.073 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 87.50 | 21.81 ± 2.91 | [20.56 ; 23.06] | 21.41 [19.43 - 23.92] | 31.876 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 54.95 | 10.00 ± 0.00 | [10.00 ; 10.00] | 10.00 [10.00 - 10.00] | 286.190 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.038 | ns |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 446.50 | 420.20 ± 0.12 | [420.13 ; 420.27] | 420.21 [420.09 - 420.31] | 2.446 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 458.50 | 458.50 ± 0.01 | [458.50 ; 458.51] | 458.50 [458.50 - 458.50] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 8,840.13 | 8,140.99 ± 43.40 | [8,115.34 ; 8,166.63] | 8,155.00 [8,098.08 - 8,177.71] | 2.235 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 1.50 | 1.50 ± 0.01 | [1.50 ; 1.51] | 1.50 [1.50 - 1.50] | 0.223 | * (p < 0.05) |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 140,723.36 | 39,856.45 ± 5,571.28 | [36,564.03 ; 43,148.86] | 39,185.53 [34,929.74 - 44,489.98] | 5.780 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 704.97 | 527.51 ± 32.39 | [508.37 ; 546.65] | 528.07 [498.63 - 555.04] | 3.949 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 62.45 | 46.98 ± 0.36 | [46.77 ; 47.20] | 46.95 [46.76 - 47.05] | 6.927 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 87.51 | 21.70 ± 3.15 | [19.83 ; 23.56] | 21.24 [18.92 - 24.29] | 29.500 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 54.91 | 10.00 ± 0.00 | [10.00 ; 10.00] | 10.00 [10.00 - 10.00] | 206.926 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.053 | ns |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -2455,31 +2455,31 @@ public void calibrate_earth_+2025_business_as_usual() {
 
 | Metric Indicator | MAPE (%) | Calibration Status | T_div (Onset) | Peak Discrepancy | Temporal Trajectory | Suspect Engine |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 5.09% | 🟢 Calibrated | 2042 CE | 9.7% (2046 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 5.10% | 🟢 Calibrated | 2042 CE | 9.7% (2046 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (2026 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 5.57% | 🟢 Calibrated | 2040 CE | 10.8% (2046 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 5.59% | 🟢 Calibrated | 2040 CE | 10.8% (2046 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 0.00% | 🟢 Calibrated | — | 0.0% (2026 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 25.95% | 🟡 Moderate Trend Alignment | 2026 CE | 51.8% (2026 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 8.08% | 🟢 Trajectory Aligned (T0 Offset) | 2038 CE | 14.5% (2046 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 24.11% | 🔴 Severe drift | 2026 CE | 29.0% (2046 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 33.34% | 🔴 Severe drift | 2026 CE | 68.5% (2026 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 67.20% | 🔴 Severe drift | 2026 CE | 81.8% (2032 CE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 26.25% | 🟡 Moderate Trend Alignment | 2026 CE | 51.8% (2026 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 8.20% | 🟢 Trajectory Aligned (T0 Offset) | 2038 CE | 14.6% (2046 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 24.03% | 🔴 Severe drift | 2026 CE | 29.0% (2046 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 33.50% | 🔴 Severe drift | 2026 CE | 68.5% (2026 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 50.10% | 🔴 Severe drift | 2026 CE | 81.8% (2032 CE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.00% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.0% (2026 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 448.49 | 425.33 ± 0.22 | [425.24 ; 425.43] | 425.33 [425.15 - 425.51] | 2.225 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 8,898.56 | 8,392.72 ± 101.75 | [8,349.20 ; 8,436.24] | 8,430.79 [8,324.27 - 8,481.59] | 1.652 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 144,493.01 | 116,794.91 ± 49,593.11 | [95,583.59 ; 138,006.24] | 109,377.47 [74,234.24 - 155,560.95] | 0.721 | ** (p < 0.01) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 712.97 | 653.90 ± 27.66 | [642.07 ; 665.74] | 667.42 [642.30 - 674.45] | 1.437 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 62.84 | 47.59 ± 0.11 | [47.54 ; 47.63] | 47.59 [47.52 - 47.64] | 7.102 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 87.50 | 58.69 ± 21.20 | [49.63 ; 67.76] | 58.10 [39.96 - 77.59] | 1.922 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 55.00 | 89.24 ± 18.68 | [81.25 ; 97.23] | 96.48 [93.85 - 100.00] | 2.592 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 448.48 | 425.33 ± 0.23 | [425.20 ; 425.47] | 425.33 [425.12 - 425.55] | 2.087 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 8,896.38 | 8,389.69 ± 108.13 | [8,325.80 ; 8,453.59] | 8,430.52 [8,296.08 - 8,485.48] | 1.553 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 144,399.67 | 117,380.28 ± 52,852.55 | [86,146.42 ; 148,614.15] | 109,375.94 [68,904.75 - 165,554.04] | 0.659 | ** (p < 0.01) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 712.70 | 652.67 ± 29.91 | [635.00 ; 670.35] | 667.30 [633.58 - 674.80] | 1.361 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 62.81 | 47.60 ± 0.14 | [47.52 ; 47.68] | 47.59 [47.51 - 47.65] | 6.609 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 87.50 | 58.71 ± 22.39 | [45.47 ; 71.94] | 58.10 [37.16 - 80.83] | 1.819 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 55.00 | 78.11 ± 22.61 | [64.75 ; 91.47] | 67.11 [67.09 - 100.00] | 1.446 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -2533,31 +2533,31 @@ public void calibrate_earth_+2026_ssp5_85() {
 
 | Metric Indicator | MAPE (%) | Calibration Status | T_div (Onset) | Peak Discrepancy | Temporal Trajectory | Suspect Engine |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 7.14% | 🟢 Calibrated | 2046 CE | 11.2% (2055 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 7.13% | 🟢 Calibrated | 2047 CE | 11.2% (2055 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (2035 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 71.15% | 🔴 Severe drift | 2035 CE | 71.9% (2035 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 71.28% | 🔴 Severe drift | 2035 CE | 71.9% (2035 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 0.00% | 🟢 Calibrated | — | 0.0% (2035 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 72.78% | 🟢 Trajectory Aligned (T0 Offset) | 2035 CE | 78.6% (2039 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 73.53% | 🟢 Trajectory Aligned (T0 Offset) | 2035 CE | 79.0% (2035 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 74.67% | 🟢 Trajectory Aligned (T0 Offset) | 2035 CE | 83.1% (2037 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 73.77% | 🟢 Trajectory Aligned (T0 Offset) | 2035 CE | 79.0% (2035 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 28.51% | 🟡 Moderate Trend Alignment | 2035 CE | 32.1% (2055 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 19.26% | 🔴 Severe drift | 2035 CE | 35.5% (2038 CE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 20.47% | 🔴 Severe drift | 2035 CE | 45.2% (2035 CE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 24.00% | 🔴 Severe drift | 2035 CE | 49.7% (2037 CE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 31.34% | 🔴 Severe drift | 2035 CE | 48.4% (2055 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.00% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.0% (2035 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 468.96 | 435.11 ± 0.08 | [435.08 ; 435.14] | 435.11 [435.05 - 435.17] | 3.529 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 9,430.95 | 2,722.31 ± 131.96 | [2,665.87 ; 2,778.74] | 2,731.88 [2,617.96 - 2,831.61] | 27.593 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 176,880.95 | 49,322.04 ± 16,829.91 | [42,123.77 ; 56,520.31] | 44,050.35 [34,090.00 - 61,143.99] | 6.384 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 782.74 | 207.80 ± 24.48 | [197.33 ; 218.27] | 216.78 [197.40 - 225.67] | 15.674 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 66.69 | 47.63 ± 0.21 | [47.54 ; 47.72] | 47.72 [47.64 - 47.75] | 11.467 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 87.50 | 72.78 ± 14.13 | [66.74 ; 78.82] | 70.41 [59.67 - 85.70] | 1.474 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 55.00 | 60.95 ± 11.31 | [56.12 ; 65.79] | 64.85 [56.37 - 68.88] | 0.745 | ** (p < 0.01) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 468.94 | 435.11 ± 0.08 | [435.06 ; 435.16] | 435.11 [435.04 - 435.18] | 3.301 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 9,428.19 | 2,709.23 ± 131.93 | [2,631.27 ; 2,787.20] | 2,719.89 [2,589.73 - 2,829.40] | 26.124 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 176,967.33 | 46,222.39 ± 18,882.37 | [35,063.62 ; 57,381.16] | 40,443.46 [30,497.37 - 62,619.89] | 6.017 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 782.76 | 205.95 ± 26.08 | [190.53 ; 221.36] | 215.79 [189.72 - 225.54] | 14.739 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 66.69 | 47.62 ± 0.23 | [47.49 ; 47.76] | 47.72 [47.58 - 47.75] | 10.732 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 87.50 | 68.52 ± 18.01 | [57.88 ; 79.16] | 65.78 [51.94 - 86.78] | 1.490 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 55.00 | 65.01 ± 17.03 | [54.94 ; 75.08] | 70.20 [49.34 - 79.96] | 0.831 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -2611,31 +2611,31 @@ public void calibrate_earth_+2035_nuclear_winter_2035() {
 
 | Metric Indicator | MAPE (%) | Calibration Status | T_div (Onset) | Peak Discrepancy | Temporal Trajectory | Suspect Engine |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 8.06% | 🟢 Calibrated | 2054 CE | 11.4% (2065 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 8.04% | 🟢 Calibrated | 2055 CE | 11.4% (2065 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (2045 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 6.18% | 🟢 Calibrated | 2048 CE | 8.8% (2051 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 6.77% | 🟢 Calibrated | 2049 CE | 9.3% (2051 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 0.00% | 🟢 Calibrated | — | 0.0% (2045 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 97.44% | 🟡 Moderate Trend Alignment | 2045 CE | 99.5% (2045 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 74.22% | 🟢 Trajectory Aligned (T0 Offset) | 2045 CE | 87.6% (2046 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 77.10% | 🟢 Trajectory Aligned (T0 Offset) | 2045 CE | 97.6% (2045 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 93.26% | 🔴 Severe drift | 2045 CE | 100.0% (2045 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 73.35% | 🔴 Severe drift | 2045 CE | 81.8% (2050 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 97.24% | 🟡 Moderate Trend Alignment | 2045 CE | 99.5% (2045 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 73.92% | 🟢 Trajectory Aligned (T0 Offset) | 2045 CE | 87.5% (2047 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 76.48% | 🟢 Trajectory Aligned (T0 Offset) | 2045 CE | 97.6% (2045 CE) | 📉 Convergent (damping) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 93.11% | 🔴 Severe drift | 2045 CE | 100.0% (2045 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 56.61% | 🔴 Severe drift | 2045 CE | 62.0% (2065 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.00% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.0% (2045 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 489.82 | 450.08 ± 0.10 | [450.04 ; 450.12] | 450.03 [450.01 - 450.11] | 4.573 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 9,848.71 | 9,243.01 ± 369.42 | [9,085.00 ; 9,401.02] | 9,129.49 [8,922.11 - 9,581.78] | 2.032 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 215,077.44 | 6,130.95 ± 8,636.28 | [2,437.15 ; 9,824.75] | 1,539.44 [1,137.42 - 6,281.03] | 11.324 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 854.63 | 225.44 ± 123.14 | [172.77 ; 278.11] | 193.09 [112.23 - 310.85] | 6.817 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 70.27 | 16.43 ± 13.35 | [10.71 ; 22.14] | 10.71 [6.31 - 25.24] | 5.635 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 87.50 | 5.89 ± 4.05 | [4.16 ; 7.62] | 4.97 [3.59 - 7.78] | 28.530 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 55.00 | 93.01 ± 17.41 | [85.57 ; 100.46] | 100.00 [100.00 - 100.00] | 3.088 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 489.77 | 450.08 ± 0.11 | [450.02 ; 450.14] | 450.03 [450.00 - 450.14] | 4.276 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 9,845.63 | 9,180.74 ± 341.72 | [8,978.80 ; 9,382.68] | 9,053.22 [8,870.83 - 9,536.77] | 2.321 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 215,101.12 | 6,655.30 ± 9,619.06 | [970.79 ; 12,339.80] | 1,532.71 [1,083.01 - 11,255.49] | 10.525 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 854.52 | 228.39 ± 132.37 | [150.17 ; 306.62] | 192.43 [102.76 - 329.46] | 6.315 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 70.26 | 16.90 ± 14.37 | [8.40 ; 25.39] | 10.80 [6.04 - 29.85] | 5.189 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 87.50 | 6.03 ± 4.47 | [3.39 ; 8.68] | 4.98 [3.11 - 8.93] | 25.753 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 55.00 | 81.69 ± 18.08 | [71.01 ; 92.38] | 89.08 [87.24 - 89.10] | 2.088 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -2689,31 +2689,31 @@ public void calibrate_earth_+2045_singularity_2045() {
 
 | Metric Indicator | MAPE (%) | Calibration Status | T_div (Onset) | Peak Discrepancy | Temporal Trajectory | Suspect Engine |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 6.81% | 🟢 Calibrated | 2062 CE | 9.9% (2070 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 6.80% | 🟢 Calibrated | 2062 CE | 9.9% (2070 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (2050 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 11.28% | 🟡 Moderate drift | 2057 CE | 19.9% (2070 CE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 13.21% | 🟡 Moderate drift | 2058 CE | 25.1% (2070 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 0.00% | 🟢 Calibrated | — | 0.0% (2050 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 97.98% | 🔴 Severe drift | 2050 CE | 99.7% (2070 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 82.80% | 🔴 Severe drift | 2050 CE | 90.6% (2070 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 89.21% | 🔴 Severe drift | 2050 CE | 97.6% (2070 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 97.29% | 🔴 Severe drift | 2050 CE | 100.0% (2058 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 71.62% | 🔴 Severe drift | 2050 CE | 81.8% (2055 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 97.44% | 🔴 Severe drift | 2050 CE | 99.7% (2070 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 81.49% | 🔴 Severe drift | 2050 CE | 91.2% (2070 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 88.06% | 🔴 Severe drift | 2050 CE | 97.6% (2070 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 96.74% | 🔴 Severe drift | 2050 CE | 100.0% (2058 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 72.20% | 🔴 Severe drift | 2050 CE | 81.8% (2056 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.00% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.0% (2050 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 499.24 | 465.00 ± 0.00 | [465.00 ; 465.00] | 465.00 [465.00 - 465.00] | 4.311 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 9,991.33 | 8,854.38 ± 535.45 | [8,625.36 ; 9,083.39] | 8,729.29 [8,371.74 - 9,479.67] | 2.889 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 234,938.78 | 4,112.50 ± 10,132.75 | [-221.35 ; 8,446.35] | 911.42 [873.19 - 1,068.14] | 12.151 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 888.34 | 148.50 ± 131.12 | [92.42 ; 204.58] | 95.89 [91.96 - 106.60] | 7.621 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 71.89 | 7.52 ± 12.88 | [2.00 ; 13.03] | 1.80 [1.78 - 5.25] | 6.987 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 87.50 | 2.37 ± 5.21 | [0.14 ; 4.60] | 0.00 [0.00 - 1.39] | 23.091 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 55.00 | 91.67 ± 19.14 | [83.48 ; 99.85] | 100.00 [100.00 - 100.00] | 2.709 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 499.17 | 465.00 ± 0.00 | [465.00 ; 465.00] | 465.00 [465.00 - 465.00] | 4.028 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 9,988.92 | 8,656.25 ± 755.29 | [8,209.90 ; 9,102.60] | 8,636.25 [7,895.88 - 9,491.99] | 2.439 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 234,943.33 | 5,137.48 ± 12,947.77 | [-2,514.16 ; 12,789.13] | 901.76 [823.59 - 1,190.86] | 10.990 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 888.16 | 158.83 ± 160.69 | [63.87 ; 253.80] | 94.85 [86.71 - 112.59] | 6.196 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 71.88 | 8.30 ± 14.35 | [-0.18 ; 16.78] | 1.80 [1.79 - 6.12] | 6.200 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 87.50 | 2.86 ± 6.30 | [-0.87 ; 6.58] | 0.00 [0.00 - 3.27] | 19.005 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 55.00 | 90.27 ± 22.31 | [77.08 ; 103.45] | 100.00 [96.80 - 100.00] | 2.236 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -2767,31 +2767,31 @@ public void calibrate_earth_+2050_peak_phosphate_2050() {
 
 | Metric Indicator | MAPE (%) | Calibration Status | T_div (Onset) | Peak Discrepancy | Temporal Trajectory | Suspect Engine |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 6.81% | 🟢 Calibrated | 2072 CE | 9.1% (2080 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 6.79% | 🟢 Calibrated | 2072 CE | 9.1% (2080 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 0.00% | 🟢 Calibrated | — | 0.0% (2060 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ‘¥ Population (worldPopulation) | 74.82% | 🔴 Severe drift | 2060 CE | 75.1% (2060 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
+| ðŸ‘¥ Population (worldPopulation) | 74.83% | 🔴 Severe drift | 2060 CE | 75.1% (2060 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 0.00% | 🟢 Calibrated | — | 0.0% (2060 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ’° Gross World Product (grossWorldProduct) | 85.07% | 🔴 Severe drift | 2060 CE | 87.4% (2080 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| âš¡ Primary Energy (primaryEnergy) | 79.46% | 🟢 Trajectory Aligned (T0 Offset) | 2060 CE | 80.6% (2060 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 36.17% | 🟡 Moderate Trend Alignment | 2060 CE | 38.0% (2080 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 21.55% | 🔴 Severe drift | 2062 CE | 27.7% (2072 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 45.54% | 🔴 Severe drift | 2060 CE | 69.0% (2079 CE) | 〰️ Oscillating Cycle | `H3SimulationEngine` |
+| ðŸ’° Gross World Product (grossWorldProduct) | 84.93% | 🔴 Severe drift | 2060 CE | 87.4% (2080 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| âš¡ Primary Energy (primaryEnergy) | 79.49% | 🟢 Trajectory Aligned (T0 Offset) | 2060 CE | 80.6% (2060 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 36.14% | 🔴 Severe drift | 2060 CE | 38.0% (2080 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 21.14% | 🔴 Severe drift | 2062 CE | 27.8% (2072 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 46.10% | 🔴 Severe drift | 2060 CE | 68.6% (2080 CE) | 📈 Divergent (compounding) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.00% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.0% (2060 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 515.30 | 480.10 ± 0.06 | [480.07 ; 480.13] | 480.10 [480.04 - 480.15] | 5.689 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 10,180.39 | 2,563.56 ± 31.14 | [2,550.24 ; 2,576.88] | 2,575.43 [2,543.19 - 2,590.63] | 117.795 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 275,104.76 | 40,446.93 ± 4,745.55 | [38,417.22 ; 42,476.63] | 38,536.85 [37,205.26 - 41,118.66] | 13.079 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 945.83 | 194.39 ± 11.14 | [189.63 ; 199.16] | 198.18 [186.32 - 204.14] | 32.234 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 74.69 | 47.65 ± 0.12 | [47.61 ; 47.70] | 47.69 [47.58 - 47.74] | 24.587 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 87.50 | 68.64 ± 6.53 | [65.85 ; 71.43] | 66.22 [64.12 - 70.41] | 4.083 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 55.00 | 74.98 ± 19.23 | [66.75 ; 83.20] | 81.91 [65.84 - 90.40] | 1.469 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 515.23 | 480.10 ± 0.07 | [480.06 ; 480.14] | 480.10 [480.04 - 480.16] | 5.314 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 10,178.98 | 2,561.94 ± 33.17 | [2,542.34 ; 2,581.54] | 2,574.71 [2,533.93 - 2,590.74] | 110.386 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 275,096.97 | 40,749.90 ± 5,338.32 | [37,595.15 ; 43,904.65] | 38,772.08 [37,142.39 - 42,856.35] | 12.204 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 945.54 | 194.07 ± 11.76 | [187.12 ; 201.03] | 198.07 [183.55 - 204.61] | 30.169 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 74.68 | 47.66 ± 0.12 | [47.59 ; 47.73] | 47.69 [47.57 - 47.75] | 22.976 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 87.50 | 69.00 ± 7.19 | [64.76 ; 73.25] | 66.11 [63.73 - 72.95] | 3.640 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 55.00 | 74.16 ± 20.76 | [61.89 ; 86.42] | 81.40 [60.28 - 91.05] | 1.305 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 
@@ -3191,25 +3191,25 @@ public void calibrate_moon_+2150_cryo_methane_2150() {
 | ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 0.00% | 🟢 Calibrated | — | 0.0% (2200 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | ðŸ’° Gross World Product (grossWorldProduct) | 100.00% | 🔴 Severe drift | 2200 CE | 100.0% (2220 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 | âš¡ Primary Energy (primaryEnergy) | 100.00% | 🔴 Severe drift | 2200 CE | 100.0% (2220 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 68.43% | 🔴 Severe drift | 2200 CE | 79.8% (2220 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“– Literacy Rate (literacyRate) | 83.03% | 🔴 Severe drift | 2200 CE | 87.9% (2220 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 75.76% | 🔴 Severe drift | 2200 CE | 81.8% (2200 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 68.41% | 🔴 Severe drift | 2200 CE | 79.8% (2220 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“– Literacy Rate (literacyRate) | 82.95% | 🔴 Severe drift | 2200 CE | 87.9% (2220 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 75.21% | 🔴 Severe drift | 2200 CE | 81.8% (2200 CE) | ➖ Stable Offset (Uniform) | `H3SimulationEngine` |
 | ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 0.00% | 🟢 Trajectory Aligned (T0 Offset) | — | 0.0% (2200 CE) | 🟢 Stable (Invariant / Calibrated) | `H3SimulationEngine` |
 
 #### 2. Descriptive Statistics & Hypothesis Invariance (H0: Sim = Obs)
 
 | Variable | N | Observed Mean (Î¼_obs) | Simulated Mean (Î¼_sim Â± Ïƒ) | 95% CI (Simulated) | Median [IQR] | Cohen's d | Signif. p-val |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 21 | 540.00 | 600.00 ± 0.00 | [600.00 ; 600.00] | 600.00 [600.00 - 600.00] | 33768017.710 | *** (p < 0.001) |
-| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 21 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
-| ðŸ‘¥ Population (worldPopulation) | 21 | 10,180.00 | 0.44 ± 0.03 | [0.42 ; 0.45] | 0.44 [0.41 - 0.46] | 459040.586 | *** (p < 0.001) |
-| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 21 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
-| ðŸ’° Gross World Product (grossWorldProduct) | 21 | 380,000.00 | 1.31 ± 0.32 | [1.18 ; 1.45] | 1.26 [1.06 - 1.54] | 1689434.147 | *** (p < 0.001) |
-| âš¡ Primary Energy (primaryEnergy) | 21 | 1,050.00 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 871849.339 | *** (p < 0.001) |
-| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 21 | 80.00 | 25.25 ± 6.30 | [22.56 ; 27.95] | 24.92 [19.70 - 30.55] | 12.290 | *** (p < 0.001) |
-| ðŸ“– Literacy Rate (literacyRate) | 21 | 87.50 | 14.85 ± 3.12 | [13.52 ; 16.19] | 14.52 [12.46 - 16.34] | 32.947 | *** (p < 0.001) |
-| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 21 | 55.00 | 13.33 ± 4.83 | [11.27 ; 15.40] | 10.00 [10.00 - 20.00] | 12.199 | *** (p < 0.001) |
-| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 21 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
+| ðŸŒ¿ Atmospheric CO2 (co2Concentration) | 11 | 540.00 | 600.00 ± 0.00 | [600.00 ; 600.00] | 600.00 [600.00 - 600.00] | 31392812.051 | *** (p < 0.001) |
+| â˜€ï¸ Milankovitch 65Â°N (milankovitchInsolation) | 11 | 458.50 | 458.50 ± 0.00 | [458.50 ; 458.50] | 458.50 [458.50 - 458.50] | 0.000 | ns |
+| ðŸ‘¥ Population (worldPopulation) | 11 | 10,180.00 | 0.44 ± 0.03 | [0.42 ; 0.46] | 0.44 [0.41 - 0.47] | 429961.091 | *** (p < 0.001) |
+| ðŸ¦£ Megafauna Abundance (megafaunaIndex) | 11 | 1.50 | 1.50 ± 0.00 | [1.50 ; 1.50] | 1.50 [1.50 - 1.50] | 0.000 | ns |
+| ðŸ’° Gross World Product (grossWorldProduct) | 11 | 380,000.00 | 1.32 ± 0.34 | [1.12 ; 1.52] | 1.26 [1.02 - 1.61] | 1568466.798 | *** (p < 0.001) |
+| âš¡ Primary Energy (primaryEnergy) | 11 | 1,050.00 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 810533.517 | *** (p < 0.001) |
+| ðŸ™ï¸ Urbanization Rate (urbanizationRate) | 11 | 80.00 | 25.28 ± 6.67 | [21.33 ; 29.22] | 24.92 [18.90 - 31.60] | 11.598 | *** (p < 0.001) |
+| ðŸ“– Literacy Rate (literacyRate) | 11 | 87.50 | 14.92 ± 3.42 | [12.90 ; 16.94] | 14.52 [12.06 - 16.74] | 30.049 | *** (p < 0.001) |
+| ðŸ“‰ Sociopolitical Instability (sociopoliticalInstability) | 11 | 55.00 | 13.64 ± 5.05 | [10.65 ; 16.62] | 10.00 [10.00 - 20.00] | 11.594 | *** (p < 0.001) |
+| ðŸ›¡ï¸ Zero-Containment Score (zeroContainmentScore) | 11 | 0.04 | 0.04 ± 0.00 | [0.04 ; 0.04] | 0.04 [0.04 - 0.04] | 0.000 | ns |
 
 #### 3. 2D Cartographic Tensor Spatial Comparison (Map-by-Map)
 

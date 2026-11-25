@@ -2,11 +2,11 @@
 
 **Scenario**: `Ancient Egypt & Early Dynastic Nile Valley (-3000 BCE)`
 
-**Simulation Run Identifier**: `RUN-ANCIENT-EGYPT---NILE-VALLEY---3000-BCE--1853`
+**Simulation Run Identifier**: `RUN-ANCIENT-EGYPT---NILE-VALLEY---3000-BCE--7354`
 
 **Spatial Domain**: H3 Resolution 4 (Planetary Mesh)
 
-**Execution Duration**: 569.6 s
+**Execution Duration**: 461.8 s
 
 ## ⚡ 1. Simulation Engine Execution & Computational Throughput Performance
 
@@ -15,18 +15,18 @@
 | **Spatial Mesh Resolution** | **Res 4** | Full Planetary Sphere | 🌐 Grid Domain |
 | **Active Hexagonal Cells** | **288,122** | Computational Mesh Vertices | 📦 Cell Domain |
 | **Temporal Integration Steps** | **240** | Monthly Ticks (Δt = 30 days) | ⏱️ Temporal Depth |
-| **Total Physics Run Time** | **569.63 s** | Wall-clock execution duration | ⏳ Wall Time |
-| **Simulation Throughput (TPS)** | **0.42** | Ticks Per Second | 🟡 Nominal Real-Time |
-| **Mean Step Latency (ms/tick)** | **2373.47 ms** | Mean execution per monthly tick | 🟡 Heavy Physical Iteration |
-| **Per-Cell Latency** | **8.238 μs** | Microseconds per cell per tick | 🚀 Micro-Scaling |
-| **Cellular Processing Throughput** | **121,393** | Cells Evaluated / Second | 📈 Compute Density |
-| **JVM Heap Allocation** | **4,988 MB / 8,192 MB** | Used Memory / Max Available Heap | 💾 Memory Footprint |
+| **Total Physics Run Time** | **461.80 s** | Wall-clock execution duration | ⏳ Wall Time |
+| **Simulation Throughput (TPS)** | **0.52** | Ticks Per Second | 🟡 Nominal Real-Time |
+| **Mean Step Latency (ms/tick)** | **1924.16 ms** | Mean execution per monthly tick | 🟡 Heavy Physical Iteration |
+| **Per-Cell Latency** | **6.678 μs** | Microseconds per cell per tick | 🚀 Micro-Scaling |
+| **Cellular Processing Throughput** | **149,739** | Cells Evaluated / Second | 📈 Compute Density |
+| **JVM Heap Allocation** | **4,202 MB / 8,192 MB** | Used Memory / Max Available Heap | 💾 Memory Footprint |
 
 # 📊 UNIFIED COMPARATIVE & CLIODYNAMIC AUDIT REPORT
 
 **Reference Baseline**: `Empirical Cliodynamic Reality (-100,000 BP ➔ 2025 CE)` (`HISTORICAL_GROUND_TRUTH`)
 
-**Date Intersection Window**: `[-3000 .. -2980]` (21 aligned sample points)
+**Date Intersection Window**: `[-3000 .. -2980]` (11 aligned sample points)
 
 **Verification Standard**: Continuous Temporal Confidence Tolerance Envelope $\tau(t)$ [AGENTS.md §11] (Deep Time: $\pm 50\%$, Antiquity: $\pm 25\text{-}35\%$, Modern: $\pm 5\%$)
 
@@ -34,7 +34,7 @@
 
 | Rank | Scenario | Run ID | Status | Mean Delta / MAPE (%) | Mean Pearson r | Earliest Divergence |
 |:---:|:---|:---|:---:|:---:|:---:|:---:|
-| #1 | **Ancient Egypt & Early Dynastic Nile Valley (-3000 BCE)** | `RUN-ANCIENT-EGYPT---NILE-VALLEY---3000-BCE--1853` | 🔴 Divergent | **321218.41%** | **+0.745** | -3000 |
+| #1 | **Ancient Egypt & Early Dynastic Nile Valley (-3000 BCE)** | `RUN-ANCIENT-EGYPT---NILE-VALLEY---3000-BCE--7354` | 🔴 Divergent | **159686.07%** | **+0.742** | -3000 |
 
 ---
 
@@ -42,47 +42,47 @@
 
 | Canonical State Variable | Ancient Egypt & Early Dynastic Nile Valley (-3000 BCE) |
 |---|---|
-| **👥 Global Demographic Population (worldPopulation)** | 🔴 r=+0.94 (89.2%) |
+| **👥 Global Demographic Population (worldPopulation)** | 🔴 r=+0.93 (89.2%) |
 | **💰 Gross World Product (grossWorldProduct)** | ⚪ N/A |
-| **⚡ Primary Energy Consumption (primaryEnergy)** | 🟢 r=+0.95 (92.3%) |
+| **⚡ Primary Energy Consumption (primaryEnergy)** | 🟢 r=+0.94 (92.3%) |
 | **🏙️ Urbanization Rate (urbanizationRate)** | 🟢 r=+0.98 (32.9%) |
-| **🌿 Atmospheric CO2 Concentration (co2Concentration)** | 🟢 r=+0.69 (2.5%) |
-| **📖 Global Literacy Rate (literacyRate)** | 🟢 r=+0.99 (37.3%) |
-| **🪙 Currency Debasement / Coinage Purity (currencyDebasement)** | 🔴 r=+0.00 (28.4%) |
-| **👑 Elite Overproduction Index (eliteOverproductionIndex)** | 🟢 r=+0.99 (20.1%) |
-| **🍞 Real Unskilled Wage (realUnskilledWage)** | 🟢 r=+0.94 (5.5%) |
-| **🏛️ Political Stress Index (politicalStressIndex)** | 🟡 r=+1.00 (130.5%) |
-| **🤝 Asabiyyah Social Cohesion (asabiyyahSocialCohesion)** | 🟢 r=+0.99 (46.8%) |
-| **📉 Sociopolitical Instability (sociopoliticalInstability)** | 🟡 r=+0.79 (210.1%) |
-| **⚖️ Gini Inequality (giniInequality)** | 🟡 r=+0.93 (18.1%) |
-| **📜 Sovereign Debt Burden (sovereignDebtBurden)** | 🟢 r=+0.96 (241.8%) |
-| **🚢 Global Trade Volume (globalTradeVolume)** | 🟢 r=+0.98 (502673.2%) |
+| **🌿 Atmospheric CO2 Concentration (co2Concentration)** | 🟢 r=+0.67 (2.5%) |
+| **📖 Global Literacy Rate (literacyRate)** | 🟢 r=+0.99 (37.2%) |
+| **🪙 Currency Debasement / Coinage Purity (currencyDebasement)** | 🔴 r=+0.00 (28.0%) |
+| **👑 Elite Overproduction Index (eliteOverproductionIndex)** | 🟢 r=+0.99 (20.3%) |
+| **🍞 Real Unskilled Wage (realUnskilledWage)** | 🟢 r=+0.93 (5.5%) |
+| **🏛️ Political Stress Index (politicalStressIndex)** | 🟡 r=+1.00 (133.7%) |
+| **🤝 Asabiyyah Social Cohesion (asabiyyahSocialCohesion)** | 🟢 r=+0.99 (46.9%) |
+| **📉 Sociopolitical Instability (sociopoliticalInstability)** | 🟡 r=+0.79 (208.3%) |
+| **⚖️ Gini Inequality (giniInequality)** | 🟡 r=+0.93 (18.8%) |
+| **📜 Sovereign Debt Burden (sovereignDebtBurden)** | 🟢 r=+0.96 (244.8%) |
+| **🚢 Global Trade Volume (globalTradeVolume)** | 🟢 r=+0.98 (529543.5%) |
 | **🌡️ Temperature Anomaly (temperatureAnomaly)** | 🟢 r=+1.00 (0.5%) |
-| **🌱 Topsoil Erosion Loss (soilErosionRate)** | 🔴 r=+0.96 (115.9%) |
-| **🌾 Agricultural EROEI (agriculturalEroei)** | 🔴 r=+0.00 (26.9%) |
-| **🌲 Forest Cover Remaining (deforestationRate)** | 🟡 r=+0.98 (12.2%) |
-| **⚡ Information Travel Speed (informationSpeed)** | 🟢 r=+0.98 (24.9%) |
+| **🌱 Topsoil Erosion Loss (soilErosionRate)** | 🔴 r=+0.96 (116.8%) |
+| **🌾 Agricultural EROEI (agriculturalEroei)** | 🔴 r=+0.00 (28.9%) |
+| **🌲 Forest Cover Remaining (deforestationRate)** | 🟡 r=+0.97 (12.3%) |
+| **⚡ Information Travel Speed (informationSpeed)** | 🟢 r=+0.98 (25.0%) |
 | **🦣 Megafauna Abundance Index (megafaunaIndex)** | ⚪ N/A |
 | **☀️ Milankovitch 65°N Insolation (milankovitchInsolation)** | ⚪ N/A |
-| **🛡️ Biogeographical Zero-Containment (zeroContainmentScore)** | 🟡 r=+0.95 (3.8%) |
-| **👶 Life Expectancy at Birth (lifeExpectancyAtBirth)** | 🟡 r=+0.91 (7.5%) |
-| **⚒️ Metal Smelting Per Capita (metalSmeltingPerCapita)** | 🟡 r=+0.97 (59.0%) |
+| **🛡️ Biogeographical Zero-Containment (zeroContainmentScore)** | 🟡 r=+0.94 (4.2%) |
+| **👶 Life Expectancy at Birth (lifeExpectancyAtBirth)** | 🟡 r=+0.90 (8.3%) |
+| **⚒️ Metal Smelting Per Capita (metalSmeltingPerCapita)** | 🟡 r=+0.97 (61.0%) |
 | **⛏️ Fossil Share Primary Energy (fossilSharePrimaryEnergy)** | 🔴 r=+0.00 (0.5%) |
-| **⚓ Shipping Freight Cost Index (shippingFreightCostIndex)** | 🔴 r=-1.00 (7205362.1%) |
+| **⚓ Shipping Freight Cost Index (shippingFreightCostIndex)** | 🔴 r=-1.00 (3301704.5%) |
 
 ## 📊 3. Deep Diagnostic Analysis by Scenario
 
-### 🔎 Scenario: `Ancient Egypt & Early Dynastic Nile Valley (-3000 BCE)` (`RUN-ANCIENT-EGYPT---NILE-VALLEY---3000-BCE--1853`)
+### 🔎 Scenario: `Ancient Egypt & Early Dynastic Nile Valley (-3000 BCE)` (`RUN-ANCIENT-EGYPT---NILE-VALLEY---3000-BCE--7354`)
 
 #### 🌿 3.1 Tier 1 Direct Biophysical Observables (Conserved Mass, Energy & Population)
 
 | Audited Variable | Mean Delta / MAPE (%) | Pearson r | Status | Drift Onset | Peak Discrepancy | Responsible Engine |
 |---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 89.22% | +0.945 | 🔴 Severe drift | 3000 BCE | 89.4% (2996 BCE) | `H3SimulationEngine` |
-| 🌿 Atmospheric CO2 Concentration (co2Concentration) | 2.50% | +0.685 | 🟢 Calibrated | — | 2.5% (3000 BCE) | `H3SimulationEngine` |
+| 👥 Global Demographic Population (worldPopulation) | 89.21% | +0.931 | 🔴 Severe drift | 3000 BCE | 89.4% (2996 BCE) | `H3SimulationEngine` |
+| 🌿 Atmospheric CO2 Concentration (co2Concentration) | 2.50% | +0.674 | 🟢 Calibrated | — | 2.5% (3000 BCE) | `H3SimulationEngine` |
 | 🌡️ Temperature Anomaly (temperatureAnomaly) | 0.46% | +1.000 | 🟢 Calibrated | — | 0.5% (2980 BCE) | `H3SimulationEngine` |
-| 🌱 Topsoil Erosion Loss (soilErosionRate) | 115.87% | +0.961 | 🔴 Severe drift | 2996 BCE | 196.9% (2980 BCE) | `H3SimulationEngine` |
-| 🌲 Forest Cover Remaining (deforestationRate) | 12.18% | +0.975 | 🟡 Moderate drift | — | 23.0% (2980 BCE) | `H3SimulationEngine` |
+| 🌱 Topsoil Erosion Loss (soilErosionRate) | 116.78% | +0.959 | 🔴 Severe drift | 2996 BCE | 196.9% (2980 BCE) | `H3SimulationEngine` |
+| 🌲 Forest Cover Remaining (deforestationRate) | 12.35% | +0.974 | 🟡 Moderate drift | — | 23.0% (2980 BCE) | `H3SimulationEngine` |
 | 🦣 Megafauna Abundance Index (megafaunaIndex) | 0.00% | +0.000 | ⚪ N/A | — | — | `H3SimulationEngine` |
 | ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0.00% | +0.000 | ⚪ N/A | — | — | `H3SimulationEngine` |
 
@@ -93,57 +93,57 @@
 | Variable | Pearson r | Theil U^M | Theil U^C | Log Growth r(Δln Y) | T0 Offset | Mean Delta / MAPE | Diagnostic Status | Responsible Theory |
 |---|---|---|---|---|---|---|---|---|
 | 💰 Gross World Product (grossWorldProduct) | **+0.000** | 0.0% | 100.0% | +0.000 | 0.0% | 0.0% | ⚪ N/A | `H3SimulationEngine` |
-| ⚡ Primary Energy Consumption (primaryEnergy) | **+0.952** | 100.0% | 0.0% | -0.836 | 92.7% | 92.3% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
-| 🏙️ Urbanization Rate (urbanizationRate) | **+0.982** | 99.6% | 0.0% | -0.674 | 1443.0% | 32.9% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
-| 📖 Global Literacy Rate (literacyRate) | **+0.985** | 70.5% | 0.0% | +0.130 | 100.0% | 37.3% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
-| 🪙 Currency Debasement / Coinage Purity (currencyDebasement) | **+0.000** | 90.7% | 0.0% | +0.000 | 500.0% | 28.4% | 🔴 Severe drift | `H3SimulationEngine` |
-| 👑 Elite Overproduction Index (eliteOverproductionIndex) | **+0.995** | 61.7% | 0.0% | -0.436 | 0.0% | 20.1% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
-| 🍞 Real Unskilled Wage (realUnskilledWage) | **+0.938** | 99.0% | 0.0% | -0.827 | 6.1% | 5.5% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
-| 🏛️ Political Stress Index (politicalStressIndex) | **+0.997** | 41.7% | 0.0% | +0.914 | 100.0% | 130.5% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
-| 🤝 Asabiyyah Social Cohesion (asabiyyahSocialCohesion) | **+0.987** | 70.2% | 0.0% | +0.181 | 5.3% | 46.8% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
-| 📉 Sociopolitical Instability (sociopoliticalInstability) | **+0.791** | 84.8% | 0.0% | +0.515 | 64.4% | 210.1% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
-| ⚖️ Gini Inequality (giniInequality) | **+0.928** | 22.6% | 0.0% | +0.887 | 32.7% | 18.1% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
-| 📜 Sovereign Debt Burden (sovereignDebtBurden) | **+0.963** | 77.2% | 0.0% | -0.239 | 369.5% | 241.8% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
-| 🚢 Global Trade Volume (globalTradeVolume) | **+0.981** | 61.5% | 0.0% | +0.892 | 0.0% | 502673.2% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
-| 🌾 Agricultural EROEI (agriculturalEroei) | **+0.000** | 16.1% | 0.0% | +0.000 | 99.4% | 26.9% | 🔴 Severe drift | `H3SimulationEngine` |
-| ⚡ Information Travel Speed (informationSpeed) | **+0.977** | 90.3% | 0.0% | +0.801 | 42.4% | 24.9% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | **+0.950** | 5.7% | 0.0% | +0.690 | 5.3% | 3.8% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
-| 👶 Life Expectancy at Birth (lifeExpectancyAtBirth) | **+0.914** | 12.4% | 0.0% | -0.520 | 22.4% | 7.5% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
-| ⚒️ Metal Smelting Per Capita (metalSmeltingPerCapita) | **+0.975** | 40.6% | 0.0% | +0.667 | 72.6% | 59.0% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
-| ⛏️ Fossil Share Primary Energy (fossilSharePrimaryEnergy) | **+0.000** | 18.3% | 0.0% | +0.000 | 0.0% | 0.5% | 🔴 Severe drift | `H3SimulationEngine` |
-| ⚓ Shipping Freight Cost Index (shippingFreightCostIndex) | **-0.998** | 96.3% | 0.0% | +0.536 | 141500.0% | 7205362.1% | 🔴 Severe drift | `H3SimulationEngine` |
+| ⚡ Primary Energy Consumption (primaryEnergy) | **+0.943** | 100.0% | 0.0% | -0.853 | 92.7% | 92.3% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
+| 🏙️ Urbanization Rate (urbanizationRate) | **+0.983** | 99.5% | 0.0% | -0.700 | 1443.0% | 32.9% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
+| 📖 Global Literacy Rate (literacyRate) | **+0.986** | 68.0% | 0.0% | -0.003 | 100.0% | 37.2% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
+| 🪙 Currency Debasement / Coinage Purity (currencyDebasement) | **+0.000** | 89.4% | 0.0% | +0.000 | 500.0% | 28.0% | 🔴 Severe drift | `H3SimulationEngine` |
+| 👑 Elite Overproduction Index (eliteOverproductionIndex) | **+0.993** | 59.6% | 0.0% | -0.457 | 0.0% | 20.3% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
+| 🍞 Real Unskilled Wage (realUnskilledWage) | **+0.930** | 98.7% | 0.0% | -0.853 | 6.1% | 5.5% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
+| 🏛️ Political Stress Index (politicalStressIndex) | **+0.998** | 38.6% | 0.0% | +0.993 | 100.0% | 133.7% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
+| 🤝 Asabiyyah Social Cohesion (asabiyyahSocialCohesion) | **+0.986** | 67.5% | 0.0% | +0.200 | 5.3% | 46.9% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
+| 📉 Sociopolitical Instability (sociopoliticalInstability) | **+0.787** | 78.8% | 0.0% | +0.656 | 64.4% | 208.3% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
+| ⚖️ Gini Inequality (giniInequality) | **+0.926** | 17.6% | 0.0% | +0.891 | 32.7% | 18.8% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
+| 📜 Sovereign Debt Burden (sovereignDebtBurden) | **+0.961** | 72.5% | 0.0% | -0.460 | 369.5% | 244.8% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
+| 🚢 Global Trade Volume (globalTradeVolume) | **+0.979** | 57.1% | 0.0% | +0.593 | 0.0% | 529543.5% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
+| 🌾 Agricultural EROEI (agriculturalEroei) | **+0.000** | 15.4% | 0.0% | +0.000 | 99.4% | 28.9% | 🔴 Severe drift | `H3SimulationEngine` |
+| ⚡ Information Travel Speed (informationSpeed) | **+0.976** | 88.7% | 0.0% | +0.812 | 42.4% | 25.0% | 🟢 Trajectory Aligned (T0 Offset) | `H3SimulationEngine` |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | **+0.944** | 6.0% | 0.0% | +0.721 | 5.3% | 4.2% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
+| 👶 Life Expectancy at Birth (lifeExpectancyAtBirth) | **+0.900** | 6.1% | 0.0% | -0.654 | 22.4% | 8.3% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
+| ⚒️ Metal Smelting Per Capita (metalSmeltingPerCapita) | **+0.974** | 34.9% | 0.0% | +0.705 | 72.6% | 61.0% | 🟡 Moderate Trend Alignment | `H3SimulationEngine` |
+| ⛏️ Fossil Share Primary Energy (fossilSharePrimaryEnergy) | **+0.000** | 16.8% | 0.0% | +0.000 | 0.0% | 0.5% | 🔴 Severe drift | `H3SimulationEngine` |
+| ⚓ Shipping Freight Cost Index (shippingFreightCostIndex) | **-0.998** | 95.7% | 0.0% | +0.485 | 141500.0% | 3301704.5% | 🔴 Severe drift | `H3SimulationEngine` |
 
 #### 📐 3.3 Descriptive Statistics & Hypothesis Tests ($H_0$: Target = Reference)
 
 | Variable | Samples (N) | Reference Mean (μ_ref) | Target Mean (μ_tgt ± σ) | 95% CI Target | Median [IQR] | Cohen's d | Significance (p-val) |
 |---|---|---|---|---|---|---|---|
-| 👥 Global Demographic Population (worldPopulation) | 21 | 14.06 | 1.52 ± 0.03 | [1.50 ; 1.53] | 1.51 [1.49 - 1.54] | 380.099 | *** (p < 0.001) |
+| 👥 Global Demographic Population (worldPopulation) | 11 | 14.06 | 1.52 ± 0.03 | [1.50 ; 1.53] | 1.51 [1.49 - 1.54] | 356.838 | *** (p < 0.001) |
 | 💰 Gross World Product (grossWorldProduct) | 0 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
-| ⚡ Primary Energy Consumption (primaryEnergy) | 21 | 0.23 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 251.920 | *** (p < 0.001) |
-| 🏙️ Urbanization Rate (urbanizationRate) | 21 | 0.10 | 1.75 ± 0.10 | [1.70 ; 1.79] | 1.76 [1.68 - 1.82] | 22.368 | *** (p < 0.001) |
-| 🌿 Atmospheric CO2 Concentration (co2Concentration) | 21 | 268.29 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 913.919 | *** (p < 0.001) |
-| 📖 Global Literacy Rate (literacyRate) | 21 | 0.20 | 2.03 ± 1.19 | [1.53 ; 2.54] | 2.29 [1.09 - 3.06] | 2.184 | *** (p < 0.001) |
-| 🪙 Currency Debasement / Coinage Purity (currencyDebasement) | 21 | 0.00 | 28.36 ± 9.09 | [24.48 ; 32.25] | 31.59 [29.59 - 34.05] | 4.414 | *** (p < 0.001) |
-| 👑 Elite Overproduction Index (eliteOverproductionIndex) | 21 | 1.00 | 1.20 ± 0.16 | [1.13 ; 1.27] | 1.19 [1.06 - 1.33] | 1.786 | *** (p < 0.001) |
-| 🍞 Real Unskilled Wage (realUnskilledWage) | 21 | 106.50 | 100.64 ± 0.60 | [100.38 ; 100.90] | 100.47 [100.15 - 100.93] | 13.760 | *** (p < 0.001) |
-| 🏛️ Political Stress Index (politicalStressIndex) | 21 | 16.01 | 32.36 ± 19.40 | [24.06 ; 40.66] | 33.73 [16.86 - 49.37] | 1.192 | *** (p < 0.001) |
-| 🤝 Asabiyyah Social Cohesion (asabiyyahSocialCohesion) | 21 | 0.76 | 0.41 ± 0.23 | [0.31 ; 0.51] | 0.39 [0.17 - 0.60] | 2.169 | *** (p < 0.001) |
-| 📉 Sociopolitical Instability (sociopoliticalInstability) | 21 | 28.13 | 85.52 ± 24.27 | [75.13 ; 95.90] | 98.58 [81.47 - 100.00] | 3.343 | *** (p < 0.001) |
-| ⚖️ Gini Inequality (giniInequality) | 21 | 0.35 | 0.38 ± 0.06 | [0.35 ; 0.41] | 0.40 [0.35 - 0.43] | 0.762 | ** (p < 0.01) |
-| 📜 Sovereign Debt Burden (sovereignDebtBurden) | 21 | 0.00 | 13.74 ± 7.47 | [10.55 ; 16.94] | 11.05 [8.72 - 16.47] | 2.601 | *** (p < 0.001) |
-| 🚢 Global Trade Volume (globalTradeVolume) | 21 | 0.00 | 1.97 ± 1.56 | [1.30 ; 2.63] | 1.62 [0.86 - 2.65] | 1.786 | *** (p < 0.001) |
-| 🌡️ Temperature Anomaly (temperatureAnomaly) | 21 | -0.10 | -0.08 ± 0.00 | [-0.08 ; -0.08] | -0.08 [-0.08 - -0.08] | 1226065.684 | *** (p < 0.001) |
-| 🌱 Topsoil Erosion Loss (soilErosionRate) | 21 | 8.52 | 17.97 ± 5.74 | [15.52 ; 20.43] | 19.53 [14.76 - 22.19] | 2.328 | *** (p < 0.001) |
-| 🌾 Agricultural EROEI (agriculturalEroei) | 21 | 4.20 | 3.55 ± 1.48 | [2.92 ; 4.18] | 4.01 [2.82 - 4.62] | 0.620 | ** (p < 0.01) |
-| 🌲 Forest Cover Remaining (deforestationRate) | 21 | 92.28 | 82.07 ± 7.84 | [78.72 ; 85.42] | 80.32 [76.32 - 86.88] | 1.843 | *** (p < 0.001) |
-| ⚡ Information Travel Speed (informationSpeed) | 21 | 65.06 | 48.87 ± 5.35 | [46.58 ; 51.16] | 50.03 [45.57 - 52.79] | 4.277 | *** (p < 0.001) |
+| ⚡ Primary Energy Consumption (primaryEnergy) | 11 | 0.23 | 0.02 ± 0.00 | [0.02 ; 0.02] | 0.02 [0.02 - 0.02] | 230.628 | *** (p < 0.001) |
+| 🏙️ Urbanization Rate (urbanizationRate) | 11 | 0.10 | 1.74 ± 0.11 | [1.68 ; 1.81] | 1.76 [1.66 - 1.83] | 20.653 | *** (p < 0.001) |
+| 🌿 Atmospheric CO2 Concentration (co2Concentration) | 11 | 268.29 | 275.00 ± 0.00 | [275.00 ; 275.00] | 275.00 [275.00 - 275.00] | 854.894 | *** (p < 0.001) |
+| 📖 Global Literacy Rate (literacyRate) | 11 | 0.20 | 2.02 ± 1.25 | [1.29 ; 2.76] | 2.29 [0.82 - 3.17] | 2.059 | *** (p < 0.001) |
+| 🪙 Currency Debasement / Coinage Purity (currencyDebasement) | 11 | 0.00 | 28.02 ± 9.64 | [22.33 ; 33.72] | 31.59 [25.83 - 34.06] | 4.113 | *** (p < 0.001) |
+| 👑 Elite Overproduction Index (eliteOverproductionIndex) | 11 | 1.00 | 1.20 ± 0.17 | [1.11 ; 1.30] | 1.19 [1.04 - 1.36] | 1.708 | *** (p < 0.001) |
+| 🍞 Real Unskilled Wage (realUnskilledWage) | 11 | 106.50 | 100.67 ± 0.67 | [100.27 ; 101.06] | 100.47 [100.11 - 101.06] | 12.286 | *** (p < 0.001) |
+| 🏛️ Political Stress Index (politicalStressIndex) | 11 | 16.01 | 32.30 ± 20.64 | [20.10 ; 44.50] | 33.73 [13.28 - 51.60] | 1.116 | *** (p < 0.001) |
+| 🤝 Asabiyyah Social Cohesion (asabiyyahSocialCohesion) | 11 | 0.76 | 0.41 ± 0.24 | [0.27 ; 0.55] | 0.39 [0.16 - 0.64] | 2.035 | *** (p < 0.001) |
+| 📉 Sociopolitical Instability (sociopoliticalInstability) | 11 | 28.13 | 83.44 ± 28.72 | [66.47 ; 100.42] | 98.58 [71.33 - 100.00] | 2.724 | *** (p < 0.001) |
+| ⚖️ Gini Inequality (giniInequality) | 11 | 0.35 | 0.38 ± 0.07 | [0.34 ; 0.42] | 0.40 [0.33 - 0.43] | 0.651 | ** (p < 0.01) |
+| 📜 Sovereign Debt Burden (sovereignDebtBurden) | 11 | 0.00 | 14.02 ± 8.64 | [8.92 ; 19.13] | 11.05 [8.60 - 18.12] | 2.295 | *** (p < 0.001) |
+| 🚢 Global Trade Volume (globalTradeVolume) | 11 | 0.00 | 2.03 ± 1.76 | [0.99 ; 3.07] | 1.62 [0.71 - 2.97] | 1.632 | *** (p < 0.001) |
+| 🌡️ Temperature Anomaly (temperatureAnomaly) | 11 | -0.10 | -0.08 ± 0.00 | [-0.08 ; -0.08] | -0.08 [-0.08 - -0.08] | 1163257.509 | *** (p < 0.001) |
+| 🌱 Topsoil Erosion Loss (soilErosionRate) | 11 | 8.52 | 17.82 ± 6.31 | [14.09 ; 21.55] | 19.53 [13.34 - 22.71] | 2.086 | *** (p < 0.001) |
+| 🌾 Agricultural EROEI (agriculturalEroei) | 11 | 4.20 | 3.51 ± 1.63 | [2.54 ; 4.47] | 4.01 [2.43 - 4.73] | 0.603 | ** (p < 0.01) |
+| 🌲 Forest Cover Remaining (deforestationRate) | 11 | 92.28 | 82.22 ± 8.57 | [77.16 ; 87.29] | 80.32 [75.49 - 88.71] | 1.660 | *** (p < 0.001) |
+| ⚡ Information Travel Speed (informationSpeed) | 11 | 65.06 | 48.77 ± 5.85 | [45.31 ; 52.23] | 50.03 [44.32 - 53.36] | 3.935 | *** (p < 0.001) |
 | 🦣 Megafauna Abundance Index (megafaunaIndex) | 0 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
 | ☀️ Milankovitch 65°N Insolation (milankovitchInsolation) | 0 | 0.00 | 0.00 ± 0.00 | [0.00 ; 0.00] | 0.00 [0.00 - 0.00] | 0.000 | ns |
-| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 21 | 0.95 | 0.94 ± 0.05 | [0.92 ; 0.96] | 0.95 [0.92 - 0.97] | 0.346 | * (p < 0.05) |
-| 👶 Life Expectancy at Birth (lifeExpectancyAtBirth) | 21 | 31.00 | 32.01 ± 2.67 | [30.87 ; 33.15] | 32.66 [30.76 - 33.96] | 0.532 | ** (p < 0.01) |
-| ⚒️ Metal Smelting Per Capita (metalSmeltingPerCapita) | 21 | 0.80 | 1.15 ± 0.42 | [0.97 ; 1.33] | 1.24 [0.90 - 1.45] | 1.164 | *** (p < 0.001) |
-| ⛏️ Fossil Share Primary Energy (fossilSharePrimaryEnergy) | 21 | 0.00 | 0.47 ± 1.00 | [0.05 ; 0.90] | 0.00 [0.00 - 0.00] | 0.669 | ** (p < 0.01) |
-| ⚓ Shipping Freight Cost Index (shippingFreightCostIndex) | 21 | 0.20 | 1,191.89 ± 233.85 | [1,091.87 ; 1,291.91] | 1,258.62 [1,038.27 - 1,411.96] | 7.207 | *** (p < 0.001) |
+| 🛡️ Biogeographical Zero-Containment (zeroContainmentScore) | 11 | 0.95 | 0.94 ± 0.05 | [0.90 ; 0.97] | 0.95 [0.91 - 0.98] | 0.357 | * (p < 0.05) |
+| 👶 Life Expectancy at Birth (lifeExpectancyAtBirth) | 11 | 31.00 | 31.81 ± 3.17 | [29.94 ; 33.69] | 32.66 [30.26 - 34.17] | 0.361 | * (p < 0.05) |
+| ⚒️ Metal Smelting Per Capita (metalSmeltingPerCapita) | 11 | 0.80 | 1.14 ± 0.47 | [0.87 ; 1.42] | 1.24 [0.81 - 1.50] | 1.033 | *** (p < 0.001) |
+| ⛏️ Fossil Share Primary Energy (fossilSharePrimaryEnergy) | 11 | 0.00 | 0.46 ± 1.01 | [-0.14 ; 1.05] | 0.00 [0.00 - 0.00] | 0.636 | ** (p < 0.01) |
+| ⚓ Shipping Freight Cost Index (shippingFreightCostIndex) | 11 | 0.21 | 1,184.23 ± 251.94 | [1,035.35 ; 1,333.12] | 1,258.62 [984.67 - 1,415.00] | 6.646 | *** (p < 0.001) |
 
 ---
 
