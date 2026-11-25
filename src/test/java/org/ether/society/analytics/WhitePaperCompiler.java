@@ -146,16 +146,11 @@ public class WhitePaperCompiler {
     }
 
     private static final Map<String, String> BENCHMARK_METRICS = Map.of(
-            "🌿 Atmospheric CO2 (co2Concentration)", "co2Concentration",
-            "☀️ Milankovitch 65°N (milankovitchInsolation)", "milankovitchInsolation",
-            "👥 Population (worldPopulation)", "worldPopulation",
-            "🦣 Megafauna Abundance (megafaunaIndex)", "megafaunaIndex",
-            "💰 Gross World Product (grossWorldProduct)", "grossWorldProduct",
-            "⚡ Primary Energy (primaryEnergy)", "primaryEnergy",
-            "🏙️ Urbanization Rate (urbanizationRate)", "urbanizationRate",
-            "📖 Literacy Rate (literacyRate)", "literacyRate",
-            "📉 Sociopolitical Instability (sociopoliticalInstability)", "sociopoliticalInstability",
-            "🛡️ Zero-Containment Score (zeroContainmentScore)", "zeroContainmentScore"
+            "🌿 Atmospheric CO2 (co2Concentration)", "co2Concentration", "☀️ Milankovitch 65°N (milankovitchInsolation)", "milankovitchInsolation",
+            "👥 Population (worldPopulation)", "worldPopulation", "🦣 Megafauna Abundance (megafaunaIndex)", "megafaunaIndex",
+            "💰 Gross World Product (grossWorldProduct)", "grossWorldProduct", "⚡ Primary Energy (primaryEnergy)", "primaryEnergy",
+            "🏙️ Urbanization Rate (urbanizationRate)", "urbanizationRate", "📖 Literacy Rate (literacyRate)", "literacyRate",
+            "📉 Sociopolitical Instability (sociopoliticalInstability)", "sociopoliticalInstability", "🛡️ Zero-Containment Score (zeroContainmentScore)", "zeroContainmentScore"
     );
 
     private void writeVisualSynthesisChartsSection(PrintWriter pw) {
@@ -183,7 +178,10 @@ public class WhitePaperCompiler {
         pw.println("|---|---|:---:|:---:|:---:|:---:|:---:|:---:|---|");
 
         List<ScenarioArchetypeAuditRegistry.ScenarioDetail> catalog = new ArrayList<>(ScenarioArchetypeAuditRegistry.getAllScenarios());
-        catalog.sort(Comparator.comparingDouble(d -> calculateRunMape(findRunForScenario(d, loadedRuns), d)));
+        catalog.sort(Comparator.comparingDouble(d -> {
+            SimulationRunRecord r = findRunForScenario(d, loadedRuns);
+            return isOffEarth(d, r) ? 999.0 : calculateRunMape(r, d);
+        }));
 
         int rank = 1;
         for (ScenarioArchetypeAuditRegistry.ScenarioDetail d : catalog) {
@@ -195,12 +193,16 @@ public class WhitePaperCompiler {
                 try { resVal = Integer.parseInt(run.getParameterMatrix().getOrDefault("h3Resolution", "4")); } catch (Exception ignored) {}
                 ticks = run.getTimeSeriesData() != null ? run.getTimeSeriesData().size() : 0;
             }
-            double mape = calculateRunMape(run, d);
-            double fidelity = Math.max(0.0, 100.0 - Math.min(100.0, mape));
-            String status = mape <= 15.0 ? "🟢 Calibrated" : mape <= 35.0 ? "🟡 Moderate Drift" : "🔴 Structural Bifurcation";
-
-            pw.println(String.format(Locale.US, "| %s%d | **%s** (`%s`) | %d -> %d | H3 Res %d | %d | **%.1f%%** | %,.1f%% | %d CE | %s |",
-                    medal, rank, d.name(), d.key(), d.startYear(), d.endYear(), resVal, ticks, fidelity, mape, d.startYear(), status));
+            if (isOffEarth(d, run)) {
+                pw.println(String.format(Locale.US, "| %s%d | **%s** (`%s`) | %d -> %d | H3 Res %d | %d | **⚪ Speculative** | N/A | %d CE | ⚪ Heuristic Sandbox (Off-Earth) |",
+                        medal, rank, d.name(), d.key(), d.startYear(), d.endYear(), resVal, ticks, d.startYear()));
+            } else {
+                double mape = calculateRunMape(run, d);
+                double fidelity = Math.max(0.0, 100.0 - Math.min(100.0, mape));
+                String status = mape <= 15.0 ? "🟢 Calibrated" : mape <= 35.0 ? "🟡 Moderate Drift" : "🔴 Structural Bifurcation";
+                pw.println(String.format(Locale.US, "| %s%d | **%s** (`%s`) | %d -> %d | H3 Res %d | %d | **%.1f%%** | %,.1f%% | %d CE | %s |",
+                        medal, rank, d.name(), d.key(), d.startYear(), d.endYear(), resVal, ticks, fidelity, mape, d.startYear(), status));
+            }
             rank++;
         }
         pw.println();
@@ -302,38 +304,36 @@ public class WhitePaperCompiler {
             pw.println("| *All Variables* | N/A | ⚪ Pending / Unexecuted | — | — | — | `Unexecuted` |");
             return;
         }
-
+        if (isOffEarth(d, run)) {
+            pw.println("| *All Variables* | N/A | ⚪ Heuristic Sandbox (Non-Earth Realm / No Terrestrial Benchmark) | — | — | — | `N/A` |");
+            return;
+        }
         double scaleFactor = GroundTruthAuditReportBuilder.computeRegionalScaleFactor(
                 run, run.getTimeSeriesData(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
         for (Map.Entry<String, String> entry : BENCHMARK_METRICS.entrySet()) {
-            String label = entry.getKey();
             String benchKey = entry.getValue();
             Map<Integer, Double> benchmark = HistoricalValidationKernel.getBenchmarkDataset(benchKey);
             GroundTruthAuditGenerator.VariableDriftAnalysis drift = GroundTruthAuditGenerator.computeVariableDrift(
-                    label, benchKey, benchmark, run.getTimeSeriesData(),
+                    entry.getKey(), benchKey, benchmark, run.getTimeSeriesData(),
                     HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC, scaleFactor);
-
             pw.println(String.format(Locale.US, "| %s | %.2f%% | %s | %s | %s | %s | `%s` |",
                     drift.variableName, drift.mape, drift.status, drift.driftOnsetYear, drift.peakDiscrepancy, drift.temporalPattern, drift.suspectEngine));
         }
     }
 
     private void writeHypothesisRows(PrintWriter pw, ScenarioArchetypeAuditRegistry.ScenarioDetail d, SimulationRunRecord run) {
-        if (run == null || run.getTimeSeriesData() == null || run.getTimeSeriesData().isEmpty()) {
+        if (run == null || run.getTimeSeriesData() == null || run.getTimeSeriesData().isEmpty() || isOffEarth(d, run)) {
             pw.println("| *All Variables* | 0 | N/A | N/A | N/A | N/A | N/A | N/A |");
             return;
         }
-
         double scaleFactor = GroundTruthAuditReportBuilder.computeRegionalScaleFactor(
                 run, run.getTimeSeriesData(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
         for (Map.Entry<String, String> entry : BENCHMARK_METRICS.entrySet()) {
-            String label = entry.getKey();
             String benchKey = entry.getValue();
             Map<Integer, Double> benchmark = HistoricalValidationKernel.getBenchmarkDataset(benchKey);
             GroundTruthAuditGenerator.VariableDriftAnalysis drift = GroundTruthAuditGenerator.computeVariableDrift(
-                    label, benchKey, benchmark, run.getTimeSeriesData(),
+                    entry.getKey(), benchKey, benchmark, run.getTimeSeriesData(),
                     HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC, scaleFactor);
-
             if (drift.sampleCount > 0) {
                 pw.println(String.format(Locale.US, "| %s | %d | %,.2f | %,.2f ± %,.2f | %s | %,.2f [%,.2f - %,.2f] | %.3f | %s |",
                         drift.variableName, drift.sampleCount, drift.meanObs, drift.meanSim, drift.stdSim, drift.getCi95Display(),
@@ -343,24 +343,21 @@ public class WhitePaperCompiler {
     }
 
     private void writeSpatialRows(PrintWriter pw, ScenarioArchetypeAuditRegistry.ScenarioDetail d, SimulationRunRecord run) {
-        String summary = d.cartographicMetricsSummary();
-        double ssim = extractMetricFromSummary(summary, "SSIM", 0.78);
-        double densityRmse = extractMetricFromSummary(summary, "RMSE", 0.14);
-        double biomesJaccard = extractMetricFromSummary(summary, "Jaccard", 0.82);
-        double pearsonR = extractMetricFromSummary(summary, "r", 0.76);
-
+        String s = d.cartographicMetricsSummary();
+        double ssim = extractMetricFromSummary(s, "SSIM", 0.78), rmse = extractMetricFromSummary(s, "RMSE", 0.14);
+        double jacc = extractMetricFromSummary(s, "Jaccard", 0.82), r = extractMetricFromSummary(s, "r", 0.76);
         Object[][] layers = {
-            {"1. Population Density (density)", densityRmse, pearsonR, ssim, biomesJaccard * 0.75, biomesJaccard * 0.85, 1.25 * (1.0 - Math.max(0.0, pearsonR))},
-            {"2. Biomes & Land Cover (biomes)", densityRmse * 0.5, Math.min(0.99, pearsonR + 0.12), Math.min(0.99, ssim + 0.10), biomesJaccard, Math.min(0.99, biomesJaccard * 1.08), 0.15 * (1.0 - biomesJaccard)},
+            {"1. Population Density (density)", rmse, r, ssim, jacc * 0.75, jacc * 0.85, 1.25 * (1.0 - Math.max(0.0, r))},
+            {"2. Biomes & Land Cover (biomes)", rmse * 0.5, Math.min(0.99, r + 0.12), Math.min(0.99, ssim + 0.10), jacc, Math.min(0.99, jacc * 1.08), 0.15 * (1.0 - jacc)},
             {"3. Topography & Elevation (elevation)", 0.0, 1.0, 1.0, 1.0, 1.0, 0.0},
-            {"4. Annual Precipitation (precip)", densityRmse * 0.35, Math.min(0.98, pearsonR + 0.15), Math.min(0.98, ssim + 0.12), Math.min(0.95, biomesJaccard * 1.05), Math.min(0.97, biomesJaccard * 1.1), 0.10 * (1.0 - Math.max(0.0, pearsonR))},
-            {"5. Territorial Sovereignty (sovereignty)", densityRmse * 1.3, Math.max(0.20, pearsonR - 0.25), Math.max(0.40, ssim - 0.18), Math.max(0.25, biomesJaccard * 0.55), Math.max(0.35, biomesJaccard * 0.70), 1.50 * (1.0 - Math.max(0.0, pearsonR))},
-            {"6. Trade Networks (tradenetwork)", densityRmse * 1.6, Math.max(0.18, pearsonR - 0.30), Math.max(0.35, ssim - 0.22), Math.max(0.18, biomesJaccard * 0.40), Math.max(0.25, biomesJaccard * 0.50), 2.10 * (1.0 - Math.max(0.0, pearsonR))},
-            {"7. Groundwater & Aquifers (aquifers)", densityRmse * 0.4, Math.min(0.95, pearsonR + 0.08), Math.min(0.95, ssim + 0.07), Math.min(0.92, biomesJaccard * 0.95), Math.min(0.94, biomesJaccard * 0.98), 0.18 * (1.0 - biomesJaccard)}
+            {"4. Annual Precipitation (precip)", rmse * 0.35, Math.min(0.98, r + 0.15), Math.min(0.98, ssim + 0.12), Math.min(0.95, jacc * 1.05), Math.min(0.97, jacc * 1.1), 0.10 * (1.0 - Math.max(0.0, r))},
+            {"5. Territorial Sovereignty (sovereignty)", rmse * 1.3, Math.max(0.20, r - 0.25), Math.max(0.40, ssim - 0.18), Math.max(0.25, jacc * 0.55), Math.max(0.35, jacc * 0.70), 1.50 * (1.0 - Math.max(0.0, r))},
+            {"6. Trade Networks (tradenetwork)", rmse * 1.6, Math.max(0.18, r - 0.30), Math.max(0.35, ssim - 0.22), Math.max(0.18, jacc * 0.40), Math.max(0.25, jacc * 0.50), 2.10 * (1.0 - Math.max(0.0, r))},
+            {"7. Groundwater & Aquifers (aquifers)", rmse * 0.4, Math.min(0.95, r + 0.08), Math.min(0.95, ssim + 0.07), Math.min(0.92, jacc * 0.95), Math.min(0.94, jacc * 0.98), 0.18 * (1.0 - jacc)}
         };
-        for (Object[] r : layers) {
+        for (Object[] row : layers) {
             pw.println(String.format(Locale.US, "| %s | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f |",
-                    r[0], (double)r[1], (double)r[2], (double)r[3], (double)r[4], (double)r[5], (double)r[6]));
+                    row[0], (double)row[1], (double)row[2], (double)row[3], (double)row[4], (double)row[5], (double)row[6]));
         }
     }
 
@@ -386,9 +383,7 @@ public class WhitePaperCompiler {
         return "public void calibrate_" + d.key().replace("-", "_") + "() {\n" +
                "    double ratio = calculateActiveMeshSurfaceKm2() / 148_940_000.0;\n" +
                "    this.demographicScalingFactor = Math.max(1.0, 1.0 / ratio);\n" +
-               "    this.minimumPopulationEpsilon = 100.0;\n" +
-               "    if (this.zeroContainmentScore > 1.0) this.zeroContainmentScore /= 100.0;\n" +
-               "}";
+               "    this.minimumPopulationEpsilon = 100.0;\n}";
     }
 
     private void writeMasterSynthesisAndRoadmap(PrintWriter pw) {
@@ -474,25 +469,30 @@ public class WhitePaperCompiler {
     }
 
     private double calculateRunMape(SimulationRunRecord run, ScenarioArchetypeAuditRegistry.ScenarioDetail d) {
-        if (run == null || run.getTimeSeriesData() == null || run.getTimeSeriesData().isEmpty()) {
-            return 100.0;
-        }
-        double scaleFactor = GroundTruthAuditReportBuilder.computeRegionalScaleFactor(
+        if (run == null || run.getTimeSeriesData() == null || run.getTimeSeriesData().isEmpty()) return 100.0;
+        double sf = GroundTruthAuditReportBuilder.computeRegionalScaleFactor(
                 run, run.getTimeSeriesData(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
         double sumMape = 0.0;
         int count = 0;
-        for (Map.Entry<String, String> entry : BENCHMARK_METRICS.entrySet()) {
-            String benchKey = entry.getValue();
-            Map<Integer, Double> benchmark = HistoricalValidationKernel.getBenchmarkDataset(benchKey);
-            GroundTruthAuditGenerator.VariableDriftAnalysis drift = GroundTruthAuditGenerator.computeVariableDrift(
-                    entry.getKey(), benchKey, benchmark, run.getTimeSeriesData(),
-                    HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC, scaleFactor);
-            if (drift.sampleCount > 0 && !Double.isNaN(drift.mape)) {
-                // Cap single-variable contribution at 100% to prevent near-zero division blowups from masking physical quality
-                sumMape += Math.min(100.0, Math.max(0.0, drift.mape));
+        for (Map.Entry<String, String> e : BENCHMARK_METRICS.entrySet()) {
+            Map<Integer, Double> bm = HistoricalValidationKernel.getBenchmarkDataset(e.getValue());
+            GroundTruthAuditGenerator.VariableDriftAnalysis dr = GroundTruthAuditGenerator.computeVariableDrift(
+                    e.getKey(), e.getValue(), bm, run.getTimeSeriesData(),
+                    HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC, sf);
+            if (dr.sampleCount > 0 && !Double.isNaN(dr.mape)) {
+                sumMape += Math.min(100.0, Math.max(0.0, dr.mape));
                 count++;
             }
         }
         return count > 0 ? (sumMape / count) : 100.0;
+    }
+
+    private boolean isOffEarth(ScenarioArchetypeAuditRegistry.ScenarioDetail d, SimulationRunRecord run) {
+        String k = d.key().toLowerCase(Locale.ROOT);
+        return k.startsWith("moon_") || k.startsWith("mars_") || k.startsWith("venus_")
+                || k.startsWith("mercury_") || k.startsWith("titan_") || k.startsWith("eyeball_")
+                || k.startsWith("boreas_") || k.startsWith("oceania_") || k.startsWith("archipelago_")
+                || (run != null && run.getTimeSeriesData() != null && GroundTruthAuditReportBuilder.computeRegionalScaleFactor(
+                        run, run.getTimeSeriesData(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC) < 0.0);
     }
 }

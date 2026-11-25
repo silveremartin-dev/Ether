@@ -10,6 +10,7 @@ import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
+import org.ether.society.h3.H3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,8 +133,23 @@ public class CharneyVegetationAlbedoEngine extends AbstractSimulationEngine {
         double relaxationFactor = 1.0 - Math.exp(-dtSafe / TAU_VEGETATION_YEARS);
         float[] rainArr = buffer.getRainfall();
         float[] bioNatArr = buffer.getBiomassNatural();
+        long[] h3Arr = buffer.getH3Indexes();
+        H3Service h3Service = H3Service.getInstance();
         int n = buffer.getCapacity();
         for (int i = 0; i < n; i++) {
+            double saharaWeight = 1.0;
+            if (h3Arr != null && h3Arr[i] != 0L) {
+                try {
+                    com.uber.h3core.util.LatLng coord = h3Service.cellToLatLng(h3Arr[i]);
+                    saharaWeight = calculateSaharaSpatialWeight(coord.lat, coord.lng);
+                } catch (Exception ignored) {
+                    saharaWeight = 0.0;
+                }
+            }
+            if (saharaWeight < 0.05) {
+                continue;
+            }
+            double localRelaxation = relaxationFactor * saharaWeight;
             double curRain = rainArr[i];
             double curBiomass = bioNatArr[i];
             double curVeg = Math.clamp(curBiomass / SAVANNA_MAX_BIOMASS, 0.0, 1.0);
@@ -144,11 +160,11 @@ public class CharneyVegetationAlbedoEngine extends AbstractSimulationEngine {
             double targetPrecip = Math.max(15.0, basePrecip + albedoConvectiveBonus);
             double targetVeg = calculateEquilibriumVegetation(targetPrecip);
 
-            double newVeg = curVeg + (targetVeg - curVeg) * relaxationFactor;
+            double newVeg = curVeg + (targetVeg - curVeg) * localRelaxation;
             double newBiomass = Math.max(5.0, newVeg * SAVANNA_MAX_BIOMASS);
 
             bioNatArr[i] = (float) newBiomass;
-            rainArr[i] = (float) (curRain + (targetPrecip - curRain) * relaxationFactor);
+            rainArr[i] = (float) (curRain + (targetPrecip - curRain) * localRelaxation);
         }
     }
 }
