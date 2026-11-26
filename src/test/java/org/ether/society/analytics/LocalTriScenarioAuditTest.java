@@ -350,7 +350,7 @@ public class LocalTriScenarioAuditTest {
                 endPop = snap.getValue("worldPopulation");
                 endCapital = snap.getValue("builtCapital");
                 if (endCapital == 0.0) {
-                    endCapital = snap.getValue("resourceCapital");
+                    endCapital = snap.getValue("grossWorldProduct");
                 }
                 endEnergy = snap.getValue("primaryEnergy");
             }

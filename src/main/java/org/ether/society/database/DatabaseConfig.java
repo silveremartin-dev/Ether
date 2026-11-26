@@ -23,15 +23,30 @@ public class DatabaseConfig {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
     private static EntityManagerFactory entityManagerFactory;
     private static HikariDataSource dataSource;
+    /** Latches offline mode once PostgreSQL is confirmed unreachable to avoid repeated 1s HikariCP timeouts per snapshot. */
+    private static volatile boolean offlineModeDetected = false;
 
     /**
      * Get or create the EntityManagerFactory.
      */
     public static synchronized EntityManagerFactory getEntityManagerFactory() {
+        if (offlineModeDetected) {
+            return null;
+        }
         if (entityManagerFactory == null || !entityManagerFactory.isOpen()) {
             entityManagerFactory = createEntityManagerFactory();
+            if (entityManagerFactory == null) {
+                offlineModeDetected = true;
+            }
         }
         return entityManagerFactory;
+    }
+
+    /**
+     * Resets the latched offline database flag so the next call re-probes PostgreSQL availability.
+     */
+    public static synchronized void resetOfflineMode() {
+        offlineModeDetected = false;
     }
 
     /**

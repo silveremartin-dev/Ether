@@ -118,28 +118,28 @@ public record PlanetPreset(
             "Terre (Terran)", 4, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.478, 40.0, 21.0, 0.30, 1.0,
             false, 1.0, 0.0, 420.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
-            true, "Terre (-1900 BP) — Ã‚ge du Bronze Moyen", 12445L,
+            true, "Terre (-1900 BP) — Âge du Bronze Moyen", 12445L,
             true, "🌍 Terre — WorldClim v2.1 & GPCP v2.3 (Composite)", 13345L,
             true, "🌍 Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)", 14345L);
 
     /** Default Terran / Earth-like settings (alias for modern) */
     public static final PlanetPreset EARTH_LIKE = EARTH_MODERN;
 
-    /** -1 000 ans : Début Ã‚ge du Fer */
+    /** -1 000 ans : Début Âge du Fer */
     public static final PlanetPreset EARTH_IRON_1000BP = new PlanetPreset(
-            "Terre (-1 000 / Début Ã‚ge du Fer)", 4, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 14.7, 12344L, 1.0, 1.0, 0.478, 40.0, 20.95, 0.305, 1.0,
+            "Terre (-1 000 / Début Âge du Fer)", 4, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 14.7, 12344L, 1.0, 1.0, 0.478, 40.0, 20.95, 0.305, 1.0,
             false, 1.0, 0.0, 278.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
-            true, "Terre (-1000 BP) — Ã‚ge du Fer Ancien", 12444L,
+            true, "Terre (-1000 BP) — Âge du Fer Ancien", 12444L,
             true, "🌍 Terre (-1000 BP) — Précipitations", 13344L,
             true, "🌍 Terre (-1000 BP) — Saisonnalité", 14344L);
 
-    /** -1 900 ans : Ã‚ge du Bronze Moyen */
+    /** -1 900 ans : Âge du Bronze Moyen */
     public static final PlanetPreset EARTH_BRONZE_1900BP = new PlanetPreset(
-            "Terre (-1 900 / Ã‚ge du Bronze Moyen)", 4, 6371.0, 24.0, 23.6, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.478, 39.5, 20.95, 0.30, 1.0,
+            "Terre (-1 900 / Âge du Bronze Moyen)", 4, 6371.0, 24.0, 23.6, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.478, 39.5, 20.95, 0.30, 1.0,
             false, 1.0, 0.0, 275.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
-            true, "Terre (-1900 BP) — Ã‚ge du Bronze Moyen", 12445L,
+            true, "Terre (-1900 BP) — Âge du Bronze Moyen", 12445L,
             true, "🌍 Terre (-1900 BP) — Précipitations", 13345L,
             true, "🌍 Terre (-1900 BP) — Saisonnalité", 14345L);
 

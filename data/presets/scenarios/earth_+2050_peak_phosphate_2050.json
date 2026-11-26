@@ -119,7 +119,7 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "Mineral Phosphate Cliff & N-P-K Soil Crisis (2050)",
-  "description" : "Ã¢â€ºÂÃ¯Â¸Â SCÃƒâ€°NARIO FUTUR : Ãƒâ€°puisement du Phosphate de Roche (Peak P 2050)\n\n[DESCRIPTION DES TERMES DE FORÃƒâ€¡AGE PHYSIQUE (TÃ¢â€šâ‚¬)]\nÃƒâ€°puisement gÃƒÂ©ologique complet des gisements de phosphate de roche bon marchÃƒÂ© sans transition vers un recyclage circulaire intÃƒÂ©gral.\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ Chute inexorable des rendements agricoles sous dÃƒÂ©ficit de fertilisation phosphatÃƒÂ©e minÃƒÂ©rale (stÃ…â€œchiomÃƒÂ©trie N-P-K).\nÃ¢â‚¬Â¢ FlambÃƒÂ©e des prix alimentaires mondiaux, crises de famine urbaine et tensions gÃƒÂ©opolitiques autour des derniers gisements.\nÃ¢â‚¬Â¢ Re-localisation agricole d'urgence, baisse de la population vers la capacitÃƒÂ© de charge organique et recyclage des flux.\n",
+  "description" : "⛏️ SCÉNARIO FUTUR : Épuisement du Phosphate de Roche (Peak P 2050)\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nÉpuisement géologique complet des gisements de phosphate de roche bon marché sans transition vers un recyclage circulaire intégral.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute inexorable des rendements agricoles sous déficit de fertilisation phosphatée minérale (stœchiométrie N-P-K).\n• Flambée des prix alimentaires mondiaux, crises de famine urbaine et tensions géopolitiques autour des derniers gisements.\n• Re-localisation agricole d'urgence, baisse de la population vers la capacité de charge organique et recyclage des flux.\n",
   "presetKey" : "peak_phosphate_2050",
   "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
@@ -151,18 +151,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Terre (-1900 BP) Ã¢â‚¬â€ Ãƒâ€šge du Bronze Moyen",
+    "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -196,18 +196,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "Terre (-1900 BP) Ã¢â‚¬â€ Ãƒâ€šge du Bronze Moyen",
+      "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
+      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -220,7 +220,7 @@
     "seed" : 12345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : true,

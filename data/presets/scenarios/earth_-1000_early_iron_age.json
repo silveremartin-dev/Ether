@@ -119,11 +119,11 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "Early Iron Age & Ancient Mediterranean (-1000 BCE)",
-  "description" : "Ã¢Å¡â€Ã¯Â¸Â HISTORICAL SCENARIO : Transition Technologique vers la SidÃƒÂ©rurgie & RÃƒÂ©seaux PhÃƒÂ©niciens (-1000 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃƒÂ©lise la transition de l'Ãƒâ€šge du Bronze vers la mÃƒÂ©tallurgie du fer aprÃƒÂ¨s l'effondrement du Bronze RÃƒÂ©cent. Diffusion de l'alphabet phÃƒÂ©nicien, essor des citÃƒÂ©s-Ãƒâ€°tats grecques, expansion de l'Empire NÃƒÂ©o-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ DÃƒÂ©mocratisation de l'outillage et des armes grÃƒÂ¢ce ÃƒÂ  l'abondance gÃƒÂ©ologique du minerai de fer.\nÃ¢â‚¬Â¢ Essor du commerce maritime thalassocratique en MÃƒÂ©diterranÃƒÂ©e (PhÃƒÂ©niciens, Grecs, Ãƒâ€°trusques).\nÃ¢â‚¬Â¢ Rupture de la dÃƒÂ©pendance stratÃƒÂ©gique au cuivre/ÃƒÂ©tain et multiplication des centres de pouvoir rÃƒÂ©gionaux.\n",
+  "description" : "⚔️ HISTORICAL SCENARIO : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.\n• Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).\n• Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.\n",
   "presetKey" : "early_iron_age",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
-    "name" : "Terre (-1 000 / DÃƒÂ©but Ãƒâ€šge du Fer)",
+    "name" : "Terre (-1 000 / Début Âge du Fer)",
     "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -151,24 +151,24 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Terre (-1000 BP) Ã¢â‚¬â€ Ãƒâ€šge du Fer Ancien",
+    "tempSource" : "Terre (-1000 BP) — Âge du Fer Ancien",
     "tempSeed" : 12444,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) Ã¢â‚¬â€ PrÃƒÂ©cipitations",
+    "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) — Précipitations",
     "precipSeed" : 13344,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre (-1000 BP) Ã¢â‚¬â€ SaisonnalitÃƒÂ©",
+    "seasonSource" : "\uD83C\uDF0D Terre (-1000 BP) — Saisonnalité",
     "seasonSeed" : 14344,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : -1000,
-    "presetDescription" : "âš” EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia."
+    "presetDescription" : "? EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia."
   },
   "ecologyPreset" : {
-    "name" : "Terre (-1 000 / DÃƒÂ©but Ãƒâ€šge du Fer)",
-    "planetPresetName" : "Terre (-1 000 / DÃƒÂ©but Ãƒâ€šge du Fer)",
+    "name" : "Terre (-1 000 / Début Âge du Fer)",
+    "planetPresetName" : "Terre (-1 000 / Début Âge du Fer)",
     "embeddedPlanetPreset" : {
-      "name" : "Terre (-1 000 / DÃƒÂ©but Ãƒâ€šge du Fer)",
+      "name" : "Terre (-1 000 / Début Âge du Fer)",
       "resolution" : 4,
       "radiusKm" : 6371.0,
       "dayLengthHours" : 24.0,
@@ -196,18 +196,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "Terre (-1000 BP) Ã¢â‚¬â€ Ãƒâ€šge du Fer Ancien",
+      "tempSource" : "Terre (-1000 BP) — Âge du Fer Ancien",
       "tempSeed" : 12444,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) Ã¢â‚¬â€ PrÃƒÂ©cipitations",
+      "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) — Précipitations",
       "precipSeed" : 13344,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre (-1000 BP) Ã¢â‚¬â€ SaisonnalitÃƒÂ©",
+      "seasonSource" : "\uD83C\uDF0D Terre (-1000 BP) — Saisonnalité",
       "seasonSeed" : 14344,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : -1000,
-      "presetDescription" : "âš” EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia."
+      "presetDescription" : "? EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia."
     },
     "terrestrialBiomassGtC" : 580.0,
     "soilOrganicCarbonGtC" : 1780.0,
@@ -220,7 +220,7 @@
     "seed" : 12344,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -1000,
-    "presetDescription" : "âš” EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia."
+    "presetDescription" : "? EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : true,
@@ -249,5 +249,5 @@
   "proceduralLeadersEnabled" : true,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Early Iron Age & Ancient Mediterranean (-1000 BCE)",
-  "displayDescription" : "Ã¢Å¡â€Ã¯Â¸Â HISTORICAL SCENARIO : Transition Technologique vers la SidÃƒÂ©rurgie & RÃƒÂ©seaux PhÃƒÂ©niciens (-1000 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃƒÂ©lise la transition de l'Ãƒâ€šge du Bronze vers la mÃƒÂ©tallurgie du fer aprÃƒÂ¨s l'effondrement du Bronze RÃƒÂ©cent. Diffusion de l'alphabet phÃƒÂ©nicien, essor des citÃƒÂ©s-Ãƒâ€°tats grecques, expansion de l'Empire NÃƒÂ©o-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ DÃƒÂ©mocratisation de l'outillage et des armes grÃƒÂ¢ce ÃƒÂ  l'abondance gÃƒÂ©ologique du minerai de fer.\nÃ¢â‚¬Â¢ Essor du commerce maritime thalassocratique en MÃƒÂ©diterranÃƒÂ©e (PhÃƒÂ©niciens, Grecs, Ãƒâ€°trusques).\nÃ¢â‚¬Â¢ Rupture de la dÃƒÂ©pendance stratÃƒÂ©gique au cuivre/ÃƒÂ©tain et multiplication des centres de pouvoir rÃƒÂ©gionaux.\n"
+  "displayDescription" : "⚔️ HISTORICAL SCENARIO : Transition Technologique vers la Sidérurgie & Réseaux Phéniciens (-1000 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModélise la transition de l'Âge du Bronze vers la métallurgie du fer après l'effondrement du Bronze Récent. Diffusion de l'alphabet phénicien, essor des cités-États grecques, expansion de l'Empire Néo-Assyrien et dynastie Zhou en Chine.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Démocratisation de l'outillage et des armes grâce à l'abondance géologique du minerai de fer.\n• Essor du commerce maritime thalassocratique en Méditerranée (Phéniciens, Grecs, Étrusques).\n• Rupture de la dépendance stratégique au cuivre/étain et multiplication des centres de pouvoir régionaux.\n"
 }

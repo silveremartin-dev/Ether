@@ -119,7 +119,7 @@
   "maxLng" : 45.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "Pax Romana & Augustan Stability (0 -> 50 CE): Biophysical Continuity",
-  "description" : "\uD83C\uDFDBÃ¯Â¸Â SCÃƒâ€°NARIO DE CONTINUITÃƒâ€° PURE (SANS ACCIDENT MAJEUR) : L'Ãƒâ€šge d'Or AugustÃƒÂ©en (An 0 -> 50 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT - CALIBRAGE DE CONTINUITÃƒâ€°]\nScÃƒÂ©nario de rÃƒÂ©fÃƒÂ©rence ÃƒÂ©talon pour tester la stabilitÃƒÂ© des moteurs de simulation en l'absence de choc exogÃƒÂ¨ne.\nModÃƒÂ©lise 50 ans de paix continue, d'intÃƒÂ©gration commerciale mÃƒÂ©diterranÃƒÂ©enne et de croissance dÃƒÂ©mographique rÃƒÂ©guliÃƒÂ¨re\nsous l'Empire romain julio-claudien.\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ Croissance dÃƒÂ©mographique modÃƒÂ©rÃƒÂ©e et rÃƒÂ©guliÃƒÂ¨re sans choc ÃƒÂ©pidÃƒÂ©mique ni famine.\nÃ¢â‚¬Â¢ StabilitÃƒÂ© monÃƒÂ©taire et fiscale du denier d'argent.\nÃ¢â‚¬Â¢ Trajectoire monotone lisse idÃƒÂ©ale pour le calibrage fin du moteur.\n",
+  "description" : "\uD83C\uDFDB️ SCÉNARIO DE CONTINUITÉ PURE (SANS ACCIDENT MAJEUR) : L'Âge d'Or Augustéen (An 0 -> 50 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT - CALIBRAGE DE CONTINUITÉ]\nScénario de référence étalon pour tester la stabilité des moteurs de simulation en l'absence de choc exogène.\nModélise 50 ans de paix continue, d'intégration commerciale méditerranéenne et de croissance démographique régulière\nsous l'Empire romain julio-claudien.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Croissance démographique modérée et régulière sans choc épidémique ni famine.\n• Stabilité monétaire et fiscale du denier d'argent.\n• Trajectoire monotone lisse idéale pour le calibrage fin du moteur.\n",
   "presetKey" : "pax_romana_augustus_0",
   "referenceTrajectoryModel" : "HYDE_MADDISON",
   "planetPreset" : {
@@ -151,18 +151,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Terre (-1900 BP) Ã¢â‚¬â€ Ãƒâ€šge du Bronze Moyen",
+    "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -196,18 +196,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "Terre (-1900 BP) Ã¢â‚¬â€ Ãƒâ€šge du Bronze Moyen",
+      "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre Ã¢â‚¬â€ WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
+      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -220,7 +220,7 @@
     "seed" : 12345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : true,
@@ -249,5 +249,5 @@
   "proceduralLeadersEnabled" : true,
   "chronicleSingularityObserverEnabled" : false,
   "displayName" : "Pax Romana & Augustan Stability (0 -> 50 CE): Biophysical Continuity",
-  "displayDescription" : "\uD83C\uDFDBÃ¯Â¸Â SCÃƒâ€°NARIO DE CONTINUITÃƒâ€° PURE (SANS ACCIDENT MAJEUR) : L'Ãƒâ€šge d'Or AugustÃƒÂ©en (An 0 -> 50 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT - CALIBRAGE DE CONTINUITÃƒâ€°]\nScÃƒÂ©nario de rÃƒÂ©fÃƒÂ©rence ÃƒÂ©talon pour tester la stabilitÃƒÂ© des moteurs de simulation en l'absence de choc exogÃƒÂ¨ne.\nModÃƒÂ©lise 50 ans de paix continue, d'intÃƒÂ©gration commerciale mÃƒÂ©diterranÃƒÂ©enne et de croissance dÃƒÂ©mographique rÃƒÂ©guliÃƒÂ¨re\nsous l'Empire romain julio-claudien.\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ Croissance dÃƒÂ©mographique modÃƒÂ©rÃƒÂ©e et rÃƒÂ©guliÃƒÂ¨re sans choc ÃƒÂ©pidÃƒÂ©mique ni famine.\nÃ¢â‚¬Â¢ StabilitÃƒÂ© monÃƒÂ©taire et fiscale du denier d'argent.\nÃ¢â‚¬Â¢ Trajectoire monotone lisse idÃƒÂ©ale pour le calibrage fin du moteur.\n"
+  "displayDescription" : "\uD83C\uDFDB️ SCÉNARIO DE CONTINUITÉ PURE (SANS ACCIDENT MAJEUR) : L'Âge d'Or Augustéen (An 0 -> 50 ap. J.-C.)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT - CALIBRAGE DE CONTINUITÉ]\nScénario de référence étalon pour tester la stabilité des moteurs de simulation en l'absence de choc exogène.\nModélise 50 ans de paix continue, d'intégration commerciale méditerranéenne et de croissance démographique régulière\nsous l'Empire romain julio-claudien.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Croissance démographique modérée et régulière sans choc épidémique ni famine.\n• Stabilité monétaire et fiscale du denier d'argent.\n• Trajectoire monotone lisse idéale pour le calibrage fin du moteur.\n"
 }

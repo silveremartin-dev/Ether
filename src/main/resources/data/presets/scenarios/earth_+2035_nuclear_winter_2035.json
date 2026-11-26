@@ -113,7 +113,7 @@
   "typeBEngineParameters" : { },
   "climateEvents" : [ {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃƒÆ’Ã‚Â©gique : Washington D.C. & Pentagone",
+    "name" : "Frappe Stratégique : Washington D.C. & Pentagone",
     "year" : 2035,
     "latitude" : 38.88,
     "longitude" : -77.05,
@@ -161,7 +161,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-CitÃƒÆ’Ã‚Â©s : AgglomÃƒÆ’Ã‚Â©ration New York & Hub Maritime",
+    "name" : "Frappe Anti-Cités : Agglomération New York & Hub Maritime",
     "year" : 2035,
     "latitude" : 40.71,
     "longitude" : -74.0,
@@ -173,7 +173,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-CitÃƒÆ’Ã‚Â©s : MÃƒÆ’Ã‚Â©galopole Los Angeles / Long Beach",
+    "name" : "Frappe Anti-Cités : Mégalopole Los Angeles / Long Beach",
     "year" : 2035,
     "latitude" : 34.05,
     "longitude" : -118.24,
@@ -185,7 +185,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃƒÆ’Ã‚Â©gique : Moscou & Centre de Commandement",
+    "name" : "Frappe Stratégique : Moscou & Centre de Commandement",
     "year" : 2035,
     "latitude" : 55.75,
     "longitude" : 37.61,
@@ -233,7 +233,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-CitÃƒÆ’Ã‚Â©s : MÃƒÆ’Ã‚Â©tropole Saint-PÃƒÆ’Ã‚Â©tersbourg & Baltique",
+    "name" : "Frappe Anti-Cités : Métropole Saint-Pétersbourg & Baltique",
     "year" : 2035,
     "latitude" : 59.93,
     "longitude" : 30.33,
@@ -245,7 +245,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃƒÆ’Ã‚Â©gique : Londres & AmirautÃƒÆ’Ã‚Â© Britannique",
+    "name" : "Frappe Stratégique : Londres & Amirauté Britannique",
     "year" : 2035,
     "latitude" : 51.5,
     "longitude" : -0.12,
@@ -269,7 +269,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃƒÆ’Ã‚Â©gique : Paris & Commandement des Forces AÃƒÆ’Ã‚Â©riennes",
+    "name" : "Frappe Stratégique : Paris & Commandement des Forces Aériennes",
     "year" : 2035,
     "latitude" : 48.85,
     "longitude" : 2.35,
@@ -281,7 +281,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Navale : Base SNLE ÃƒÆ’Ã…Â½le Longue (Brest)",
+    "name" : "Frappe Navale : Base SNLE Île Longue (Brest)",
     "year" : 2035,
     "latitude" : 48.3,
     "longitude" : -4.5,
@@ -293,7 +293,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃƒÆ’Ã‚Â©gique : PÃƒÆ’Ã‚Â©kin & Commission Militaire Centrale",
+    "name" : "Frappe Stratégique : Pékin & Commission Militaire Centrale",
     "year" : 2035,
     "latitude" : 39.9,
     "longitude" : 116.4,
@@ -317,7 +317,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-CitÃƒÆ’Ã‚Â©s : MÃƒÆ’Ã‚Â©galopole Industrielle Shanghai / Yangtze",
+    "name" : "Frappe Anti-Cités : Mégalopole Industrielle Shanghai / Yangtze",
     "year" : 2035,
     "latitude" : 31.23,
     "longitude" : 121.47,
@@ -329,7 +329,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃƒÆ’Ã‚Â©gique : Tokyo & Complexe Industriel Kanto",
+    "name" : "Frappe Stratégique : Tokyo & Complexe Industriel Kanto",
     "year" : 2035,
     "latitude" : 35.68,
     "longitude" : 139.69,
@@ -341,7 +341,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-Forces : Base StratÃƒÆ’Ã‚Â©gique Andersen (Guam)",
+    "name" : "Frappe Anti-Forces : Base Stratégique Andersen (Guam)",
     "year" : 2035,
     "latitude" : 13.58,
     "longitude" : 144.92,
@@ -353,7 +353,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe Anti-Forces : Base AÃƒÆ’Ã‚Â©rienne Ramstein (OTAN)",
+    "name" : "Frappe Anti-Forces : Base Aérienne Ramstein (OTAN)",
     "year" : 2035,
     "latitude" : 49.43,
     "longitude" : 7.6,
@@ -365,7 +365,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃƒÆ’Ã‚Â©gique : New Delhi & Centres StratÃƒÆ’Ã‚Â©giques",
+    "name" : "Frappe Stratégique : New Delhi & Centres Stratégiques",
     "year" : 2035,
     "latitude" : 28.61,
     "longitude" : 77.2,
@@ -377,7 +377,7 @@
     "day" : 1
   }, {
     "type" : "NUCLEAR_STRIKE",
-    "name" : "Frappe StratÃƒÆ’Ã‚Â©gique : Islamabad & Complexe NuclÃƒÆ’Ã‚Â©aire Kahuta",
+    "name" : "Frappe Stratégique : Islamabad & Complexe Nucléaire Kahuta",
     "year" : 2035,
     "latitude" : 33.68,
     "longitude" : 73.04,
@@ -395,7 +395,7 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "Nuclear Winter & Stratospheric Solar Dimming (2035)",
-  "description" : "ÃƒÂ¢Ã‹Å“Ã‚Â¢ÃƒÂ¯Ã‚Â¸Ã‚Â SCÃƒÆ’Ã¢â‚¬Â°NARIO FUTUR : Catastrophe de la Guerre NuclÃƒÆ’Ã‚Â©aire & Hiver StratosphÃƒÆ’Ã‚Â©rique\n\n[DESCRIPTION DES TERMES DE FORÃƒÆ’Ã¢â‚¬Â¡AGE PHYSIQUE (TÃƒÂ¢Ã¢â‚¬Å¡Ã¢â€šÂ¬)]\nConflit nuclÃƒÆ’Ã‚Â©aire ÃƒÆ’Ã‚Â  haute intensitÃƒÆ’Ã‚Â© dÃƒÆ’Ã‚Â©clenchant d'immenses tempÃƒÆ’Ã‚Âªtes de feu urbaines et l'injection massive de carbone suie dans la stratosphÃƒÆ’Ã‚Â¨re.\n\n[OBSERVABLES CLÃƒÆ’Ã¢â‚¬Â°S DU SCÃƒÆ’Ã¢â‚¬Â°NARIO]\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Chute brutale de l'insolation solaire au sol (-70%) et refroidissement planÃƒÆ’Ã‚Â©taire de -15Ãƒâ€šÃ‚Â°C ÃƒÆ’Ã‚Â  -25Ãƒâ€šÃ‚Â°C.\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Effondrement total de la photosynthÃƒÆ’Ã‚Â¨se et rupture gÃƒÆ’Ã‚Â©nÃƒÆ’Ã‚Â©ralisÃƒÆ’Ã‚Â©e des chaÃƒÆ’Ã‚Â®nes alimentaires en moins de 60 jours.\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Survie dÃƒÆ’Ã‚Â©mographique rÃƒÆ’Ã‚Â©siduelle restreinte aux refuges souterrains, biomes marins profonds et serres protÃƒÆ’Ã‚Â©gÃƒÆ’Ã‚Â©es.\n",
+  "description" : "☢️ SCÉNARIO FUTUR : Catastrophe de la Guerre Nucléaire & Hiver Stratosphérique\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nConflit nucléaire à haute intensité déclenchant d'immenses tempêtes de feu urbaines et l'injection massive de carbone suie dans la stratosphère.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Chute brutale de l'insolation solaire au sol (-70%) et refroidissement planétaire de -15°C à -25°C.\n• Effondrement total de la photosynthèse et rupture généralisée des chaînes alimentaires en moins de 60 jours.\n• Survie démographique résiduelle restreinte aux refuges souterrains, biomes marins profonds et serres protégées.\n",
   "presetKey" : "nuclear_winter_2035",
   "referenceTrajectoryModel" : "SSP2",
   "planetPreset" : {
@@ -427,18 +427,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Terre (-1900 BP) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ÃƒÆ’Ã¢â‚¬Å¡ge du Bronze Moyen",
+    "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Ã‚Â°C global mean temperature, 420 ppm COÃ¢â€šâ€š, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -472,18 +472,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "Terre (-1900 BP) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ÃƒÆ’Ã¢â‚¬Å¡ge du Bronze Moyen",
+      "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Ã‚Â°C global mean temperature, 420 ppm COÃ¢â€šâ€š, industrial globalization, and satellite-calibrated ecologies."
+      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -496,7 +496,7 @@
     "seed" : 12345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Ã‚Â°C global mean temperature, 420 ppm COÃ¢â€šâ€š, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : true,

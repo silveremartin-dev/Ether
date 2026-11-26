@@ -105,7 +105,8 @@ public class TainterComplexityCollapseEngine extends AbstractSimulationEngine {
 
         double pop = buffer.getHumanPopulation()[i];
         double kPerCap = (pop > 0.0) ? (capital / pop) : capital;
-        double surplusFlow = (pop * (0.05 + 0.020 * kPerCap)) * dtYears;
+        // Tainter (1988) diminishing marginal returns: sub-linear logarithmic benefit against super-linear maintenance complexity
+        double surplusFlow = (pop * (0.05 + 2.5 * Math.log1p(kPerCap / 200.0))) * dtYears;
 
         double complexity = Math.log(1.0 + 0.02 * kPerCap);
         double maintenanceCost = (0.015 * capital + Math.max(1.0, pop) * Math.pow(complexity, 2.2) * 0.08) * dtYears;

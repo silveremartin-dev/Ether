@@ -119,7 +119,7 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "Business As Usual: Fossil Fuel Reliance & Warming (SSP5-8.5)",
-  "description" : "\uD83D\uDCC9 SCÃƒÆ’Ã¢â‚¬Â°NARIO FUTUR : Business As Usual (Trajectoire GIEC SSP5-8.5)\n\n[DESCRIPTION DES TERMES DE FORÃƒÆ’Ã¢â‚¬Â¡AGE PHYSIQUE (TÃƒÂ¢Ã¢â‚¬Å¡Ã¢â€šÂ¬)]\nPoursuite de l'extraction des combustibles fossiles traditionnels sans dÃƒÆ’Ã‚Â©ploiement massif de la fusion ni captage du carbone.\n\n[OBSERVABLES CLÃƒÆ’Ã¢â‚¬Â°S DU SCÃƒÆ’Ã¢â‚¬Â°NARIO]\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Trajectoire de concentration COÃƒÂ¢Ã¢â‚¬Å¡Ã¢â‚¬Å¡ non rÃƒÆ’Ã‚Â©gulÃƒÆ’Ã‚Â©e (>1000 ppm en 2100) et hausse thermique globale >4Ãƒâ€šÃ‚Â°C.\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Submersion marine des mÃƒÆ’Ã‚Â©tropoles cÃƒÆ’Ã‚Â´tiÃƒÆ’Ã‚Â¨res et stress thermique lÃƒÆ’Ã‚Â©tal (tempÃƒÆ’Ã‚Â©rature thermomÃƒÆ’Ã‚Â¨tre mouillÃƒÆ’Ã‚Â© Tw > 35Ãƒâ€šÃ‚Â°C).\nÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Effondrement des rendements agricoles tropicaux et vagues de rÃƒÆ’Ã‚Â©fugiÃƒÆ’Ã‚Â©s climatiques vers les hautes latitudes.\n",
+  "description" : "\uD83D\uDCC9 SCÉNARIO FUTUR : Business As Usual (Trajectoire GIEC SSP5-8.5)\n\n[DESCRIPTION DES TERMES DE FORÇAGE PHYSIQUE (T₀)]\nPoursuite de l'extraction des combustibles fossiles traditionnels sans déploiement massif de la fusion ni captage du carbone.\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Trajectoire de concentration CO₂ non régulée (>1000 ppm en 2100) et hausse thermique globale >4°C.\n• Submersion marine des métropoles côtières et stress thermique létal (température thermomètre mouillé Tw > 35°C).\n• Effondrement des rendements agricoles tropicaux et vagues de réfugiés climatiques vers les hautes latitudes.\n",
   "presetKey" : "ssp5_85",
   "referenceTrajectoryModel" : "SSP5",
   "planetPreset" : {
@@ -151,18 +151,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Terre (-1900 BP) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ÃƒÆ’Ã¢â‚¬Å¡ge du Bronze Moyen",
+    "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
     "tempSeed" : 12445,
     "precipUseImport" : true,
-    "precipSource" : "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 & GPCP v2.3 (Composite)",
+    "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
     "precipSeed" : 13345,
     "seasonUseImport" : true,
-    "seasonSource" : "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 Bio4 & ERA5 (Composite)",
+    "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
     "seasonSeed" : 14345,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPreset" : {
     "name" : "Terre (Terran)",
@@ -196,18 +196,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "Terre (-1900 BP) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â ÃƒÆ’Ã¢â‚¬Å¡ge du Bronze Moyen",
+      "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
       "tempSeed" : 12445,
       "precipUseImport" : true,
-      "precipSource" : "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 & GPCP v2.3 (Composite)",
+      "precipSource" : "ðŸŒ Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
       "precipSeed" : 13345,
       "seasonUseImport" : true,
-      "seasonSource" : "ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â Terre ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â WorldClim v2.1 Bio4 & ERA5 (Composite)",
+      "seasonSource" : "ðŸŒ Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)",
       "seasonSeed" : 14345,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : 2026,
-      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
+      "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
     },
     "terrestrialBiomassGtC" : 450.0,
     "soilOrganicCarbonGtC" : 1500.0,
@@ -220,7 +220,7 @@
     "seed" : 12345,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : 2026,
-    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0Â°C global mean temperature, 420 ppm COâ‚‚, industrial globalization, and satellite-calibrated ecologies."
+    "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO2, industrial globalization, and satellite-calibrated ecologies."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : true,

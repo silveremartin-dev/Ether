@@ -119,7 +119,7 @@
   "maxLng" : 180.0,
   "boundaryMode" : "DYNAMIC_RESERVOIR",
   "name" : "Out of Africa & Homo Sapiens Expansion (-100,000 BP)",
-  "description" : "\uD83C\uDF0D SCÃƒâ€°NARIO PALÃƒâ€°OLITHIQUE : Berceau Africain, TraversÃƒÂ©e des Continents & Out of Africa (-100 000 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModÃƒÂ©lise la dynamique dÃƒÂ©mographique et l'expansion spatiale des premiÃƒÂ¨res populations d'Homo Sapiens depuis l'Afrique de l'Est ÃƒÂ  travers le Moyen-Orient, l'Eurasie, l'OcÃƒÂ©anie et les AmÃƒÂ©riques.\n\n[CONDITIONS INITIALES PHYSIQUES (TÃ¢â€šâ‚¬)]\nÃ¢â‚¬Â¢ Population Initiale : 50 000 individus (CapacitÃƒÂ© nomade prÃƒÂ©-agricole).\nÃ¢â‚¬Â¢ Stock Capital Physique (KÃ¢â€šâ‚¬) : 2 kg/habitant (bifaces en pierre, javelots).\nÃ¢â‚¬Â¢ Ãƒâ€°nergie StockÃƒÂ©e (EÃ¢â€šâ‚¬) : 5 MJ/habitant (maÃƒÂ®trise du feu et combustible bois).\nÃ¢â‚¬Â¢ RÃƒÂ©serves Alimentaires (FÃ¢â€šâ‚¬) : 2 mois de subsistance en chasse-cueillette.\nÃ¢â‚¬Â¢ Savoir ArchivÃƒÂ© (IÃ¢â€šâ‚¬) : 2 bits/habitant (traditions orales palÃƒÂ©olithiques & langage).\n\n[OBSERVABLES CLÃƒâ€°S DU SCÃƒâ€°NARIO]\nÃ¢â‚¬Â¢ Vitesse de dispersion gÃƒÂ©ographique vers le Proche-Orient, l'Asie du Sud et l'Europe.\nÃ¢â‚¬Â¢ Survie dÃƒÂ©mographique nomade face aux glaciations et ÃƒÂ©vÃƒÂ¨nements de Dansgaard-Oeschger.\nÃ¢â‚¬Â¢ DÃƒÂ©rive linguistique palÃƒÂ©olithique et innovations lithiques (Levallois, emmanchement ÃƒÂ  la rÃƒÂ©sine).\n",
+  "description" : "\uD83C\uDF0D SCÉNARIO PALÉOLITHIQUE : Berceau Africain, Traversée des Continents & Out of Africa (-100 000 BCE)\n\n[HISTORICAL & BIOPHYSICAL CONTEXT]\nModélise la dynamique démographique et l'expansion spatiale des premières populations d'Homo Sapiens depuis l'Afrique de l'Est à travers le Moyen-Orient, l'Eurasie, l'Océanie et les Amériques.\n\n[CONDITIONS INITIALES PHYSIQUES (T₀)]\n• Population Initiale : 50 000 individus (Capacité nomade pré-agricole).\n• Stock Capital Physique (K₀) : 2 kg/habitant (bifaces en pierre, javelots).\n• Énergie Stockée (E₀) : 5 MJ/habitant (maîtrise du feu et combustible bois).\n• Réserves Alimentaires (F₀) : 2 mois de subsistance en chasse-cueillette.\n• Savoir Archivé (I₀) : 2 bits/habitant (traditions orales paléolithiques & langage).\n\n[OBSERVABLES CLÉS DU SCÉNARIO]\n• Vitesse de dispersion géographique vers le Proche-Orient, l'Asie du Sud et l'Europe.\n• Survie démographique nomade face aux glaciations et évènements de Dansgaard-Oeschger.\n• Dérive linguistique paléolithique et innovations lithiques (Levallois, emmanchement à la résine).\n",
   "presetKey" : "out_of_africa",
   "referenceTrajectoryModel" : "PALEO_SOURCES",
   "planetPreset" : {
@@ -151,18 +151,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "\uD83C\uDF0D Terre (-100000 BP) Ã¢â‚¬â€ Dernier Interglaciaire EÃƒÂ©mien",
+    "tempSource" : "\uD83C\uDF0D Terre (-100000 BP) — Dernier Interglaciaire Eémien",
     "tempSeed" : 12450,
     "precipUseImport" : true,
-    "precipSource" : "\uD83C\uDF0D Terre (-100000 BP) Ã¢â‚¬â€ HumiditÃƒÂ© & Savane Trans-saharienne",
+    "precipSource" : "\uD83C\uDF0D Terre (-100000 BP) — Humidité & Savane Trans-saharienne",
     "precipSeed" : 13350,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83C\uDF0D Terre (-100000 BP) Ã¢â‚¬â€ SaisonnalitÃƒÂ© EÃƒÂ©mienne",
+    "seasonSource" : "\uD83C\uDF0D Terre (-100000 BP) — Saisonnalité Eémienne",
     "seasonSeed" : 14350,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
     "associatedEpochYear" : -100000,
-    "presetDescription" : "\uD83C\uDF0D EARTH (-100,000 BP / Last Interglacial / Eemian): Warm interglacial climate (+1 to +2Â°C above pre-industrial), sea level +6 to +9m above modern datum. Green Sahara corridors and early Homo Sapiens expansion out of Africa."
+    "presetDescription" : "\uD83C\uDF0D EARTH (-100,000 BP / Last Interglacial / Eemian): Warm interglacial climate (+1 to +2°C above pre-industrial), sea level +6 to +9m above modern datum. Green Sahara corridors and early Homo Sapiens expansion out of Africa."
   },
   "ecologyPreset" : {
     "name" : "Terre (-100 000 / Dernier Interglaciaire)",
@@ -196,18 +196,18 @@
       "elevationUseImport" : true,
       "elevationMapSource" : "earth",
       "tempUseImport" : true,
-      "tempSource" : "\uD83C\uDF0D Terre (-100000 BP) Ã¢â‚¬â€ Dernier Interglaciaire EÃƒÂ©mien",
+      "tempSource" : "\uD83C\uDF0D Terre (-100000 BP) — Dernier Interglaciaire Eémien",
       "tempSeed" : 12450,
       "precipUseImport" : true,
-      "precipSource" : "\uD83C\uDF0D Terre (-100000 BP) Ã¢â‚¬â€ HumiditÃƒÂ© & Savane Trans-saharienne",
+      "precipSource" : "\uD83C\uDF0D Terre (-100000 BP) — Humidité & Savane Trans-saharienne",
       "precipSeed" : 13350,
       "seasonUseImport" : true,
-      "seasonSource" : "\uD83C\uDF0D Terre (-100000 BP) Ã¢â‚¬â€ SaisonnalitÃƒÂ© EÃƒÂ©mienne",
+      "seasonSource" : "\uD83C\uDF0D Terre (-100000 BP) — Saisonnalité Eémienne",
       "seasonSeed" : 14350,
       "canonicalPlanet" : "earth",
       "tidalLocked" : false,
       "associatedEpochYear" : -100000,
-      "presetDescription" : "\uD83C\uDF0D EARTH (-100,000 BP / Last Interglacial / Eemian): Warm interglacial climate (+1 to +2Â°C above pre-industrial), sea level +6 to +9m above modern datum. Green Sahara corridors and early Homo Sapiens expansion out of Africa."
+      "presetDescription" : "\uD83C\uDF0D EARTH (-100,000 BP / Last Interglacial / Eemian): Warm interglacial climate (+1 to +2°C above pre-industrial), sea level +6 to +9m above modern datum. Green Sahara corridors and early Homo Sapiens expansion out of Africa."
     },
     "terrestrialBiomassGtC" : 620.0,
     "soilOrganicCarbonGtC" : 1800.0,
@@ -220,7 +220,7 @@
     "seed" : 12350,
     "canonicalPlanet" : "earth",
     "associatedEpochYear" : -100000,
-    "presetDescription" : "\uD83C\uDF0D EARTH (-100,000 BP / Last Interglacial / Eemian): Warm interglacial climate (+1 to +2Â°C above pre-industrial), sea level +6 to +9m above modern datum. Green Sahara corridors and early Homo Sapiens expansion out of Africa."
+    "presetDescription" : "\uD83C\uDF0D EARTH (-100,000 BP / Last Interglacial / Eemian): Warm interglacial climate (+1 to +2°C above pre-industrial), sea level +6 to +9m above modern datum. Green Sahara corridors and early Homo Sapiens expansion out of Africa."
   },
   "ecologyPresetName" : "Terre (Terran)",
   "useRealEarthData" : true,

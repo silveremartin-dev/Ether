@@ -135,11 +135,11 @@ public record EcologyPreset(
     public static final EcologyPreset EARTH_LIKE = EARTH_MODERN;
     public static final EcologyPreset EARTH_STANDARD = EARTH_MODERN;
 
-    /** -1 000 ans : Début Ã‚ge du Fer */
+    /** -1 000 ans : Début Âge du Fer */
     public static final EcologyPreset EARTH_IRON_1000BP = new EcologyPreset(
             PlanetPreset.EARTH_IRON_1000BP.name(), PlanetPreset.EARTH_IRON_1000BP.name(), PlanetPreset.EARTH_IRON_1000BP, 580.0, 1780.0, 7.0, 17.0, 135.0, 2100.0, 87.0, 21000.0, 12344L, null, null, null, null, null, null);
 
-    /** -1 900 ans : Ã‚ge du Bronze Moyen */
+    /** -1 900 ans : Âge du Bronze Moyen */
     public static final EcologyPreset EARTH_BRONZE_1900BP = new EcologyPreset(
             PlanetPreset.EARTH_BRONZE_1900BP.name(), PlanetPreset.EARTH_BRONZE_1900BP.name(), PlanetPreset.EARTH_BRONZE_1900BP, 590.0, 1800.0, 9.0, 19.0, 145.0, 2250.0, 87.0, 23000.0, 12345L, null, null, null, null, null, null);
 
