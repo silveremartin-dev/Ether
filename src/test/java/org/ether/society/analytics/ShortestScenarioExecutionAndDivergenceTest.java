@@ -2,6 +2,7 @@ package org.ether.society.analytics;
 
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -15,12 +16,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * instruments real-time simulation throughput (TPS, latency), and runs the
  * multi-variate ground truth divergence audit to verify that all mathematical
  * bug fixes (spatial scoping, denominator epsilon smoothing, zero-containment scale,
- * andBosperupian agricultural feedback) prevent model drift.
+ * and Boserupian agricultural feedback) prevent model drift.
  * </p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
  */
+@Tag("scientific")
 public class ShortestScenarioExecutionAndDivergenceTest {
 
     @Test
@@ -34,9 +36,11 @@ public class ShortestScenarioExecutionAndDivergenceTest {
         assertNotNull(scenarios, "Scenario list must not be null");
         assertFalse(scenarios.isEmpty(), "Scenario list must not be empty");
 
-        // Identify the shortest scenario by chronological duration (years)
+        // Identify the shortest canonical global historical Earth scenario by chronological duration (years)
         Scenario shortest = scenarios.stream()
                 .filter(s -> s.getEndDateYear() > s.getStartDateYear())
+                .filter(s -> s.getPresetKey() != null && !s.getPresetKey().isBlank())
+                .filter(s -> s.isUseRealEarthData() && !s.isClippingEnabled() && s.getEndDateYear() <= 2025)
                 .min(Comparator.comparingLong(s -> s.getEndDateYear() - s.getStartDateYear()))
                 .orElse(scenarios.get(0));
 

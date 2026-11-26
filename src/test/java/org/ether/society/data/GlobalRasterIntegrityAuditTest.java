@@ -20,7 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 4. Completely blank/black uniform layers (min == max pixel value)
  * 5. Invariant violations in deep-time (-3,000,000 to -10,000 BP)
  */
-// Standard unit/integration test
+// Multi-minute full planetary raster scan across all epochs
+@Tag("data-audit")
 public class GlobalRasterIntegrityAuditTest {
 
     private static final String[] CRITICAL_LAYERS = {

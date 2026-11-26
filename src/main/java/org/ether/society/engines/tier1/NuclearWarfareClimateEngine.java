@@ -41,7 +41,6 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
     /** Global stratospheric soot optical depth accumulation factor */
     private static double globalSootOpticalDepth = 0.0;
     private static long baseSeed = 42L;
-    private static long invocationCounter = 0L;
 
     /**
      * Sets the scenario-derived random seed for deterministic conflict and soot injection events.
@@ -83,7 +82,7 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
         if (buffer == null || buffer.getCapacity() == 0) return;
 
         int sootInjectionEvents = 0;
-        invocationCounter++;
+        final long currentTickId = buffer.getSimulationTick();
 
         float[] bioHuman = buffer.getHumanPopulation();
         float[] uraniumArr = buffer.getResourceUranium();
@@ -108,7 +107,7 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
 
             if (powerPerCapita >= NUCLEAR_CAPABILITY_POWER_WATTS && capital > 20000.0) {
                 long cellId = (h3Arr != null && h3Arr[i] != 0L) ? h3Arr[i] : i;
-                double prng = org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, invocationCounter, cellId, 211L);
+                double prng = org.ether.society.util.DeterministicPRNG.nextDouble(baseSeed, currentTickId, cellId, 211L);
                 if (prng < 0.0001) {
                     sootInjectionEvents++;
                     globalSootOpticalDepth += 0.50;
@@ -169,6 +168,5 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
 
     public static void resetState() {
         globalSootOpticalDepth = 0.0;
-        invocationCounter = 0L;
     }
 }

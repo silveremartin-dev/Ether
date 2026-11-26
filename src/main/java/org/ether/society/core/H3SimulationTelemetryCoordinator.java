@@ -31,6 +31,7 @@ final class H3SimulationTelemetryCoordinator {
     private CompiledTelemetryPlan compiledTelemetryPlan = CompiledTelemetryPlan.NO_OP;
     private TelemetryEvaluationResult cachedTelemetryResult = TelemetryEvaluationResult.EMPTY;
     private long lastTelemetryTick = -1L;
+    private long lastStatsSyncTick = -1L;
     private boolean headlessTelemetrySubscribed = false;
 
     H3SimulationTelemetryCoordinator() {
@@ -115,5 +116,27 @@ final class H3SimulationTelemetryCoordinator {
         this.cachedTelemetryResult = res;
         this.lastTelemetryTick = tickCounter;
         return res;
+    }
+
+    /**
+     * Refreshes cached scalar statistics directly from the DOD buffers when the engine
+     * advances without an active telemetry subscription.
+     */
+    void refreshUnbufferedMetricsIfStale(H3SimulationEngine engine) {
+        if (engine.worldBuffer == null || engine.statisticsKernel == null) return;
+        if (this.lastStatsSyncTick == engine.tickCounter && engine.currentFertility > 0.0f && engine.currentLifeExpectancy > 0.0f) {
+            return;
+        }
+        engine.currentGini = engine.statisticsKernel.calculateGini(engine.worldBuffer.getResourceCapital());
+        engine.currentGDP = engine.statisticsKernel.calculateGDP(
+                engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getHumanPopulation());
+        float foodPerCapVal = (float) engine.getFoodPerCapita();
+        float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
+        engine.currentLifeExpectancy = engine.statisticsKernel.calculateLifeExpectancy(engine.worldBuffer, foodSatVal);
+        if (engine.agentBuffer != null) {
+            engine.currentFertility = engine.statisticsKernel.calculateFertilityRate(
+                    engine.agentBuffer.getBirths(), engine.agentBuffer.getMass());
+        }
+        this.lastStatsSyncTick = engine.tickCounter;
     }
 }

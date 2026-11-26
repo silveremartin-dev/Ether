@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0
  */
-@Tag("benchmark")
+@Tag("scientific")
 public class LocalTriScenarioAuditTest {
 
     public record CulturalMatrixAudit(

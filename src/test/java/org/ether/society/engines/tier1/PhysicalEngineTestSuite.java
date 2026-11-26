@@ -90,7 +90,8 @@ public class PhysicalEngineTestSuite {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
         org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
         buf.getResourceUranium()[0] = 100.0f;
-        buf.getResourceCapital()[0] = 300000.0f;
+        buf.getResourceCapital()[0] = 30_000_000.0f;
+        buf.getEnergyFire()[0] = buf.getHumanPopulation()[0] * 600.0f; // High-energy fission industrial power (>= 15,000 W/cap)
         double initialPollution = buf.getPollutionLevel()[0];
         double initialBioHuman = buf.getHumanPopulation()[0];
 

@@ -42,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   <li>{@code data/ether/<planet>/<year>/state_1d.json}</li>
  * </ul>
  */
+@org.junit.jupiter.api.Tag("manual")
 public class GenerateAllEpochVariables1DTest {
 
     private static final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);

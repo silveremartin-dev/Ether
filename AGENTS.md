@@ -319,7 +319,8 @@ During all calibration, benchmark falsification, and testing phases, any code mo
 1. **Mandatory Automated Architecture & Code Quality Audits (`scripts/test/`)**:
    * Every structural refactoring, new engine addition, or codebase maintenance pass MUST pass the two automated zero-defect audit suites:
      * **Architecture & Zero-Defect Compliance Audit (`scripts/test/audit-architecture-compliance.ps1` / `.sh`)**:
-       * Enforces the $\le 500$ lines ceiling on all `src/main/java` production classes, zero silent exception swallowing (`catch` blocks), zero duplicate class names across packages, pure stateless `*Helper` / `*Formatter` contracts (`final` class, `private` constructor, zero instance fields), canonical Singleton contracts, and `SimulationEngineModule` contract compliance.
+       * Enforces zero silent exception swallowing (`catch` blocks), zero duplicate class names across packages, pure stateless `*Helper` / `*Formatter` contracts (`final` class, `private` constructor, zero instance fields), canonical Singleton contracts, and `SimulationEngineModule` contract compliance.
+       * **Class Length Guideline ($\sim 500$ lines — Soft Guideline, Not an Absolute Ceiling)**: Working, cohesive, scientifically correct code ALWAYS takes priority over line-count limits. Never displace logic belonging to class A into an unrelated class B solely to stay under 500 lines. Only extract code from a class that significantly exceeds 500 lines when a clean, state-of-the-art Single Responsibility decomposition exists.
      * **Comprehensive Code Quality, Naming & Determinism Audit (`scripts/test/audit-full-quality-and-naming.ps1` / `.sh`)**:
        * Verifies canonical class naming archetypes (zero legacy `*Manager`, `*Catalog`, `*Evaluator`, `*Calculator`, `*Util` drift), 100% class-level Javadoc coverage, strict English-only comments, and zero unseeded `new Random()` or `Math.random()` calls in simulation engines and kernels.
      * **Localization & Hardcoded UI Strings Audit (`scripts/i18n/audit-i18n-and-hardcoded-strings.ps1` / `.sh`)**:
@@ -334,3 +335,16 @@ During all calibration, benchmark falsification, and testing phases, any code mo
      * `scripts/i18n/`: Localization and hardcoded string audits (`audit-i18n-and-hardcoded-strings.ps1` / `.sh`).
      * `scripts/gcp/`: Google Cloud Platform Batch and distributed cluster automation.
      * `scripts/gis/` & `scripts/ingest/`: External geospatial and empirical dataset ingestion pipelines.
+
+
+---
+
+## 📐 18. Strict SI Unit Consistency & Centralized Conversion Mandate
+1. **Exclusive Use of SI Units**:
+   * All physical, biological, thermodynamic, and economic state variables in Ether MUST be formulated strictly in coherent International System of Units (SI) dimensions ($\text{m}, \text{kg}, \text{s}, \text{K}, \text{J}, \text{W}, \text{Pa}$) or explicitly documented SI decimal multiples ($\text{km}, \text{t}, \text{GJ}, \text{MW}, \text{yr}$). Non-SI imperial or ad-hoc dimensionless scaling hacks are strictly prohibited.
+2. **Single Authoritative Unit Conversion Class (`PhysicalUnitsHelper`)**:
+   * ALL dimensional conversions across simulation engines, kernels, telemetry helpers, and data loaders MUST pass exclusively through `org.ether.society.model.PhysicalUnitsHelper` (e.g., `gjPerYearToWatts`, `wattsToGjPerYear`, `kgToMetricTonnes`, `celsiusToKelvin`, `daysToYears`, `yearsToSeconds`, `biomassKgToEnergyGJ`).
+   * **Ban on Inline Conversion Factors**: Hardcoding raw conversion literals (`* 31.688`, `/ 31557600.0`, `* 1e-3`, `+ 273.15`, `/ 365.25`) directly inside physics equations is strictly forbidden.
+3. **Mandatory Dimensional Audit on Every Formula**:
+   * Before committing any engine or kernel formula, verify dimensional homogeneity on both sides of every equation (e.g., `[W] = [J/s]`, `[GJ/yr]`, `[t/km²]`, `[hab]`) and verify that every `WorldBuffer` array read/written matches the exact physical unit declared in `WorldBuffer` Javadoc.
+   * Any unit mismatch discovered in an engine or kernel is a **Category A** defect and MUST be corrected immediately using `PhysicalUnitsHelper`, with a dedicated dimensional unit test covering the conversion.

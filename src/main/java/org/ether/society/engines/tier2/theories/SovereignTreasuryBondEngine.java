@@ -93,10 +93,9 @@ public class SovereignTreasuryBondEngine extends AbstractSimulationEngine {
      * Executes one fiscal accounting cycle across all active sovereign polities.
      *
      * @param polities   active polities/nations
-     * @param cells      inhabited cells
      * @param deltaYears time step fraction in years
      */
-    public static void processPolityFiscalCycles(List<Polity> polities, List<H3Cell> cells, double deltaYears) {
+    public static void processPolityFiscalCycles(List<Polity> polities, double deltaYears) {
         if (polities == null || polities.isEmpty() || deltaYears <= 0.0) return;
 
         for (Polity polity : polities) {

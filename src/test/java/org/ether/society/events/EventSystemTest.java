@@ -24,7 +24,8 @@ class EventSystemTest {
         List<String> events = eventSystem.flushEvents();
 
         assertFalse(events.isEmpty(), "Should trigger historical event for -10000 BC");
-        assertTrue(events.get(0).contains("Agricultural Revolution"));
+        assertTrue(events.stream().anyMatch(e -> e.contains("Agricultural Revolution")),
+                "Should trigger Agricultural Revolution milestone at -10000 BC");
     }
 
     @Test

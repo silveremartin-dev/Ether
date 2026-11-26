@@ -135,10 +135,13 @@ public class JavaRustParityAndFalsificationSuiteTest {
         ab.getMass()[i] = mass;
         ab.getEnergy()[i] = energy;
         ab.getAge()[i] = age;
-        for (int d = 0; d < 4; d++) {
-            float culVal = 0.4f + (d * 0.15f);
-            ab.getCulture()[d][i] = culVal;
+        int culDims = ab.getCulture() != null ? ab.getCulture().length : 4;
+        for (int d = 0; d < Math.min(4, culDims); d++) {
             ab.getGenetics()[d][i] = 0.5f;
+        }
+        for (int d = 0; d < culDims; d++) {
+            float culVal = 0.2f + (d * 0.08f);
+            ab.getCulture()[d][i] = Math.min(0.95f, culVal);
         }
     }
 
@@ -311,9 +314,12 @@ public class JavaRustParityAndFalsificationSuiteTest {
         float diffRate = 0.08f;
         float forceRate = 0.05f;
 
-        // Configure deterministic drift parameters in Java kernels
+        // Configure deterministic drift parameters and single authoritative simulation tick
         javaCultureKernel.resetState();
         stdCultureKernel.resetState();
+        javaSimdWorld.setSimulationTick(1L);
+        javaStdWorld.setSimulationTick(1L);
+        rustWorld.setSimulationTick(1L);
 
         // 1. Advance Java SIMD Engine
         javaCultureKernel.setDiffusionRate(diffRate);
@@ -332,9 +338,9 @@ public class JavaRustParityAndFalsificationSuiteTest {
             arena.syncToJavaBuffers(rustWorld, rustAgents);
         }
 
-        // 4. Verify 3-Engine Parity
+        // 4. Verify 3-Engine Parity across ALL 9 cultural dimensions (0..8)
         for (int i = 0; i < 40; i++) {
-            for (int d = 0; d < 4; d++) {
+            for (int d = 0; d < 9; d++) {
                 float simdVal = javaSimdAgents.getCulture()[d][i];
                 float stdVal = javaStdAgents.getCulture()[d][i];
                 float rustVal = rustAgents.getCulture()[d][i];
@@ -344,8 +350,59 @@ public class JavaRustParityAndFalsificationSuiteTest {
 
                 assertEquals(Float.floatToRawIntBits(simdVal), Float.floatToRawIntBits(stdVal),
                         "Cultural coordinate at [" + d + "][" + i + "] must be bit-identical between Java SIMD and Standard");
-                assertEquals(simdVal, rustVal, 0.05f,
-                        "Cultural coordinate at [" + d + "][" + i + "] must converge between Java and Rust");
+                assertEquals(simdVal, rustVal, 0.005f,
+                        "Cultural coordinate at [" + d + "][" + i + "] must converge tightly between Java and Rust");
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("5b. Dynamic 32-Dimension Cultural Tensor: Java vs Rust Parity (d = 0..31, Zero Bit-Shift Collision)")
+    public void testDynamic32DimensionCultureParity() {
+        assertTrue(NativeRustBridge.isNativeAvailable(), "Rust core must be available");
+        int cap = 16;
+        int dims = 32;
+        WorldBuffer jWorld = new WorldBuffer(cap);
+        WorldBuffer rWorld = new WorldBuffer(cap);
+        AgentBuffer jAgents = new AgentBuffer(cap, dims);
+        AgentBuffer rAgents = new AgentBuffer(cap, dims);
+
+        for (int i = 0; i < cap; i++) {
+            for (int n = 0; n < 6; n++) {
+                int nb = (i + n + 1) % cap;
+                jWorld.getNeighborIndexes()[i][n] = nb;
+                rWorld.getNeighborIndexes()[i][n] = nb;
+            }
+            populateCell(jWorld, i, 200f, 15f, 800f, (byte) 4, 2000f, 500f, 5000f, 1000f, 300f, 1.0f);
+            populateCell(rWorld, i, 200f, 15f, 800f, (byte) 4, 2000f, 500f, 5000f, 1000f, 300f, 1.0f);
+            jWorld.getHumanPopulation()[i] = 500f;
+            rWorld.getHumanPopulation()[i] = 500f;
+            populateAgent(jAgents, i, 500f, 80f, 25f, 1.0f);
+            populateAgent(rAgents, i, 500f, 80f, 25f, 1.0f);
+        }
+
+        CultureKernel ck = new CultureKernel();
+        ck.setBaseSeed(777L);
+        ck.setDiffusionRate(0.08f);
+        ck.setForcingRate(0.05f);
+        ck.setMutationRate(0.02f);
+
+        jWorld.setSimulationTick(17L);
+        rWorld.setSimulationTick(17L);
+        ck.tick(jWorld, jAgents, 365.25f);
+
+        try (NativeRustBridge.NativeWorldArena arena = new NativeRustBridge.NativeWorldArena(cap)) {
+            arena.syncFromJavaBuffers(rWorld, rAgents);
+            arena.tickCulture(1.0f, 0.08f, 0.05f, 0.02f, 777L, 17L);
+            arena.syncToJavaBuffers(rWorld, rAgents);
+        }
+
+        for (int d = 0; d < dims; d++) {
+            for (int i = 0; i < cap; i++) {
+                float jVal = jAgents.getCulture()[d][i];
+                float rVal = rAgents.getCulture()[d][i];
+                assertEquals(jVal, rVal, 1e-4f,
+                        "32D cultural tensor mismatch at dim=" + d + ", agent=" + i);
             }
         }
     }
@@ -463,6 +520,36 @@ public class JavaRustParityAndFalsificationSuiteTest {
                 assertFalse(Float.isNaN(rustAgents.getEnergy()[i]), "Agent energy must not be NaN");
                 assertTrue(rustAgents.getEnergy()[i] >= 0.0f && rustAgents.getEnergy()[i] <= 100.0f, "Agent energy must be in [0, 100]");
             }
+        }
+    }
+
+    @Test
+    @DisplayName("8. Multi-Taxon OrganismBiophysicalProfile Allometry: Java vs. Rust Non-Human Parity")
+    public void testMultiTaxonOrganismProfileParity() {
+        assertTrue(NativeRustBridge.isNativeAvailable(), "Rust core must be available");
+        org.ether.society.model.OrganismBiophysicalProfile megafauna =
+                org.ether.society.model.OrganismBiophysicalProfile.fromAllometricScaling("MEGAFAUNA_PROBOSCIDEAN", 3500.0, 4.24);
+        javaSimdWorld.setOrganismProfile(megafauna);
+        rustWorld.setOrganismProfile(megafauna);
+        double lifeScale = megafauna.referenceLifespanYears()
+                / org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS.referenceLifespanYears();
+        for (int i = 0; i < 40; i++) {
+            float scaledAge = (float) (25.0 * lifeScale);
+            javaSimdAgents.getAge()[i] = scaledAge;
+            rustAgents.getAge()[i] = scaledAge;
+        }
+        float dt = 365.25f;
+        javaDemographicKernel.tick(javaSimdWorld, javaSimdAgents, dt);
+        try (NativeRustBridge.NativeWorldArena arena = new NativeRustBridge.NativeWorldArena(capacity)) {
+            arena.syncFromJavaBuffers(rustWorld, rustAgents);
+            arena.tickDemographic(150.0f, 1.0f, 42L);
+            arena.syncToJavaBuffers(rustWorld, rustAgents);
+        }
+        for (int i = 0; i < 40; i++) {
+            assertEquals(javaSimdAgents.getMass()[i], rustAgents.getMass()[i], Math.max(0.05f, javaSimdAgents.getMass()[i] * 0.002f),
+                    "Non-human taxon mass must match between Java and Rust at index " + i);
+            assertEquals(javaSimdAgents.getAge()[i], rustAgents.getAge()[i], 0.05f,
+                    "Allometrically scaled taxon age must match between Java and Rust at index " + i);
         }
     }
 }

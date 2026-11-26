@@ -9,12 +9,14 @@ import org.ether.society.model.Scenario;
 import org.ether.society.persistence.ScenarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("data-audit")
 class ComparativeAnalyticsIntegrationTest {
 
     private SimulationRunRepository runRepository;
@@ -27,6 +29,16 @@ class ComparativeAnalyticsIntegrationTest {
         runRepository.seedPreRecordedHistoricalBenchmarks();
         scenarioRepository = new ScenarioRepository();
         analyzer = new RootCauseAnalyzer();
+    }
+
+    @org.junit.jupiter.api.AfterEach
+    void tearDown() {
+        if (scenarioRepository != null) {
+            List<Scenario> all = scenarioRepository.findAll();
+            if (all.removeIf(s -> "Test Scenario Alpha".equals(s.getName()))) {
+                scenarioRepository.saveAll(all);
+            }
+        }
     }
 
     @Test

@@ -415,11 +415,11 @@ public final class H3SimulationEngine implements ISimulationEngine {
         return metricsAggregator != null ? (float) metricsAggregator.getEmergentTechnologyLevel() : 1.0f;
     }
 
-    public float getCurrentGini() { return currentGini; }
+    public float getCurrentGini() { telemetryCoordinator.refreshUnbufferedMetricsIfStale(this); return currentGini; }
     public int[] getDensityDistribution() { return densityDistribution; }
-    public float getCurrentGDP() { return currentGDP; }
-    public float getCurrentLifeExpectancy() { return currentLifeExpectancy; }
-    public float getCurrentFertility() { return currentFertility; }
+    public float getCurrentGDP() { telemetryCoordinator.refreshUnbufferedMetricsIfStale(this); return currentGDP; }
+    public float getCurrentLifeExpectancy() { telemetryCoordinator.refreshUnbufferedMetricsIfStale(this); return currentLifeExpectancy; }
+    public float getCurrentFertility() { telemetryCoordinator.refreshUnbufferedMetricsIfStale(this); return currentFertility; }
 
     // --- EXTENDED CLIODYNAMIC & PHYSICAL METRICS (Delegated to SimulationMetricsAggregator) ---
     public double getEnergyCaptured() { return metricsAggregator.getEnergyCaptured(); } public double getResourceDepletionRate() { return metricsAggregator.getResourceDepletionRate(); } public double getEnergyPerCapita() { return metricsAggregator.getEnergyPerCapita(); }

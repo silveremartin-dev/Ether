@@ -200,31 +200,30 @@ import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 
             
-            import org.ether.society.database.H3Cell;
-            import java.util.List;
+            import org.ether.society.core.dod.WorldBuffer;
 
             /**
              * Custom Simulation Engine for Ether Framework.
-             * Implements the ProceduralEnginePlugin interface for deterministic cliodynamic simulation.
+             * Implements the {@code SimulationEngineModule} contract for deterministic cliodynamic simulation.
              */
             public class %s extends AbstractSimulationEngine {
 
                 /**
-                 * Process.
+                 * Executes one simulation tick on the planar {@link WorldBuffer}.
                  *
-                 * @param cells the cells parameter (List&lt;H3Cell&gt;)
-                 * @param deltaYears the delta years parameter (double)
+                 * @param buffer the planetary Data-Oriented Design buffer
+                 * @param dtYears the elapsed simulation time step in years
+                 * @param dtMonthly the monthly sub-step fraction in years
                  */
                 @Override
-                public void process(List<H3Cell> cells, double deltaYears) {
-                    if (cells == null || cells.isEmpty()) return;
+                public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+                    if (buffer == null) return;
+                    float[] biomassArr = buffer.getBiomassNatural();
+                    if (biomassArr == null) return;
 
-                    // Iterate over spatial cell domains and apply localized cellular state transformations
-                    for (H3Cell cell : cells) {
-                        // Example: Apply cliodynamic physical transformation
-                        double currentBiomass = cell.getBiomass();
-                        double targetBiomass = currentBiomass * (1.0 + 0.01 * deltaYears);
-                        cell.setBiomass(targetBiomass);
+                    int capacity = buffer.getCapacity();
+                    for (int i = 0; i < capacity; i++) {
+                        biomassArr[i] = (float) (biomassArr[i] * (1.0 + 0.01 * dtYears));
                     }
                 }
             }

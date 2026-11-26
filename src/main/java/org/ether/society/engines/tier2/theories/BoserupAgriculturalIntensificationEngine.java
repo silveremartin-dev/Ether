@@ -10,14 +10,8 @@ import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
-import org.ether.society.core.math.SmoothMath;
-
-import org.ether.society.engines.tier1.SoilNutrientNPKEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Ester Boserup Agricultural Intensification &amp; Induced Innovation Engine.

@@ -7,6 +7,7 @@
 package org.ether.society.analytics;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Verifies multi-scenario before/after calibration on continuous non-bifurcating historical regimes,
  * cartographic tensor comparison, root cause drift decomposition, and multi-scale sensitivity matrices.
  */
+@Tag("scientific")
 public class HistoricalScenarioCalibrationHarnessTest {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalScenarioCalibrationHarnessTest.class);
 

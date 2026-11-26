@@ -6,12 +6,9 @@
  */
 package org.ether.society.engines.tier2.theories;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,49 +21,47 @@ public class StructuralDemographicBifurcationEngineTest {
     @Test
     @DisplayName("Stable low-inequality and food-abundant cells remain below critical PSI threshold with 0 crises")
     public void testSubCriticalEquilibriumNoCrisis() {
-        StructuralDemographicBifurcationEngine engine = new StructuralDemographicBifurcationEngine(10.0, 0.05, new Random(42));
+        StructuralDemographicBifurcationEngine engine = new StructuralDemographicBifurcationEngine(10.0, 0.05, 42L);
 
-        H3Cell cell = new H3Cell(1001L, 45.0, 5.0);
-        cell.setPopulation(1000);
-        cell.setFoodResource(50000.0); // Extreme abundance: requiredFood (2000) / 50000 = 0.04 -> MMP floored at 0.5
-        cell.setGiniIndex(0.25);       // Low inequality
-        cell.setResourceCapital(100.0); // Moderate capital
+        WorldBuffer buffer = new WorldBuffer(1);
+        buffer.getHumanPopulation()[0] = 1000.0f;
+        buffer.getFoodResource()[0] = 50000.0f;
+        buffer.getGiniIndex()[0] = 0.25f;
+        buffer.getResourceCapital()[0] = 100.0f;
 
-        engine.process(List.of(cell), 1.0);
+        engine.tick(buffer, 1.0, 12.0);
 
         assertEquals(0, engine.getTotalCrisesTriggered(), "Subcritical cell must not experience Poisson catastrophe jump");
-        assertEquals(0.25, cell.getGiniIndex(), 1e-4, "Gini must remain unchanged when no crisis occurs");
-        assertEquals(1000, cell.getPopulation(), "Population must remain intact when no crisis occurs");
+        assertEquals(0.25f, buffer.getGiniIndex()[0], 1e-4f, "Gini must remain unchanged when no crisis occurs");
+        assertEquals(1000.0f, buffer.getHumanPopulation()[0], 1e-3f, "Population must remain intact when no crisis occurs");
         assertTrue(engine.getMeanPlanetaryPSI() < 10.0, "Mean PSI must remain below critical threshold");
     }
 
     @Test
     @DisplayName("Extreme elite overproduction and mass immiseration triggers Scheidel Great Leveler collapse jump")
     public void testSuperCriticalBifurcationJump() {
-        // Deterministic PRNG seeded to guarantee jump under high hazard
-        StructuralDemographicBifurcationEngine engine = new StructuralDemographicBifurcationEngine(2.0, 0.99, new Random(1));
+        StructuralDemographicBifurcationEngine engine = new StructuralDemographicBifurcationEngine(2.0, 0.99, 1L);
 
-        H3Cell stressedCell = new H3Cell(1002L, 45.0, 5.0);
-        stressedCell.setPopulation(10000);
-        stressedCell.setFoodResource(100.0);   // Severe famine: requiredFood (20000) / 100 = 200 -> MMP = 200
-        stressedCell.setGiniIndex(0.85);        // Extreme elite oligarchic concentration
-        stressedCell.setResourceCapital(2000.0); // Enormous elite surplus -> EMP = 20 * (0.85^2 * 3) = 43.35
-                                                // SF = 2.5 -> PSI = 200 * 43.35 * 2.5 = 21,675 >> 2.0
+        WorldBuffer buffer = new WorldBuffer(1);
+        buffer.getHumanPopulation()[0] = 300000.0f; // High density (~169 hab/km2 on H3 Res-4 hex) triggering supercritical MMP
+        buffer.getFoodResource()[0] = 100.0f;
+        buffer.getGiniIndex()[0] = 0.85f;
+        buffer.getResourceCapital()[0] = 2000.0f;
 
-        int initialPop = stressedCell.getPopulation();
-        double initialCapital = stressedCell.getResourceCapital();
-        double initialGini = stressedCell.getGiniIndex();
+        float initialPop = buffer.getHumanPopulation()[0];
+        float initialCapital = buffer.getResourceCapital()[0];
+        float initialGini = buffer.getGiniIndex()[0];
 
-        engine.process(List.of(stressedCell), 1.0);
+        engine.tick(buffer, 1.0, 12.0);
 
         assertEquals(1, engine.getTotalCrisesTriggered(), "Catastrophe jump must fire under extreme supercritical PSI");
-        
+
         // Assert Walter Scheidel's 'The Great Leveler' inequality and capital dissipation
-        assertEquals(initialGini * 0.70, stressedCell.getGiniIndex(), 1e-3,
-                "Crisis jump must compress Gini inequality index by exactly 30% (elite estate redistribution)");
-        assertEquals(initialCapital * 0.75, stressedCell.getResourceCapital(), 1e-3,
+        assertEquals(initialGini * 0.70f, buffer.getGiniIndex()[0], 1e-3f,
+                "Crisis jump must compress Gini inequality index by 30% (elite estate redistribution)");
+        assertEquals(initialCapital * 0.75f, buffer.getResourceCapital()[0], 1e-2f,
                 "Crisis jump must destroy 25% of elite physical capital stock (warfare/fires)");
-        assertEquals((int) (initialPop * 0.85), stressedCell.getPopulation(),
+        assertEquals(initialPop * 0.85f, buffer.getHumanPopulation()[0], 1.0f,
                 "Crisis jump must incur 15% excess mortality shock from sociopolitical breakdown");
     }
 }

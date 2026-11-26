@@ -38,13 +38,27 @@ class ScenarioTestProtocolTest {
         scenarioRepository = new ScenarioRepository();
     }
 
+    @org.junit.jupiter.api.AfterEach
+    void cleanupRepository() {
+        if (scenarioRepository != null) {
+            java.util.List<Scenario> all = scenarioRepository.findAll();
+            boolean changed = all.removeIf(s -> "Iterative Calibration Test".equals(s.getName())
+                    || "Roman Empire Validation Protocol".equals(s.getName())
+                    || "Fertile Crescent Calibration".equals(s.getName())
+                    || "Modern Horizon Benchmark Test".equals(s.getName()));
+            if (changed) {
+                scenarioRepository.saveAll(all);
+            }
+        }
+    }
+
     private void configureFastRegionalScenario(Scenario s) {
         s.setClippingEnabled(true);
-        s.setMinLat(40.0);
-        s.setMaxLat(42.0);
-        s.setMinLng(10.0);
-        s.setMaxLng(12.0);
-        s.setH3Resolution(1);
+        s.setMinLat(36.0);
+        s.setMaxLat(46.0);
+        s.setMinLng(6.0);
+        s.setMaxLng(18.0);
+        s.setH3Resolution(2);
     }
 
     @Test
@@ -118,14 +132,14 @@ class ScenarioTestProtocolTest {
         scenario.setName("Iterative Calibration Test");
         scenario.setStartDateYear(1000);
         scenario.setEndDateYear(1001);
-        scenario.setInitialHumanCount(100_000L);
+        scenario.setInitialHumanCount(1_200_000L);
         scenario.setInitialFoodReserveMonths(2.0);
         configureFastRegionalScenario(scenario);
 
-        // Target record expecting higher food / growth
+        // Target record expecting higher food / growth relative to 1.22M baseline
         SimulationRunRecord targetRun = new SimulationRunRecord("TARGET-ITERATIVE", scenario.getName(), "Target", Map.of("Réserves Food F0", "12.0 mois"));
-        targetRun.addSnapshot(1000, 100_000L, 100_000.0, 10.0, 80.0, 100);
-        targetRun.addSnapshot(1001, 110_000L, 110_000.0, 12.0, 80.0, 150);
+        targetRun.addSnapshot(1000, 1_200_000L, 100_000.0, 10.0, 80.0, 100);
+        targetRun.addSnapshot(1001, 2_500_000L, 110_000.0, 12.0, 80.0, 150);
 
         ScenarioTestProtocol.ProtocolReport finalReport = protocolEngine.autoCalibrate(scenario, targetRun, 2, 50.0);
 

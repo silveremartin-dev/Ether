@@ -114,6 +114,7 @@ public class SimulationPipeline {
         } else if (activeScenario != null) {
             worldBuffer.setCurrentYear(activeScenario.getStartDateYear());
         }
+        worldBuffer.setSimulationTick(engine != null ? engine.getTickCounter() : 0L);
         worldBuffer.setDemographicKernelManaged(agentBuffer != null);
 
         SimulationTimeStep timeStep = SimulationTimeStep.ofSeconds(dtSlow);
@@ -190,7 +191,7 @@ public class SimulationPipeline {
                     org.ether.society.engines.tier2.theories.WarDiplomacyEngine.processGeopoliticalConflicts(engine.getNations(), cells, activeScenario);
                 }
                 if (states == null || Boolean.TRUE.equals(states.get("SovereignTreasuryBondEngine"))) {
-                    org.ether.society.engines.tier2.theories.SovereignTreasuryBondEngine.processPolityFiscalCycles(engine.getNations(), cells, dtYears);
+                    org.ether.society.engines.tier2.theories.SovereignTreasuryBondEngine.processPolityFiscalCycles(engine.getNations(), dtYears);
                 }
             }
         }

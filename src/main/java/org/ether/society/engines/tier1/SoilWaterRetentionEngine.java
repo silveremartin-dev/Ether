@@ -42,7 +42,7 @@ public class SoilWaterRetentionEngine extends AbstractSimulationEngine {
      * Calculates volumetric soil water content $\theta(h)$ for matric suction head $|h|$ (in cm).
      */
     public static double calculateWaterContent(double matricSuctionHeadCm) {
-        double posHead = SmoothMath.softplus(matricSuctionHeadCm, 2.0);
+        double posHead = SmoothMath.softplus(matricSuctionHeadCm, 50.0);
         double alphaH = ALPHA * posHead;
         double denominator = Math.pow(1.0 + Math.pow(alphaH, N_PARAM), M_PARAM);
         return THETA_R + (THETA_S - THETA_R) / denominator;
@@ -64,7 +64,7 @@ public class SoilWaterRetentionEngine extends AbstractSimulationEngine {
         double saturationFrac = SmoothMath.softmin(1.0, (Math.max(0.0, rainfallMm) / 1200.0) * slopeDrainage, 6.0);
         double estimatedTheta = THETA_R + (THETA_S - THETA_R) * saturationFrac;
 
-        double plantWaterContent = SmoothMath.softplus(estimatedTheta - thetaPWP, 40.0);
+        double plantWaterContent = SmoothMath.softplus(estimatedTheta - thetaPWP, 250.0);
         return SmoothMath.softmin(1.0, plantWaterContent / awcMax, 8.0);
     }
 

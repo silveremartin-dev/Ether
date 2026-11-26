@@ -10,7 +10,7 @@ const LUT_CO2_STEP_SIZE: i32 = 25;
 const LUT_CO2_STEPS: usize = 35;
 const PET_LUT_MIN: i32 = -5;
 
-const H3_AVG_AREA_KM2: [f64; 16] = [
+pub(crate) const H3_AVG_AREA_KM2: [f64; 16] = [
     4357449.416, 609788.441, 86801.780, 12393.434,
     1770.347, 252.903, 36.129, 5.161,
     0.737, 0.105, 0.015, 0.0021,

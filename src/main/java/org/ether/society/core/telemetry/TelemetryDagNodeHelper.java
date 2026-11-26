@@ -61,7 +61,7 @@ final class TelemetryDagNodeHelper {
             case "kardashevScale" -> CliodynamicFormulasRegistry.computeKardashevScale(c.powerWattsPerCapita(), c.popLong);
             case "foodPerCapita" -> c.foodPerCapita;
             case "biomassNatural" -> c.bioNatSum;
-            case "biomassDomesticated" -> c.bioAgrSum + c.bioLivSum;
+            case "biomassDomesticated" -> org.ether.society.model.PhysicalUnitsHelper.kgToMetricTonnes(c.bioAgrSum) + c.bioLivSum;
             case "potableWater" -> c.waterSum;
             case "resourceDepletion" -> {
                 double maxRes = Math.max(1.0, c.capacity * 100_000.0);

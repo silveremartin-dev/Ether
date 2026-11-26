@@ -260,11 +260,13 @@ public class EnvironmentalKernel {
             }
             if (bioAgriArr != null && i < bioAgriArr.length) {
                 float cultivationShare = (float) Math.tanh(capPerCap / 15.0f);
+                float maxCellAgriKg = maxAgPotential / 0.0105f;
                 float perCapitaAgTarget = humanPop * (250.0f + 370.0f * cultivationShare) * cultivationShare;
                 float annualAgFluxKg = (agProd > 0.0f)
                         ? Math.max(perCapitaAgTarget, (agProd / Math.max(0.0001f, dtInYears)) / 0.0105f * cultivationShare)
                         : perCapitaAgTarget;
-                bioAgriArr[i] = Math.max(bioAgriArr[i] * foodRetentionFactor, annualAgFluxKg);
+                annualAgFluxKg = Math.min(maxCellAgriKg, annualAgFluxKg);
+                bioAgriArr[i] = Math.min(maxCellAgriKg, Math.max(bioAgriArr[i] * foodRetentionFactor, annualAgFluxKg));
             }
         }
     }

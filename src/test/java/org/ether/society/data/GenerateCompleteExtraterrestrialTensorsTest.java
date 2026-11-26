@@ -29,6 +29,7 @@ import static org.ether.society.data.ExtraterrestrialTensorMetadataSupport.write
  * @author Silvere Martin-Michiellot
  * @see ExtraterrestrialTensorMetadataSupport
  */
+@org.junit.jupiter.api.Tag("manual")
 public class GenerateCompleteExtraterrestrialTensorsTest {
 
     /** Standard equirectangular raster width in pixels. */

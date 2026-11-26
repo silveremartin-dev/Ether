@@ -25,7 +25,6 @@ public class CultureKernel {
     private float diffusionRate = 0.08f;
     private float mutationRate = 0.015f;
     private float forcingRate = 0.05f;
-    private long deterministicTickCounter = 0L;
     private long baseSeed = 42L;
 
     private float[][] cachedHexCultureSum;
@@ -34,12 +33,11 @@ public class CultureKernel {
     private int[] activeHexes;
     private int activeHexCount = 0;
 
-    /** Resets internal deterministic tick counter and default kernel rates. */
+    /** Resets default kernel rates and seed. */
     public void resetState() {
         this.diffusionRate = 0.08f;
         this.mutationRate = 0.015f;
         this.forcingRate = 0.05f;
-        this.deterministicTickCounter = 0L;
         this.baseSeed = 42L;
     }
 
@@ -92,8 +90,8 @@ public class CultureKernel {
 
     private void tickWithDtYears(WorldBuffer world, AgentBuffer agents, float dtYears) {
         float dtNormalized = Math.max(0.0001f, dtYears);
-        deterministicTickCounter++;
-        langevinDrift(agents, dtNormalized, deterministicTickCounter);
+        long tickIndex = world != null ? world.getSimulationTick() : 0L;
+        langevinDrift(agents, dtNormalized, tickIndex);
         diffuseAndForce(world, agents, dtNormalized);
     }
 
@@ -108,7 +106,7 @@ public class CultureKernel {
             if (hexIds[i] == -1) continue;
             for (int d = 0; d < dims; d++) {
                 double gaussianNoise = Math.clamp(
-                        org.ether.society.util.DeterministicPRNG.nextGaussian(baseSeed, tickIndex, ((long) i << 4) | d),
+                        org.ether.society.util.DeterministicPRNG.nextGaussian(baseSeed, tickIndex, ((long) i << 5) | d),
                         -3.0, 3.0);
                 culture[d][i] = Math.clamp(culture[d][i] + (float) (gaussianNoise * noiseCoeff), 0.0f, 1.0f);
             }

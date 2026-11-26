@@ -83,48 +83,6 @@ public class CompiledEngineKernel {
     }
 
     /**
-     * Executes Kernel Fusion over object-based H3Cell list in a single memory cache pass.
-     */
-    public void executeFusedKernel(List<H3Cell> cells, double dt) {
-        if (cells == null || cells.isEmpty()) return;
-
-        SymbolicExpression popExpr = fusedExpressions.get("humanPopulation");
-        SymbolicExpression tempExpr = fusedExpressions.get("temperature");
-        SymbolicExpression capExpr = fusedExpressions.get("resourceCapital");
-        SymbolicExpression pollExpr = fusedExpressions.get("pollutionLevel");
-        SymbolicExpression energyExpr = fusedExpressions.get("energyFoodConsumed");
-
-        for (H3Cell cell : cells) {
-            if (cell == null) continue;
-
-            if (popExpr != null && cell.getPopulation() != null && cell.getPopulation() > 0) {
-                double newPop = popExpr.evaluate(cell.getPopulation());
-                org.ether.society.database.H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, (int) Math.max(0, newPop));
-            }
-
-            if (tempExpr != null && cell.getTemperature() != null) {
-                double newTemp = tempExpr.evaluate(cell.getTemperature());
-                cell.setTemperature(newTemp);
-            }
-
-            if (capExpr != null && cell.getResourceCapital() != null) {
-                double newCap = capExpr.evaluate(cell.getResourceCapital());
-                cell.setResourceCapital(Math.max(0.0, newCap));
-            }
-
-            if (pollExpr != null && cell.getPollutionLevel() != null) {
-                double newPoll = pollExpr.evaluate(cell.getPollutionLevel());
-                cell.setPollutionLevel(Math.max(0.0, newPoll));
-            }
-
-            if (energyExpr != null && cell.getEnergyFoodConsumed() != null) {
-                double newEnergy = energyExpr.evaluate(cell.getEnergyFoodConsumed());
-                cell.setEnergyFoodConsumed(Math.max(0.0, newEnergy));
-            }
-        }
-    }
-
-    /**
      * To string.
      *
      * @return the resulting computation or state reference

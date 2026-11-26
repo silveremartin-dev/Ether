@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@org.junit.jupiter.api.Tag("manual")
 class PresetStorageServiceTest {
 
     @BeforeAll

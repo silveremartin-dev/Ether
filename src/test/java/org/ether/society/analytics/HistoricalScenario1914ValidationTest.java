@@ -3,6 +3,7 @@ package org.ether.society.analytics;
 import org.ether.society.analytics.SimulationRunRecord;
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
  */
+@Tag("scientific")
 public class HistoricalScenario1914ValidationTest {
 
     @Test

@@ -5,10 +5,7 @@
 package org.ether.society.core.engine;
 
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.database.H3Cell;
 import org.ether.society.model.Scenario;
-
-import java.util.List;
 
 /**
  * Skeletal base implementation for {@link SimulationEngineModule} reducing boilerplate across
@@ -35,10 +32,6 @@ public abstract class AbstractSimulationEngine implements SimulationEngineModule
 
     public String getDescription() {
         return name() + " simulation engine module.";
-    }
-
-    public void process(List<H3Cell> cells, double deltaYears) {
-        // Default no-op for purely DoD-based engines; overridden by cellular engines
     }
 
     public void processBuffer(WorldBuffer buffer, double deltaYears) {

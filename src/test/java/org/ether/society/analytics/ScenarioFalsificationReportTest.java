@@ -26,6 +26,7 @@ import java.util.*;
  * against historical ground truth datasets (HYDE 3.4, Maddison, EPICA, Seshat),
  * and generates the standardized cliodynamic falsification audit report.</p>
  */
+@org.junit.jupiter.api.Tag("scientific")
 public class ScenarioFalsificationReportTest {
 
     public record SimpleBenchmarkItem(String name, String runId) implements ScenarioBenchmarkItem {

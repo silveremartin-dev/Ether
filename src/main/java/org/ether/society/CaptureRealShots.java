@@ -256,7 +256,9 @@ public class CaptureRealShots extends Application {
                     if (resCombo != null) {
                         resCombo.setValue(4);
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ex) {
+                    System.err.println("Could not set H3 resolution combo: " + ex.getMessage());
+                }
                 setupPanel.markClean();
                 setupPanel.startSimulationDeferred();
             });
@@ -311,7 +313,9 @@ public class CaptureRealShots extends Application {
                     BorderPane root = (BorderPane) simTab.getContent();
                     TabPane leftSidebar = (TabPane) root.getLeft();
                     leftSidebar.getSelectionModel().select(0); // 🎛️ 3D Render & Controls
-                } catch (Exception ignored) {}
+                } catch (Exception ex) {
+                    System.err.println("Could not select 3D render tab: " + ex.getMessage());
+                }
 
                 mapCanvas.setViewMode(ViewMode.VIEW_3D);
                 mapCanvas.setSmoothMap(false);

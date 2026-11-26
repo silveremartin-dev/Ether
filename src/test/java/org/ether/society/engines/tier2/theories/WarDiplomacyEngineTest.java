@@ -103,6 +103,7 @@ public class WarDiplomacyEngineTest {
         buf.getBiomassNatural()[0] = 2000.0f;
         buf.getHumanPopulation()[1] = 3000.0f;
         buf.getResourceCapital()[1] = 100.0f;
+        buf.getMetalResource()[1] = 100.0f; // Accessible ore reserves enabling induced metallurgy
         buf.getNeighborIndexes()[0] = new int[]{1};
         buf.getNeighborIndexes()[1] = new int[]{0};
 

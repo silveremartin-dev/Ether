@@ -1,8 +1,8 @@
 {
-  "name" : "Terre (-1 000 / Début Âge du Fer)",
-  "planetPresetName" : "Terre (-1 000 / Début Âge du Fer)",
+  "name" : "Terre (-1 000 / Début Ã‚ge du Fer)",
+  "planetPresetName" : "Terre (-1 000 / Début Ã‚ge du Fer)",
   "embeddedPlanetPreset" : {
-    "name" : "Terre (-1 000 / Début Âge du Fer)",
+    "name" : "Terre (-1 000 / Début Ã‚ge du Fer)",
     "resolution" : 4,
     "radiusKm" : 6371.0,
     "dayLengthHours" : 24.0,
@@ -36,7 +36,7 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "earth",
     "tempUseImport" : true,
-    "tempSource" : "Terre (-1000 BP) — Âge du Fer Ancien",
+    "tempSource" : "Terre (-1000 BP) — Ã‚ge du Fer Ancien",
     "tempSeed" : 12444,
     "precipUseImport" : true,
     "precipSource" : "\uD83C\uDF0D Terre (-1000 BP) — Précipitations",
@@ -46,8 +46,8 @@
     "seasonSeed" : 14344,
     "canonicalPlanet" : "earth",
     "tidalLocked" : false,
-    "presetDescription" : "⚔ EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia.",
-    "associatedEpochYear" : -1000
+    "associatedEpochYear" : -1000,
+    "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie."
   },
   "terrestrialBiomassGtC" : 580.0,
   "soilOrganicCarbonGtC" : 1780.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "earth",
-  "presetDescription" : "⚔ EARTH (-1,000 BP / Early Iron Age): Blast furnaces and widespread iron metallurgy, deforestation for charcoal smelting, expansion of classical empires and monetary economies across Eurasia.",
-  "associatedEpochYear" : -1000
+  "associatedEpochYear" : -1000,
+  "presetDescription" : "⚔ TERRE (-1 000 / Début de l'Âge du Fer) : Démocratisation de la métallurgie du fer aux hauts fourneaux, déforestation accrue pour le charbon de bois, essor des grands empires classiques et monnaies frappées en Eurasie."
 }

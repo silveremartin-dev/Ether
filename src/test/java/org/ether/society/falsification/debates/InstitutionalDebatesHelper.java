@@ -99,13 +99,20 @@ final class InstitutionalDebatesHelper {
         H3Cell highland = pair.highlandInclusive();
         H3Cell coastal = pair.coastalExtractive();
 
-        List<H3Cell> testCells = List.of(highland, coastal);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
+        buf.getHumanPopulation()[0] = (float) highland.getPopulationOr(0);
+        buf.getGiniIndex()[0] = (float) highland.getGiniIndexOr(0.25);
+        buf.getResourceCapital()[0] = (float) highland.getResourceCapitalOr(0.0);
+        buf.getHumanPopulation()[1] = (float) coastal.getPopulationOr(0);
+        buf.getGiniIndex()[1] = (float) coastal.getGiniIndexOr(0.75);
+        buf.getResourceCapital()[1] = (float) coastal.getResourceCapitalOr(0.0);
+
         for (int yr = 0; yr < 50; yr++) {
-            instEngine.process(testCells, 1.0);
-            highland.setResourceCapital(highland.getResourceCapital() + (5.0 / highland.getMovementFriction()));
-            coastal.setResourceCapital(coastal.getResourceCapital() + (5.0 / coastal.getMovementFriction()));
+            instEngine.tick(buf, 1.0, 12.0);
+            buf.getResourceCapital()[0] += (float) (5.0 / highland.getMovementFriction());
+            buf.getResourceCapital()[1] += (float) (5.0 / coastal.getMovementFriction());
         }
-        return new AcemogluShortTermResult(highland.getResourceCapital(), coastal.getResourceCapital());
+        return new AcemogluShortTermResult(buf.getResourceCapital()[0], buf.getResourceCapital()[1]);
     }
 
     static AcemogluLongTermResult runAcemogluLongTermSimulation() {
@@ -114,16 +121,27 @@ final class InstitutionalDebatesHelper {
         H3Cell highland = pair.highlandInclusive();
         H3Cell coastal = pair.coastalExtractive();
 
-        List<H3Cell> testCells = List.of(highland, coastal);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
+        buf.getHumanPopulation()[0] = (float) highland.getPopulationOr(0);
+        buf.getGiniIndex()[0] = (float) highland.getGiniIndexOr(0.25);
+        buf.getResourceCapital()[0] = (float) highland.getResourceCapitalOr(0.0);
+        buf.getHumanPopulation()[1] = (float) coastal.getPopulationOr(0);
+        buf.getGiniIndex()[1] = (float) coastal.getGiniIndexOr(0.75);
+        buf.getResourceCapital()[1] = (float) coastal.getResourceCapitalOr(0.0);
+
         for (int yr = 0; yr < 300; yr++) {
-            instEngine.process(testCells, 1.0);
+            instEngine.tick(buf, 1.0, 12.0);
+            highland.setResourceCapital((double) buf.getResourceCapital()[0]);
+            coastal.setResourceCapital((double) buf.getResourceCapital()[1]);
             double effFrictionA = Math.max(1.0, highland.getMovementFriction() / (1.0 + 0.1 * H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(highland)));
-            highland.setResourceCapital(highland.getResourceCapital() + (5.0 / effFrictionA));
-            coastal.setResourceCapital(coastal.getResourceCapital() + (5.0 / 1.0));
+            buf.getResourceCapital()[0] += (float) (5.0 / effFrictionA);
+            buf.getResourceCapital()[1] += 5.0f;
         }
+        highland.setResourceCapital((double) buf.getResourceCapital()[0]);
+        coastal.setResourceCapital((double) buf.getResourceCapital()[1]);
         return new AcemogluLongTermResult(
-                highland.getResourceCapital(),
-                coastal.getResourceCapital(),
+                buf.getResourceCapital()[0],
+                buf.getResourceCapital()[1],
                 H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(highland),
                 H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(coastal)
         );

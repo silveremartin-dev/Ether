@@ -69,6 +69,7 @@ public class NativeWorldArena implements AutoCloseable {
         private final MemorySegment soilDepthSeg;
         private final MemorySegment soilOrganicCarbonSeg;
         private final MemorySegment commercialFluxVolumeSeg;
+        private final MemorySegment organismProfileSeg;
 
         // Agent primitive arrays segments
         private final MemorySegment hexIdsSeg;
@@ -84,6 +85,7 @@ public class NativeWorldArena implements AutoCloseable {
         private final MemorySegment genCountSeg;
         private final MemorySegment geneticsSeg;
         private final MemorySegment cultureSeg;
+        private final int maxCultureDims = 32;
 
         public NativeWorldArena(int capacity) {
             this(capacity, capacity);
@@ -133,9 +135,10 @@ public class NativeWorldArena implements AutoCloseable {
             this.soilDepthSeg = arena.allocate(cap * Float.BYTES, 64);
             this.soilOrganicCarbonSeg = arena.allocate(cap * Float.BYTES, 64);
             this.commercialFluxVolumeSeg = arena.allocate(cap * Float.BYTES, 64);
+            this.organismProfileSeg = arena.allocate(5L * Double.BYTES, 64);
 
-            // Populate WorldBufferRaw struct in native memory (312 bytes)
-            this.worldStructSeg = arena.allocate(312, 8);
+            // Populate WorldBufferRaw struct in native memory (320 bytes)
+            this.worldStructSeg = arena.allocate(320, 8);
             worldStructSeg.set(ValueLayout.JAVA_LONG, 0, cap);
             worldStructSeg.set(ValueLayout.ADDRESS, 8, h3IndexesSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 16, neighborIndexesSeg);
@@ -175,6 +178,10 @@ public class NativeWorldArena implements AutoCloseable {
             worldStructSeg.set(ValueLayout.ADDRESS, 288, soilDepthSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 296, soilOrganicCarbonSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 304, commercialFluxVolumeSeg);
+            worldStructSeg.set(ValueLayout.ADDRESS, 312, organismProfileSeg);
+
+            // Initialize organism profile segment with canonical Homo sapiens baseline
+            syncOrganismProfile(org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS);
 
             // Agent Buffer allocation
             long aCap = agentCapacity;
@@ -189,10 +196,10 @@ public class NativeWorldArena implements AutoCloseable {
             this.deathsSeg = arena.allocate(aCap * Float.BYTES, 64);
             this.genCountSeg = arena.allocate(aCap * Integer.BYTES, 64);
             this.geneticsSeg = arena.allocate(aCap * 4 * Float.BYTES, 64);
-            this.cultureSeg = arena.allocate(aCap * 4 * Float.BYTES, 64);
+            this.cultureSeg = arena.allocate(aCap * maxCultureDims * Float.BYTES, 64);
 
-            // Populate AgentBufferRaw struct in native memory (104 bytes)
-            this.agentStructSeg = arena.allocate(104, 8);
+            // Populate AgentBufferRaw struct in native memory (112 bytes)
+            this.agentStructSeg = arena.allocate(112, 8);
             agentStructSeg.set(ValueLayout.JAVA_LONG, 0, aCap);
             agentStructSeg.set(ValueLayout.ADDRESS, 8, hexIdsSeg);
             agentStructSeg.set(ValueLayout.ADDRESS, 16, agentH3Seg);
@@ -206,12 +213,27 @@ public class NativeWorldArena implements AutoCloseable {
             agentStructSeg.set(ValueLayout.ADDRESS, 80, genCountSeg);
             agentStructSeg.set(ValueLayout.ADDRESS, 88, geneticsSeg);
             agentStructSeg.set(ValueLayout.ADDRESS, 96, cultureSeg);
+            agentStructSeg.set(ValueLayout.JAVA_LONG, 104, 9L);
+        }
+
+        private void syncOrganismProfile(org.ether.society.model.OrganismBiophysicalProfile profile) {
+            org.ether.society.model.OrganismBiophysicalProfile p = profile != null
+                    ? profile
+                    : org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS;
+            double lifespanScale = p.referenceLifespanYears()
+                    / org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS.referenceLifespanYears();
+            organismProfileSeg.set(ValueLayout.JAVA_DOUBLE, 0, p.basalMetabolicPowerWatts());
+            organismProfileSeg.set(ValueLayout.JAVA_DOUBLE, 8, p.annualMetabolicEnergyGJ());
+            organismProfileSeg.set(ValueLayout.JAVA_DOUBLE, 16, p.minPrimiparityAgeYears());
+            organismProfileSeg.set(ValueLayout.JAVA_DOUBLE, 24, p.gestationEnergyGJ());
+            organismProfileSeg.set(ValueLayout.JAVA_DOUBLE, 32, lifespanScale);
         }
 
         /**
          * Fast bulk copy from Java {@link WorldBuffer} and {@link AgentBuffer} arrays into native memory.
          */
         public void syncFromJavaBuffers(WorldBuffer wb, AgentBuffer ab) {
+            syncOrganismProfile(wb.getOrganismProfile());
             int count = Math.min(capacity, wb.getCapacity());
             if (wb.getH3Indexes() != null) MemorySegment.copy(wb.getH3Indexes(), 0, h3IndexesSeg, ValueLayout.JAVA_LONG, 0, count);
             if (wb.getElevation() != null) MemorySegment.copy(wb.getElevation(), 0, elevationSeg, ValueLayout.JAVA_FLOAT, 0, count);
@@ -270,7 +292,9 @@ public class NativeWorldArena implements AutoCloseable {
                 }
                 if (ab.getCulture() != null) {
                     float[][] cul = ab.getCulture();
-                    for (int d = 0; d < Math.min(4, cul.length); d++) {
+                    int cDims = Math.min(maxCultureDims, cul.length);
+                    agentStructSeg.set(ValueLayout.JAVA_LONG, 104, (long) cDims);
+                    for (int d = 0; d < cDims; d++) {
                         if (cul[d] != null) {
                             MemorySegment.copy(cul[d], 0, cultureSeg, ValueLayout.JAVA_FLOAT, (long) d * agentCapacity * Float.BYTES, Math.min(aCount, cul[d].length));
                         }
@@ -283,6 +307,7 @@ public class NativeWorldArena implements AutoCloseable {
          * Fast bulk copy from native memory back into Java arrays.
          */
         public void syncToJavaBuffers(WorldBuffer wb, AgentBuffer ab) {
+            syncOrganismProfile(wb.getOrganismProfile());
             int count = Math.min(capacity, wb.getCapacity());
             if (wb.getFoodResource() != null) MemorySegment.copy(foodResourceSeg, ValueLayout.JAVA_FLOAT, 0, wb.getFoodResource(), 0, count);
             if (wb.getHumanPopulation() != null) MemorySegment.copy(humanPopulationSeg, ValueLayout.JAVA_FLOAT, 0, wb.getHumanPopulation(), 0, count);
@@ -314,7 +339,8 @@ public class NativeWorldArena implements AutoCloseable {
                 }
                 if (ab.getCulture() != null) {
                     float[][] cul = ab.getCulture();
-                    for (int d = 0; d < Math.min(4, cul.length); d++) {
+                    int cDims = Math.min(maxCultureDims, cul.length);
+                    for (int d = 0; d < cDims; d++) {
                         if (cul[d] != null) {
                             MemorySegment.copy(cultureSeg, ValueLayout.JAVA_FLOAT, (long) d * agentCapacity * Float.BYTES, cul[d], 0, Math.min(aCount, cul[d].length));
                         }

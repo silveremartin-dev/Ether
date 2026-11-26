@@ -21,7 +21,7 @@ class TimeManagerTest {
         assertEquals(-20000, timeManager.getCurrentYear());
         assertEquals(0, timeManager.getCurrentMonth()); // January
         assertEquals(1, timeManager.getCurrentDay());
-        assertEquals("Day 1, Jan 20000 BC", timeManager.getFormattedDate());
+        assertEquals("Jan 20000 BC (An -20000)", timeManager.getFormattedDate());
     }
 
     @Test
@@ -49,7 +49,7 @@ class TimeManagerTest {
     void testFormattedDateAD() {
         timeManager.reset(2024);
         assertEquals(2024, timeManager.getCurrentYear());
-        assertEquals("Day 1, Jan 2024 AD", timeManager.getFormattedDate());
+        assertEquals("Jan 2024 AD (An 2024)", timeManager.getFormattedDate());
     }
 
     @Test

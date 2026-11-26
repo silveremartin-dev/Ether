@@ -101,14 +101,4 @@ public class ScenarioEngineJITCompiler {
         }
         compiledKernel.executeFusedKernel(worldBuffer, dt);
     }
-
-    /**
-     * Executes the compiled fused kernel over a list of H3Cells.
-     */
-    public void execute(List<H3Cell> cells, double dt) {
-        if (compiledKernel == null) {
-            compile();
-        }
-        compiledKernel.executeFusedKernel(cells, dt);
-    }
 }

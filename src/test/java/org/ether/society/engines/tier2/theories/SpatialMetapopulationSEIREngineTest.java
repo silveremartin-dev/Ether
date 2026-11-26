@@ -1,10 +1,7 @@
 package org.ether.society.engines.tier2.theories;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,47 +13,44 @@ public class SpatialMetapopulationSEIREngineTest {
     @Test
     public void testSEIRTransmissionAndDecay() {
         SpatialMetapopulationSEIREngine engine = new SpatialMetapopulationSEIREngine();
+        WorldBuffer buffer = new WorldBuffer(1);
+        buffer.getHumanPopulation()[0] = 10000.0f;
 
-        H3Cell cell = new H3Cell(613503380827930810L, 45.0, 10.0);
-        cell.setPopulation(10000);
-        cell.setEpidemicInfected(200);
+        // First tick allocates SEIR arrays on capacity=1, then seed infection
+        engine.tick(buffer, 0.001, 0.012);
+        engine.seedInfection(0, 200.0f);
+        engine.tick(buffer, 0.1, 1.2); // ~36 days
 
-        engine.process(List.of(cell), 0.1); // ~36 days
-
-        assertNotNull(cell.getEpidemicInfected());
-        assertTrue(cell.getEpidemicInfected() >= 0, "Infected population cannot be negative");
-        assertTrue(cell.getEpidemicInfected() <= cell.getPopulation(), "Infected cannot exceed total population");
-        assertTrue(cell.getPopulation() <= 10000, "Fatalities must decrement total population");
+        assertTrue(buffer.getHumanPopulation()[0] >= 0.0f, "Surviving population must be non-negative");
+        assertTrue(buffer.getHumanPopulation()[0] < 10000.0f, "SEIR virulence fatalities must decrement total population");
     }
 
     @Test
     public void testInversionResistanceWhenInfectedExceedsPopulation() {
         SpatialMetapopulationSEIREngine engine = new SpatialMetapopulationSEIREngine();
+        WorldBuffer buffer = new WorldBuffer(1);
+        buffer.getHumanPopulation()[0] = 100.0f;
 
-        // Edge case: Inconsistent or corrupted data where infected > population
-        H3Cell cell = new H3Cell(613503380827930811L, 45.1, 10.1);
-        cell.setPopulation(100);
-        cell.setEpidemicInfected(500); // 500 > 100
+        engine.tick(buffer, 0.001, 0.012);
+        engine.seedInfection(0, 500.0f); // 500 > 100
 
         assertDoesNotThrow(() -> {
-            engine.process(List.of(cell), 0.05);
+            engine.tick(buffer, 0.05, 0.6);
         }, "Engine must safely clamp infected count without producing negative exposed cohorts");
 
-        assertTrue(cell.getEpidemicInfected() <= cell.getPopulation(), "Infected must be bounded by population");
-        assertTrue(cell.getEpidemicInfected() >= 0, "Infected must remain non-negative");
+        assertTrue(buffer.getHumanPopulation()[0] >= 0.0f, "Population must remain non-negative");
+        assertTrue(buffer.getHumanPopulation()[0] <= 100.0f, "Population cannot exceed initial cohort under epidemic mortality");
     }
 
     @Test
-    public void testNullSafetyAndEmptyList() {
+    public void testNullSafetyAndZeroPopulation() {
         SpatialMetapopulationSEIREngine engine = new SpatialMetapopulationSEIREngine();
 
-        assertDoesNotThrow(() -> engine.process(null, 1.0));
-        assertDoesNotThrow(() -> engine.process(new ArrayList<>(), 1.0));
+        assertDoesNotThrow(() -> engine.tick(null, 1.0, 12.0));
 
-        H3Cell emptyCell = new H3Cell(613503380827930812L, 0.0, 0.0);
-        emptyCell.setPopulation(null);
-        emptyCell.setEpidemicInfected(null);
+        WorldBuffer emptyBuffer = new WorldBuffer(1);
+        emptyBuffer.getHumanPopulation()[0] = 0.0f;
 
-        assertDoesNotThrow(() -> engine.process(List.of(emptyCell), 1.0));
+        assertDoesNotThrow(() -> engine.tick(emptyBuffer, 1.0, 12.0));
     }
 }

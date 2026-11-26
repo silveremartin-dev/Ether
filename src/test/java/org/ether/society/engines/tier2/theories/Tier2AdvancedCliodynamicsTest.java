@@ -14,15 +14,9 @@ import org.ether.society.engines.tier2.theories.*;
 import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.engines.compiler.*;
 
-import org.ether.society.database.H3Cell;
-import org.ether.society.engines.tier2.theories.ArthurCombinatorialTechnologyEngine;
-import org.ether.society.engines.tier2.theories.BoserupAgriculturalIntensificationEngine;
-import org.ether.society.engines.tier2.theories.PriceMultilevelSelectionEngine;
+import org.ether.society.core.dod.WorldBuffer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,89 +33,57 @@ public class Tier2AdvancedCliodynamicsTest {
 
     @Test
     @DisplayName("Price Equation Engine: Multilevel cultural selection on civic altruism")
-    /*
-     * Test price multilevel selection operation.
-     * <p>
-     * Executes operational logic for {@code Tier2AdvancedCliodynamicsTest} within the automated verification and regression test suite.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testPriceMultilevelSelection() {
         PriceMultilevelSelectionEngine engine = new PriceMultilevelSelectionEngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("Price"));
 
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell cooperativePolity = new H3Cell();
-        cooperativePolity.setPopulation(1000);
-        cooperativePolity.setGiniIndex(0.20); // Low inequality -> high cooperation
-        cooperativePolity.setResourceCapital(500.0);
-        cooperativePolity.setResourceWork(100.0);
-        cells.add(cooperativePolity);
+        WorldBuffer buffer = new WorldBuffer(1);
+        buffer.getHumanPopulation()[0] = 1000.0f;
+        buffer.getGiniIndex()[0] = 0.20f; // Low inequality -> high cooperation
+        buffer.getResourceCapital()[0] = 500.0f;
+        buffer.getInstitutionalComplexity()[0] = 0.2f;
 
-        double workBefore = cooperativePolity.getResourceWork();
-        engine.process(cells, 1.0);
-        double workAfter = cooperativePolity.getResourceWork();
+        float capBefore = buffer.getResourceCapital()[0];
+        float instBefore = buffer.getInstitutionalComplexity()[0];
+        engine.tick(buffer, 1.0, 12.0);
 
-        assertTrue(workAfter > workBefore, "High civic prosociality must increase effective collective work output");
+        assertTrue(buffer.getResourceCapital()[0] > capBefore, "High civic prosociality must increase collective physical capital output");
+        assertTrue(buffer.getInstitutionalComplexity()[0] > instBefore, "High civic prosociality must strengthen institutional complexity");
     }
 
     @Test
-    @DisplayName("Boserup Intensification Engine: Demographic pressure triggering agricultural shifts")
-    /*
-     * Test boserup intensification operation.
-     * <p>
-     * Executes operational logic for {@code Tier2AdvancedCliodynamicsTest} within the automated verification and regression test suite.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
+    @DisplayName("Boserup Intensification Engine: Demographic pressure triggering capital deepening")
     public void testBoserupIntensification() {
         BoserupAgriculturalIntensificationEngine engine = new BoserupAgriculturalIntensificationEngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("Boserup"));
 
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell denseDelta = new H3Cell();
-        denseDelta.setPopulation(100_000); // Very high population density
-        denseDelta.setBiomassAgriculture(100.0);
-        denseDelta.setResourceWork(500.0);
-        cells.add(denseDelta);
+        WorldBuffer buffer = new WorldBuffer(1);
+        buffer.getHumanPopulation()[0] = 100_000.0f; // Very high population density
+        buffer.getResourceCapital()[0] = 500.0f;
 
-        double agriBefore = denseDelta.getBiomassAgriculture();
-        engine.process(cells, 1.0);
-        double agriAfter = denseDelta.getBiomassAgriculture();
+        float capBefore = buffer.getResourceCapital()[0];
+        engine.tick(buffer, 1.0, 12.0);
 
-        assertTrue(agriAfter > agriBefore, "High demographic density must force agricultural yield intensification");
+        assertTrue(buffer.getResourceCapital()[0] > capBefore, "High demographic density must force agricultural capital intensification");
     }
 
     @Test
     @DisplayName("Arthur Combinatorial Technology Engine: Recombinant innovation dynamics")
-    /*
-     * Test arthur combinatorial technology operation.
-     * <p>
-     * Executes operational logic for {@code Tier2AdvancedCliodynamicsTest} within the automated verification and regression test suite.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testArthurCombinatorialTechnology() {
         ArthurCombinatorialTechnologyEngine engine = new ArthurCombinatorialTechnologyEngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("Arthur"));
 
-        List<H3Cell> cells = new ArrayList<>();
-        H3Cell researchHub = new H3Cell();
-        researchHub.setPopulation(50_000);
-        researchHub.setResourceCapital(10_000.0);
-        cells.add(researchHub);
+        WorldBuffer buffer = new WorldBuffer(1);
+        buffer.getHumanPopulation()[0] = 50_000.0f;
+        buffer.getResourceCapital()[0] = 10_000.0f;
 
-        double capBefore = researchHub.getResourceCapital();
-        engine.process(cells, 1.0);
-        double capAfter = researchHub.getResourceCapital();
+        float capBefore = buffer.getResourceCapital()[0];
+        engine.tick(buffer, 1.0, 12.0);
 
-        assertTrue(capAfter > capBefore, "Combinatorial capital dynamics must accelerate physical capital accumulation");
+        assertTrue(buffer.getResourceCapital()[0] > capBefore, "Combinatorial capital dynamics must accelerate physical capital accumulation");
     }
 }
 

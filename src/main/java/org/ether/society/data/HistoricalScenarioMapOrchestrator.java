@@ -192,6 +192,9 @@ final class HistoricalScenarioMapOrchestrator {
      * @return coastline-masked density {@link BufferedImage}
      */
     static BufferedImage rasterizeDensityMapForYear(String type, Scenario scenario, long targetYear) {
+        if (targetYear < -3_000_000L && scenario != null && scenario.isUseRealEarthData()) {
+            throw new IllegalStateException("ZERO FALLBACK VIOLATION: Empirical/paleolithic archive out of bounds for year " + targetYear);
+        }
         if (targetYear < -10000) {
             return applyAltimetryCoastlineMask(PaleolithicDensityGenerator.generatePrehistoricSyntheticDensityMap(targetYear, type));
         }

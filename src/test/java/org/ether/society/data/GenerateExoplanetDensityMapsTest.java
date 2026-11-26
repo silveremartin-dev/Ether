@@ -1,5 +1,6 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Generates calibrated physical population density maps for Mars (2050) and Venus (2080).
  * Outputs both standardized grayscale density tensors [0..255] and full composite visual maps.
  */
+@Tag("manual")
 public class GenerateExoplanetDensityMapsTest {
 
     private static final String ARTIFACT_DIR = "C:/Users/silve/.gemini/antigravity/brain/5cc4325b-7d3b-4ad4-810d-c81e2978ec09";

@@ -140,9 +140,9 @@ public class LongHorizonEcosystemCalibrationTest {
         float gini = runner.getEngine().getCurrentGini();
         assertTrue(gini >= 0.0f && gini <= 1.0f, "Gini must remain bounded in [0, 1], got: " + gini);
 
-        // Kardashev scale must be defined and in [0, 3] range
+        // Kardashev scale (Sagan log10(P_W) - 6)/10 can be slightly negative below 1 MW regional power
         double kardashev = runner.getEngine().getKardashevScale();
-        assertTrue(kardashev >= 0.0 && kardashev <= 3.0, "Kardashev scale must be within Type 0-3 range, got: " + kardashev);
+        assertTrue(kardashev >= -0.5 && kardashev <= 3.0, "Kardashev scale must be within physical village-to-Type-III range, got: " + kardashev);
 
         // Division of labor must be positive
         double divLabor = runner.getEngine().getDivisionOfLaborIndex();

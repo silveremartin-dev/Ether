@@ -33,16 +33,16 @@
   "elevationUseImport" : true,
   "elevationMapSource" : "mercury",
   "tempUseImport" : true,
-  "tempSource" : "⚪ Mercure — MESSENGER MLA Extreme Thermal Model",
+  "tempSource" : "âšª Mercure — MESSENGER MLA Extreme Thermal Model",
   "tempSeed" : 66766,
   "precipUseImport" : true,
-  "precipSource" : "⚪ Mercure — MESSENGER Exospheric Vacuum Model",
+  "precipSource" : "âšª Mercure — MESSENGER Exospheric Vacuum Model",
   "precipSeed" : 67666,
   "seasonUseImport" : true,
-  "seasonSource" : "⚪ Mercure — 3:2 Spin-Orbit Thermal Variance Model",
+  "seasonSource" : "âšª Mercure — 3:2 Spin-Orbit Thermal Variance Model",
   "seasonSeed" : 68666,
   "canonicalPlanet" : "mercury",
   "tidalLocked" : false,
-  "presetDescription" : "Mercure (Hermes)",
-  "associatedEpochYear" : 2026
+  "associatedEpochYear" : 2026,
+  "presetDescription" : "Mercure (Hermes)"
 }

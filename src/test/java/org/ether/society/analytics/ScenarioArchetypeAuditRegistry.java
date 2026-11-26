@@ -125,6 +125,17 @@ public final class ScenarioArchetypeAuditRegistry {
             "Bug: Wild cereal yield dropped to exactly zero during cold ticks. Remediation: Implement cold-hardy wild grass tolerance curve in BotanicalYieldModel."
         ));
 
+        register(new ScenarioDetail(
+            "earth_-10000_benchmark_standard",
+            "Benchmark Standard Planetary Scenario (-10,000 -> -5,000 BCE)",
+            -10000, -5000, 365.25,
+            "Synthetic & Compute Benchmark",
+            "Standardized CLI and throughput benchmark preset (--scenario=BENCHMARK_STANDARD) spanning 5,000 annual ticks over Early Holocene Earth rasters (N0 = 4,000,000); distinct from the gapless 9-block historical continuum.",
+            "Baseline Holocene Transition (-10,000 -> -5,000 BCE): Evaluates multi-thread/Panama/Rust kernel parity, spatial resolution scaling (H3 Res 2-7), and determinism across 5,000 annual ticks without historical event overrides.",
+            "Deterministic bitwise parity & H3 throughput baseline across JVM Scalar, Vector API SIMD, and Rust native kernels.",
+            "Audit Note: Deduplicated redundant earth_benchmark_standard.json leaving earth_-10000_benchmark_standard.json as the sole canonical presetKey=benchmark_standard definition."
+        ));
+
         // ==============================================================================
         // BLOCK 2: NEOLITHIC REVOLUTION, BRONZE AGE & HYDRAULIC STATES
         // ==============================================================================
@@ -253,6 +264,28 @@ public final class ScenarioArchetypeAuditRegistry {
         ));
 
         register(new ScenarioDetail(
+            "earth_+0_pax_romana_augustus_0",
+            "Pax Romana & Augustan Stability (0 -> 180 CE): Biophysical Continuity",
+            0, 180, 30.0,
+            "Classical Antiquity",
+            "High-resolution (H3 Res 6, 30-day step) Mediterranean Pax Romana window from Augustus to Commodus, isolating the Roman Climatic Optimum agrarian surplus prior to the 3rd-century crisis.",
+            "Bifurcation at 165 CE: Prolonged Pax Romana urban growth pushed Mediterranean carrying capacity close to Malthusian grain limits right before the Antonine epidemiological shock.",
+            "H3 Res 6 regional fiscal-agrarian continuity over 2,192 planned monthly ticks (saved run through 20 CE validated in saves/).",
+            "Audit Note: High-resolution companion scenario to earth_+0_roman_empire evaluating fine Mediterranean shipping & grain corridors."
+        ));
+
+        register(new ScenarioDetail(
+            "earth_+165_antonine_plague_165",
+            "Antonine Plague & Imperial Crisis under Marcus Aurelius (165 -> 180 CE)",
+            165, 180, 7.0,
+            "Classical Antiquity",
+            "High-frequency (7-day weekly step, H3 Res 6) epidemiological shock tracking the smallpox/measles pandemic returning from Ctesiphon across imperial legionary corridors.",
+            "Bifurcation at 166-170 CE: Acute 15-20% metropolitan mortality triggered agricultural labor scarcity, rising real agrarian wages, fiscal tax contraction, and Marcomannic frontier stress.",
+            "Fine weekly SEIR epidemic diffusion over 783 planned weekly ticks across 409,863 H3 Res-6 cells.",
+            "Audit Note: Directly benchmarks SpatialMetapopulationSEIREngine over 7-day sub-annual epidemic waves."
+        ));
+
+        register(new ScenarioDetail(
             "earth_+536_late_antique_ice_age",
             "Late Antique Little Ice Age (LALIA) & Justinian Plague (536 -> 650 CE)",
             536, 650, 14.0,
@@ -272,6 +305,17 @@ public final class ScenarioArchetypeAuditRegistry {
             "Bifurcation at 750 CE (Abbasid Revolution): Shift of imperial capital from Damascus to Baghdad linked Mediterranean and Indian Ocean maritime networks, triggering agricultural intensification (introduction of sugar, cotton, citrus).",
             "SSIM: 0.842 | Caliphate Border Jaccard: 0.815 | Trade Volume RMSE: 0.112 | Agricultural Crop Diffusion Pearson r: 0.870.",
             "Bug: Dhimmi tax (Jizya) revenue did not decrease as populations converted to Islam. Remediation: Dynamically update tax yield based on religious demographic tensor shares."
+        ));
+
+        register(new ScenarioDetail(
+            "earth_+800_carolingian_800",
+            "Carolingian Renaissance and Caliphal Apex (800 -> 888 CE)",
+            800, 888, 30.0,
+            "Medieval Era",
+            "Simultaneous Early Medieval apex: Charlemagne's imperial coronation (800 CE) and heavy-plow agricultural revival in temperate Western Europe alongside Abbasid Baghdad under Harun al-Rashid.",
+            "Bifurcation at 843 CE (Treaty of Verdun & Viking Raids): Carolingian partition coincided with warming Atlantic navigation corridors enabling Norse maritime expansion.",
+            "Monthly continental agrarian & Viking maritime corridor evaluation over 1,071 planned ticks.",
+            "Audit Note: Bridges Early Islamic Expansion (632 CE) and Song Dynasty (1000 CE) at the imperial height of Western & Near Eastern Eurasia."
         ));
 
         register(new ScenarioDetail(

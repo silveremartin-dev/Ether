@@ -1,7 +1,7 @@
 # 🔬 ETHER CLIODYNAMIC ENGINE: EMPIRICAL CALIBRATION & SCIENTIFIC FALSIFICATION REPORT
 
 **Evaluation Scope**: Non-bifurcating Continuous Steady Regimes & Twin Counterfactual Falsifications
-**Evaluation Date**: 2026-11-07
+**Evaluation Date**: 2026-11-26
 **Empirical Ground Truth Datasets**: HYDE 3.4 (Klein Goldewijk et al., 2023), Maddison Project Database (Bolt & van Zanden, 2020), Seshat Global History Databank (Turchin et al., 2018), UN WPP 2024, EPICA Dome C Ice Core
 
 ## 📐 1. Mathematical Formalism & Metric Definitions
@@ -88,8 +88,8 @@ When integrating forward trajectories against historical series, the engine comp
 
 | Scenario | Spatial RMSE | Pearson ($r$) | Structural SSIM | Categorical Jaccard | KL Relative Entropy |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| CLASSICAL_AGRARIAN_EXPANSION | 4,6149 | 0,9949 | 0,9903 | 97,57% | 0,0123 nats |
-| HIGH_MEDIEVAL_GROWTH | 3,4023 | 0,9974 | 0,9964 | 99,16% | 0,0053 nats |
+| CLASSICAL_AGRARIAN_EXPANSION | 4,8667 | 0,9891 | 0,9687 | 97,72% | 0,0185 nats |
+| HIGH_MEDIEVAL_GROWTH | 3,8511 | 0,9938 | 0,9880 | 99,25% | 0,0087 nats |
 | PRE_INDUSTRIAL_CONTINUITY | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
 | SECOND_INDUSTRIAL_ACCELERATION | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
 | POST_WAR_GOLDEN_AGE | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
@@ -97,8 +97,8 @@ When integrating forward trajectories against historical series, the engine comp
 | BRONZE_AGE_COLLAPSE_1200BCE_COUNTERFACTUAL | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
 | LATE_ANTIQUE_COOLING_536CE_UNFORCED | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
 | LATE_ANTIQUE_COOLING_536CE_COUNTERFACTUAL | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
-| BLACK_DEATH_1347CE_UNFORCED | 1,2734 | 0,9996 | 0,9996 | 99,96% | 0,0008 nats |
-| BLACK_DEATH_1347CE_COUNTERFACTUAL | 1,2734 | 0,9996 | 0,9996 | 99,96% | 0,0008 nats |
+| BLACK_DEATH_1347CE_UNFORCED | 1,6064 | 0,9986 | 0,9985 | 99,94% | 0,0021 nats |
+| BLACK_DEATH_1347CE_COUNTERFACTUAL | 1,6064 | 0,9986 | 0,9985 | 99,94% | 0,0021 nats |
 | COLUMBIAN_EXCHANGE_1492CE_UNFORCED | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
 | COLUMBIAN_EXCHANGE_1492CE_COUNTERFACTUAL | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
 | TOKUGAWA_SAKOKU_1639CE_UNFORCED | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
@@ -106,13 +106,13 @@ When integrating forward trajectories against historical series, the engine comp
 | HARAPPA_INDUS_COLLAPSE_1900BCE | 0,0000 | 1,0000 | 1,0000 | 100,00% | 0,0000 nats |
 | ROMAN_THIRD_CENTURY_CRISIS_235CE | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
 | CLASSIC_MAYA_COLLAPSE_800CE | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
-| EPOCH_1_PALEOLITHIC_DISPERSAL | 1,8841 | 0,8930 | 0,9525 | 82,20% | 0,2535 nats |
-| EPOCH_2_UPPER_PALEOLITHIC_LGM | 6,5722 | 0,7111 | 0,5625 | 52,89% | 0,5958 nats |
-| EPOCH_3_NEOLITHIC_FERTILE_CRESCENT | 29,1349 | 0,7959 | 0,2216 | 73,79% | 3,7817 nats |
-| EPOCH_4_BRONZE_AGE_URBANIZATION | 4,6367 | 0,9946 | 0,9885 | 98,91% | 0,0083 nats |
-| EPOCH_5_CLASSICAL_ANTIQUITY | 6,1639 | 0,9925 | 0,9811 | 95,88% | 0,0196 nats |
-| EPOCH_6_EARLY_MEDIEVAL_ISLAMIC | 4,9134 | 0,9971 | 0,9894 | 97,74% | 0,0077 nats |
-| EPOCH_7_HIGH_LATE_MEDIEVAL | 4,1284 | 0,9962 | 0,9947 | 99,10% | 0,0069 nats |
+| EPOCH_1_PALEOLITHIC_DISPERSAL | 4,8705 | 0,7458 | 0,7696 | 70,76% | 3,1427 nats |
+| EPOCH_2_UPPER_PALEOLITHIC_LGM | 7,0015 | 0,7010 | 0,6925 | 63,55% | 0,5075 nats |
+| EPOCH_3_NEOLITHIC_FERTILE_CRESCENT | 10,4317 | 0,8648 | 0,6870 | 92,54% | 0,1417 nats |
+| EPOCH_4_BRONZE_AGE_URBANIZATION | 4,8766 | 0,9854 | 0,9584 | 98,51% | 0,0190 nats |
+| EPOCH_5_CLASSICAL_ANTIQUITY | 5,8009 | 0,9866 | 0,9516 | 95,77% | 0,0278 nats |
+| EPOCH_6_EARLY_MEDIEVAL_ISLAMIC | 3,9922 | 0,9939 | 0,9833 | 98,53% | 0,0107 nats |
+| EPOCH_7_HIGH_LATE_MEDIEVAL | 4,5694 | 0,9915 | 0,9827 | 99,12% | 0,0117 nats |
 | EPOCH_8_EARLY_MODERN_GLOBAL | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
 | EPOCH_9_INDUSTRIAL_ANTHROPOCENE | 0,0420 | 0,9420 | 0,9250 | 88,40% | 0,0180 nats |
 
@@ -122,510 +122,510 @@ When integrating forward trajectories against historical series, the engine comp
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year -500 | 100,0 M | 98,7 M | 1,28% | 1,0000 | 0,0026 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -400 | 110,3 M | 108,4 M | 1,73% | 1,0000 | 0,0035 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -334 | 117,7 M | 121,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -300 | 121,6 M | 123,2 M | 1,28% | 1,0000 | 0,0026 | -0,0001 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -200 | 134,2 M | 136,2 M | 1,52% | 1,0000 | 0,0030 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -100 | 148,0 M | 150,1 M | 1,42% | 1,0000 | 0,0028 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 0 | 163,2 M | 164,5 M | 0,81% | 1,0000 | 0,0016 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 20 | 166,4 M | 171,4 M | 3,00% | 1,0000 | 0,0060 | +0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 40 | 169,7 M | 174,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 60 | 173,1 M | 178,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 80 | 176,5 M | 181,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 100 | 180,0 M | 181,1 M | 0,62% | 1,0000 | 0,0012 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year -500 | 100,0 M | 98,7 M | 1,28% | 1,0000 | 0,0026 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -400 | 110,3 M | 108,4 M | 1,73% | 1,0000 | 0,0035 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -334 | 117,7 M | 121,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -300 | 121,6 M | 123,2 M | 1,28% | 1,0000 | 0,0026 | -0,0001 |  Continuous Parametric Drift (Slow) |
+| Year -200 | 134,2 M | 136,2 M | 1,52% | 1,0000 | 0,0030 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -100 | 148,0 M | 150,1 M | 1,42% | 1,0000 | 0,0028 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 0 | 163,2 M | 164,5 M | 0,81% | 1,0000 | 0,0016 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 20 | 166,4 M | 171,4 M | 3,00% | 1,0000 | 0,0060 | +0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 40 | 169,7 M | 174,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 60 | 173,1 M | 178,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 80 | 176,5 M | 181,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 100 | 180,0 M | 181,1 M | 0,62% | 1,0000 | 0,0012 | -0,0002 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `High Medieval Expansion & Land Clearance (1000 CE -> 1300 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1000 | 265,0 M | 264,8 M | 0,08% | 1,0000 | 0,0002 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1020 | 272,4 M | 280,5 M | 3,00% | 1,0000 | 0,0060 | +0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1040 | 280,0 M | 288,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1060 | 287,7 M | 296,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1080 | 295,8 M | 304,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1100 | 304,0 M | 313,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1120 | 312,4 M | 321,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1140 | 321,1 M | 330,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1160 | 330,1 M | 340,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1180 | 339,3 M | 349,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1200 | 348,7 M | 359,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1206 | 351,6 M | 362,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1220 | 358,4 M | 369,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1240 | 368,4 M | 379,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1260 | 378,6 M | 390,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1280 | 389,2 M | 400,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1300 | 400,0 M | 402,8 M | 0,69% | 1,0000 | 0,0014 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1000 | 265,0 M | 264,8 M | 0,08% | 1,0000 | 0,0002 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1020 | 272,4 M | 280,5 M | 3,00% | 1,0000 | 0,0060 | +0,0003 |  Continuous Parametric Drift (Slow) |
+| Year 1040 | 280,0 M | 288,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1060 | 287,7 M | 296,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1080 | 295,8 M | 304,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1100 | 304,0 M | 313,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1120 | 312,4 M | 321,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1140 | 321,1 M | 330,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1160 | 330,1 M | 340,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1180 | 339,3 M | 349,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1200 | 348,7 M | 359,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1206 | 351,6 M | 362,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1220 | 358,4 M | 369,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1240 | 368,4 M | 379,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1260 | 378,6 M | 390,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1280 | 389,2 M | 400,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1300 | 400,0 M | 402,8 M | 0,69% | 1,0000 | 0,0014 | -0,0002 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Early Modern Pre-Industrial Commercial Continuity (1500 CE -> 1750 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1500 | 425,0 M | 424,1 M | 0,22% | 1,0000 | 0,0004 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1520 | 442,8 M | 456,1 M | 3,00% | 1,0000 | 0,0060 | +0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1540 | 461,4 M | 475,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1560 | 480,7 M | 495,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1580 | 500,8 M | 515,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1600 | 521,8 M | 537,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1620 | 543,7 M | 560,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1639 | 565,3 M | 582,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1640 | 566,5 M | 583,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1660 | 590,2 M | 607,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1680 | 615,0 M | 633,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1700 | 640,7 M | 660,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1720 | 667,6 M | 687,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1740 | 695,6 M | 716,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1500 | 425,0 M | 424,1 M | 0,22% | 1,0000 | 0,0004 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1520 | 442,8 M | 456,1 M | 3,00% | 1,0000 | 0,0060 | +0,0003 |  Continuous Parametric Drift (Slow) |
+| Year 1540 | 461,4 M | 475,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1560 | 480,7 M | 495,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1580 | 500,8 M | 515,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1600 | 521,8 M | 537,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1620 | 543,7 M | 560,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1639 | 565,3 M | 582,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1640 | 566,5 M | 583,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1660 | 590,2 M | 607,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1680 | 615,0 M | 633,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1700 | 640,7 M | 660,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1720 | 667,6 M | 687,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1740 | 695,6 M | 716,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Late 19th Century Industrial & Thermodynamic Scaling (1850 CE -> 1910 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1860 | 1 330,9 M | 1 370,8 M | 3,00% | 1,0000 | 0,0060 | +0,0006 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1880 | 1 484,9 M | 1 501,7 M | 1,13% | 1,0000 | 0,0023 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1900 | 1 656,8 M | 1 706,5 M | 3,00% | 1,0000 | 0,0060 | +0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1860 | 1 330,9 M | 1 370,8 M | 3,00% | 1,0000 | 0,0060 | +0,0006 |  Continuous Parametric Drift (Slow) |
+| Year 1880 | 1 484,9 M | 1 501,7 M | 1,13% | 1,0000 | 0,0023 | -0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1900 | 1 656,8 M | 1 706,5 M | 3,00% | 1,0000 | 0,0060 | +0,0002 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Post-WWII Green Revolution & Exergy Growth (1950 CE -> 1990 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1950 | 2 525,0 M | 2 521,6 M | 0,14% | 1,0000 | 0,0003 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1960 | 3 043,1 M | 3 134,4 M | 3,00% | 1,0000 | 0,0060 | +0,0006 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1980 | 4 420,1 M | 4 552,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1950 | 2 525,0 M | 2 521,6 M | 0,14% | 1,0000 | 0,0003 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1960 | 3 043,1 M | 3 134,4 M | 3,00% | 1,0000 | 0,0060 | +0,0006 |  Continuous Parametric Drift (Slow) |
+| Year 1980 | 4 420,1 M | 4 552,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Late Bronze Age Collapse Twin A: Unforced Continuous Eastern Med Baseline (-1250 -> -1150 BCE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year -1200 | 41,8 M | 41,0 M | 2,04% | 1,0000 | 0,0041 | +0,0001 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year -1200 | 41,8 M | 41,0 M | 2,04% | 1,0000 | 0,0041 | +0,0001 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Late Bronze Age Collapse Twin B: Counterfactual Resilient Agrarian Network (-1250 -> -1150 BCE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year -1200 | 53,9 M | 53,0 M | 1,54% | 1,0000 | 0,0031 | +0,0001 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year -1200 | 53,9 M | 53,0 M | 1,54% | 1,0000 | 0,0031 | +0,0001 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `536 CE Volcanic Winter Twin A: Unforced Roman-Byzantine Agrarian Continuity (530 -> 600 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 536 | 207,7 M | 214,0 M | 3,00% | 1,0000 | 0,0060 | +0,0010 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 540 | 206,2 M | 212,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 560 | 198,9 M | 204,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 580 | 191,8 M | 197,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 600 | 185,0 M | 182,4 M | 1,43% | 1,0000 | 0,0029 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 536 | 207,7 M | 214,0 M | 3,00% | 1,0000 | 0,0060 | +0,0010 |  Continuous Parametric Drift (Slow) |
+| Year 540 | 206,2 M | 212,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 560 | 198,9 M | 204,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 580 | 191,8 M | 197,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 600 | 185,0 M | 182,4 M | 1,43% | 1,0000 | 0,0029 | -0,0002 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `536 CE Volcanic Winter Twin B: Counterfactual Epidemic Containment & Grain Subsidy (530 -> 600 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 536 | 211,6 M | 218,0 M | 3,00% | 1,0000 | 0,0060 | +0,0010 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 540 | 212,7 M | 219,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 560 | 218,3 M | 224,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 580 | 224,1 M | 230,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 600 | 230,0 M | 227,7 M | 1,00% | 1,0000 | 0,0020 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 536 | 211,6 M | 218,0 M | 3,00% | 1,0000 | 0,0060 | +0,0010 |  Continuous Parametric Drift (Slow) |
+| Year 540 | 212,7 M | 219,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 560 | 218,3 M | 224,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 580 | 224,1 M | 230,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 600 | 230,0 M | 227,7 M | 1,00% | 1,0000 | 0,0020 | -0,0002 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `1347 CE Black Death Twin A: Unforced High-Density Eurasian Network Baseline (1340 -> 1400 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1340 | 375,0 M | 376,2 M | 0,31% | 1,0000 | 0,0006 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1347 | 365,4 M | 376,3 M | 3,00% | 1,0000 | 0,0060 | +0,0008 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1360 | 348,1 M | 358,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1380 | 323,2 M | 332,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1400 | 300,0 M | 459,1 M | 53,03% | 1,0000 | 0,1061 | +0,0050 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1340 | 375,0 M | 376,2 M | 0,31% | 1,0000 | 0,0006 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1347 | 365,4 M | 376,3 M | 3,00% | 1,0000 | 0,0060 | +0,0008 |  Continuous Parametric Drift (Slow) |
+| Year 1360 | 348,1 M | 358,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1380 | 323,2 M | 332,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1400 | 300,0 M | 459,1 M | 53,03% | 1,0000 | 0,1061 | +0,0050 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `1347 CE Black Death Twin B: Counterfactual Malthusian Wage Explosion & Labor Realignment (1340 -> 1400 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1340 | 375,0 M | 374,9 M | 0,04% | 1,0000 | 0,0001 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1347 | 366,8 M | 377,8 M | 3,00% | 1,0000 | 0,0060 | +0,0008 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1360 | 351,9 M | 362,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1380 | 330,3 M | 340,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1400 | 310,0 M | 303,7 M | 2,02% | 1,0000 | 0,0040 | -0,0001 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1340 | 375,0 M | 374,9 M | 0,04% | 1,0000 | 0,0001 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1347 | 366,8 M | 377,8 M | 3,00% | 1,0000 | 0,0060 | +0,0008 |  Continuous Parametric Drift (Slow) |
+| Year 1360 | 351,9 M | 362,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1380 | 330,3 M | 340,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1400 | 310,0 M | 303,7 M | 2,02% | 1,0000 | 0,0040 | -0,0001 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `1492 CE Columbian Exchange Twin A: Unforced Isolated Americas Baseline (1490 -> 1600 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1491 | 460,5 M | 474,3 M | 3,00% | 1,0000 | 0,0060 | +0,0060 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1492 | 461,0 M | 474,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1500 | 465,2 M | 479,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1520 | 475,6 M | 489,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1540 | 486,4 M | 501,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1560 | 497,3 M | 512,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1580 | 508,5 M | 523,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1600 | 520,0 M | 522,4 M | 0,47% | 1,0000 | 0,0009 | -0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1491 | 460,5 M | 474,3 M | 3,00% | 1,0000 | 0,0060 | +0,0060 |  Continuous Parametric Drift (Slow) |
+| Year 1492 | 461,0 M | 474,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1500 | 465,2 M | 479,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1520 | 475,6 M | 489,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1540 | 486,4 M | 501,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1560 | 497,3 M | 512,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1580 | 508,5 M | 523,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1600 | 520,0 M | 522,4 M | 0,47% | 1,0000 | 0,0009 | -0,0003 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `1492 CE Columbian Exchange Twin B: Empirical Smallpox/Measles Shock & Cereal Globalization (1490 -> 1600 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1491 | 460,7 M | 474,5 M | 3,00% | 1,0000 | 0,0060 | +0,0060 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1492 | 461,3 M | 475,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1500 | 466,8 M | 480,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1520 | 480,6 M | 495,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1540 | 494,8 M | 509,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1560 | 509,4 M | 524,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1580 | 524,5 M | 540,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1600 | 540,0 M | 542,9 M | 0,54% | 1,0000 | 0,0011 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1491 | 460,7 M | 474,5 M | 3,00% | 1,0000 | 0,0060 | +0,0060 |  Continuous Parametric Drift (Slow) |
+| Year 1492 | 461,3 M | 475,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1500 | 466,8 M | 480,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1520 | 480,6 M | 495,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1540 | 494,8 M | 509,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1560 | 509,4 M | 524,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1580 | 524,5 M | 540,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1600 | 540,0 M | 542,9 M | 0,54% | 1,0000 | 0,0011 | -0,0002 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `1639 CE Sakoku Japan Twin A: Autarkic Steady-State Regime Baseline (1630 -> 1720 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1639 | 546,6 M | 541,0 M | 1,03% | 1,0000 | 0,0021 | +0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1640 | 547,4 M | 563,8 M | 3,00% | 1,0000 | 0,0060 | +0,0039 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1660 | 562,4 M | 579,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1680 | 577,8 M | 595,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1700 | 593,7 M | 611,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1720 | 610,0 M | 605,5 M | 0,74% | 1,0000 | 0,0015 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1639 | 546,6 M | 541,0 M | 1,03% | 1,0000 | 0,0021 | +0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1640 | 547,4 M | 563,8 M | 3,00% | 1,0000 | 0,0060 | +0,0039 |  Continuous Parametric Drift (Slow) |
+| Year 1660 | 562,4 M | 579,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1680 | 577,8 M | 595,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1700 | 593,7 M | 611,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1720 | 610,0 M | 605,5 M | 0,74% | 1,0000 | 0,0015 | -0,0002 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `1639 CE Sakoku Japan Twin B: Counterfactual Open-Port Maritime Mercantile Expansion (1630 -> 1720 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1639 | 548,8 M | 543,2 M | 1,02% | 1,0000 | 0,0020 | +0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1640 | 549,8 M | 566,3 M | 3,00% | 1,0000 | 0,0060 | +0,0040 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1660 | 570,0 M | 587,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1680 | 590,9 M | 608,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1700 | 612,5 M | 630,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1720 | 635,0 M | 630,8 M | 0,66% | 1,0000 | 0,0013 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1639 | 548,8 M | 543,2 M | 1,02% | 1,0000 | 0,0020 | +0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1640 | 549,8 M | 566,3 M | 3,00% | 1,0000 | 0,0060 | +0,0040 |  Continuous Parametric Drift (Slow) |
+| Year 1660 | 570,0 M | 587,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1680 | 590,9 M | 608,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1700 | 612,5 M | 630,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1720 | 635,0 M | 630,8 M | 0,66% | 1,0000 | 0,0013 | -0,0002 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Archaeological Detective: Indus Valley / Harappa Urban De-densification (-1900 -> -1500 BCE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year -1900 | 35,0 M | 34,7 M | 0,83% | 1,0000 | 0,0017 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1800 | 34,2 M | 35,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1700 | 33,5 M | 33,5 M | 0,18% | 1,0000 | 0,0004 | -0,0001 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1600 | 32,7 M | 33,7 M | 3,00% | 1,0000 | 0,0060 | +0,0001 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1500 | 32,0 M | 31,5 M | 1,54% | 1,0000 | 0,0031 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year -1900 | 35,0 M | 34,7 M | 0,83% | 1,0000 | 0,0017 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1800 | 34,2 M | 35,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1700 | 33,5 M | 33,5 M | 0,18% | 1,0000 | 0,0004 | -0,0001 |  Continuous Parametric Drift (Slow) |
+| Year -1600 | 32,7 M | 33,7 M | 3,00% | 1,0000 | 0,0060 | +0,0001 |  Continuous Parametric Drift (Slow) |
+| Year -1500 | 32,0 M | 31,5 M | 1,54% | 1,0000 | 0,0031 | -0,0000 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Archaeological Detective: Roman Empire Third-Century Anarchy & Plague of Cyprian (235 -> 284 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 240 | 188,4 M | 194,1 M | 3,00% | 1,0000 | 0,0060 | +0,0012 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 260 | 182,2 M | 187,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 280 | 176,2 M | 181,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 240 | 188,4 M | 194,1 M | 3,00% | 1,0000 | 0,0060 | +0,0012 |  Continuous Parametric Drift (Slow) |
+| Year 260 | 182,2 M | 187,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 280 | 176,2 M | 181,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Archaeological Detective: Classic Maya Lowlands Karst Mega-Drought & Palace Abandonment (800 -> 950 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 800 | 220,0 M | 220,2 M | 0,11% | 1,0000 | 0,0002 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 820 | 221,9 M | 228,6 M | 3,00% | 1,0000 | 0,0060 | +0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 840 | 223,9 M | 230,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 860 | 225,9 M | 223,4 M | 1,09% | 1,0000 | 0,0022 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 880 | 227,9 M | 234,7 M | 3,00% | 1,0000 | 0,0060 | +0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 900 | 229,9 M | 236,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 920 | 231,9 M | 227,9 M | 1,74% | 1,0000 | 0,0035 | -0,0001 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 940 | 234,0 M | 241,0 M | 3,00% | 1,0000 | 0,0060 | +0,0001 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 800 | 220,0 M | 220,2 M | 0,11% | 1,0000 | 0,0002 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 820 | 221,9 M | 228,6 M | 3,00% | 1,0000 | 0,0060 | +0,0003 |  Continuous Parametric Drift (Slow) |
+| Year 840 | 223,9 M | 230,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 860 | 225,9 M | 223,4 M | 1,09% | 1,0000 | 0,0022 | -0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 880 | 227,9 M | 234,7 M | 3,00% | 1,0000 | 0,0060 | +0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 900 | 229,9 M | 236,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 920 | 231,9 M | 227,9 M | 1,74% | 1,0000 | 0,0035 | -0,0001 |  Continuous Parametric Drift (Slow) |
+| Year 940 | 234,0 M | 241,0 M | 3,00% | 1,0000 | 0,0060 | +0,0001 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Epoch 1: Paleolithic Out-of-Africa Dispersal (-100000 -> -50000 BP)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year -100000 | 0,2 M | 0,2 M | 0,56% | 1,0000 | 0,0011 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -95000 | 0,2 M | 0,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -90000 | 0,2 M | 0,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -85000 | 0,2 M | 0,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -80000 | 0,2 M | 0,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -75000 | 0,2 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -74000 | 0,2 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -70000 | 0,3 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -65000 | 0,3 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -60000 | 0,3 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -55000 | 0,3 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -50000 | 0,3 M | 0,3 M | 1,46% | 1,0000 | 0,0029 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year -100000 | 0,2 M | 0,2 M | 0,56% | 1,0000 | 0,0011 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -95000 | 0,2 M | 0,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -90000 | 0,2 M | 0,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -85000 | 0,2 M | 0,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -80000 | 0,2 M | 0,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -75000 | 0,2 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -74000 | 0,2 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -70000 | 0,3 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -65000 | 0,3 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -60000 | 0,3 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -55000 | 0,3 M | 0,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -50000 | 0,3 M | 0,3 M | 1,46% | 1,0000 | 0,0029 | -0,0000 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Epoch 2: Upper Paleolithic & Last Glacial Maximum (-50000 -> -10000 BP)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year -50000 | 1,5 M | 1,5 M | 0,09% | 1,0000 | 0,0002 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -45000 | 1,7 M | 1,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -40000 | 2,0 M | 2,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -35000 | 2,3 M | 2,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -30000 | 2,6 M | 2,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -29000 | 2,7 M | 2,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -28000 | 2,7 M | 2,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -27000 | 2,8 M | 2,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -26000 | 2,9 M | 3,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -25000 | 3,0 M | 3,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -24000 | 3,1 M | 3,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -23000 | 3,1 M | 3,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -22000 | 3,2 M | 3,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -21000 | 3,3 M | 3,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -20000 | 3,4 M | 3,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -19000 | 3,5 M | 3,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -18000 | 3,6 M | 3,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -17000 | 3,7 M | 3,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -16000 | 3,8 M | 3,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -15000 | 3,9 M | 4,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -14000 | 4,0 M | 4,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -13000 | 4,1 M | 4,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -12000 | 4,3 M | 4,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -11000 | 4,4 M | 4,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -10900 | 4,4 M | 4,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -10000 | 4,5 M | 4,6 M | 2,95% | 1,0000 | 0,0059 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year -50000 | 1,5 M | 1,5 M | 0,09% | 1,0000 | 0,0002 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -45000 | 1,7 M | 1,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -40000 | 2,0 M | 2,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -35000 | 2,3 M | 2,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -30000 | 2,6 M | 2,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -29000 | 2,7 M | 2,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -28000 | 2,7 M | 2,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -27000 | 2,8 M | 2,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -26000 | 2,9 M | 3,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -25000 | 3,0 M | 3,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -24000 | 3,1 M | 3,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -23000 | 3,1 M | 3,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -22000 | 3,2 M | 3,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -21000 | 3,3 M | 3,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -20000 | 3,4 M | 3,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -19000 | 3,5 M | 3,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -18000 | 3,6 M | 3,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -17000 | 3,7 M | 3,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -16000 | 3,8 M | 3,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -15000 | 3,9 M | 4,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -14000 | 4,0 M | 4,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -13000 | 4,1 M | 4,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -12000 | 4,3 M | 4,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -11000 | 4,4 M | 4,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -10900 | 4,4 M | 4,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -10000 | 4,5 M | 4,6 M | 2,95% | 1,0000 | 0,0059 | -0,0000 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Epoch 3: Neolithic Revolution & Agrarian Sedentism (-10000 -> -3000 BCE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year -10000 | 4,5 M | 4,4 M | 1,59% | 1,0000 | 0,0032 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -9900 | 4,7 M | 4,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -9800 | 4,8 M | 5,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -9700 | 5,0 M | 5,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -9600 | 5,1 M | 5,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -9500 | 5,3 M | 5,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -9400 | 5,5 M | 5,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -9300 | 5,7 M | 5,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -9200 | 5,9 M | 6,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -9100 | 6,1 M | 6,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -9000 | 6,3 M | 6,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -8900 | 6,5 M | 6,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -8800 | 6,7 M | 6,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -8700 | 6,9 M | 7,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -8600 | 7,1 M | 7,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -8500 | 7,4 M | 7,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -8400 | 7,6 M | 7,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -8300 | 7,9 M | 8,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -8200 | 8,1 M | 8,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -8100 | 8,4 M | 8,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -8000 | 8,7 M | 8,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -7900 | 9,0 M | 9,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -7800 | 9,3 M | 9,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -7700 | 9,6 M | 9,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -7600 | 9,9 M | 10,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -7500 | 10,2 M | 10,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -7400 | 10,6 M | 10,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -7300 | 10,9 M | 11,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -7200 | 11,3 M | 11,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -7100 | 11,7 M | 12,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -7000 | 12,1 M | 12,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -6900 | 12,5 M | 12,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -6800 | 12,9 M | 13,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -6700 | 13,3 M | 13,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -6600 | 13,8 M | 14,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -6500 | 14,2 M | 14,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -6400 | 14,7 M | 15,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -6300 | 15,2 M | 15,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -6200 | 15,7 M | 16,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -6100 | 16,2 M | 16,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -6000 | 16,8 M | 17,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -5900 | 17,3 M | 17,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -5800 | 17,9 M | 18,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -5700 | 18,5 M | 19,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -5600 | 19,1 M | 19,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -5500 | 19,8 M | 20,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -5400 | 20,4 M | 21,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -5300 | 21,1 M | 21,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -5200 | 21,8 M | 22,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -5100 | 22,6 M | 23,3 M | 3,45% | 1,0000 | 0,0069 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -5000 | 23,3 M | 24,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -4900 | 24,1 M | 24,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -4800 | 24,9 M | 25,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -4700 | 25,7 M | 26,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -4600 | 26,6 M | 27,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -4500 | 27,5 M | 28,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -4400 | 28,4 M | 29,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -4300 | 29,3 M | 30,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -4200 | 30,3 M | 31,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -4100 | 31,3 M | 32,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -4000 | 32,4 M | 33,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -3900 | 33,5 M | 34,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -3800 | 34,6 M | 35,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -3700 | 35,7 M | 36,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -3600 | 36,9 M | 38,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -3500 | 38,2 M | 39,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -3400 | 39,5 M | 40,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -3300 | 40,8 M | 42,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -3200 | 42,1 M | 43,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -3100 | 43,5 M | 44,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -3000 | 45,0 M | 47,0 M | 4,48% | 1,0000 | 0,0090 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year -10000 | 4,5 M | 4,4 M | 1,59% | 1,0000 | 0,0032 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -9900 | 4,7 M | 4,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -9800 | 4,8 M | 5,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -9700 | 5,0 M | 5,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -9600 | 5,1 M | 5,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -9500 | 5,3 M | 5,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -9400 | 5,5 M | 5,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -9300 | 5,7 M | 5,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -9200 | 5,9 M | 6,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -9100 | 6,1 M | 6,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -9000 | 6,3 M | 6,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -8900 | 6,5 M | 6,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -8800 | 6,7 M | 6,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -8700 | 6,9 M | 7,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -8600 | 7,1 M | 7,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -8500 | 7,4 M | 7,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -8400 | 7,6 M | 7,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -8300 | 7,9 M | 8,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -8200 | 8,1 M | 8,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -8100 | 8,4 M | 8,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -8000 | 8,7 M | 8,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -7900 | 9,0 M | 9,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -7800 | 9,3 M | 9,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -7700 | 9,6 M | 9,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -7600 | 9,9 M | 10,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -7500 | 10,2 M | 10,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -7400 | 10,6 M | 10,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -7300 | 10,9 M | 11,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -7200 | 11,3 M | 11,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -7100 | 11,7 M | 12,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -7000 | 12,1 M | 12,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -6900 | 12,5 M | 12,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -6800 | 12,9 M | 13,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -6700 | 13,3 M | 13,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -6600 | 13,8 M | 14,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -6500 | 14,2 M | 14,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -6400 | 14,7 M | 15,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -6300 | 15,2 M | 15,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -6200 | 15,7 M | 16,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -6100 | 16,2 M | 16,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -6000 | 16,8 M | 17,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -5900 | 17,3 M | 17,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -5800 | 17,9 M | 18,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -5700 | 18,5 M | 19,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -5600 | 19,1 M | 19,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -5500 | 19,8 M | 20,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -5400 | 20,4 M | 21,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -5300 | 21,1 M | 21,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -5200 | 21,8 M | 22,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -5100 | 22,6 M | 23,3 M | 3,45% | 1,0000 | 0,0069 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -5000 | 23,3 M | 24,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -4900 | 24,1 M | 24,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -4800 | 24,9 M | 25,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -4700 | 25,7 M | 26,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -4600 | 26,6 M | 27,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -4500 | 27,5 M | 28,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -4400 | 28,4 M | 29,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -4300 | 29,3 M | 30,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -4200 | 30,3 M | 31,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -4100 | 31,3 M | 32,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -4000 | 32,4 M | 33,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -3900 | 33,5 M | 34,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -3800 | 34,6 M | 35,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -3700 | 35,7 M | 36,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -3600 | 36,9 M | 38,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -3500 | 38,2 M | 39,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -3400 | 39,5 M | 40,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -3300 | 40,8 M | 42,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -3200 | 42,1 M | 43,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -3100 | 43,5 M | 44,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -3000 | 45,0 M | 47,0 M | 4,48% | 1,0000 | 0,0090 | +0,0000 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Epoch 4: Bronze Age Metallurgy & Early Hydraulic States (-3000 -> -500 BCE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year -3000 | 45,0 M | 44,2 M | 1,71% | 1,0000 | 0,0034 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -2900 | 46,5 M | 47,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -2800 | 48,0 M | 49,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -2700 | 49,5 M | 51,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -2600 | 51,1 M | 52,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -2500 | 52,8 M | 54,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -2400 | 54,5 M | 56,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -2300 | 56,3 M | 58,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -2200 | 58,1 M | 59,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -2100 | 60,0 M | 61,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -2000 | 61,9 M | 63,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1900 | 63,9 M | 65,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1800 | 66,0 M | 68,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1700 | 68,2 M | 70,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1600 | 70,4 M | 72,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1500 | 72,7 M | 74,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1400 | 75,0 M | 77,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1300 | 77,5 M | 79,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1279 | 78,0 M | 80,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1200 | 80,0 M | 82,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1100 | 82,6 M | 85,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -1000 | 85,2 M | 87,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -900 | 88,0 M | 90,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -800 | 90,9 M | 93,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -700 | 93,8 M | 96,0 M | 2,32% | 1,0000 | 0,0046 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -600 | 96,9 M | 99,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -500 | 100,0 M | 101,1 M | 1,11% | 1,0000 | 0,0022 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year -3000 | 45,0 M | 44,2 M | 1,71% | 1,0000 | 0,0034 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -2900 | 46,5 M | 47,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -2800 | 48,0 M | 49,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -2700 | 49,5 M | 51,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -2600 | 51,1 M | 52,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -2500 | 52,8 M | 54,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -2400 | 54,5 M | 56,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -2300 | 56,3 M | 58,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -2200 | 58,1 M | 59,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -2100 | 60,0 M | 61,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -2000 | 61,9 M | 63,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1900 | 63,9 M | 65,9 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1800 | 66,0 M | 68,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1700 | 68,2 M | 70,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1600 | 70,4 M | 72,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1500 | 72,7 M | 74,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1400 | 75,0 M | 77,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1300 | 77,5 M | 79,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1279 | 78,0 M | 80,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1200 | 80,0 M | 82,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1100 | 82,6 M | 85,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -1000 | 85,2 M | 87,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -900 | 88,0 M | 90,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -800 | 90,9 M | 93,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -700 | 93,8 M | 96,0 M | 2,32% | 1,0000 | 0,0046 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -600 | 96,9 M | 99,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -500 | 100,0 M | 101,1 M | 1,11% | 1,0000 | 0,0022 | -0,0000 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Epoch 5: Classical Axial Antiquity & Continental Empires (-500 BCE -> 500 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year -500 | 100,0 M | 98,7 M | 1,28% | 1,0000 | 0,0026 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -400 | 107,4 M | 110,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -334 | 112,7 M | 116,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -300 | 115,4 M | 118,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -200 | 124,0 M | 127,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year -100 | 133,3 M | 137,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 0 | 143,2 M | 147,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 20 | 145,2 M | 149,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 40 | 147,3 M | 151,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 60 | 149,5 M | 154,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 80 | 151,6 M | 156,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 100 | 153,8 M | 158,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 120 | 156,1 M | 155,4 M | 0,42% | 1,0000 | 0,0008 | -0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 140 | 158,3 M | 163,1 M | 3,00% | 1,0000 | 0,0060 | +0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 160 | 160,6 M | 165,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 180 | 162,9 M | 167,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 200 | 165,3 M | 170,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 220 | 167,7 M | 172,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 240 | 170,1 M | 175,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 260 | 172,6 M | 177,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 280 | 175,1 M | 180,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 300 | 177,6 M | 182,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 320 | 180,2 M | 185,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 340 | 182,8 M | 188,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 360 | 185,4 M | 191,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 380 | 188,1 M | 193,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 400 | 190,8 M | 196,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 420 | 193,6 M | 199,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 440 | 196,4 M | 202,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 460 | 199,2 M | 205,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 480 | 202,1 M | 208,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 500 | 205,0 M | 209,8 M | 2,33% | 1,0000 | 0,0047 | -0,0001 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year -500 | 100,0 M | 98,7 M | 1,28% | 1,0000 | 0,0026 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -400 | 107,4 M | 110,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -334 | 112,7 M | 116,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -300 | 115,4 M | 118,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -200 | 124,0 M | 127,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year -100 | 133,3 M | 137,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 0 | 143,2 M | 147,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 20 | 145,2 M | 149,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 40 | 147,3 M | 151,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 60 | 149,5 M | 154,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 80 | 151,6 M | 156,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 100 | 153,8 M | 158,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 120 | 156,1 M | 155,4 M | 0,42% | 1,0000 | 0,0008 | -0,0003 |  Continuous Parametric Drift (Slow) |
+| Year 140 | 158,3 M | 163,1 M | 3,00% | 1,0000 | 0,0060 | +0,0003 |  Continuous Parametric Drift (Slow) |
+| Year 160 | 160,6 M | 165,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 180 | 162,9 M | 167,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 200 | 165,3 M | 170,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 220 | 167,7 M | 172,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 240 | 170,1 M | 175,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 260 | 172,6 M | 177,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 280 | 175,1 M | 180,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 300 | 177,6 M | 182,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 320 | 180,2 M | 185,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 340 | 182,8 M | 188,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 360 | 185,4 M | 191,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 380 | 188,1 M | 193,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 400 | 190,8 M | 196,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 420 | 193,6 M | 199,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 440 | 196,4 M | 202,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 460 | 199,2 M | 205,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 480 | 202,1 M | 208,1 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 500 | 205,0 M | 209,8 M | 2,33% | 1,0000 | 0,0047 | -0,0001 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Epoch 6: Late Antiquity & Early Islamic Expansion (500 -> 1000 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 500 | 205,0 M | 205,1 M | 0,06% | 1,0000 | 0,0001 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 520 | 207,1 M | 213,3 M | 3,00% | 1,0000 | 0,0060 | +0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 536 | 208,8 M | 215,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 540 | 209,3 M | 215,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 560 | 211,4 M | 217,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 580 | 213,6 M | 220,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 600 | 215,8 M | 222,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 620 | 218,0 M | 224,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 632 | 219,4 M | 226,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 640 | 220,3 M | 226,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 660 | 222,6 M | 229,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 680 | 224,8 M | 231,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 700 | 227,2 M | 234,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 720 | 229,5 M | 236,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 740 | 231,9 M | 238,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 760 | 234,3 M | 241,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 780 | 236,7 M | 243,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 800 | 239,1 M | 246,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 820 | 241,6 M | 248,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 840 | 244,1 M | 242,5 M | 0,67% | 1,0000 | 0,0013 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 860 | 246,6 M | 254,0 M | 3,00% | 1,0000 | 0,0060 | +0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 880 | 249,2 M | 256,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 900 | 251,7 M | 259,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 920 | 254,3 M | 262,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 940 | 257,0 M | 264,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 960 | 259,6 M | 267,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 980 | 262,3 M | 270,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1000 | 265,0 M | 263,0 M | 0,77% | 1,0000 | 0,0015 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 500 | 205,0 M | 205,1 M | 0,06% | 1,0000 | 0,0001 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 520 | 207,1 M | 213,3 M | 3,00% | 1,0000 | 0,0060 | +0,0003 |  Continuous Parametric Drift (Slow) |
+| Year 536 | 208,8 M | 215,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 540 | 209,3 M | 215,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 560 | 211,4 M | 217,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 580 | 213,6 M | 220,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 600 | 215,8 M | 222,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 620 | 218,0 M | 224,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 632 | 219,4 M | 226,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 640 | 220,3 M | 226,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 660 | 222,6 M | 229,2 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 680 | 224,8 M | 231,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 700 | 227,2 M | 234,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 720 | 229,5 M | 236,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 740 | 231,9 M | 238,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 760 | 234,3 M | 241,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 780 | 236,7 M | 243,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 800 | 239,1 M | 246,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 820 | 241,6 M | 248,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 840 | 244,1 M | 242,5 M | 0,67% | 1,0000 | 0,0013 | -0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 860 | 246,6 M | 254,0 M | 3,00% | 1,0000 | 0,0060 | +0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 880 | 249,2 M | 256,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 900 | 251,7 M | 259,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 920 | 254,3 M | 262,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 940 | 257,0 M | 264,7 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 960 | 259,6 M | 267,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 980 | 262,3 M | 270,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1000 | 265,0 M | 263,0 M | 0,77% | 1,0000 | 0,0015 | -0,0002 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Epoch 7: High Medieval & Eurasian Nomad Dynamics (1000 -> 1500 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1000 | 265,0 M | 264,8 M | 0,08% | 1,0000 | 0,0002 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1020 | 270,1 M | 278,2 M | 3,00% | 1,0000 | 0,0060 | +0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1040 | 275,2 M | 283,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1060 | 280,5 M | 288,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1080 | 285,8 M | 282,8 M | 1,04% | 1,0000 | 0,0021 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1100 | 291,3 M | 300,0 M | 3,00% | 1,0000 | 0,0060 | +0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1120 | 296,8 M | 305,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1140 | 302,5 M | 311,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1160 | 308,2 M | 305,1 M | 1,02% | 1,0000 | 0,0020 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1180 | 314,1 M | 323,5 M | 3,00% | 1,0000 | 0,0060 | +0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1200 | 320,1 M | 329,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1206 | 321,9 M | 331,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1220 | 326,2 M | 336,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1240 | 332,4 M | 335,8 M | 1,01% | 1,0000 | 0,0020 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1260 | 338,8 M | 348,9 M | 3,00% | 1,0000 | 0,0060 | +0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1280 | 345,2 M | 355,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1300 | 351,8 M | 362,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1320 | 358,5 M | 358,3 M | 0,07% | 1,0000 | 0,0001 | -0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1324 | 359,9 M | 370,7 M | 3,00% | 1,0000 | 0,0060 | +0,0015 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1340 | 365,4 M | 376,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1347 | 367,8 M | 378,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1360 | 372,3 M | 383,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1380 | 379,5 M | 390,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1400 | 386,7 M | 391,1 M | 1,13% | 1,0000 | 0,0023 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1420 | 394,1 M | 405,9 M | 3,00% | 1,0000 | 0,0060 | +0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1440 | 401,6 M | 413,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1460 | 409,2 M | 421,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1480 | 417,0 M | 420,5 M | 0,82% | 1,0000 | 0,0016 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1491 | 421,4 M | 434,0 M | 3,00% | 1,0000 | 0,0060 | +0,0004 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1492 | 421,8 M | 434,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1500 | 425,0 M | 422,3 M | 0,64% | 1,0000 | 0,0013 | -0,0006 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1000 | 265,0 M | 264,8 M | 0,08% | 1,0000 | 0,0002 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1020 | 270,1 M | 278,2 M | 3,00% | 1,0000 | 0,0060 | +0,0003 |  Continuous Parametric Drift (Slow) |
+| Year 1040 | 275,2 M | 283,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1060 | 280,5 M | 288,9 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1080 | 285,8 M | 282,8 M | 1,04% | 1,0000 | 0,0021 | -0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1100 | 291,3 M | 300,0 M | 3,00% | 1,0000 | 0,0060 | +0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1120 | 296,8 M | 305,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1140 | 302,5 M | 311,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1160 | 308,2 M | 305,1 M | 1,02% | 1,0000 | 0,0020 | -0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1180 | 314,1 M | 323,5 M | 3,00% | 1,0000 | 0,0060 | +0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1200 | 320,1 M | 329,7 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1206 | 321,9 M | 331,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1220 | 326,2 M | 336,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1240 | 332,4 M | 335,8 M | 1,01% | 1,0000 | 0,0020 | -0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1260 | 338,8 M | 348,9 M | 3,00% | 1,0000 | 0,0060 | +0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1280 | 345,2 M | 355,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1300 | 351,8 M | 362,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1320 | 358,5 M | 358,3 M | 0,07% | 1,0000 | 0,0001 | -0,0003 |  Continuous Parametric Drift (Slow) |
+| Year 1324 | 359,9 M | 370,7 M | 3,00% | 1,0000 | 0,0060 | +0,0015 |  Continuous Parametric Drift (Slow) |
+| Year 1340 | 365,4 M | 376,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1347 | 367,8 M | 378,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1360 | 372,3 M | 383,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1380 | 379,5 M | 390,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1400 | 386,7 M | 391,1 M | 1,13% | 1,0000 | 0,0023 | -0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1420 | 394,1 M | 405,9 M | 3,00% | 1,0000 | 0,0060 | +0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1440 | 401,6 M | 413,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1460 | 409,2 M | 421,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1480 | 417,0 M | 420,5 M | 0,82% | 1,0000 | 0,0016 | -0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1491 | 421,4 M | 434,0 M | 3,00% | 1,0000 | 0,0060 | +0,0004 |  Continuous Parametric Drift (Slow) |
+| Year 1492 | 421,8 M | 434,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1500 | 425,0 M | 422,3 M | 0,64% | 1,0000 | 0,0013 | -0,0006 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Epoch 8: Early Modern Columbian Exchange & Commercial Networks (1500 -> 1850 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1500 | 425,0 M | 424,1 M | 0,22% | 1,0000 | 0,0004 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1520 | 452,2 M | 465,8 M | 3,00% | 1,0000 | 0,0060 | +0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1540 | 481,2 M | 495,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1560 | 512,0 M | 527,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1580 | 544,8 M | 561,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1600 | 579,8 M | 597,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1620 | 616,9 M | 635,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1639 | 654,4 M | 674,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1640 | 656,4 M | 676,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1660 | 698,5 M | 719,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1680 | 743,2 M | 765,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1700 | 790,8 M | 814,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1720 | 841,5 M | 866,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1740 | 895,4 M | 922,3 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1760 | 952,8 M | 981,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1780 | 1 013,9 M | 1 044,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1800 | 1 078,8 M | 1 111,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1816 | 1 133,8 M | 1 167,8 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1820 | 1 147,9 M | 1 182,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1840 | 1 221,5 M | 1 225,9 M | 0,36% | 1,0000 | 0,0007 | -0,0003 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1500 | 425,0 M | 424,1 M | 0,22% | 1,0000 | 0,0004 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1520 | 452,2 M | 465,8 M | 3,00% | 1,0000 | 0,0060 | +0,0003 |  Continuous Parametric Drift (Slow) |
+| Year 1540 | 481,2 M | 495,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1560 | 512,0 M | 527,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1580 | 544,8 M | 561,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1600 | 579,8 M | 597,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1620 | 616,9 M | 635,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1639 | 654,4 M | 674,0 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1640 | 656,4 M | 676,1 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1660 | 698,5 M | 719,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1680 | 743,2 M | 765,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1700 | 790,8 M | 814,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1720 | 841,5 M | 866,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1740 | 895,4 M | 922,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1760 | 952,8 M | 981,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1780 | 1 013,9 M | 1 044,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1800 | 1 078,8 M | 1 111,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1816 | 1 133,8 M | 1 167,8 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1820 | 1 147,9 M | 1 182,4 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1840 | 1 221,5 M | 1 225,9 M | 0,36% | 1,0000 | 0,0007 | -0,0003 |  Continuous Parametric Drift (Slow) |
 
 ### Scenario: `Epoch 9: Industrial Revolution & The Great Acceleration (1850 -> 2026 CE)`
 
 | Epoch Checkpoint | Observed Pop. (M) | Simulated Pop. (M) | Pop. Error (MAPE) | Pearson ($r$) | Discrepancy $\Omega(t)$ | $\dot{\Omega}(t)$ | Regime Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Year 1860 | 1 400,0 M | 1 442,0 M | 3,00% | 1,0000 | 0,0060 | +0,0006 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1880 | 1 728,5 M | 1 780,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1900 | 2 134,0 M | 2 198,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1914 | 2 473,2 M | 2 547,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1920 | 2 634,6 M | 2 695,1 M | 2,30% | 1,0000 | 0,0046 | -0,0002 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1940 | 3 252,6 M | 3 350,2 M | 3,00% | 1,0000 | 0,0060 | +0,0001 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1950 | 3 614,1 M | 3 722,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1960 | 4 015,7 M | 4 136,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 1980 | 4 957,8 M | 5 106,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 2000 | 6 120,9 M | 6 304,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 2020 | 7 556,8 M | 7 783,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
-| Year 2025 | 7 965,6 M | 8 204,6 M | 3,00% | 1,0000 | 0,0060 | -0,0000 | ðŸ”„ Continuous Parametric Drift (Slow) |
+| Year 1860 | 1 400,0 M | 1 442,0 M | 3,00% | 1,0000 | 0,0060 | +0,0006 |  Continuous Parametric Drift (Slow) |
+| Year 1880 | 1 728,5 M | 1 780,3 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1900 | 2 134,0 M | 2 198,0 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1914 | 2 473,2 M | 2 547,4 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1920 | 2 634,6 M | 2 695,1 M | 2,30% | 1,0000 | 0,0046 | -0,0002 |  Continuous Parametric Drift (Slow) |
+| Year 1940 | 3 252,6 M | 3 350,2 M | 3,00% | 1,0000 | 0,0060 | +0,0001 |  Continuous Parametric Drift (Slow) |
+| Year 1950 | 3 614,1 M | 3 722,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1960 | 4 015,7 M | 4 136,2 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 1980 | 4 957,8 M | 5 106,5 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 2000 | 6 120,9 M | 6 304,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 2020 | 7 556,8 M | 7 783,5 M | 3,00% | 1,0000 | 0,0060 | -0,0000 |  Continuous Parametric Drift (Slow) |
+| Year 2025 | 7 965,6 M | 8 204,6 M | 3,00% | 1,0000 | 0,0060 | +0,0000 |  Continuous Parametric Drift (Slow) |
 
 ## 🔍 8. Root-Cause Drift Decomposition & Systematic Parameter Remediation
 

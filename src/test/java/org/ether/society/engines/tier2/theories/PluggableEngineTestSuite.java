@@ -19,12 +19,9 @@ import org.ether.society.engines.tier2.theories.*;
 import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.engines.compiler.*;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,24 +33,17 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class PluggableEngineTestSuite {
 
-    private List<H3Cell> testCells;
+    private WorldBuffer testBuffer;
 
     @BeforeEach
     /*
      * Set up operation.
-     * <p>
-     * Executes operational logic for {@code PluggableEngineTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
      */
     public void setUp() {
         SimulationEngineRegistry.getInstance().resetAll();
-        testCells = new ArrayList<>();
-        H3Cell cell = new H3Cell(613503380827930701L, 45.0, 10.0);
-        cell.setPopulation(1000);
-        cell.setTemperature(15.0);
-        testCells.add(cell);
+        testBuffer = new WorldBuffer(1);
+        testBuffer.getHumanPopulation()[0] = 1000.0f;
+        testBuffer.getTemperature()[0] = 15.0f;
     }
 
     @Test
@@ -61,29 +51,24 @@ public class PluggableEngineTestSuite {
      * Test custom plugin registration and execution operation.
      */
     public void testCustomPluginRegistrationAndExecution() {
-        // Register a custom user engine that increases temperature by 1.0 degree per tick
+        // Register a custom user engine that increases temperature by 1.0 degree per year
         SimulationEngineRegistry.getInstance().register(new AbstractSimulationEngine("CustomGeothermalBooster", "CustomGeothermalBooster", EngineTier.TIER_1_BIOPHYSICAL) {
             @Override
-            public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
-                // Buffer tick
-            }
-
-            @Override
-            public void process(List<H3Cell> cells, double deltaYears) {
-                for (H3Cell cell : cells) {
-                    if (cell != null) {
-                        cell.setTemperature(cell.getTemperature() + 1.0 * deltaYears);
-                    }
+            public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+                if (buffer == null || buffer.getTemperature() == null) return;
+                float[] temps = buffer.getTemperature();
+                for (int i = 0; i < buffer.getCapacity(); i++) {
+                    temps[i] += (float) (1.0 * dtYears);
                 }
             }
         });
 
         assertNotNull(SimulationEngineRegistry.getInstance().getEngine("CustomGeothermalBooster"));
 
-        double initialTemp = testCells.get(0).getTemperature();
-        SimulationEngineRegistry.getInstance().getEngine("CustomGeothermalBooster").process(testCells, 1.0);
+        float initialTemp = testBuffer.getTemperature()[0];
+        SimulationEngineRegistry.getInstance().getEngine("CustomGeothermalBooster").tick(testBuffer, 1.0, 12.0);
 
-        assertEquals(initialTemp + 1.0, testCells.get(0).getTemperature(), 0.001, "Custom plugin should execute and modify cell state.");
+        assertEquals(initialTemp + 1.0f, testBuffer.getTemperature()[0], 0.001f, "Custom plugin should execute and modify buffer state.");
     }
 }
 

@@ -139,14 +139,6 @@ public class StatisticsKernel {
     }
 
     /**
-     * Backward-compatible overload ignoring legacy technological index and delegating directly
-     * to conserved physical observables {@link #calculateGini(float[], float[])}.
-     */
-    public float calculateGini(float[] capital, float[] humanBiomass, float ignoredLegacyTech) {
-        return calculateGini(capital, humanBiomass);
-    }
-
-    /**
      * Computes the density distribution (histogram) over $[0, \text{maxVal}]$.
      */
     public int[] calculateDistribution(float[] values, int bins, float maxVal) {
@@ -282,14 +274,6 @@ public class StatisticsKernel {
     }
 
     /**
-     * Backward-compatible overload ignoring legacy technological index and delegating directly
-     * to conserved physical observables {@link #calculateGDP(float[], float[])}.
-     */
-    public float calculateGDP(float[] capital, float[] humanBiomass, float ignoredLegacyTech) {
-        return calculateGDP(capital, humanBiomass, 0.0);
-    }
-
-    /**
      * Calculates Gross World Product (GWP) from physical capital stock alone.
      */
     public float calculateGDP(float[] capital) {
@@ -351,18 +335,18 @@ public class StatisticsKernel {
     }
 
     /**
-     * Computes life expectancy from cohort mean ages and nutritional satisfaction when no {@link WorldBuffer}
+     * Computes life expectancy from cohort mean ages and full nutritional satisfaction when no {@link WorldBuffer}
      * is provided (Lotka stable age distribution $e_0 \approx 1.35 \bar{a}$).
      */
     public float calculateLifeExpectancy(float[] ages, int[] hexIds) {
-        return calculateLifeExpectancy(ages, hexIds, 0.0f, 1.0f);
+        return calculateLifeExpectancy(ages, hexIds, 1.0f);
     }
 
     /**
-     * Backward-compatible overload computing life expectancy directly from cohort ages and food satisfaction,
-     * ignoring any legacy technological scalar.
+     * Computes life expectancy directly from cohort ages and nutritional satisfaction
+     * (Lotka stable age distribution $e_0 \approx 1.35 \bar{a}$).
      */
-    public float calculateLifeExpectancy(float[] ages, int[] hexIds, float ignoredLegacyTech, float foodSatisfaction) {
+    public float calculateLifeExpectancy(float[] ages, int[] hexIds, float foodSatisfaction) {
         double sumAge = 0.0;
         int count = 0;
         if (ages != null && hexIds != null) {

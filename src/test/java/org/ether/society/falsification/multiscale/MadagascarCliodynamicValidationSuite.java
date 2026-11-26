@@ -12,6 +12,7 @@ import org.ether.society.database.H3Cell;
 import org.ether.society.model.ClimateEvent;
 import org.ether.society.model.Scenario;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
  */
+@Tag("scientific")
 @DisplayName("Madagascar Insular Cliodynamic & Ecological Validation Suite")
 public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
 

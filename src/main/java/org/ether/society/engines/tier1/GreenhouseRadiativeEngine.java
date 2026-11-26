@@ -71,7 +71,7 @@ public class GreenhouseRadiativeEngine extends AbstractSimulationEngine {
         double co2Ratio = SmoothMath.softmax(50.0, currentCo2Ppm, 0.2) / BASELINE_CO2_PPM;
         double co2Forcing = 5.35 * Math.log(co2Ratio);
         double ch4Forcing = 0.036 * (Math.sqrt(SmoothMath.softplus(currentCh4Ppb, 0.2)) - Math.sqrt(BASELINE_CH4_PPB));
-        return SmoothMath.softplus(co2Forcing + ch4Forcing, 4.0);
+        return co2Forcing + ch4Forcing;
     }
 
     /**

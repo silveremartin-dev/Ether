@@ -36,18 +36,18 @@
     "elevationUseImport" : true,
     "elevationMapSource" : "venus",
     "tempUseImport" : true,
-    "tempSource" : "\uD83D\uDFE1 Vénus — Magellan SAR & Hypsometric Model",
+    "tempSource" : " Vénus — Magellan SAR & Hypsometric Model",
     "tempSeed" : 55655,
     "precipUseImport" : true,
-    "precipSource" : "\uD83D\uDFE1 Vénus — H2SO4 Virga Cycle Model",
+    "precipSource" : " Vénus — H2SO4 Virga Cycle Model",
     "precipSeed" : 56555,
     "seasonUseImport" : true,
-    "seasonSource" : "\uD83D\uDFE1 Vénus — Super-Rotation Low Variance Model",
+    "seasonSource" : " Vénus — Super-Rotation Low Variance Model",
     "seasonSeed" : 57555,
     "canonicalPlanet" : "venus",
     "tidalLocked" : false,
-    "presetDescription" : "\uD83D\uDFE1 VENUS (Hesperos): Runaway greenhouse hellscape with 92 atm CO₂ atmosphere, 465°C surface temperature, sulfuric acid clouds, active basaltic volcanism, and complete absence of liquid water.",
-    "associatedEpochYear" : 2026
+    "associatedEpochYear" : 2026,
+    "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface."
   },
   "terrestrialBiomassGtC" : 0.0,
   "soilOrganicCarbonGtC" : 0.0,
@@ -66,6 +66,6 @@
   "customSeasonalityBase64" : null,
   "customGeologyTensorMapsBase64" : null,
   "canonicalPlanet" : "venus",
-  "presetDescription" : "\uD83D\uDFE1 VENUS (Hesperos): Runaway greenhouse hellscape with 92 atm CO₂ atmosphere, 465°C surface temperature, sulfuric acid clouds, active basaltic volcanism, and complete absence of liquid water.",
-  "associatedEpochYear" : 2026
+  "associatedEpochYear" : 2026,
+  "presetDescription" : "\uD83D\uDFE1 VÉNUS (Hesperos) : Enfer à effet de serre emballé avec 92 atm de CO₂, température au sol de 465°C, nuages d'acide sulfurique, volcanisme basaltique actif et absence totale d'eau liquide de surface."
 }

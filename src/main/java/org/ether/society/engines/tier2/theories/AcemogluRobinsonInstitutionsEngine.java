@@ -36,6 +36,17 @@ public class AcemogluRobinsonInstitutionsEngine extends AbstractSimulationEngine
     }
 
     @Override
+    public String getEquationsTooltip() {
+        return """
+               [Acemoglu-Robinson Institutional Divergence (Acemoglu & Robinson 2012)]
+               • Inclusiveness Index:    I = smoothClamp(1.0 - Gini, 0.05, 0.95)
+               • Property Rights Gate:   Φ_pr = σ(k_pc; 100.0, 30.0)
+               • Capital Accumulation:   dK/dt = 0.02 · (I - 0.35) · Φ_pr · K
+               Ref: D. Acemoglu & J. A. Robinson (2012), "Why Nations Fail"
+               """;
+    }
+
+    @Override
     public boolean supportsCellularDerivatives() {
         return true;
     }

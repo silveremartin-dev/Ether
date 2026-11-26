@@ -1,5 +1,6 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -7,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("data-audit")
 public class PlanetaryGrayscaleVerificationTest {
 
     private static final String[] PLANETS = { "earth", "mars", "moon", "mercury", "venus" };

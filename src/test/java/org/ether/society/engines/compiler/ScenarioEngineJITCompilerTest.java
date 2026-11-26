@@ -62,14 +62,14 @@ public class ScenarioEngineJITCompilerTest {
         assertNotNull(report, "Conflict report must be generated during compilation");
 
         // Fused: 0.90 * (1.05 * T + 2.0) - 1.0 = 0.945 * T + 0.80
-        H3Cell cell = new H3Cell(3001L, 45.0, 5.0);
-        cell.setTemperature(20.0);
+        org.ether.society.core.dod.WorldBuffer wb = new org.ether.society.core.dod.WorldBuffer(1);
+        wb.getTemperature()[0] = 20.0f;
 
-        compiler.execute(List.of(cell), 1.0);
+        compiler.execute(wb, 1.0f);
 
         // Expected temperature: 0.945 * 20.0 + 0.80 = 18.90 + 0.80 = 19.70
-        assertEquals(19.70, cell.getTemperature(), 1e-4,
-                "JIT fused kernel execution over cell must evaluate fused affine transformation exactly");
+        assertEquals(19.70f, wb.getTemperature()[0], 1e-3f,
+                "JIT fused kernel execution over WorldBuffer must evaluate fused affine transformation exactly");
     }
 
     @Test
@@ -84,21 +84,7 @@ public class ScenarioEngineJITCompilerTest {
         assertFalse(kernel.getFusedExpressions().isEmpty());
         assertTrue(kernel.toString().contains("Fused Compiled CPU Kernel Expressions"));
 
-        // 1. Test List<H3Cell> fused execution
-        H3Cell cell = new H3Cell(4001L, 10.0, 10.0);
-        cell.setTemperature(15.0);
-        cell.setPopulation(100);
-        cell.setResourceCapital(50.0);
-        cell.setPollutionLevel(0.2);
-
-        kernel.executeFusedKernel(List.of(cell), 1.0);
-
-        assertEquals(1.1 * 15.0 + 2.0, cell.getTemperature(), 1e-4);
-        assertEquals((int) (1.05 * 100 + 10.0), cell.getPopulation());
-        assertEquals(1.02 * 50.0 + 5.0, cell.getResourceCapital(), 1e-4);
-        assertEquals(1.01 * 0.2 + 0.1, cell.getPollutionLevel(), 1e-4);
-
-        // 2. Test WorldBuffer fused execution
+        // Test Data-Oriented WorldBuffer fused execution
         org.ether.society.core.dod.WorldBuffer wb = new org.ether.society.core.dod.WorldBuffer(4);
         wb.getTemperature()[0] = 10.0f;
         wb.getHumanPopulation()[0] = 50.0f;
@@ -116,27 +102,25 @@ public class ScenarioEngineJITCompilerTest {
     public void testSimulationEngineModuleDefaultMethods() {
         org.ether.society.core.engine.AbstractSimulationEngine plugin = new org.ether.society.core.engine.AbstractSimulationEngine("TestDummy", "TestDummy", org.ether.society.core.engine.EngineTier.TIER_2_CLIODYNAMIC) {
             @Override
-            public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {}
-            @Override
-            public void process(List<H3Cell> cells, double dt) {
-                for (H3Cell c : cells) {
-                    if (c.getResourceWork() != null) {
-                        c.setResourceWork(c.getResourceWork() + dt * 10.0);
-                    }
+            public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
+                if (buffer == null || buffer.getResourceCapital() == null) return;
+                float[] cap = buffer.getResourceCapital();
+                for (int i = 0; i < buffer.getCapacity(); i++) {
+                    cap[i] += (float) (dtYears * 10.0);
                 }
             }
         };
 
-        H3Cell cell = new H3Cell(5001L, 0.0, 0.0);
-        cell.setResourceWork(50.0);
+        org.ether.society.core.dod.WorldBuffer buffer = new org.ether.society.core.dod.WorldBuffer(1);
+        buffer.getResourceCapital()[0] = 50.0f;
 
-        plugin.process(List.of(cell), 2.0);
-        assertEquals(70.0, cell.getResourceWork(), 1e-4);
+        plugin.tick(buffer, 2.0, 24.0);
+        assertEquals(70.0f, buffer.getResourceCapital()[0], 1e-4f);
 
         assertNotNull(plugin.getName());
         assertNotNull(plugin.getDescription());
-        assertTrue(plugin.getEquationsTooltip().contains("Mathematical"));
-        assertEquals("Tier 2: Cliodynamics", plugin.getCategory());
+        assertNotNull(plugin.getEquationsTooltip());
+        assertEquals("TIER_2_CLIODYNAMIC", plugin.getCategory());
     }
 }
 

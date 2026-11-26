@@ -6,6 +6,7 @@
  */
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Verification test for {@link DeepTimePaleoEpochGenerator}.
  */
+@Tag("manual")
 public class DeepTimePaleoEpochGeneratorTest {
 
     @Test

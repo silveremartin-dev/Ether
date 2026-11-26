@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+@org.junit.jupiter.api.Tag("manual")
 public class InspectScenarioNamesTest {
 
     private static final Map<String, String> ENGLISH_NAMES = new LinkedHashMap<>();

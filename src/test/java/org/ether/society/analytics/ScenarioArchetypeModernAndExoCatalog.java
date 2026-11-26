@@ -91,6 +91,17 @@ final class ScenarioArchetypeModernAndExoCatalog {
         ));
 
         register.accept(new ScenarioDetail(
+            "earth_+1950_great_acceleration",
+            "The Great Acceleration & Anthropocene (1950 -> 2024 CE)",
+            1950, 2024, 30.0,
+            "Early Modern & Industrial",
+            "Instrumental historical calibration benchmark spanning 1950-2024 CE (Steffen et al. 2015; Smil 2017; Maddison 2020): demographic surge from 2.5B to 8.1B, Haber-Bosch Green Revolution, petrochemical prime movers, and Keeling CO2 curve (310 -> 425 ppm).",
+            "Bifurcation at 1973-1990 CE: Fossil energy scaling and synthetic nitrogen overcame classical agrarian limits while driving exponential anthropogenic radiative forcing and nitrogen/phosphorus planetary overshoot.",
+            "Anchored to NOAA Mauna Loa, UN WPP, ERA5, FAO, and USGS instrumental series (sigma_obs < 1.5%) over 901 planned monthly ticks.",
+            "Audit Note: Dedicated historical 1950->2024 instrumental calibration preset complementing earth_+2000_anthropocene_2000 (2000->2100)."
+        ));
+
+        register.accept(new ScenarioDetail(
             "earth_+2000_anthropocene_2000",
             "The Anthropocene & The Great Acceleration (2000 -> 2100 CE)",
             2000, 2100, 7.0,
@@ -113,6 +124,17 @@ final class ScenarioArchetypeModernAndExoCatalog {
             "Bifurcation at 2038 CE: Wet-bulb temperatures exceeding 35°C in the Indus-Ganges basin and Persian Gulf exceed human survivability limits, triggering cross-continental climate refugee waves.",
             "SSIM: 0.885 | Wet Bulb Exceedance RMSE: 0.088 | Migration Flow Pearson r: 0.890 | Agricultural EROEI r: 0.810.",
             "Bug: Heat lethality mortality did not trigger regional out-migration until whole population perished. Remediation: Add anticipatory environmental displacement term in MigrationEngine."
+        ));
+
+        register.accept(new ScenarioDetail(
+            "earth_+2026_2026_future",
+            "Ether Prospective Projection (2026-2100): Standard Biophysical Dynamics",
+            2026, 2100, 30.0,
+            "Future Earth Trajectories",
+            "Default SSP2 middle-of-the-road prospective Earth baseline from 2026 to 2100 CE under ETHER_CALIBRATED biophysical constraints (WorldClim/ERA5 initialization, N0 = 8.301B, N-P-K stoichiometry, and Debts-to-Exergy limits).",
+            "Bifurcation at 2050-2065 CE: Demographic peaking, peak hydrocarbon EROEI moderation, and regional wet-bulb stress test whether capital deepening outpaces ecological depletion.",
+            "Baseline counterfactual SSP2 trajectory over 901 planned monthly ticks (H3 Res 3).",
+            "Audit Note: Standard SSP2 prospective baseline contrasting against SSP5-8.5 high-emissions counterfactual (earth_+2026_ssp5_85)."
         ));
 
         register.accept(new ScenarioDetail(

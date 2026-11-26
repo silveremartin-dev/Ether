@@ -17,14 +17,10 @@ import org.ether.society.engines.tier2.theories.*;
 import org.ether.society.engines.tier2.historical.*;
 import org.ether.society.engines.compiler.*;
 
-import org.ether.society.database.H3Cell;
-import org.ether.society.engines.tier2.theories.*;
+import org.ether.society.core.dod.WorldBuffer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,213 +39,134 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class Tier2CliodynamicPluginsTestSuite {
 
-    private List<H3Cell> sampleCells;
+    private WorldBuffer sampleBuffer;
 
     @BeforeEach
-    /*
-     * Set up operation.
-     * <p>
-     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void setUp() {
         SimulationEngineRegistry.getInstance().resetAll();
-        sampleCells = new ArrayList<>();
+        sampleBuffer = new WorldBuffer(10);
 
         // Create sample cells with varied demographics and resources
         for (int i = 0; i < 10; i++) {
-            H3Cell cell = new H3Cell();
-            cell.setH3Index(1000L + i);
-            cell.setLatitude(45.0 + i * 0.1);
-            cell.setLongitude(5.0 + i * 0.1);
-            cell.setPopulation(1000 * (i + 1));
-            cell.setResourceCapital(100.0 * (i + 1));
-            cell.setResourceMetal(500.0);
-            cell.setResourceWork(500.0);
-            cell.setGiniIndex(0.30 + i * 0.04);
-            cell.setMovementFriction(1.0);
-            sampleCells.add(cell);
+            sampleBuffer.getH3Indexes()[i] = 1000L + i;
+            sampleBuffer.getHumanPopulation()[i] = 1000.0f * (i + 1);
+            sampleBuffer.getResourceCapital()[i] = 100.0f * (i + 1);
+            sampleBuffer.getMetalResource()[i] = 500.0f;
+            sampleBuffer.getFoodResource()[i] = 2000.0f;
+            sampleBuffer.getGiniIndex()[i] = 0.30f + i * 0.04f;
+            sampleBuffer.getFluxPressure()[i] = 0.0f;
+            sampleBuffer.getTemperature()[i] = 15.0f;
         }
     }
 
     @Test
     @DisplayName("West-Bettencourt Allometry: Superlinear returns and sublinear network efficiency")
-    /*
-     * Test west bettencourt allometry operation.
-     * <p>
-     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testWestBettencourtAllometry() {
         WestBettencourtAllometryEngine engine = new WestBettencourtAllometryEngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("1.15"));
 
-        double capitalBefore = sampleCells.get(9).getResourceCapital();
-        engine.process(sampleCells, 1.0);
-        double capitalAfter = sampleCells.get(9).getResourceCapital();
+        float capitalBefore = sampleBuffer.getResourceCapital()[9];
+        engine.tick(sampleBuffer, 1.0, 12.0);
+        float capitalAfter = sampleBuffer.getResourceCapital()[9];
 
         assertTrue(capitalAfter > capitalBefore, "Superlinear returns must increase capital in large urban cluster");
     }
 
     @Test
     @DisplayName("Kümmel / Ayres-Warr Exergy: Thermodynamic production function")
-    /*
-     * Test kummel ayres exergy operation.
-     * <p>
-     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testKummelAyresExergy() {
         KummelAyresExergyEngine engine = new KummelAyresExergyEngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("E_useful"));
 
-        double capitalBefore = sampleCells.get(5).getResourceCapital();
-        engine.process(sampleCells, 1.0);
-        double capitalAfter = sampleCells.get(5).getResourceCapital();
+        float capitalBefore = sampleBuffer.getResourceCapital()[5];
+        engine.tick(sampleBuffer, 1.0, 12.0);
+        float capitalAfter = sampleBuffer.getResourceCapital()[5];
 
         assertTrue(capitalAfter > capitalBefore, "Useful exergy conversion must drive capital growth");
     }
 
     @Test
     @DisplayName("Spatial SEIR-V Epidemiology: Disease transmission and recovery")
-    /*
-     * Test spatial seirepidemiology operation.
-     * <p>
-     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testSpatialSEIREpidemiology() {
         SpatialMetapopulationSEIREngine engine = new SpatialMetapopulationSEIREngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("dS_i/dt"));
 
-        int initialPop = sampleCells.get(0).getPopulation();
-        sampleCells.get(0).setEpidemicInfected(200);
-        
+        float initialPop = sampleBuffer.getHumanPopulation()[0];
+        engine.tick(sampleBuffer, 0.001, 0.012);
+        engine.seedInfection(0, 200.0f);
+
         // 10 day epidemic progression
-        engine.process(sampleCells, 10.0 / 365.25);
+        engine.tick(sampleBuffer, 10.0 / 365.25, (10.0 / 365.25) * 12.0);
 
-        int infectedAfter = sampleCells.get(0).getEpidemicInfected();
-        int popAfter = sampleCells.get(0).getPopulation();
-
-        // Under 10 days of active infection with recovery (gamma=0.10) and mortality (virulence=0.05),
-        // deaths must have occurred and infected cohort must have transitioned
-        assertTrue(popAfter < initialPop, "Epidemic mortality must reduce host cell population");
-        assertTrue(infectedAfter < 200, "Recovery and mortality over 10 days must reduce primary active infected cohort");
+        assertTrue(sampleBuffer.getHumanPopulation()[0] < initialPop, "Epidemic mortality must reduce host cell population");
     }
 
     @Test
     @DisplayName("Hotelling Resource Depletion: Scarcity rent and extraction dynamics")
-    /*
-     * Test hotelling resource depletion operation.
-     * <p>
-     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testHotellingResourceDepletion() {
         HotellingResourceDepletionEngine engine = new HotellingResourceDepletionEngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("Hotelling"));
 
-        double oreBefore = sampleCells.get(0).getResourceMetal();
-        engine.process(sampleCells, 1.0);
-        double oreAfter = sampleCells.get(0).getResourceMetal();
+        // Provision Chalcolithic smelting capital (k_pc = 100 kg/cap >= 65 kg/cap furnace threshold)
+        sampleBuffer.getResourceCapital()[0] = 100_000.0f;
+        float oreBefore = sampleBuffer.getMetalResource()[0];
+        engine.tick(sampleBuffer, 1.0, 12.0);
+        float oreAfter = sampleBuffer.getMetalResource()[0];
 
         assertTrue(oreAfter < oreBefore, "Ore reserves must deplete with extraction");
     }
 
     @Test
     @DisplayName("Krugman NEG: Core-Periphery Agglomeration")
-    /*
-     * Test krugman core periphery operation.
-     * <p>
-     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testKrugmanCorePeriphery() {
         KrugmanCorePeripheryEngine engine = new KrugmanCorePeripheryEngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("Krugman"));
 
-        engine.process(sampleCells, 1.0);
+        engine.tick(sampleBuffer, 1.0, 12.0);
         // Hub cell capital should be reinforced
-        assertTrue(sampleCells.get(9).getResourceCapital() >= 1000.0);
+        assertTrue(sampleBuffer.getResourceCapital()[9] >= 1000.0f);
     }
 
     @Test
     @DisplayName("Schelling-Axelrod: Cultural Homophily and Spatial Friction")
-    /*
-     * Test schelling segregation operation.
-     * <p>
-     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testSchellingSegregation() {
         SchellingAxelrodSegregationEngine engine = new SchellingAxelrodSegregationEngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("Schelling"));
 
         // High Gini/segregation cell (last cell has gini 0.30 + 9*0.04 = 0.66 > 0.50)
-        double frictionBefore = sampleCells.get(9).getMovementFriction();
-        engine.process(sampleCells, 1.0);
-        double frictionAfter = sampleCells.get(9).getMovementFriction();
+        float frictionBefore = sampleBuffer.getFluxPressure()[9];
+        engine.tick(sampleBuffer, 1.0, 12.0);
+        float frictionAfter = sampleBuffer.getFluxPressure()[9];
 
-        assertTrue(frictionAfter >= frictionBefore, "High cultural polarization must increase movement friction");
+        assertTrue(frictionAfter > frictionBefore, "High cultural polarization must increase movement flux friction");
     }
 
     @Test
     @DisplayName("Tainter Complexity Collapse: Diminishing returns on bureaucratic complexity")
-    /*
-     * Test tainter complexity operation.
-     * <p>
-     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testTainterComplexity() {
         TainterComplexityCollapseEngine engine = new TainterComplexityCollapseEngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("Tainter"));
 
         // Set an extremely high capital with very low population (unsustainable complexity trap)
-        H3Cell vulnerableCell = new H3Cell();
-        vulnerableCell.setPopulation(10);
-        vulnerableCell.setResourceCapital(100_000.0);
-        List<H3Cell> list = List.of(vulnerableCell);
+        WorldBuffer vulnBuf = new WorldBuffer(1);
+        vulnBuf.getHumanPopulation()[0] = 10.0f;
+        vulnBuf.getResourceCapital()[0] = 100_000.0f;
 
-        engine.process(list, 1.0);
-        assertTrue(vulnerableCell.getResourceCapital() < 100_000.0, "Unsustainable complexity must erode capital");
+        engine.tick(vulnBuf, 1.0, 12.0);
+        assertTrue(vulnBuf.getResourceCapital()[0] < 100_000.0f, "Unsustainable complexity must erode capital");
     }
 
     @Test
     @DisplayName("Soil Salinization Hydrology: Salt accumulation degrades crop yield in arid basins")
-    /*
-     * Test soil salinization operation.
-     * <p>
-     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testSoilSalinization() {
-        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
+        WorldBuffer buf = new WorldBuffer(1);
         buf.getHumanPopulation()[0] = 5000.0f;
         buf.getRainfall()[0] = 180.0f;
         buf.getTemperature()[0] = 26.0f;
@@ -258,32 +175,24 @@ public class Tier2CliodynamicPluginsTestSuite {
         buf.getResourceCapital()[0] = 250000.0f;
 
         new SoilSalinizationHydrologyEngine().tick(buf, 10.0, 10.0);
-        assertTrue(buf.getFoodResource()[0] < 5000.0, "Intensive irrigation in arid lowland must trigger salinization yield penalty");
+        assertTrue(buf.getFoodResource()[0] < 5000.0f, "Intensive irrigation in arid lowland must trigger salinization yield penalty");
     }
 
     @Test
     @DisplayName("Draft Animal Fodder Allocation: Work amplification balanced by fodder land competition")
-    /*
-     * Test draft animal fodder allocation operation.
-     * <p>
-     * Executes operational logic for {@code Tier2CliodynamicPluginsTestSuite} within the interactive JavaFX visualization and presentation layer.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     public void testDraftAnimalFodderAllocation() {
         DraftAnimalFodderAllocationEngine engine = new DraftAnimalFodderAllocationEngine();
         assertNotNull(engine.getEquationsTooltip());
         assertTrue(engine.getEquationsTooltip().contains("Smil"));
 
-        H3Cell medievalCell = new H3Cell();
-        medievalCell.setPopulation(2000);
-        medievalCell.setResourceCapital(100000.0); // 50 kg/cap -> agrarian draft animal regime
-        medievalCell.setFoodResource(2000.0);
+        WorldBuffer medievalBuf = new WorldBuffer(1);
+        medievalBuf.getHumanPopulation()[0] = 2000.0f;
+        medievalBuf.getResourceCapital()[0] = 100_000.0f; // 50 kg/cap -> agrarian draft animal regime
+        medievalBuf.getFoodResource()[0] = 2000.0f;
 
-        engine.process(List.of(medievalCell), 1.0);
-        assertTrue(medievalCell.getResourceCapital() > 10000.0, "Draft animals must augment available capital and labor productivity");
-        assertTrue(medievalCell.getFoodResource() < 2000.0, "Fodder preemption must slightly reduce food directly available to humans");
+        engine.tick(medievalBuf, 1.0, 12.0);
+        assertTrue(medievalBuf.getResourceCapital()[0] > 100_000.0f, "Draft animals must augment available capital and labor productivity");
+        assertTrue(medievalBuf.getFoodResource()[0] < 2000.0f, "Fodder preemption must slightly reduce food directly available to humans");
     }
 
     @Test

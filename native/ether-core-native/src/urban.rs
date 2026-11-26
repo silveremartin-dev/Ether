@@ -35,6 +35,11 @@ pub unsafe fn process_urban(world: &mut WorldBufferRaw, dt_years: f32) {
     } else {
         &[]
     };
+    let profile_basal_w = if !world.organism_profile.is_null() {
+        (*world.organism_profile).basal_power_watts
+    } else {
+        4.24 * 65.0_f64.powf(0.75)
+    };
 
     let cap_ptr = world.resource_capital as usize;
     let comp_ptr = world.institutional_complexity as usize;
@@ -71,7 +76,7 @@ pub unsafe fn process_urban(world: &mut WorldBufferRaw, dt_years: f32) {
         let wood_val = if !wood.is_empty() { wood[i] } else { 0.0 };
         let agri_val = if !agri.is_empty() { agri[i] } else { 0.0 };
 
-        let basal_w = 4.24 * 65.0_f64.powf(0.75); // Matches OrganismBiophysicalProfile.HOMO_SAPIENS (97.06238 W)
+        let basal_w = profile_basal_w; // Synchronized with WorldBuffer.getOrganismProfile().basalMetabolicPowerWatts()
         let wood_thermal_w = 212.0 * ((nat_val as f64 + wood_val as f64 + 50.0) / 50.0).tanh();
         let draft_w = 25.0 * (softplus(capital_per_capita - 150.0, 0.05) / 250.0).tanh();
         let mill_and_charcoal_w = 220.0 * (softplus(capital_per_capita - 520.0, 0.05) / 420.0).tanh();

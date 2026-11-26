@@ -45,9 +45,15 @@ import java.util.List;
 
  */
 
-public final class CliodynamicAdvisor {
-    private CliodynamicAdvisor() {
-        // Pure static telemetry advisor
+public final class CliodynamicAdvisor extends org.ether.society.core.engine.AbstractSimulationEngine {
+    /** Constructs the CliodynamicAdvisor Tier 2 telemetry module. */
+    public CliodynamicAdvisor() {
+        super("CliodynamicAdvisor", "CliodynamicAdvisor", org.ether.society.core.engine.EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
+        // Predictive advisor alerts are evaluated on demand by the UI telemetry panel
     }
 
 

@@ -81,7 +81,7 @@ class DODDataGeneratorTest {
         WorldBuffer world = new WorldBuffer(capacity);
         world.getH3Indexes()[0] = 55555L;
         world.getHumanPopulation()[0] = 1500.0f; // 1500 people
-        world.getResourceCapital()[0] = 300000.0f;
+        world.getResourceCapital()[0] = 15000.0f; // 10 kg/cap pre-industrial regime
 
         world.getH3Indexes()[1] = 66666L;
         world.getHumanPopulation()[1] = 0.0f; // Unpopulated cell

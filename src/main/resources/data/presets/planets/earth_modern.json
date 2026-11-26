@@ -33,7 +33,7 @@
   "elevationUseImport" : true,
   "elevationMapSource" : "earth",
   "tempUseImport" : true,
-  "tempSource" : "Terre (-1900 BP) — Âge du Bronze Moyen",
+  "tempSource" : "Terre (-1900 BP) — Ã‚ge du Bronze Moyen",
   "tempSeed" : 12445,
   "precipUseImport" : true,
   "precipSource" : "\uD83C\uDF0D Terre — WorldClim v2.1 & GPCP v2.3 (Composite)",
@@ -43,6 +43,6 @@
   "seasonSeed" : 14345,
   "canonicalPlanet" : "earth",
   "tidalLocked" : false,
-  "presetDescription" : "\uD83C\uDF0D EARTH (2026 / Modern Anthropocene): Standard Terran baseline with 70.8% ocean coverage, 15.0°C global mean temperature, 420 ppm CO₂, industrial globalization, and satellite-calibrated ecologies.",
-  "associatedEpochYear" : 2026
+  "associatedEpochYear" : 2026,
+  "presetDescription" : "\uD83C\uDF0D TERRE (2026 / Anthropocène Moderne) : Référence terrestre contemporaine avec 70,8% d'océans, 15,0°C de température moyenne, 420 ppm de CO₂, mondialisation industrielle et biomes calibrés par télédétection satellitaire."
 }

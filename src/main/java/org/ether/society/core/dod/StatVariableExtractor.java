@@ -46,7 +46,6 @@ public final class StatVariableExtractor {
                 case "population":
                 case "pop":
                 case "humanpopulation":
-                case "biomasshuman":
                     return buffer.getHumanPopulation();
                 case "food":
                 case "foodresource":
@@ -92,7 +91,6 @@ public final class StatVariableExtractor {
                     case "population":
                     case "pop":
                     case "humanpopulation":
-                    case "biomasshuman":
                         res[i] = c.getPopulation() != null ? c.getPopulation().floatValue() : 0.0f;
                         break;
                     case "tech":

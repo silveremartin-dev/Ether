@@ -1,10 +1,7 @@
 package org.ether.society.engines.tier2.theories;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,42 +13,41 @@ public class ArthurCombinatorialTechnologyEngineTest {
     @Test
     public void testCombinatorialInnovationAdvance() {
         ArthurCombinatorialTechnologyEngine engine = new ArthurCombinatorialTechnologyEngine();
-        H3Cell cell = new H3Cell(613503380827930850L, 51.5, -0.1);
-        cell.setPopulation(5000);
-        cell.setResourceCapital(1000.0);
+        WorldBuffer buffer = new WorldBuffer(1);
+        buffer.getHumanPopulation()[0] = 5000.0f;
+        buffer.getResourceCapital()[0] = 1000.0f;
 
-        engine.process(List.of(cell), 1.0);
+        engine.tick(buffer, 1.0, 12.0);
 
-        assertTrue(cell.getResourceCapital() > 1000.0, "Combinatorial innovation must advance productive capital stock");
-        assertTrue(Double.isFinite(cell.getResourceCapital()), "Productive capital stock must remain finite");
+        assertTrue(buffer.getResourceCapital()[0] > 1000.0f, "Combinatorial innovation must advance productive capital stock");
+        assertTrue(Float.isFinite(buffer.getResourceCapital()[0]), "Productive capital stock must remain finite");
     }
 
     @Test
     public void testNegativeCapitalRobustness() {
         ArthurCombinatorialTechnologyEngine engine = new ArthurCombinatorialTechnologyEngine();
-        H3Cell cell = new H3Cell(613503380827930851L, 51.6, -0.2);
-        cell.setPopulation(1000);
-        cell.setResourceCapital(-100.0); // Negative capital (debt/deficit)
+        WorldBuffer buffer = new WorldBuffer(1);
+        buffer.getHumanPopulation()[0] = 1000.0f;
+        buffer.getResourceCapital()[0] = -100.0f; // Negative capital (debt/deficit)
 
         assertDoesNotThrow(() -> {
-            engine.process(List.of(cell), 1.0);
+            engine.tick(buffer, 1.0, 12.0);
         }, "Negative capital must not cause Math.sqrt(negative) NaN exception or crash");
 
-        assertFalse(Double.isNaN(cell.getResourceCapitalOr(0.0)), "Capital stock must never become NaN under negative capital");
+        assertFalse(Float.isNaN(buffer.getResourceCapital()[0]), "Capital stock must never become NaN under negative capital");
     }
 
     @Test
     public void testNullSafetyGuards() {
         ArthurCombinatorialTechnologyEngine engine = new ArthurCombinatorialTechnologyEngine();
-        assertDoesNotThrow(() -> engine.process(null, 1.0));
-        assertDoesNotThrow(() -> engine.process(new ArrayList<>(), 1.0));
+        assertDoesNotThrow(() -> engine.tick(null, 1.0, 12.0));
 
-        H3Cell nullCell = new H3Cell(613503380827930852L, 0.0, 0.0);
-        nullCell.setPopulation(null);
-        nullCell.setResourceCapital(null);
+        WorldBuffer zeroBuffer = new WorldBuffer(1);
+        zeroBuffer.getHumanPopulation()[0] = 0.0f;
+        zeroBuffer.getResourceCapital()[0] = 0.0f;
 
         assertDoesNotThrow(() -> {
-            engine.process(List.of(nullCell), 1.0);
-        }, "Engine must safely process cells with null fields without throwing NPE");
+            engine.tick(zeroBuffer, 1.0, 12.0);
+        }, "Engine must safely process zeroed cells without throwing exceptions");
     }
 }

@@ -31,7 +31,7 @@ Every simulation step records twelve fundamental physical state variables aggreg
 | **1** | $N$ | **Human / Agent Population** | Inhabitants | `humanPopulation[i]` | $N = \sum_{i=0}^{C-1} P_i$ |
 | **2** | $K$ | **Physical Built Capital Stock** | $1990\,\$$ / kg | `resourceCapital[i]` | $K = \sum_{i=0}^{C-1} K_i$ |
 | **3** | $P_{\text{watts}}$ | **Primary Power Dissipation** | Watts ($\text{W}$) | `powerWattsPerCapita[i]` | $P_{\text{watts}} = \sum_{i=0}^{C-1} \left( p_{i, \text{metabolic}} + p_{i, \text{mechanical}} + p_{i, \text{grid}} \right) \cdot P_i$ |
-| **4** | $B_{\text{agr}}$ | **Agricultural Crop Biomass** | Metric Tons | `biomassAgriculture[i]` | $B_{\text{agr}} = \sum_{i=0}^{C-1} B_{\text{agr}, i}$ |
+| **4** | $B_{\text{agr}}$ | **Agricultural Crop Biomass** | Kilograms (converted $\times 10^{-3}$ to t in `biomassDomesticated`) | `biomassAgriculture[i]` | $B_{\text{agr}} = \sum_{i=0}^{C-1} B_{\text{agr}, i}$ |
 | **5** | $B_{\text{nat}}$ | **Wild Ecological Biomass** | Metric Tons | `biomassNatural[i]` | $B_{\text{nat}} = \sum_{i=0}^{C-1} B_{\text{nat}, i}$ |
 | **6** | $B_{\text{livestock}}$ | **Domesticated Animal Biomass** | Metric Tons | `biomassFauna[i]` | $B_{\text{livestock}} = \sum_{i=0}^{C-1} B_{\text{livestock}, i}$ |
 | **7** | $W_{\text{potable}}$ | **Accessible Potable Water** | $\text{m}^3$ | `resourceWater[i]` | $W_{\text{potable}} = \sum_{i=0}^{C-1} W_{i} \cdot A_{\text{cell}, i} \cdot 10^3$ |

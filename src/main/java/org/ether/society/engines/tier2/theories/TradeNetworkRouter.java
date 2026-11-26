@@ -6,6 +6,9 @@
  */
 package org.ether.society.engines.tier2.theories;
 
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.tier1.ThermodynamicMigrationEngine;
 import org.slf4j.Logger;
@@ -23,9 +26,15 @@ import java.util.*;
  * @version 1.0.0-beta.3
  * @see TradeCorridorArbitrageHelper
  */
-public final class TradeNetworkRouter {
-    private TradeNetworkRouter() {
-        // Pure static spatial router
+public final class TradeNetworkRouter extends AbstractSimulationEngine {
+    /** Constructs the TradeNetworkRouter Tier 2 module. */
+    public TradeNetworkRouter() {
+        super("TradeNetworkRouter", "TradeNetworkRouter", EngineTier.TIER_2_CLIODYNAMIC);
+    }
+
+    @Override
+    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+        // Spatial trade corridors are evaluated on demand by the map overlay and FluxKernel
     }
 
     private static final Logger logger = LoggerFactory.getLogger(TradeNetworkRouter.class);

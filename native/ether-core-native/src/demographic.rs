@@ -39,6 +39,29 @@ pub unsafe fn process_demographics_full(
     let dt_in_years = dt_years.max(0.0001);
     let min_mass_threshold = (target_cohort_size * 0.001).clamp(0.0001, 0.05);
 
+    let c_dims = if agents.culture_dims >= 1 && agents.culture_dims <= 32 {
+        agents.culture_dims
+    } else {
+        4
+    };
+    let (annual_metabolic_gj, min_primiparity_years, gestation_energy_gj, lifespan_scale) =
+        if !world.organism_profile.is_null() {
+            let p = &*world.organism_profile;
+            (
+                p.annual_metabolic_gj.max(1e-12),
+                p.min_primiparity_years.max(1e-6),
+                p.gestation_energy_gj.max(1e-12),
+                p.lifespan_scale.max(1e-6),
+            )
+        } else {
+            (
+                HUMAN_ANNUAL_METABOLIC_ENERGY_GJ as f64,
+                HUMAN_MIN_PRIMIPARITY_AGE_YEARS as f64,
+                HUMAN_GESTATION_LACTATION_ENERGY_GJ as f64,
+                1.0_f64,
+            )
+        };
+
     let hex_ids = std::slice::from_raw_parts_mut(agents.hex_ids, a_cap);
     let mass = std::slice::from_raw_parts_mut(agents.mass, a_cap);
     let energy = std::slice::from_raw_parts_mut(agents.energy, a_cap);
@@ -46,7 +69,7 @@ pub unsafe fn process_demographics_full(
     let age = std::slice::from_raw_parts_mut(agents.age, a_cap);
     let births = std::slice::from_raw_parts_mut(agents.births, a_cap);
     let deaths = std::slice::from_raw_parts_mut(agents.deaths, a_cap);
-    let culture_slice = std::slice::from_raw_parts(agents.culture, 4 * a_cap);
+    let culture_slice = std::slice::from_raw_parts(agents.culture, c_dims * a_cap);
 
     let food = std::slice::from_raw_parts_mut(world.food_resource, w_cap);
     let human_pop = std::slice::from_raw_parts_mut(world.human_population, w_cap);
@@ -101,7 +124,7 @@ pub unsafe fn process_demographics_full(
             let fish_bio = if !bio_fish.is_empty() { bio_fish[h] } else { 0.0 };
             let demand_trophic_factor = 1.0 + 0.15 * (cap_per_cap / 120.0).tanh();
             let demand = ((pop_h as f64)
-                * (HUMAN_ANNUAL_METABOLIC_ENERGY_GJ as f64)
+                * annual_metabolic_gj
                 * demand_trophic_factor
                 * (dt_in_years as f64)) as f32;
             cell_demand[h] = demand;
@@ -151,7 +174,7 @@ pub unsafe fn process_demographics_full(
         let trophic_ratio = compute_smooth_trophic_ratio(cap_per_cap, fish_bio);
 
         let food_satisfaction = cell_satisfaction[h];
-        let base_metabolic_need = (m as f64) * (HUMAN_ANNUAL_METABOLIC_ENERGY_GJ as f64) * (dt_in_years as f64);
+        let base_metabolic_need = (m as f64) * annual_metabolic_gj * (dt_in_years as f64);
         let food_taken = (base_metabolic_need * trophic_ratio * (food_satisfaction as f64)) as f32;
 
         let forager_weight = 1.0 - (cap_per_cap / 20.0).tanh();
@@ -159,22 +182,23 @@ pub unsafe fn process_demographics_full(
             capital[h] += ((food_taken as f64) * (CARCASS_MATERIAL_BYPRODUCT_FRACTION as f64) * 0.05 * forager_weight) as f32;
         }
 
-        // Smooth C^infty somatic energy store update
+        // Smooth C^infty somatic energy store update scaled by dt monthly equivalent
+        let dt_monthly_equivalent = (dt_in_years as f64) * 12.0;
         let sat_gate = sigmoid(food_satisfaction as f64, 0.80, 0.05);
         let energy_gain = 5.0 * (food_satisfaction as f64);
         let energy_loss = 15.0 * (1.0 - food_satisfaction as f64);
-        let delta_energy = sat_gate * energy_gain - (1.0 - sat_gate) * energy_loss;
+        let delta_energy = (sat_gate * energy_gain - (1.0 - sat_gate) * energy_loss) * dt_monthly_equivalent;
         energy[i] = ((energy[i] as f64 + delta_energy) as f32).clamp(0.0, 100.0);
 
-        // 1. Smooth Primiparity & Fecundity Curve
-        let kinship_natalism = culture_slice[a_cap + i].clamp(0.0, 1.0);
-        let delayed_marriage_shift = 6.0 * (cap_per_cap / 450.0).tanh();
-        let primiparity_age = (HUMAN_MIN_PRIMIPARITY_AGE_YEARS as f64)
-            + 10.0 * (1.0 - kinship_natalism as f64)
+        // 1. Smooth Primiparity & Fecundity Curve (allometric lifespan_scale alignment)
+        let kinship_natalism = if c_dims > 1 { culture_slice[a_cap + i].clamp(0.0, 1.0) } else { 0.5_f32 };
+        let delayed_marriage_shift = 6.0 * lifespan_scale * (cap_per_cap / 450.0).tanh();
+        let primiparity_age = min_primiparity_years
+            + 10.0 * lifespan_scale * (1.0 - kinship_natalism as f64)
             + delayed_marriage_shift;
-        let peak_fertility_age = primiparity_age + 8.0;
-        let maturity_gate = sigmoid(age_years as f64, primiparity_age - 1.0, 0.75);
-        let age_diff = (age_years as f64) - peak_fertility_age;
+        let peak_fertility_age = primiparity_age + 8.0 * lifespan_scale;
+        let maturity_gate = sigmoid(age_years as f64, primiparity_age - 1.0 * lifespan_scale, 0.75 * lifespan_scale);
+        let age_diff = ((age_years as f64) - peak_fertility_age) / lifespan_scale;
         let fecundity_age_factor = (maturity_gate * (-(age_diff * age_diff) / 338.0).exp()) as f32;
 
         let nutritional_factor = (0.15 + 0.85 * (energy[i] / 75.0) * food_satisfaction).clamp(0.05, 1.25);
@@ -193,7 +217,7 @@ pub unsafe fn process_demographics_full(
         let boserup_intensification = 1.0 + 0.36 * (cap_per_cap / 80.0).tanh();
         let synthetic_nitrogen_boost = 1.0 + 3.5 * sigmoid(cap_per_cap, 800.0, 250.0);
         let carrying_capacity = ((annual_cell_prod * boserup_intensification * synthetic_nitrogen_boost)
-            / (HUMAN_ANNUAL_METABOLIC_ENERGY_GJ as f64))
+            / annual_metabolic_gj)
             .max(1.0);
         let malthusian_pressure = (total_cell_pop as f64) / carrying_capacity;
         let density_feedback = (1.0 / (1.0 + malthusian_pressure * malthusian_pressure)) as f32;
@@ -201,34 +225,36 @@ pub unsafe fn process_demographics_full(
         // 4. Bocquet-Appel Neolithic fertility transition from cultivated agrarian caloric share
         let agri_caloric_share = edible_agri / (renewable_flow + 1e-4);
         let neolithic_weight = sigmoid(agri_caloric_share + 0.35 * (cap_per_cap / 30.0).tanh(), 0.25, 0.10);
-        let forager_fertility = 0.026_f64;
-        let agrarian_fertility = 0.042 - 0.016 * sigmoid(cap_per_cap, 2400.0, 600.0);
+        let forager_fertility = 0.026_f64 / lifespan_scale;
+        let agrarian_fertility = (0.042 - 0.016 * sigmoid(cap_per_cap, 2400.0, 600.0)) / lifespan_scale;
         let max_bio_fertility = ((1.0 - neolithic_weight) * forager_fertility + neolithic_weight * agrarian_fertility) as f32;
         let fertility_modulation = fecundity_age_factor * nutritional_factor.min(1.0) * cultural_fertility_mult * density_feedback;
 
-        // Maximum biological fecundity bound (Wood 1994, Dynamics of Human Reproduction, max biological CBR ~ 48‰)
-        let birth_rate = (max_bio_fertility * fertility_modulation.clamp(0.0, 1.25)).min(0.048);
+        // Maximum biological fecundity bound scaled inversely by allometric generation time
+        let birth_rate = (max_bio_fertility * fertility_modulation.clamp(0.0, 1.25)).min((0.048 / lifespan_scale) as f32);
         let new_births = m * birth_rate * dt_in_years;
         births[i] = m * birth_rate;
 
         // 5. Maternal reproductive load
-        let repro_load = new_births * HUMAN_GESTATION_LACTATION_ENERGY_GJ;
+        let repro_load = new_births * (gestation_energy_gj as f32);
         let repro_food_taken = food[h].min(repro_load);
         food[h] -= repro_food_taken;
         food_consumed[h] += repro_food_taken;
 
-        // 6. Omran / Preston Sanitary Infant Mortality
+        // 6. Omran (1971) / Cutler & Miller (2005) Sanitary & Potable Water Infant Mortality
         let cell_water = water[h] as f64;
         let water_security = 0.30 + 0.70 * (cell_water / (10.0 + cell_water.max(0.0)));
-        let unsanitary_exposure = 1.0 - sigmoid(cap_per_cap, 320.0, 110.0);
-        let baseline_infant_mort = 0.018 + 0.30 * unsanitary_exposure;
+        let f_clean = (cap_per_cap / (cap_per_cap + 1200.0)) * water_security.min(1.0);
+        let k_cap_sq = cap_per_cap * cap_per_cap;
+        let f_sewer = k_cap_sq / (k_cap_sq + (2500.0 * 2500.0));
+        let unsanitary_exposure = (1.0 - f_clean).max(0.0).powf(1.5) * (1.0 - 0.5 * f_sewer);
         let nutritional_stress = 1.5 - 0.5 * (food_satisfaction as f64);
         let water_stress = 1.5 - 0.5 * water_security;
-        let mut infant_mortality_rate = ((baseline_infant_mort * nutritional_stress * water_stress).clamp(0.015, 0.55)) as f32;
+        let mut infant_mortality_rate = (((0.015 + 0.305 * unsanitary_exposure) * nutritional_stress * water_stress).clamp(0.015, 0.55)) as f32;
 
         let mut lifespan_ratio = 1.0_f32;
-        if !lifespan.is_empty() && lifespan[h] > 5.0 {
-            lifespan_ratio = (40.0 / lifespan[h]).clamp(0.40, 2.50);
+        if !lifespan.is_empty() && lifespan[h] > (5.0 * lifespan_scale) as f32 {
+            lifespan_ratio = (((40.0 * lifespan_scale) / lifespan[h] as f64).clamp(0.40, 2.50)) as f32;
             infant_mortality_rate = (infant_mortality_rate * (0.85 + 0.15 * lifespan_ratio)).clamp(0.015, 0.55);
         }
 
@@ -236,13 +262,14 @@ pub unsafe fn process_demographics_full(
         let non_surviving_infants = new_births - surviving_newborns;
 
         // 7. Gompertz-Makeham Adult & Senescent Hazard Law
-        let gompertz_senescence = (0.0001_f64 * (0.08_f64 * age_years as f64).exp()) as f32;
+        let scaled_age = (age_years as f64) / lifespan_scale;
+        let gompertz_senescence = ((0.0001_f64 / lifespan_scale) * (0.08_f64 * scaled_age).exp()) as f32;
         let acute_deficit = softplus(1.0 - food_satisfaction as f64, 20.0);
         let deficit_mortality = 0.35 * sigmoid(acute_deficit, 0.40, 0.08);
         let energy_mortality = 0.45 * (1.0 - sigmoid(energy[i] as f64, 15.0, 4.0));
-        let starvation_mortality = deficit_mortality + energy_mortality;
-        let baseline_hazard = (0.008 + 0.016 * unsanitary_exposure) * (lifespan_ratio as f64);
-        let adult_hazard_rate = (baseline_hazard + gompertz_senescence as f64 + starvation_mortality).max(0.008) as f32;
+        let starvation_mortality = (deficit_mortality + energy_mortality) / lifespan_scale;
+        let baseline_hazard = ((0.008 + 0.016 * unsanitary_exposure) / lifespan_scale) * (lifespan_ratio as f64);
+        let adult_hazard_rate = (baseline_hazard + gompertz_senescence as f64 + starvation_mortality).max(0.008 / lifespan_scale) as f32;
 
         let survival_fraction = ((-adult_hazard_rate as f64 * dt_in_years as f64).exp()) as f32;
         let adult_deaths = m * (1.0 - survival_fraction);
@@ -254,16 +281,16 @@ pub unsafe fn process_demographics_full(
         // 8. Continuous Lotka Age Renewal Dynamics
         if new_mass > min_mass_threshold {
             let senescent_deaths = adult_deaths.min(m * gompertz_senescence * dt_in_years);
-            let mean_senescent_death_age = (age_years + 10.0).max(62.0);
+            let mean_senescent_death_age = (age_years + (10.0 * lifespan_scale) as f32).max((62.0 * lifespan_scale) as f32);
             let age_sum = (age_years + dt_in_years) * m
                 - age_years * (adult_deaths - senescent_deaths).max(0.0)
                 - mean_senescent_death_age * senescent_deaths;
-            let mut updated_mean_age = (age_sum / new_mass).max(16.0);
+            let mut updated_mean_age = (age_sum / new_mass).max((16.0 * lifespan_scale) as f32);
 
-            let target_eq_age = (24.5 + 12.0 * (cap_per_cap / 450.0).tanh()) as f32;
-            let gen_turnover = (0.08 * dt_in_years).min(1.0);
+            let target_eq_age = ((24.5 + 12.0 * (cap_per_cap / 450.0).tanh()) * lifespan_scale) as f32;
+            let gen_turnover = (((0.08 / lifespan_scale) as f32) * dt_in_years).min(1.0);
             updated_mean_age += (target_eq_age - updated_mean_age) * gen_turnover;
-            age[i] = updated_mean_age.clamp(18.0, 50.0);
+            age[i] = updated_mean_age.clamp((18.0 * lifespan_scale) as f32, (50.0 * lifespan_scale) as f32);
         }
 
         human_pop[h] += mass[i];
@@ -273,7 +300,7 @@ pub unsafe fn process_demographics_full(
     }
 
     // Step 4: Dunbar Mitosis
-    process_mitosis(agents, a_cap, target_cohort_size, seed);
+    process_mitosis(agents, a_cap, c_dims, target_cohort_size, lifespan_scale, seed);
 }
 
 fn find_free_slot(hex_ids: &[i32], capacity: usize, hint: &mut usize) -> Option<usize> {
@@ -292,14 +319,14 @@ fn find_free_slot(hex_ids: &[i32], capacity: usize, hint: &mut usize) -> Option<
     None
 }
 
-unsafe fn process_mitosis(agents: &mut AgentBufferRaw, capacity: usize, target_cohort_size: f32, seed: i64) {
+unsafe fn process_mitosis(agents: &mut AgentBufferRaw, capacity: usize, culture_dims: usize, target_cohort_size: f32, lifespan_scale: f64, seed: i64) {
     let mass = std::slice::from_raw_parts_mut(agents.mass, capacity);
     let energy = std::slice::from_raw_parts_mut(agents.energy, capacity);
     let hex_ids = std::slice::from_raw_parts_mut(agents.hex_ids, capacity);
     let h3_indexes = std::slice::from_raw_parts_mut(agents.h3_indexes, capacity);
     let age = std::slice::from_raw_parts_mut(agents.age, capacity);
     let gen = std::slice::from_raw_parts_mut(agents.generation_count, capacity);
-    let culture = std::slice::from_raw_parts_mut(agents.culture, 4 * capacity);
+    let culture = std::slice::from_raw_parts_mut(agents.culture, culture_dims * capacity);
     let genetics = std::slice::from_raw_parts_mut(agents.genetics, 4 * capacity);
 
     let mut hint = 0;
@@ -319,12 +346,14 @@ unsafe fn process_mitosis(agents: &mut AgentBufferRaw, capacity: usize, target_c
                 gen[new_slot] = gen[i] + 1;
 
                 let age_rnd = crate::prng::next_double(seed, 0, new_slot as i64, 403) as f32;
-                age[new_slot] = (18.0 + age_rnd * 8.0).max(16.0);
+                age[new_slot] = ((18.0 + age_rnd as f64 * 8.0).max(16.0) * lifespan_scale) as f32;
 
                 for d in 0..4 {
                     let mut_g = ((crate::prng::next_double(seed, 0, new_slot as i64, 405 + d as i64) - 0.5) as f32) * 0.05_f32;
-                    let mut_c = ((crate::prng::next_double(seed, 0, new_slot as i64, 415 + d as i64) - 0.5) as f32) * 0.05_f32;
                     genetics[d * capacity + new_slot] = (genetics[d * capacity + i] + mut_g).clamp(0.0, 1.0);
+                }
+                for d in 0..culture_dims {
+                    let mut_c = ((crate::prng::next_double(seed, 0, new_slot as i64, 415 + d as i64) - 0.5) as f32) * 0.05_f32;
                     culture[d * capacity + new_slot] = (culture[d * capacity + i] + mut_c).clamp(0.0, 1.0);
                 }
             } else {

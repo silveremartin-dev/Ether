@@ -91,7 +91,8 @@ public class HistoricalBestFitAndTypeBSuiteTest {
         buf.getHumanPopulation()[0] = 10000.0f;
         double initialCapital = 280.0 * 10000.0;
         buf.getResourceCapital()[0] = (float) initialCapital;
-        buf.getEnergyFoodConsumed()[0] = 500.0f;
+        buf.getEnergyFoodConsumed()[0] = 35_000.0f; // 3.5 GJ/person annual basal metabolic flux
+        buf.getEnergyFire()[0] = 50_000.0f; // Exosomatic biomass thermal harnessing
 
         new LenskiPureEngine().tick(buf, 1.0, 1.0);
         assertTrue(buf.getGiniIndex()[0] > 0.0f,

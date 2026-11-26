@@ -71,7 +71,7 @@ public class LongDurationEnduranceIntegrationTest extends AbstractCliodynamicBen
         CliodynamicAssertions.assertPhysicalIntegrity(world);
         assertEquals(initialCapacity, world.getCapacity(), "Buffer capacity must remain invariant with zero allocation leaks.");
         assertTrue(finalPop >= initialPop * 0.1, "Population must not suffer total unforced extinction across 5 millennia.");
-        assertTrue(finalPop <= initialPop * 100.0, "Ecological ceiling must prevent unbounded Malthusian explosion.");
+        assertTrue(finalPop <= initialPop * 100.0, "Ecological ceiling must prevent unbounded Malthusian explosion, was: " + finalPop);
         assertEquals(0, conservationGuard.getViolationCount(), "Zero physical invariant violations over 5,000 years.");
     }
 

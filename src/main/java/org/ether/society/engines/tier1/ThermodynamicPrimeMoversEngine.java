@@ -100,8 +100,10 @@ public class ThermodynamicPrimeMoversEngine extends AbstractSimulationEngine {
             thermalEnginePower = 2500.0 * carnotEfficiency * availableFuelEnthalpy;
         }
 
-        double totalMechanicalWatts = somaticPower + animalPower + millPower + thermalEnginePower;
-        double curFire = buffer.getEnergyFire()[i];
-        acc.dEnergyFire += (float) ((totalMechanicalWatts - curFire) * Math.min(1.0, dtYears));
+        // Extensive cellular exosomatic flux target in GJ/yr (somatic food resides in energyFoodConsumed)
+        double exosomaticWattsPerCapita = animalPower + millPower + thermalEnginePower;
+        double targetExosomaticGJPerYr = org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(pop * exosomaticWattsPerCapita);
+        double curFireGJPerYr = buffer.getEnergyFire()[i];
+        acc.dEnergyFire += (float) ((targetExosomaticGJPerYr - curFireGJPerYr) * Math.min(1.0, dtYears));
     }
 }

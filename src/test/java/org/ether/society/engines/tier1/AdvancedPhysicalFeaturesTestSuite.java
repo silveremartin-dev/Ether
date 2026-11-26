@@ -101,6 +101,7 @@ public class AdvancedPhysicalFeaturesTestSuite {
 
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(testCells.size());
         org.ether.society.data.DODDataGenerator.populateWorldBuffer(testCells, buf, false);
+        buf.getTemperature()[0] = 2.0f; // Cold boreal/steppe permafrost regime (<= 4.0°C)
         double initialSoc = buf.getSoilOrganicCarbon()[0];
         new TrophicEcosystemEngine().tick(buf, 1.0, 12.0);
 

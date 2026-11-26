@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @Tag("academic")
 @Tag("scientific")
-@Tag("benchmark")
 public class MacroFutureAndExoFalsificationTest {
 
     public record SimpleBenchmarkItem(String name, String runId) implements ScenarioBenchmarkItem {

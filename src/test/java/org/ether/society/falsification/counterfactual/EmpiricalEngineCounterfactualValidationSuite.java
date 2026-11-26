@@ -242,14 +242,19 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             for (int s = 0; s < MONTE_CARLO_SEEDS.length; s++) {
                 long seed = MONTE_CARLO_SEEDS[s];
                 List<H3Cell> cells = generator.generatePlanet(createEarthPreset(seed));
-                for (H3Cell c : cells) {
-                    c.setPopulation(1_000);
-                    c.setGiniIndex(0.20); // High prosociality / low inequality
-                    c.setResourceCapital(200.0);
+                org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+                for (int i = 0; i < cells.size(); i++) {
+                    buf.getHumanPopulation()[i] = 1_000.0f;
+                    buf.getGiniIndex()[i] = 0.20f; // High prosociality / low inequality
+                    buf.getResourceCapital()[i] = 200.0f;
                 }
 
-                engine.process(cells, 1.0);
-                capitalCooperative[s] = cells.stream().mapToDouble(c -> c.getResourceCapital() != null ? c.getResourceCapital() : 0.0).average().orElse(200.0);
+                engine.tick(buf, 1.0, 12.0);
+                double sum = 0.0;
+                for (int i = 0; i < buf.getCapacity(); i++) {
+                    sum += buf.getResourceCapital()[i];
+                }
+                capitalCooperative[s] = buf.getCapacity() > 0 ? sum / buf.getCapacity() : 200.0;
             }
 
             double meanCap = Arrays.stream(capitalCooperative).average().orElse(0.0);
@@ -272,16 +277,21 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             ProceduralGenerator generator = new ProceduralGenerator();
 
             List<H3Cell> cells = generator.generatePlanet(createEarthPreset(101L));
-            for (H3Cell c : cells) {
-                c.setPopulation(500);
-                c.setGiniIndex(0.70); // Severe social polarization
-                c.setMovementFriction(1.0);
+            org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
+            for (int i = 0; i < cells.size(); i++) {
+                buf.getHumanPopulation()[i] = 500.0f;
+                buf.getGiniIndex()[i] = 0.70f; // Severe social polarization
+                buf.getFluxPressure()[i] = 0.0f;
             }
 
-            engine.process(cells, 10.0);
+            engine.tick(buf, 10.0, 120.0);
 
-            double avgFriction = cells.stream().mapToDouble(c -> c.getMovementFriction() != null ? c.getMovementFriction() : 1.0).average().orElse(1.0);
-            assertTrue(avgFriction > 1.0, "High internal social polarization must elevate movement friction and territorial border tension");
+            double sumFriction = 0.0;
+            for (int i = 0; i < buf.getCapacity(); i++) {
+                sumFriction += buf.getFluxPressure()[i];
+            }
+            double avgFriction = buf.getCapacity() > 0 ? sumFriction / buf.getCapacity() : 0.0;
+            assertTrue(avgFriction > 0.0, "High internal social polarization must elevate movement flux friction and territorial border tension");
         }
     }
 

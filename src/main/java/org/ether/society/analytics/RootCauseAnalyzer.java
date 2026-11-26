@@ -279,8 +279,9 @@ public class RootCauseAnalyzer {
             explanation.append(org.ether.society.i18n.I18n.getOrDefault("analytics.divergence.origin_differences", "Primary origin of discrepancies: ")).append(String.join(", ", keyDifferences)).append(". ");
         }
 
-        MetricDelta popDelta = deltas.stream().filter(d -> "population".equalsIgnoreCase(d.getMetricName())
-                || "worldPopulation".equalsIgnoreCase(d.getMetricName())).findFirst().orElse(null);
+        MetricDelta popDelta = findMetricDelta(deltas,
+                org.ether.society.i18n.I18n.getOrDefault("metric.population", "Total Population"),
+                "population", "worldPopulation", "Total Population");
         if (popDelta != null) {
             explanation.append(String.format(org.ether.society.i18n.I18n.getOrDefault("analytics.divergence.final_impact_fmt", "Final impact at Year %d: %+.1f%% on population."), finalYear, popDelta.getPercentageChange()));
         }
@@ -291,17 +292,30 @@ public class RootCauseAnalyzer {
         return new ComparisonResult(baseline, target, divergenceYear, deltas, keyDifferences, explanation.toString(), proposedCorrections);
     }
 
+    private static MetricDelta findMetricDelta(List<MetricDelta> deltas, String... names) {
+        for (MetricDelta d : deltas) {
+            if (d.getMetricName() == null) continue;
+            for (String candidate : names) {
+                if (candidate != null && candidate.equalsIgnoreCase(d.getMetricName())) {
+                    return d;
+                }
+            }
+        }
+        return null;
+    }
+
     private List<ParameterCorrection> generateParameterCorrections(SimulationRunRecord baseline, SimulationRunRecord target,
                                                                    List<MetricDelta> deltas, int divergenceYear) {
         List<ParameterCorrection> corrections = new ArrayList<>();
-        MetricDelta popDelta = deltas.stream().filter(d -> "population".equalsIgnoreCase(d.getMetricName())
-                || "worldPopulation".equalsIgnoreCase(d.getMetricName())).findFirst().orElse(null);
-        MetricDelta techDelta = deltas.stream().filter(d -> "techLevel".equalsIgnoreCase(d.getMetricName())
-                || "avgTechLevel".equalsIgnoreCase(d.getMetricName())
-                || "builtCapital".equalsIgnoreCase(d.getMetricName())).findFirst().orElse(null);
-        MetricDelta stabDelta = deltas.stream().filter(d -> "institutionalStability".equalsIgnoreCase(d.getMetricName())
-                || "stateStabilityIndex".equalsIgnoreCase(d.getMetricName())
-                || "asabiyyah".equalsIgnoreCase(d.getMetricName())).findFirst().orElse(null);
+        MetricDelta popDelta = findMetricDelta(deltas,
+                org.ether.society.i18n.I18n.getOrDefault("metric.population", "Total Population"),
+                "population", "worldPopulation", "Total Population");
+        MetricDelta techDelta = findMetricDelta(deltas,
+                org.ether.society.i18n.I18n.getOrDefault("metric.avg_tech", "Average Technology Level"),
+                "techLevel", "avgTechLevel", "builtCapital", "Average Technology Level");
+        MetricDelta stabDelta = findMetricDelta(deltas,
+                org.ether.society.i18n.I18n.getOrDefault("metric.stability", "Stability Index (Asabiyyah)"),
+                "institutionalStability", "stateStabilityIndex", "asabiyyah", "Stability Index (Asabiyyah)");
 
         if (popDelta != null && Math.abs(popDelta.getPercentageChange()) >= 5.0) {
             double changePct = popDelta.getPercentageChange();

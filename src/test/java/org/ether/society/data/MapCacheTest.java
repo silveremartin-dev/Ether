@@ -1,9 +1,11 @@
 package org.ether.society.data;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Tag("data-audit")
 public class MapCacheTest {
 
     @Test

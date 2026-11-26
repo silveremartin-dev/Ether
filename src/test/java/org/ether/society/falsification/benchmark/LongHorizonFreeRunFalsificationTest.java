@@ -46,7 +46,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @Tag("scientific")
 @Tag("falsification")
-@Tag("benchmark")
 @Tag("pillar6")
 public class LongHorizonFreeRunFalsificationTest {
 

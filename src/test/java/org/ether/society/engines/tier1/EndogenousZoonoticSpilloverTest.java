@@ -56,8 +56,10 @@ public class EndogenousZoonoticSpilloverTest {
         buf.getHumanPopulation()[0] = (float) (300);
         buf.getBiomassLivestock()[0] = 0.0f;
         buf.getFoodResource()[0] = 50_000.0f;
+        buf.getWaterResource()[0] = 5000.0f;
+        buf.getFreshwaterAquifer()[0] = 500.0f;
         buf.getLifespan()[0] = 45.0f;
-        buf.getResourceCapital()[0] = 500.0f;
+        buf.getResourceCapital()[0] = 60_000.0f;
 
         BioMolecularEpidemiologyEngine engine = new BioMolecularEpidemiologyEngine();
         for (int m = 0; m < 36; m++) {

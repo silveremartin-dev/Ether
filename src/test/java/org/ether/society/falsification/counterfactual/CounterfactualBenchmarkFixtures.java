@@ -44,6 +44,7 @@ public final class CounterfactualBenchmarkFixtures {
             buf.getFoodResource()[i] = (float) c.getFoodResourceOr(0.0);
             buf.getWaterResource()[i] = (float) c.getWaterResourceOr(0.0);
             buf.getWoodResource()[i] = (float) c.getWoodResourceOr(0.0);
+            buf.getMetalResource()[i] = (float) c.getResourceMetalOr(0.0);
             buf.getResourceCoal()[i] = (float) c.getResourceCoalOr(0.0);
             buf.getResourceOil()[i] = (float) c.getResourceOilOr(0.0);
             buf.getBiomassAgriculture()[i] = (float) c.getBiomassAgricultureOr(0.0);
@@ -70,6 +71,7 @@ public final class CounterfactualBenchmarkFixtures {
             c.setFoodResource((double) buf.getFoodResource()[i]);
             c.setWaterResource((double) buf.getWaterResource()[i]);
             c.setWoodResource((double) buf.getWoodResource()[i]);
+            c.setResourceMetal((double) buf.getMetalResource()[i]);
             c.setBiomassAgriculture((double) buf.getBiomassAgriculture()[i]);
             c.setBiomassLivestock((double) buf.getBiomassLivestock()[i]);
             c.setBiomassNatural((double) buf.getBiomassNatural()[i]);
@@ -713,7 +715,7 @@ public final class CounterfactualBenchmarkFixtures {
                 c.setPopulation(1_000);
                 c.setFoodResource(1_500.0); // 1.5 food/cap > 1.2 target
                 c.setResourceCapital(50_000.0);
-                c.setResourceWork(80.0);
+                c.setMovementFriction(1.0);
             }
 
             List<H3Cell> controlGrid = cloneCellGrid(initialCells);
@@ -725,8 +727,8 @@ public final class CounterfactualBenchmarkFixtures {
                 runDoD(new WienerCyberneticHomeostasisEngine(), treatmentGrid, deltaYears);
             }
 
-            controlWork[s] = controlGrid.stream().mapToDouble(c -> c.getResourceWork() != null ? c.getResourceWork() : 0.0).average().orElse(0.0);
-            treatmentWork[s] = treatmentGrid.stream().mapToDouble(c -> c.getResourceWork() != null ? c.getResourceWork() : 0.0).average().orElse(0.0);
+            controlWork[s] = controlGrid.stream().mapToDouble(c -> c.getMovementFriction() != null ? c.getMovementFriction() : 1.0).average().orElse(1.0);
+            treatmentWork[s] = treatmentGrid.stream().mapToDouble(c -> c.getMovementFriction() != null ? c.getMovementFriction() : 1.0).average().orElse(1.0);
         }
 
         double d = calculateCohensD(controlWork, treatmentWork);

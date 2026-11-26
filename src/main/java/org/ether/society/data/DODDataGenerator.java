@@ -52,7 +52,7 @@ public class DODDataGenerator {
         for (int i = 0; i < cells.size() && i < buffer.getCapacity(); i++) {
             H3Cell cell = cells.get(i);
 
-            buffer.getH3Indexes()[i] = cell.getH3Index();
+            buffer.getH3Indexes()[i] = cell.getH3Index() != null ? cell.getH3Index() : 0L;
             buffer.getElevation()[i] = cell.getElevation() != null ? cell.getElevation().floatValue() : 0.0f;
             buffer.getTemperature()[i] = cell.getTemperature() != null ? cell.getTemperature().floatValue() : 15.0f;
             buffer.getRainfall()[i] = cell.getRainfall() != null ? cell.getRainfall().floatValue() : 500.0f;
@@ -96,6 +96,7 @@ public class DODDataGenerator {
             buffer.getSoilDepth()[i] = cell.getSoilDepth() != null ? cell.getSoilDepth().floatValue() : 1.0f;
             buffer.getSoilOrganicCarbon()[i] = cell.getSoilOrganicCarbon() != null ? cell.getSoilOrganicCarbon().floatValue() : 25.0f;
             buffer.getCommercialFluxVolume()[i] = cell.getTradeNetwork() != null ? cell.getTradeNetwork().floatValue() : 0.0f;
+            buffer.getFluxPressure()[i] = cell.getMovementFriction() != null ? cell.getMovementFriction().floatValue() : 1.0f;
             buffer.getPollutionLevel()[i] = cell.getPollutionLevel() != null ? cell.getPollutionLevel().floatValue() : 0.0f;
         }
 
@@ -120,6 +121,43 @@ public class DODDataGenerator {
         }
 
         buffer.invalidatePartitionIndices();
+    }
+
+    /**
+     * Synchronizes updated physical observables from a {@link WorldBuffer} back into
+     * its corresponding {@link H3Cell} domain objects after DoD kernel execution.
+     *
+     * @param buffer source contiguous world state buffer
+     * @param cells  destination ordered list of H3 hexagonal cells
+     */
+    public static void syncBufferToCells(WorldBuffer buffer, List<H3Cell> cells) {
+        if (buffer == null || cells == null || cells.isEmpty()) return;
+        int limit = Math.min(cells.size(), buffer.getCapacity());
+        for (int i = 0; i < limit; i++) {
+            H3Cell cell = cells.get(i);
+            if (cell == null) continue;
+            float pop = buffer.getHumanPopulation()[i];
+            cell.setPopulation(Math.max(0, Math.round(pop)));
+            cell.setHumanPopulation((double) pop);
+            cell.setFoodResource((double) buffer.getFoodResource()[i]);
+            cell.setWaterResource((double) buffer.getWaterResource()[i]);
+            cell.setWoodResource((double) buffer.getWoodResource()[i]);
+            cell.setGiniIndex((double) buffer.getGiniIndex()[i]);
+            if (buffer.getResourceCapital() != null) cell.setResourceCapital((double) buffer.getResourceCapital()[i]);
+            if (buffer.getMetalResource() != null) cell.setResourceMetal((double) buffer.getMetalResource()[i]);
+            if (buffer.getClayResource() != null) cell.setResourceClay((double) buffer.getClayResource()[i]);
+            if (buffer.getBiomassAgriculture() != null) cell.setBiomassAgriculture((double) buffer.getBiomassAgriculture()[i]);
+            if (buffer.getBiomassNatural() != null) cell.setBiomassNatural((double) buffer.getBiomassNatural()[i]);
+            if (buffer.getBiomassLivestock() != null) cell.setBiomassLivestock((double) buffer.getBiomassLivestock()[i]);
+            if (buffer.getBiomassFish() != null) cell.setBiomassFish((double) buffer.getBiomassFish()[i]);
+            if (buffer.getEnergyFire() != null) cell.setEnergyFire((double) buffer.getEnergyFire()[i]);
+            if (buffer.getEnergyWind() != null) cell.setEnergyWind((double) buffer.getEnergyWind()[i]);
+            if (buffer.getEnergySolar() != null) cell.setEnergySolar((double) buffer.getEnergySolar()[i]);
+            if (buffer.getEnergyFoodConsumed() != null) cell.setEnergyFoodConsumed((double) buffer.getEnergyFoodConsumed()[i]);
+            if (buffer.getFluxPressure() != null) cell.setMovementFriction((double) buffer.getFluxPressure()[i]);
+            if (buffer.getCommercialFluxVolume() != null) cell.setTradeNetwork((double) buffer.getCommercialFluxVolume()[i]);
+            if (buffer.getPollutionLevel() != null) cell.setPollutionLevel((double) buffer.getPollutionLevel()[i]);
+        }
     }
 
     /**
@@ -164,7 +202,9 @@ public class DODDataGenerator {
             // Smooth C^infty initial crude birth rate transition:
             // Forager ~0.028 -> Neolithic sedentary cereal weaning ~0.038 -> High-capital modern demographic transition ~0.018
             double neolithicWeight = SmoothMath.sigmoid(agriShare, 0.25, 0.10);
-            double modernTransitionWeight = SmoothMath.sigmoid(capPerCap, 1200.0, 400.0);
+            double rawModSig = SmoothMath.sigmoid(capPerCap, 1200.0, 150.0);
+            double zeroModSig = SmoothMath.sigmoid(0.0, 1200.0, 150.0);
+            double modernTransitionWeight = Math.clamp((rawModSig - zeroModSig) / (1.0 - zeroModSig), 0.0, 1.0);
             float initialAnnualCbr = (float) ((0.028 * (1.0 - neolithicWeight) + 0.038 * neolithicWeight)
                     * (1.0 - 0.52 * modernTransitionWeight));
 

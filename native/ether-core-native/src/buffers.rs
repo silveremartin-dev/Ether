@@ -1,7 +1,18 @@
 use std::ffi::c_float;
 
+/// C-ABI Multi-Taxon Allometric Biophysical Profile synchronized with Java `OrganismBiophysicalProfile`.
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+pub struct OrganismProfileRaw {
+    pub basal_power_watts: f64,
+    pub annual_metabolic_gj: f64,
+    pub min_primiparity_years: f64,
+    pub gestation_energy_gj: f64,
+    pub lifespan_scale: f64,
+}
+
 /// Zero-Copy Data-Oriented World Grid Buffer (AOSOA/SoA layout).
-/// Strictly aligned to `NativeWorldArena` (248 bytes, AGENTS.md §10.1: zero technology state).
+/// Strictly aligned to `NativeWorldArena` (320 bytes, AGENTS.md §10.1: zero technology state).
 #[repr(C)]
 pub struct WorldBufferRaw {
     pub capacity: usize,
@@ -59,12 +70,15 @@ pub struct WorldBufferRaw {
     pub soil_depth: *mut c_float,
     pub soil_organic_carbon: *mut c_float,
     pub commercial_flux_volume: *mut c_float,
+
+    // Multi-taxon organism profile (offset 312)
+    pub organism_profile: *const OrganismProfileRaw,
 }
 
 unsafe impl Send for WorldBufferRaw {}
 unsafe impl Sync for WorldBufferRaw {}
 
-/// High-Performance Demographic Agent Buffer (Cohorts SoA layout, 104 bytes C-ABI).
+/// High-Performance Demographic Agent Buffer (Cohorts SoA layout, 112 bytes C-ABI).
 #[repr(C)]
 pub struct AgentBufferRaw {
     pub capacity: usize,
@@ -81,9 +95,10 @@ pub struct AgentBufferRaw {
     pub deaths: *mut c_float,
     pub generation_count: *mut i32,
 
-    // 4-Dimensional Genetic & Cultural Tensors (flattened [4 * capacity])
+    // Multi-dimensional Genetic (4) & Cultural (9..32) Tensors
     pub genetics: *mut c_float,
     pub culture: *mut c_float,
+    pub culture_dims: usize,
 }
 
 unsafe impl Send for AgentBufferRaw {}

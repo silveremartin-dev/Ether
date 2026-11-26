@@ -148,11 +148,11 @@ public class Tier1UntestedEnginesComprehensiveTest {
     }
 
     @Test
-    @DisplayName("CrustalGeothermalEngine: deep mining cutoff scales with technological era")
+    @DisplayName("CrustalGeothermalEngine: deep mining cutoff scales with mechanical power and shaft capital")
     void testCrustalGeothermalEngine() {
-        double depthAncient = CrustalGeothermalEngine.calculateMaxMiningDepthMeters(1.0);
-        double depthIndustrial = CrustalGeothermalEngine.calculateMaxMiningDepthMeters(4.0);
-        double depthModern = CrustalGeothermalEngine.calculateMaxMiningDepthMeters(8.0);
+        double depthAncient = CrustalGeothermalEngine.calculateMaxMiningDepthMeters(100.0, 1000.0);
+        double depthIndustrial = CrustalGeothermalEngine.calculateMaxMiningDepthMeters(400.0, 4000.0);
+        double depthModern = CrustalGeothermalEngine.calculateMaxMiningDepthMeters(800.0, 8000.0);
 
         assertTrue(depthAncient >= 50.0 && depthAncient < 500.0, "Ancient surface mining should be bounded to shallow depths");
         assertTrue(depthIndustrial > depthAncient && depthIndustrial < 3000.0, "Industrial mining should reach intermediate depths");

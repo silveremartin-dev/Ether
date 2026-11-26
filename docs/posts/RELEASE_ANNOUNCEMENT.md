@@ -17,7 +17,7 @@
 * **31 Cliodynamic Debate Falsification Battery**: Systematic econometric confrontation of competing sociological paradigms (Boserup vs. Malthus, Turchin vs. Pinker, Smil vs. Nordhaus, Ostrom vs. Hardin, Acemoglu vs. Geography, Scott Grain States, Henrich Cultural Drift).
 
 ### 2. Autonomous White Paper & Academic Manuscript Synchronization
-* **Automated White Paper Recompilation**: `WHITE_PAPER_45_SCENARIOS_HISTORICAL_BENCHMARK.md` generated dynamically from 51 real simulation saves, complete with multi-variate gap matrices and per-scenario remediation audits.
+* **Automated White Paper Recompilation**: `WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md` generated dynamically from 50 real simulation saves across all 51 canonical presets, complete with multi-variate gap matrices and per-scenario remediation audits.
 * **Academic Monograph Enrichment**: International manuscript `ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md` enriched with Table 7.4.A1 (Historical Validation Matrix) and Table 7.4.A3 (Prospective & Exoplanetary Matrix), synchronized across all 4 OS distribution trees.
 
 ### 3. Complete Javadoc API Documentation Refresh

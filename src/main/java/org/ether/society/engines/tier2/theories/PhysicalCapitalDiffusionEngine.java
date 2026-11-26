@@ -88,7 +88,7 @@ public class PhysicalCapitalDiffusionEngine implements SimulationEngineModule {
             float metal = metalArr != null ? metalArr[i] : 0.0f;
 
             double organicDemand = pop * 0.15;
-            double organicScarcityStress = SmoothMath.smoothClamp(1.0 - (wood / Math.max(1.0, organicDemand)), 0.0, 1.0, 0.05);
+            double organicScarcityStress = SmoothMath.smoothClamp(1.0 - (wood / Math.max(1.0, organicDemand)), 0.0, 1.0, 20.0);
 
             double potMetal = (metal > 0.0) ? (metal / (metal + 15.0)) : 0.0;
             double deltaK = 5.0 * organicScarcityStress * potMetal * Math.max(0.0001, dtYears);

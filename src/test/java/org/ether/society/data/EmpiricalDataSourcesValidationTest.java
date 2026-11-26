@@ -149,9 +149,12 @@ public class EmpiricalDataSourcesValidationTest {
     public void testZeroFallbackException() {
         org.ether.society.model.Scenario scenario = new org.ether.society.model.Scenario();
         scenario.setUseRealEarthData(true);
-        // Year -99999 has no empirical HYDE 3.4 file -> system must throw IllegalStateException under Zero Fallback Policy
+        // Pre-hominin year -9999999 and missing HYDE epoch -99999 must throw IllegalStateException under Zero Fallback Policy
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            HistoricalMapGenerator.rasterizeDensityMapForYear("RIVER_VALLEYS", scenario, -99999);
+            DataDownloaderService.downloadHydeDataset(-99999);
+        }, "Zero Fallback Policy must reject missing empirical HYDE dataset for -99999");
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            HistoricalMapGenerator.rasterizeDensityMapForYear("RIVER_VALLEYS", scenario, -9999999L);
         }, "Zero Fallback Policy must throw IllegalStateException when empirical data is missing");
         logger.info("Zero Fallback Policy Constraint Validated Successfully.");
     }

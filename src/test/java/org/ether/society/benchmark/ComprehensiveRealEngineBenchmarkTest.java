@@ -5,6 +5,7 @@
 package org.ether.society.benchmark;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
  */
+@Tag("benchmark")
 public class ComprehensiveRealEngineBenchmarkTest {
     private static final Logger logger = LoggerFactory.getLogger(ComprehensiveRealEngineBenchmarkTest.class);
 

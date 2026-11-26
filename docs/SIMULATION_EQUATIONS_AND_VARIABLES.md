@@ -1907,8 +1907,9 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
 * **Academic Literature Reference**: Bairoch, P. (1988). *Cities and Economic Development*. University of Chicago Press; de Vries, J. (1984). *European Urbanization: 1500-1800*. Harvard University Press.
 * **Output Unit**: Percentage of total population [$\%$].
 * **Governing Equation**:
-  * Direct State Observable (`DemographicMetricsCalculator.java`):
-    $$U = \frac{\sum_{i \in \text{nucleated}} N_i}{N_{\text{total}}} \times 100.0, \quad \text{where } i \in \text{nucleated} \iff (N_i \ge 5000 \text{ or } \rho_i \ge 150\text{ hab/km}^2)$$
+  * Continuous Cellular Nucleation (`DemographicMetricsHelper.computeCellUrbanFraction`): Combines spatial nucleation $\max(\sigma(N_i, 5000, 1500), \sigma(\rho_i, 12, 4))$ with smooth $C^1$ agrarian ($k_{\text{pc}} \approx 180\text{ kg/cap}$), commercial ($k_{\text{pc}} \approx 1200\text{ kg/cap}$), and industrial harmonic ($P_{\text{watts}} \approx 1200\text{ W/cap}, k_{\text{pc}} \approx 2800\text{ kg/cap}$) activation shares clamped in $[0.0, 0.92]$, preserving $< 0.01\%$ in Paleolithic bands and $\sim 2\text{--}6\%$ in Classical agrarian provinces.
+  * Direct Spatial Sum (`CompiledTelemetryPlan`):
+    $$U = \operatorname{clamp}\!\left(\frac{\sum_i N_i \cdot u_{\text{cell}}(N_i, k_{\text{pc},i}, P_{\text{watts},i}, A_i)}{\sum_i N_i} \times 100.0,\; 0.0,\; 95.0\right)$$
   * Analytical Closed-Form (`CliodynamicAnalyticalFormulasCatalog.java`):
     $$U(\Phi) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 0.95) \cdot 5.0) \cdot \frac{85.0}{1.0 + \exp(-(\Phi - 1.65) / 0.30)}, \; 0.0, \; 90.0 \right)$$
 

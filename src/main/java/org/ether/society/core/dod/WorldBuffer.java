@@ -63,7 +63,7 @@ public class WorldBuffer {
     private final float[] biomassLivestock;
     /** Marine and freshwater ichthyological biomass stock (\(\text{t}\)). */
     private final float[] biomassFish;
-    /** Cultivated crop standing agricultural biomass stock (\(\text{t}\)). */
+    /** Cultivated crop standing agricultural biomass stock in kilograms of dry grain equivalent (\(\text{kg}\)). */
     private final float[] biomassAgriculture;
     /** Wild uncultivated flora and fauna standing biomass stock (\(\text{t}\)). */
     private final float[] biomassNatural;
@@ -106,6 +106,8 @@ public class WorldBuffer {
     private final float[] baselineTemperature;
     /** Active simulation calendar year (used by time-dependent orbital Tier 1 forcings). */
     private double currentYear = 2000.0;
+    /** Single authoritative simulation tick counter propagated from {@link org.ether.society.core.H3SimulationEngine}. */
+    private long simulationTick = 0L;
     /** Flag set when {@link DemographicKernel} governs human food consumption and demographic flux in the full pipeline. */
     private boolean demographicKernelManaged = false;
 
@@ -221,25 +223,25 @@ public class WorldBuffer {
     /** @return marine and freshwater harvestable fish biomass stock in metric tons */
     public float[] getBiomassFish() { return biomassFish; }
 
-    /** @return cultivated crop standing agricultural biomass in metric tons */
+    /** @return cultivated crop standing agricultural biomass in kilograms of dry grain equivalent (\(\text{kg}\)) */
     public float[] getBiomassAgriculture() { return biomassAgriculture; }
 
-    /** @return primary wild vegetative ecosystem biomass stock in metric tons */
+    /** @return primary wild vegetative ecosystem biomass stock in metric tons (\(\text{t}\)) */
     public float[] getBiomassNatural() { return biomassNatural; }
 
-    /** @return kinetic wind energy flux captured in megawatt-hours (MWh) */
+    /** @return kinetic wind energy flux captured in gigajoules per year (\(\text{GJ/yr}\); \(1\text{ GJ/yr} \approx 31.688\text{ W}\)) */
     public float[] getEnergyWind() { return energyWind; }
 
-    /** @return incident solar irradiance energy flux captured in megawatt-hours (MWh) */
+    /** @return incident solar irradiance energy flux captured in gigajoules per year (\(\text{GJ/yr}\)) */
     public float[] getEnergySolar() { return energySolar; }
 
-    /** @return combustible thermal fire / furnace exergy captured in megawatt-hours (MWh) */
+    /** @return combustible thermal fire / furnace exergy captured in gigajoules per year (\(\text{GJ/yr}\)) */
     public float[] getEnergyFire() { return energyFire; }
 
-    /** @return forced somatic captive labor energy flux in megawatt-hours (MWh) */
+    /** @return forced somatic captive labor energy flux in gigajoules per year (\(\text{GJ/yr}\)) */
     public float[] getEnergySlaves() { return energySlaves; }
 
-    /** @return metabolic food energy ingested by human population in gigajoules (GJ) */
+    /** @return metabolic food energy ingested by human population in gigajoules per year (\(\text{GJ/yr}\)) */
     public float[] getEnergyFoodConsumed() { return energyFoodConsumed; }
 
     /** @return demographic cohort life expectancy at birth in years (yr) */
@@ -481,6 +483,10 @@ public class WorldBuffer {
     public double getCurrentYear() { return currentYear; }
     /** @param currentYear current simulation calendar year */
     public void setCurrentYear(double currentYear) { this.currentYear = currentYear; }
+    /** @return single authoritative simulation tick counter */
+    public long getSimulationTick() { return simulationTick; }
+    /** @param simulationTick single authoritative simulation tick counter */
+    public void setSimulationTick(long simulationTick) { this.simulationTick = simulationTick; }
     /** @return true if DemographicKernel owns human consumption/demographics in this pipeline tick */
     public boolean isDemographicKernelManaged() { return demographicKernelManaged; }
     /** @param managed flag indicating DemographicKernel manages human consumption */

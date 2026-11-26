@@ -71,6 +71,7 @@ public class FluxKernel {
         float[] prices = world.getLocalPrice();
         float[] elev = world.getElevation();
         int[][] neighbors = world.getNeighborIndexes();
+        float[] commFlux = world.getCommercialFluxVolume();
 
         if (food == null || prices == null || neighbors == null) return;
 
@@ -119,6 +120,12 @@ public class FluxKernel {
 
                 cachedDeltaFood[i] -= flux;
                 cachedDeltaFood[nIdx] += flux;
+
+                if (commFlux != null) {
+                    float absFlux = Math.abs(flux);
+                    commFlux[i] += absFlux;
+                    commFlux[nIdx] += absFlux;
+                }
             }
         }
 

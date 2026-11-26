@@ -55,11 +55,10 @@ public class DemographicKernel {
     }
 
     /**
-     * Resets internal state variables and slot hints for inter-scenario isolation.
+     * Resets internal state variables for inter-scenario isolation.
      */
     public void resetState() {
         this.baseSeed = 42L;
-        this.nextFreeSlotHint = 0;
     }
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DemographicKernel.class);
@@ -384,23 +383,25 @@ public class DemographicKernel {
         }
     }
 
-    private int nextFreeSlotHint = 0;
-
     private void processMitosis(AgentBuffer agents) {
-        this.nextFreeSlotHint = CohortMitosisProcessor.processMitosis(agents, targetCohortSize, baseSeed, nextFreeSlotHint);
+        CohortMitosisProcessor.processMitosis(agents, targetCohortSize, baseSeed, 0);
     }
 
     /**
      * Computes annual edible caloric food harvest flux (GJ/yr) from cellular agricultural grain stocks
-     * (stored in kg dry grain: $15.0\times 10^{-3}\text{ GJ/kg}$) and terrestrial/aquatic biomass pools
-     * (stored in metric tonnes: $\text{MJ/kg} \equiv \text{GJ/t}$ for wild flora, livestock fauna, and fish).
+     * (stored in kg dry grain) and terrestrial/aquatic biomass pools (stored in metric tonnes)
+     * via {@link org.ether.society.model.PhysicalUnitsHelper}.
      */
     static double computeAnnualEdibleFoodFluxGJ(
             double bioNaturalTons, double bioAgriKg, double bioLivestockTons, double bioFishTons, double wildHarvestFrac) {
-        double edibleNaturalGJ = bioNaturalTons * wildHarvestFrac * PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
-        double edibleAgriGJ = bioAgriKg * 0.70 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3);
-        double edibleFaunaGJ = bioLivestockTons * 0.15 * PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG;
-        double edibleFishGJ = bioFishTons * 0.25 * PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
+        double edibleNaturalGJ = org.ether.society.model.PhysicalUnitsHelper.biomassTonnesToEnergyGJ(
+                bioNaturalTons * wildHarvestFrac, PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG);
+        double edibleAgriGJ = org.ether.society.model.PhysicalUnitsHelper.biomassKgToEnergyGJ(
+                bioAgriKg * 0.70, PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG);
+        double edibleFaunaGJ = org.ether.society.model.PhysicalUnitsHelper.biomassTonnesToEnergyGJ(
+                bioLivestockTons * 0.15, PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG);
+        double edibleFishGJ = org.ether.society.model.PhysicalUnitsHelper.biomassTonnesToEnergyGJ(
+                bioFishTons * 0.25, PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG);
         return edibleNaturalGJ + edibleAgriGJ + edibleFaunaGJ + edibleFishGJ;
     }
 }

@@ -127,12 +127,34 @@ public final class ThermodynamicMetricsHelper {
     }
 
     /**
-     * Evaluates total domesticated anthropic and livestock biomass.
+     * Evaluates total domesticated plant and animal biomass in metric tonnes ($\text{t}$):
+     * agricultural standing crop dry matter ({@code biomassAgriculture}, stored in $\text{kg}$ and
+     * converted via $10^{-3}\text{ t/kg}$) plus domesticated livestock herds ({@code biomassLivestock}, in $\text{t}$).
      *
-     * @return domesticated biomass index
+     * @return domesticated biomass in metric tonnes ($\text{t}$)
      */
     public double getBiomassDomesticated() {
-        return engine.getTotalPopulation() * 0.15 + engine.getTotalFood() * 0.4;
+        org.ether.society.core.dod.WorldBuffer wb = engine.getWorldBuffer();
+        if (wb != null && wb.getCapacity() > 0) {
+            float[] bioAgr = wb.getBiomassAgriculture();
+            float[] bioLiv = wb.getBiomassLivestock();
+            double sumTonnes = 0.0;
+            for (int i = 0; i < wb.getCapacity(); i++) {
+                if (bioAgr != null && bioAgr[i] > 0.0f) sumTonnes += org.ether.society.model.PhysicalUnitsHelper.kgToMetricTonnes(bioAgr[i]);
+                if (bioLiv != null && bioLiv[i] > 0.0f) sumTonnes += bioLiv[i];
+            }
+            return sumTonnes;
+        }
+        java.util.List<org.ether.society.database.H3Cell> cells = engine.getCells();
+        if (cells != null && !cells.isEmpty()) {
+            double sumTonnes = 0.0;
+            for (org.ether.society.database.H3Cell c : cells) {
+                if (c == null) continue;
+                sumTonnes += org.ether.society.model.PhysicalUnitsHelper.kgToMetricTonnes(c.getBiomassAgricultureOr(0.0)) + c.getBiomassLivestockOr(0.0);
+            }
+            return sumTonnes;
+        }
+        return 0.0;
     }
 
     /**

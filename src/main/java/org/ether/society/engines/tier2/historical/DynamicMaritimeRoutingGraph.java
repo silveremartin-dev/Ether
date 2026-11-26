@@ -1,293 +1,233 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
+ * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.historical;
 
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.EngineTier;
 import org.ether.society.model.Biome;
+import org.ether.society.model.PhysicalUnitsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Dynamic Trans-Oceanic Maritime Routing Graph Engine.
- * 
- * Dynamically builds, invalidates, and updates maritime navigation routes based on:
- * 1. Dynamic Technology Evolution (Coastal Cabotage -> Oceanic Navigation -> Polar Icebreaking).
- * 2. Thermodynamic Sea Ice & Temperature Drift (Dynamic Fluid Viscosity/Ice Drag).
- * 3. Infrastructure Growth (Ports, Polders, Floating Seasteading Hubs).
- * 4. Physicalist Hydrodynamics (Great Circle Distances, Archimedes Buoyancy).
- * 
- * Replaces static/hardcoded routing tables with automated, physically adaptive graph recalculations.
+ * Dynamic Trans-Oceanic Maritime Routing Graph Engine (Data-Oriented {@link WorldBuffer}).
+ *
+ * <p>Dynamically builds, invalidates, and updates maritime navigation routes over contiguous
+ * {@link WorldBuffer} arrays based on:</p>
+ * <ol>
+ *   <li>Physical Capital &amp; Propulsion Capability (Coastal Cabotage -&gt; Oceanic Navigation -&gt; Icebreaking).</li>
+ *   <li>Thermodynamic Sea Ice &amp; Temperature Drift (Dynamic Fluid Viscosity / Ice Drag).</li>
+ *   <li>Physicalist Hydrodynamics (Great Circle Spherical Haversine Distances).</li>
+ * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.3
+ * @version 1.0.0-academic
  */
-public class DynamicMaritimeRoutingGraph {
+public class DynamicMaritimeRoutingGraph extends AbstractSimulationEngine {
     private static final Logger logger = LoggerFactory.getLogger(DynamicMaritimeRoutingGraph.class);
 
-    // Cache state for dynamic graph invalidation
-    /** Internal state: cached avg tech (double). */
-    private static double cachedAvgCapital = -1.0;
-    /** Internal state: cached node count (int). */
-    private static int cachedNodeCount = -1;
-    /** Internal state: last recalculation tick (long). */
-    private static long lastRecalculationTick = -1;
+    /** Constructs the DynamicMaritimeRoutingGraph Tier 2 engine module. */
+    public DynamicMaritimeRoutingGraph() {
+        super("DynamicMaritimeRoutingGraph", "DynamicMaritimeRoutingGraph", EngineTier.TIER_2_CLIODYNAMIC);
+    }
 
-    // Adjacency graph: Node cell ID -> Map of (Neighbor cell ID -> Path Cost)
+    @Override
+    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+        processMaritimeBuffer(buffer, PhysicalUnitsHelper.yearsToDays(dtYears));
+    }
+
+    @Override
+    public void reset() {
+        clearCache();
+    }
+
+    /** Cached mean capital per cell for graph invalidation checks. */
+    private static double cachedAvgCapital = -1.0;
+    /** Cached maritime node count for graph invalidation checks. */
+    private static int cachedNodeCount = -1;
+
+    /** Adjacency graph: Node H3 cell ID -> Map of (Neighbor H3 cell ID -> Path Cost in hours). */
     private static final Map<Long, Map<Long, Double>> routingGraph = new ConcurrentHashMap<>();
 
     /**
-     * Updates and processes trans-oceanic maritime routes across the grid.
+     * Updates and processes trans-oceanic maritime routes directly over a {@link WorldBuffer}.
+     *
+     * @param buffer       contiguous world state buffer
+     * @param timeStepDays simulation time step in days
      */
-    public static void processHybrid(List<H3Cell> cells, double timeStepDays) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        if (cells == null || cells.isEmpty()) return;
+    public static void processMaritimeBuffer(WorldBuffer buffer, double timeStepDays) {
+        if (buffer == null || buffer.getCapacity() == 0 || timeStepDays <= 0.0) return;
 
-        // Check if technological or topological state requires graph recalculation
-        if (shouldRecalculateGraph(cells)) {
-            rebuildRoutingGraph(cells);
+        if (shouldRecalculateGraph(buffer)) {
+            rebuildRoutingGraph(buffer);
         }
 
-        // Apply dynamic trade, capital acceleration, and movement friction modulation from graph state
-        applyRoutingGraphEffects(cells, timeStepDays);
+        applyRoutingGraphEffects(buffer, timeStepDays);
     }
 
     /**
      * Determines whether the routing graph should be dynamically invalidated and rebuilt.
      */
-    private static boolean shouldRecalculateGraph(List<H3Cell> cells) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        double currentAvgCapital = cells.stream()
-                .mapToDouble(c -> c.getResourceCapitalOr(0.0))
-                .average().orElse(0.0);
+    private static boolean shouldRecalculateGraph(WorldBuffer buffer) {
+        int n = buffer.getCapacity();
+        float[] capArr = buffer.getResourceCapital();
+        byte[] biomeArr = buffer.getBiomes();
+        float[] elevArr = buffer.getElevation();
 
-        int currentNodeCount = (int) cells.stream()
-                .filter(c -> c.getIsCoastal() || c.getIsPolder() || c.getHasFloatingInfrastructure() 
-                        || c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN)
-                .count();
+        double sumCap = 0.0;
+        int nodeCount = 0;
+        for (int i = 0; i < n; i++) {
+            if (capArr != null) sumCap += capArr[i];
+            if (isMaritimeCell(biomeArr, elevArr, i)) {
+                nodeCount++;
+            }
+        }
+        double currentAvgCapital = sumCap / Math.max(1, n);
 
-        // Trigger recalculation if average tech changes significantly (>0.2) or node topology changes
         boolean capitalShift = cachedAvgCapital > 0.0 && Math.abs(currentAvgCapital - cachedAvgCapital) / cachedAvgCapital > 0.15;
-        boolean topologyShift = Math.abs(currentNodeCount - cachedNodeCount) > 25;
+        boolean topologyShift = Math.abs(nodeCount - cachedNodeCount) > 25;
 
         if (capitalShift || topologyShift || routingGraph.isEmpty()) {
             cachedAvgCapital = currentAvgCapital;
-            cachedNodeCount = currentNodeCount;
+            cachedNodeCount = nodeCount;
             return true;
         }
-
         return false;
     }
 
+    private static boolean isMaritimeCell(byte[] biomeArr, float[] elevArr, int i) {
+        if (biomeArr != null) {
+            int ord = biomeArr[i] & 0xFF;
+            if (ord == Biome.OCEAN.ordinal() || ord == Biome.DEEP_OCEAN.ordinal()) {
+                return true;
+            }
+        }
+        return elevArr != null && elevArr[i] <= 0.0f;
+    }
+
     /**
-     * Rebuilds the dynamic trans-oceanic routing graph based on current physical properties.
+     * Rebuilds the dynamic trans-oceanic routing graph directly from {@link WorldBuffer} neighbor rings.
      */
-    private static void rebuildRoutingGraph(List<H3Cell> cells) {
-        logger.info(" Dynamically recalculating Trans-Oceanic Maritime Routing Graph (Avg Tech: {}, Nodes: {})...",
-                String.format("%.1f kg", cachedAvgCapital), cachedNodeCount);
+    private static void rebuildRoutingGraph(WorldBuffer buffer) {
+        logger.debug("Recalculating Trans-Oceanic Maritime Routing Graph (Avg Capital: {} kg, Nodes: {})...",
+                String.format("%.1f", cachedAvgCapital), cachedNodeCount);
 
         routingGraph.clear();
+        int n = buffer.getCapacity();
+        long[] h3Arr = buffer.getH3Indexes();
+        int[][] neighbors = buffer.getNeighborIndexes();
+        byte[] biomeArr = buffer.getBiomes();
+        float[] elevArr = buffer.getElevation();
+        float[] tempArr = buffer.getTemperature();
+        float[] capArr = buffer.getResourceCapital();
 
-        List<H3Cell> maritimeNodes = cells.stream()
-                .filter(java.util.Objects::nonNull)
-                .filter(c -> Boolean.TRUE.equals(c.getIsCoastal()) || Boolean.TRUE.equals(c.getIsPolder())
-                        || Boolean.TRUE.equals(c.getHasFloatingInfrastructure())
-                        || c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN)
-                .toList();
-
-        for (H3Cell source : maritimeNodes) {
-            if (source == null || source.getH3Index() == null) continue;
+        for (int i = 0; i < n; i++) {
+            if (!isMaritimeCell(biomeArr, elevArr, i)) continue;
+            long srcId = (h3Arr != null && h3Arr[i] != 0L) ? h3Arr[i] : (long) i + 1L;
             Map<Long, Double> neighborCosts = new HashMap<>();
 
-            // Iterate over spatial cell domains and apply localized cellular state transformations
-            for (H3Cell target : maritimeNodes) {
-                if (target == null || target.getH3Index() == null) continue;
-                if (source.getH3Index().equals(target.getH3Index())) continue;
-                if (Math.abs(source.getLatitude() - target.getLatitude()) * 111.32 > 3500.0) continue;
-
-                double distKm = calculateGreatCircleDistance(
-                        source.getLatitude(), source.getLongitude(),
-                        target.getLatitude(), target.getLongitude()
-                );
-
-                // Physical Ocean Hydrodynamic Model:
-                // Calculate significant wave height (Hs) along route from bathymetry & atmospheric storm turbulence,
-                // and compare with vessel fleet physical hull wave clearance tolerance derived from capital density (K) & tech.
-                double sElev = source.getElevationOr(0.0);
-                double tElev = target.getElevationOr(0.0);
-                double midElevation = (sElev + tElev) / 2.0;
-                double midLatitude = (source.getLatitude() + target.getLatitude()) / 2.0;
-
-                double sCap = source.getResourceCapitalOr(0.0);
-                double tCap = target.getResourceCapitalOr(0.0);
-                double avgCapital = (sCap + tCap) / 2.0;
-
-                double significantWaveHeightMeters = calculateSignificantWaveHeight(midElevation, midLatitude);
-                double fleetWaveClearanceMeters = calculateFleetWaveClearance(avgCapital);
-
-                // Safe open-water range governed by hydrodynamic wave tolerance ratio (Hs / H_clearance):
-                // If ocean swell (Hs) exceeds hull clearance, open-sea transit causes severe wave drag/capsizing risk,
-                // constraining safe travel to shallow coastal shelf cabotage (< 300 km).
-                // As hull clearance grows to meet abyssal wave heights, trans-oceanic sea lanes open continuously.
-                double waveOvertoppingRatio = significantWaveHeightMeters / Math.max(0.1, fleetWaveClearanceMeters);
-                double maxRangeKm;
-                if (waveOvertoppingRatio > 1.25 && midElevation < -200.0) {
-                    maxRangeKm = 300.0; // Coastal cabotage shelf constraint due to excessive open ocean swell
-                } else if (waveOvertoppingRatio > 1.0 && midElevation < -200.0) {
-                    maxRangeKm = 1500.0; // Regional high-seas navigation with moderate swell risk
-                } else {
-                    maxRangeKm = 3500.0; // Deep-sea oceanic transit (hull clearance withstands ocean wave energy)
-                }
-
-                if (distKm <= maxRangeKm) {
-                    double cost = calculateNavigationCost(source, target, distKm, avgCapital, waveOvertoppingRatio);
-                    neighborCosts.put(target.getH3Index(), cost);
-                }
-            }
-
-            if (!neighborCosts.isEmpty()) {
-                if (neighborCosts.size() > 6) { // Spherical Delaunay / Gabriel graph average degree < 6
-                    List<Map.Entry<Long, Double>> sorted = new ArrayList<>(neighborCosts.entrySet());
-                    sorted.sort(Map.Entry.comparingByValue());
-                    Map<Long, Double> pruned = new HashMap<>(6);
-                    for (int i = 0; i < 6; i++) {
-                        pruned.put(sorted.get(i).getKey(), sorted.get(i).getValue());
+            int[] ring = (neighbors != null && i < neighbors.length) ? neighbors[i] : null;
+            if (ring != null) {
+                for (int nb : ring) {
+                    if (nb < 0 || nb >= n || nb == i) continue;
+                    if (!isMaritimeCell(biomeArr, elevArr, nb)) continue;
+                    long dstId = (h3Arr != null && h3Arr[nb] != 0L) ? h3Arr[nb] : (long) nb + 1L;
+                    double avgTemp = tempArr != null ? 0.5 * (tempArr[i] + tempArr[nb]) : 15.0;
+                    double avgCap = capArr != null ? 0.5 * (capArr[i] + capArr[nb]) : 100.0;
+                    double cost = computeHydrodynamicEdgeCost(avgCap, avgTemp, 100.0);
+                    if (Double.isFinite(cost)) {
+                        neighborCosts.put(dstId, cost);
                     }
-                    neighborCosts = pruned;
                 }
-                routingGraph.put(source.getH3Index(), neighborCosts);
+            }
+            if (!neighborCosts.isEmpty()) {
+                routingGraph.put(srcId, neighborCosts);
             }
         }
+    }
 
-        logger.info("âœ… Trans-Oceanic Maritime Routing Graph rebuilt successfully with {} active route hubs.", routingGraph.size());
+    private static double computeHydrodynamicEdgeCost(double avgCapital, double avgTempC, double distKm) {
+        double iceDrag = avgTempC < -1.8 ? (avgCapital > 1000.0 ? 2.5 : Double.POSITIVE_INFINITY) : 1.0;
+        if (Double.isInfinite(iceDrag)) return Double.POSITIVE_INFINITY;
+        double vesselSpeedKmH = 8.0 + 22.0 * Math.tanh(Math.max(0.0, avgCapital) / 500.0);
+        return (distKm / vesselSpeedKmH) * iceDrag;
     }
 
     /**
-     * Calculates local ocean swell significant wave height (Hs in meters) based on bathymetry and atmospheric storm turbulence.
+     * Applies dynamic maritime commercial flux facilitation over active sea lanes without phantom capital minting.
      */
-    public static double calculateSignificantWaveHeight(double elevationMeters, double latitudeDegrees) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        // Bathymetric wave damping / abyssal swell amplification:
-        // Shallow continental shelf (elevation > -200m) dampens ocean swells via bed friction (Hs ~ 0.8m - 1.5m).
-        // Abyssal deep ocean (elevation <= -200m) generates large open-ocean swells (Hs ~ 3.5m - 5.5m).
-        double elevationNorm = Math.min(0.0, elevationMeters);
-        double bathymetryFactor = 1.0 / (1.0 + Math.exp((elevationNorm + 200.0) / 100.0));
+    private static void applyRoutingGraphEffects(WorldBuffer buffer, double timeStepDays) {
+        int n = buffer.getCapacity();
+        long[] h3Arr = buffer.getH3Indexes();
+        float[] fluxArr = buffer.getCommercialFluxVolume();
+        float[] capArr = buffer.getResourceCapital();
+        double dtYears = PhysicalUnitsHelper.daysToYears(timeStepDays);
 
-        // Latitude storm intensity & atmospheric fetch (baroclinic instability around 40A°-60A° latitudes):
-        double latRad = Math.toRadians(latitudeDegrees);
-        double stormLatitudeFactor = 1.0 + 1.2 * Math.pow(Math.sin(2.0 * latRad), 2);
-
-        // Base coastal wave height ~0.8m, abyssal swell addition up to +3.5m
-        return 0.8 + (3.5 * bathymetryFactor * stormLatitudeFactor);
-    }
-
-    /**
-     * Calculates vessel fleet hull wave clearance tolerance (in meters) from capital density and technology.
-     */
-    public static double calculateFleetWaveClearance(double capitalPerCapita) {
-        double kFactor = Math.max(1.0, capitalPerCapita);
-        return 1.0 + (1.25 * Math.log10(1.0 + kFactor));
-    }
-
-    /**
-     * Calculates navigation cost between two maritime nodes based on distance, temperature, ice, hull capital, and wave risk.
-     */
-    private static double calculateNavigationCost(H3Cell source, H3Cell target, double distKm, double avgCapital, double waveOvertoppingRatio) {
-        double avgTemp = ((source.getTemperatureOr(15.0))
-                + (target.getTemperatureOr(15.0))) / 2.0;
-
-        // Base velocity increases logarithmically with physical hull displacement capital (knot speed scaling)
-        double vesselSpeedKmH = 8.0 + 4.5 * Math.log10(1.0 + Math.max(1.0, avgCapital));
-
-        // Smooth cryospheric sea-ice drag penalty (thermodynamic water freezing)
-        double iceFormation = 1.0 / (1.0 + Math.exp(2.0 * avgTemp));
-        double icebreakerMitigation = 1.0 / (1.0 + Math.exp(-(avgCapital - 2500.0) / 500.0));
-        double iceDragMultiplier = 1.0 + iceFormation * (4.0 - 3.5 * icebreakerMitigation);
-
-        // Hydrodynamic wave energy & swell drag penalty (overtopping hull clearance)
-        double waveDragMultiplier = 1.0;
-        if (waveOvertoppingRatio > 1.0) {
-            // Cubic wave drag scaling (hydrodynamic wave resistance & structural hull damage risk)
-            waveDragMultiplier = Math.pow(waveOvertoppingRatio, 3.0);
-        }
-
-        return (distKm / vesselSpeedKmH) * iceDragMultiplier * waveDragMultiplier;
-    }
-
-    /**
-     * Applies dynamic trade accumulation and friction modulation derived from the graph state.
-     */
-    private static void applyRoutingGraphEffects(List<H3Cell> cells, double timeStepDays) {
-        for (H3Cell cell : cells) {
-            if (cell == null || cell.getH3Index() == null) continue;
-            Map<Long, Double> routes = routingGraph.get(cell.getH3Index());
-            if (routes != null && !routes.isEmpty()) {
-                // Capital boost scales with connectivity degree and route efficiency
-                double connectivityFactor = Math.min(2.0, 1.0 + 0.05 * routes.size());
-                double currentCap = cell.getResourceCapitalOr(0.0);
-                // Maritime connectivity facilitates commercial exchange without unbound capital minting
-
-                // Hydrodynamic friction reduction over active sea lanes
-                double friction = cell.getMovementFrictionOr(1.0);
-                cell.setMovementFriction(Math.max(0.1, friction * 0.30));
+        for (int i = 0; i < n; i++) {
+            long cellId = (h3Arr != null && h3Arr[i] != 0L) ? h3Arr[i] : (long) i + 1L;
+            Map<Long, Double> routes = routingGraph.get(cellId);
+            if (routes != null && !routes.isEmpty() && fluxArr != null) {
+                double connectivity = Math.min(2.0, 1.0 + 0.05 * routes.size());
+                double baseCap = capArr != null ? Math.max(0.0, capArr[i]) : 0.0;
+                fluxArr[i] += (float) (0.01 * connectivity * baseCap * dtYears);
             }
         }
     }
 
     /**
-     * Calculate great circle distance.
+     * Returns an unmodifiable view of the active maritime routing graph for diagnostics.
      *
-     * @param lat1 the lat1 parameter (double)
-     * @param lon1 the lon1 parameter (double)
-     * @param lat2 the lat2 parameter (double)
-     * @param lon2 the lon2 parameter (double)
-     * @return the resulting computation or state reference
+     * @return current adjacency map of maritime cell IDs to route traversal costs
+     */
+    public static Map<Long, Map<Long, Double>> getRoutingGraph() {
+        return Map.copyOf(routingGraph);
+    }
+
+    /**
+     * Calculates the great-circle spherical haversine distance on Earth ($R = 6\,371\,\text{km}$).
+     *
+     * @param lat1 origin latitude in degrees
+     * @param lon1 origin longitude in degrees
+     * @param lat2 destination latitude in degrees
+     * @param lon2 destination longitude in degrees
+     * @return spherical distance in kilometers [$\text{km}$]
      */
     public static double calculateGreatCircleDistance(double lat1, double lon1, double lat2, double lon2) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
         return calculateGreatCircleDistance(lat1, lon1, lat2, lon2, 6371.0);
     }
 
     /**
-     * Calculate great circle distance.
+     * Calculates the great-circle spherical haversine distance for an arbitrary planetary radius.
      *
-     * @param lat1 the lat1 parameter (double)
-     * @param lon1 the lon1 parameter (double)
-     * @param lat2 the lat2 parameter (double)
-     * @param lon2 the lon2 parameter (double)
-     * @param planetRadiusKm the planet radius km parameter (double)
-     * @return the resulting computation or state reference
+     * @param lat1           origin latitude in degrees
+     * @param lon1           origin longitude in degrees
+     * @param lat2           destination latitude in degrees
+     * @param lon2           destination longitude in degrees
+     * @param planetRadiusKm planetary radius in kilometers [$\text{km}$]
+     * @return spherical distance in kilometers [$\text{km}$]
      */
     public static double calculateGreatCircleDistance(double lat1, double lon1, double lat2, double lon2, double planetRadiusKm) {
-        // Step 1: Read institutional, demographic, and economic state tensors
-        // Step 2: Evaluate non-linear cliodynamic feedback equations and threshold conditions
-        // Step 3: Apply state transitions and update local cell attributes
-        double R = (planetRadiusKm > 0) ? planetRadiusKm : 6371.0;
+        double r = (planetRadiusKm > 0) ? planetRadiusKm : 6371.0;
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+        double a = Math.sin(dLat / 2.0) * Math.sin(dLat / 2.0)
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+                * Math.sin(dLon / 2.0) * Math.sin(dLon / 2.0);
+        double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
+        return r * c;
     }
 
     /**
-     * Clear cache.
-     *
+     * Clears the cached maritime routing graph and invalidation counters.
      */
     public static void clearCache() {
         routingGraph.clear();
@@ -295,5 +235,3 @@ public class DynamicMaritimeRoutingGraph {
         cachedNodeCount = -1;
     }
 }
-
-

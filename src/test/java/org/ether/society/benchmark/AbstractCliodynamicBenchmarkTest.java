@@ -117,6 +117,7 @@ public abstract class AbstractCliodynamicBenchmarkTest {
             buffer.getBiomassAgriculture()[i] = c.getBiomassAgriculture() != null ? c.getBiomassAgriculture().floatValue() : 500.0f;
             buffer.getBiomassNatural()[i] = c.getBiomassNatural() != null ? c.getBiomassNatural().floatValue() : 2000.0f;
             buffer.getFoodResource()[i] = c.getFoodResource() != null ? c.getFoodResource().floatValue() : 3000.0f;
+            buffer.getWaterResource()[i] = c.getWaterResource() != null ? c.getWaterResource().floatValue() : 2000.0f;
             buffer.getResourceCapital()[i] = c.getResourceCapital() != null ? c.getResourceCapital().floatValue() : 200.0f;
             buffer.getGiniIndex()[i] = 0.30f;
             buffer.getTemperature()[i] = c.getTemperature() != null ? c.getTemperature().floatValue() : 20.0f;
@@ -131,17 +132,8 @@ public abstract class AbstractCliodynamicBenchmarkTest {
      */
     protected AgentBuffer populateAgentBuffer(WorldBuffer world) {
         int capacity = world.getCapacity();
-        AgentBuffer agents = new AgentBuffer(capacity);
-
-        for (int i = 0; i < capacity; i++) {
-            if (world.getH3Indexes()[i] == 0) continue;
-            float pop = world.getHumanPopulation()[i];
-            if (pop > 0.0f) {
-                agents.getHexIds()[i] = i;
-                agents.getMass()[i] = pop;
-                agents.getEnergy()[i] = 200.0f;
-            }
-        }
+        AgentBuffer agents = new AgentBuffer(capacity * 4);
+        org.ether.society.data.DODDataGenerator.initializeAgentBuffer(world, agents, 150, 42L);
         return agents;
     }
 
@@ -159,6 +151,7 @@ public abstract class AbstractCliodynamicBenchmarkTest {
         logger.info("Starting multi-year cliodynamic benchmark: {} years ({} ticks, dt={} days)", totalYears, totalTicks, dtDays);
 
         for (int tick = 1; tick <= totalTicks; tick++) {
+            world.setSimulationTick(tick);
             var pre = conservationGuard.captureSnapshot(world);
 
             // 1. Environmental primary production and food regeneration

@@ -50,8 +50,10 @@ public class MaritimeHighwayEngine extends AbstractSimulationEngine {
         if (isMaritimeBasin && buffer.getTemperature()[i] > 0.0f) {
             double currentCap = buffer.getResourceCapital()[i];
             double capPerCapita = currentCap / Math.max(1.0, pop);
-            double totalWatts = buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i] + buffer.getEnergySolar()[i]
-                    + (buffer.getResourceCoal()[i] * 24.0) + (buffer.getResourceOil()[i] * 42.0);
+            // Convert cellular GJ/yr energy stocks (including coal ~24 GJ/t, oil ~42 GJ/t) into continuous Watts
+            double totalWatts = org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(
+                    buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i] + buffer.getEnergySolar()[i]
+                    + (buffer.getResourceCoal()[i] * 24.0) + (buffer.getResourceOil()[i] * 42.0));
             double powerW = totalWatts / Math.max(1.0, pop);
             double propulsionFactor = 1.0 + Math.log10(1.0 + Math.max(0.0, powerW - 300.0) / 150.0);
             double maritimeEquilibriumCap = 120.0 * propulsionFactor * propulsionFactor;

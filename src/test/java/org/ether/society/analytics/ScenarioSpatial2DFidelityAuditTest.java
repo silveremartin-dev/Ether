@@ -7,6 +7,7 @@ import org.ether.society.network.codec.CellTopologyWireCodec;
 import org.ether.society.network.codec.WorldBufferWireCodec;
 import org.ether.society.ui.analytics.SpatialTensorRasterRenderer;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
@@ -36,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * </ul>
  * </p>
  */
+@Tag("scientific")
 public class ScenarioSpatial2DFidelityAuditTest {
 
     public record SpatialAuditEntry(

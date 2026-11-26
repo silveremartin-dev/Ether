@@ -327,7 +327,7 @@ Ether systematically generates and updates publication-grade visual synthesis ch
 
 **Full Academic Paper & 8-Pillar Benchmark Monograph**:
 * **[`docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md`](docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md)** (10-Chapter Classical Scientific Structure & 8 Bottom-Up Epistemological Pillars)
-* **[`docs/WHITE_PAPER_45_SCENARIOS_HISTORICAL_BENCHMARK.md`](docs/WHITE_PAPER_45_SCENARIOS_HISTORICAL_BENCHMARK.md)** (Complete 45-Scenario Synthesis & Partitioning Audit — 51 Validated Simulation Runs)
+* **[`docs/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md`](docs/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md)** (Complete All-Scenario Synthesis & Partitioning Audit — 51 Canonical Scenarios)
 * **Detailed Empirical Synthesis Reports by Horizon**:
   * [Phase 1 Historical Synthesis (10 Canonical Eras, -20k BP to 1914 CE)](docs/reports/scenario_phase1_falsification_synthesis.md)
   * [Phase 2 Expansion Synthesis (8 Imperial & Global Eras, -100k BP to 1950 CE)](docs/reports/scenario_phase2_falsification_synthesis.md)

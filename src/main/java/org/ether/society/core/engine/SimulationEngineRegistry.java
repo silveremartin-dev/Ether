@@ -170,13 +170,8 @@ public final class SimulationEngineRegistry {
             }
         }
 
-        // Return a named virtual engine fallback for descriptive scenario metadata tags
-        return new AbstractSimulationEngine(id, id, EngineTier.TIER_2_CLIODYNAMIC) {
-            @Override
-            public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
-                // Descriptive or composite scenario meta-tag pass
-            }
-        };
+        logger.debug("No registered or classpath SimulationEngineModule found for ID '{}'", id);
+        return null;
     }
 
     /**
@@ -232,6 +227,9 @@ public final class SimulationEngineRegistry {
         register(new EdoJapanIsolationEngine());
         register(new BoserupAgriculturalIntensificationEngine());
         register(new SpatialMetapopulationSEIREngine());
+        register(new DynamicMaritimeRoutingGraph());
+        register(new TradeNetworkRouter());
+        register(new CliodynamicAdvisor());
 
         // --- Discover and register all SPI SimulationEngineModule instances automatically ---
         try {

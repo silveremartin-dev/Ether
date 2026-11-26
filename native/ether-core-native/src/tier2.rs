@@ -96,6 +96,18 @@ pub unsafe fn process_tier2(world: &mut WorldBufferRaw, dt_years: f32) {
     };
     let flux_ptr = world.flux_pressure as usize;
 
+    let h3_ptr = world.h3_indexes as usize;
+    let mut cell_area_default_km2 = 1770.49_f64;
+    if h3_ptr != 0 {
+        let first_h3 = *(world.h3_indexes) as u64;
+        if first_h3 != 0 {
+            let res = ((first_h3 >> 52) & 0x0F) as usize;
+            if res <= 15 {
+                cell_area_default_km2 = crate::environmental::H3_AVG_AREA_KM2[res];
+            }
+        }
+    }
+
     (0..n).into_par_iter().for_each(|i| {
         let p = pop_slice[i] as f64;
         if p <= 0.001 {
@@ -118,8 +130,8 @@ pub unsafe fn process_tier2(world: &mut WorldBufferRaw, dt_years: f32) {
         // -----------------------------------------------------------------
         // 1. Cutler-Miller (2005) & Omran (1971): Urban Pathogen Sanitation
         // -----------------------------------------------------------------
-        let cell_area_km2 = 36.13_f64;
-        let density = (p / 0.06) / cell_area_km2; // Convert somatic mass to headcount
+        let cell_area_km2 = cell_area_default_km2;
+        let density = p / cell_area_km2; // p is living headcount (individuals)
         let crowding_pathogen = (density / 200.0).min(1.0);
         let sanitation_coverage = if k_pc > 200.0 {
             ((k_pc - 200.0) / 2000.0).min(0.98)
@@ -148,7 +160,7 @@ pub unsafe fn process_tier2(world: &mut WorldBufferRaw, dt_years: f32) {
         // -----------------------------------------------------------------
         if p >= 5.0 {
             let food_val = if !food_slice.is_empty() { food_slice[i] as f64 } else { 500.0 };
-            let food_per_cap = food_val / (p / 0.06).max(1.0);
+            let food_per_cap = food_val / p.max(1.0);
             let mmp = (1.9 / food_per_cap.max(0.2)) * (density / 150.0).tanh();
             let emp = ((gini - 0.25).max(0.0) / 0.20).powi(2);
             let sf = 0.4 * (1.9 / food_per_cap.max(0.2)) * (k_pc / 800.0).tanh();
@@ -210,7 +222,7 @@ pub unsafe fn process_tier2(world: &mut WorldBufferRaw, dt_years: f32) {
         // -----------------------------------------------------------------
         // 6. Tainter (1988) Diminishing Marginal Returns on Complexity
         // -----------------------------------------------------------------
-        let headcount = (p / 0.06).max(1.0);
+        let headcount = p.max(1.0);
         if capital >= 50.0 {
             let k_per_cap_t = capital / headcount;
             let surplus_flow = headcount * (0.05 + 0.020 * k_per_cap_t) * dt;

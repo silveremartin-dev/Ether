@@ -90,7 +90,7 @@ public class WhitePaperCompiler {
         System.out.println("Loaded " + loadedRuns.size() + " simulation runs into repo in " + (System.currentTimeMillis() - startTime) + " ms.");
         File chartsDir = new File("docs/images/charts");
         BenchmarkSynthesisChartGenerator.generateAllSynthesisCharts(chartsDir);
-        File outFile = new File("docs/WHITE_PAPER_45_SCENARIOS_HISTORICAL_BENCHMARK.md");
+        File outFile = new File("docs/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md");
         if (outFile.getParentFile() != null) outFile.getParentFile().mkdirs();
 
         try (PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outFile), StandardCharsets.UTF_8))) {
@@ -107,7 +107,8 @@ public class WhitePaperCompiler {
     }
 
     private void writeHeaderAndIntroduction(PrintWriter pw) {
-        pw.println("# 📖 WHITE PAPER: EMPIRICAL BENCHMARKING & BIFURCATION AUDIT OF 45 PLANETARY SIMULATION RUNS");
+        int count = ScenarioArchetypeAuditRegistry.getAllScenarios().size();
+        pw.println("# 📖 WHITE PAPER: EMPIRICAL BENCHMARKING & BIFURCATION AUDIT OF ALL " + count + " PLANETARY SIMULATION SCENARIOS");
         pw.println();
         pw.println("**Author**: Antigravity Cliodynamics Core Team & Silvère Martin-Michiellot  ");
         pw.println("**Date**: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "  ");
@@ -154,9 +155,9 @@ public class WhitePaperCompiler {
     );
 
     private void writeVisualSynthesisChartsSection(PrintWriter pw) {
-        pw.println("## 📈 1.4 VISUAL SYNTHESIS: 45-SCENARIO FIDELITY, 27 VARIABLES & 2D CARTOGRAPHIC QUALITY CURVES");
+        pw.println("## 📈 1.4 VISUAL SYNTHESIS: ALL-SCENARIO FIDELITY, 27 VARIABLES & 2D CARTOGRAPHIC QUALITY CURVES");
         pw.println();
-        pw.println("![1. Master 45-Scenario Fidelity Curve & Continuous Epistemic Tolerance Envelope](images/charts/chart1_45_scenarios_fidelity_curve.png)");
+        pw.println("![1. Master All-Scenario Fidelity Curve & Continuous Epistemic Tolerance Envelope](images/charts/chart1_45_scenarios_fidelity_curve.png)");
         pw.println();
         pw.println("![2. Quality Profile of All 27 Canonical State Variables](images/charts/chart2_27_variables_quality_profile.png)");
         pw.println();
@@ -173,8 +174,9 @@ public class WhitePaperCompiler {
     }
 
     private void writeMasterRankingTable(PrintWriter pw, Map<String, SimulationRunRecord> loadedRuns) {
-        pw.println("## 🏆 2. MASTER 45-SCENARIO CALIBRATION RANKING & MATRIX");
-        pw.println("| # | Scenario Key & Title | Epoch Horizon | Grid Resolution | Ticks | Fidelity Score | Global MAPE | Primary Rupture (T_div) | Diagnostic Status |");
+        int count = ScenarioArchetypeAuditRegistry.getAllScenarios().size();
+        pw.println("## 🏆 2. MASTER ALL-SCENARIO (" + count + ") CALIBRATION RANKING & MATRIX");
+        pw.println("| # | Scenario Key & Title | Epoch Horizon | Grid Resolution | Planned Ticks (Executed) | Fidelity Score | Global MAPE | Primary Rupture (T_div) | Diagnostic Status |");
         pw.println("|---|---|:---:|:---:|:---:|:---:|:---:|:---:|---|");
 
         List<ScenarioArchetypeAuditRegistry.ScenarioDetail> catalog = new ArrayList<>(ScenarioArchetypeAuditRegistry.getAllScenarios());
@@ -189,19 +191,21 @@ public class WhitePaperCompiler {
             SimulationRunRecord run = findRunForScenario(d, loadedRuns);
             int resVal = 4;
             int ticks = 0;
+            long plannedTicks = Math.max(1L, Math.round(((d.endYear() - d.startYear()) * 365.25) / Math.max(1.0, d.dtDays())));
             if (run != null) {
                 try { resVal = Integer.parseInt(run.getParameterMatrix().getOrDefault("h3Resolution", "4")); } catch (Exception ignored) {}
                 ticks = run.getTimeSeriesData() != null ? run.getTimeSeriesData().size() : 0;
             }
+            String tickDisplay = String.format(Locale.US, "%,d (%d)", plannedTicks, ticks);
             if (isOffEarth(d, run)) {
-                pw.println(String.format(Locale.US, "| %s%d | **%s** (`%s`) | %d -> %d | H3 Res %d | %d | **⚪ Speculative** | N/A | %d CE | ⚪ Heuristic Sandbox (Off-Earth) |",
-                        medal, rank, d.name(), d.key(), d.startYear(), d.endYear(), resVal, ticks, d.startYear()));
+                pw.println(String.format(Locale.US, "| %s%d | **%s** (`%s`) | %d -> %d | H3 Res %d | %s | **⚪ Speculative** | N/A | %d CE | ⚪ Heuristic Sandbox (Off-Earth) |",
+                        medal, rank, d.name(), d.key(), d.startYear(), d.endYear(), resVal, tickDisplay, d.startYear()));
             } else {
                 double mape = calculateRunMape(run, d);
                 double fidelity = Math.max(0.0, 100.0 - Math.min(100.0, mape));
-                String status = mape <= 15.0 ? "🟢 Calibrated" : mape <= 35.0 ? "🟡 Moderate Drift" : "🔴 Structural Bifurcation";
-                pw.println(String.format(Locale.US, "| %s%d | **%s** (`%s`) | %d -> %d | H3 Res %d | %d | **%.1f%%** | %,.1f%% | %d CE | %s |",
-                        medal, rank, d.name(), d.key(), d.startYear(), d.endYear(), resVal, ticks, fidelity, mape, d.startYear(), status));
+                String status = run == null ? "⚪ Benchmark Preset (Not Saved)" : mape <= 15.0 ? "🟢 Calibrated" : mape <= 35.0 ? "🟡 Moderate Drift" : "🔴 Structural Bifurcation";
+                pw.println(String.format(Locale.US, "| %s%d | **%s** (`%s`) | %d -> %d | H3 Res %d | %s | **%.1f%%** | %,.1f%% | %d CE | %s |",
+                        medal, rank, d.name(), d.key(), d.startYear(), d.endYear(), resVal, tickDisplay, fidelity, mape, d.startYear(), status));
             }
             rank++;
         }
@@ -236,13 +240,14 @@ public class WhitePaperCompiler {
                 try { snapCount = Integer.parseInt(run.getParameterMatrix().getOrDefault("snapshotCount", "0")); } catch (Exception ignored) {}
             }
             int tickVal = run != null && run.getTimeSeriesData() != null ? run.getTimeSeriesData().size() : 0;
+            long plannedTicks = Math.max(1L, Math.round(((d.endYear() - d.startYear()) * 365.25) / Math.max(1.0, d.dtDays())));
 
             pw.println(String.format("### 3.%d Scenario Audit: `%s`", index, d.name()));
             pw.println();
             pw.println("- **Scenario Key**: `" + d.key() + "`");
             pw.println("- **Classification**: *" + d.category() + "*");
             pw.println("- **Epoch Horizon**: " + d.startYear() + " -> " + d.endYear() + " (" + (d.endYear() - d.startYear()) + " years)");
-            pw.println("- **Time Step (dt)**: " + d.dtDays() + " days");
+            pw.println("- **Time Step (dt)**: " + d.dtDays() + " days (" + plannedTicks + " planned ticks)");
             pw.println("- **Physical Mesh**: Uber H3 Discrete Hexagonal Grid (Resolution " + resVal + (cellVal > 0 ? ", " + String.format(Locale.US, "%,d", cellVal) + " cells" : "") + ")");
             pw.println("- **Simulation Ticks**: " + tickVal + " ticks executed (" + snapCount + " intermediate snapshots saved across timeline)");
             pw.println("- **Historical Context**: " + d.historicalContext());
@@ -432,7 +437,8 @@ public class WhitePaperCompiler {
         String scNameNorm = d.name().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
 
         Set<String> scTokens = Arrays.stream(d.name().toLowerCase(Locale.ROOT).split("[^a-z0-9]+"))
-                .filter(w -> w.length() >= 4 && !w.equals("scenario") && !w.equals("modern") && !w.equals("early"))
+                .filter(w -> w.length() >= 4 && !w.equals("scenario") && !w.equals("modern") && !w.equals("early")
+                        && !w.equals("standard") && !w.equals("planetary") && !w.equals("biophysical") && !w.equals("dynamics"))
                 .collect(Collectors.toSet());
 
         SimulationRunRecord bestRun = null;

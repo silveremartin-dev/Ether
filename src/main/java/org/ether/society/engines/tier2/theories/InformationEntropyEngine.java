@@ -66,8 +66,10 @@ public class InformationEntropyEngine extends AbstractSimulationEngine {
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         double pop = Math.max(1.0, buffer.getHumanPopulation()[i]);
         double kPerCapita = buffer.getResourceCapital()[i] / pop;
-        double totalWatts = buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i] + buffer.getEnergySolar()[i]
-                + (buffer.getResourceCoal()[i] * 24.0) + (buffer.getResourceOil()[i] * 42.0);
+        // Convert cellular GJ/yr energy stocks (including coal ~24 GJ/t, oil ~42 GJ/t) into continuous Watts
+        double totalWatts = org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(
+                buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i] + buffer.getEnergySolar()[i]
+                + (buffer.getResourceCoal()[i] * 24.0) + (buffer.getResourceOil()[i] * 42.0));
         double powerWattsPerCapita = (totalWatts > 0.0) ? (totalWatts / pop) : SOMATIC_POWER_FLOOR_WATTS;
         double friction = 1.0;
 

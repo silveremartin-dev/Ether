@@ -51,10 +51,6 @@ public class CrustalGeothermalEngine extends AbstractSimulationEngine {
      * @param capital             installed cellular physical capital stock
      * @return maximum accessible mining shaft depth in meters $\in [50, 4000]$
      */
-    public static double calculateMaxMiningDepthMeters(double legacyTech) {
-        return calculateMaxMiningDepthMeters(100.0 * legacyTech, 1000.0 * legacyTech);
-    }
-
     public static double calculateMaxMiningDepthMeters(double powerWattsPerCapita, double capital) {
         double dSurface = 50.0;
         double dMax = 4000.0;
@@ -74,7 +70,9 @@ public class CrustalGeothermalEngine extends AbstractSimulationEngine {
         double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
-        double totalWatts = buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i] + buffer.getEnergySolar()[i] + buffer.getEnergyFoodConsumed()[i];
+        double totalWatts = org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(
+                buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i]
+                + buffer.getEnergySolar()[i] + buffer.getEnergyFoodConsumed()[i]);
         double powerPerCapita = Math.max(85.0, totalWatts / Math.max(1.0, pop));
         double capital = buffer.getResourceCapital()[i];
         double maxDepthMeters = calculateMaxMiningDepthMeters(powerPerCapita, capital);
