@@ -47,7 +47,7 @@ public class TelemetryAndDimensionalInvarianceBugFixTest {
         // 2. Confirm that if World3CouplingEngine is executed unfiltered on a Medieval cell (N=20,000, k_pc=150 kg/cap),
         // it treats wooden plows and granaries (K = 3,000,000) as polluting industrial factories (IO) and depletes mineral stocks
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 20_000.0f;
+        buf.getHumanPopulation()[0] = 20_000.0f;
         buf.getResourceCapital()[0] = 20_000.0f * 150.0f; // 3,000,000 kg of agrarian tools/structures
         buf.getMetalResource()[0] = 5_000.0f;
         buf.getPollutionLevel()[0] = 0.0f;
@@ -70,7 +70,7 @@ public class TelemetryAndDimensionalInvarianceBugFixTest {
     public void testEntropicMetalDissipationArealConcentrationInvariance() {
         WorldBuffer buf = new WorldBuffer(1);
         buf.getH3Indexes()[0] = 0x8428309ffffffffL;
-        buf.getBiomassHuman()[0] = (float) (10_000 * 0.06);
+        buf.getHumanPopulation()[0] = (float) (10_000);
         buf.getResourceCapital()[0] = 1_000_000.0f;
         buf.getMetalResource()[0] = 150_000.0f;
         buf.getPollutionLevel()[0] = 0.0f;
@@ -92,7 +92,7 @@ public class TelemetryAndDimensionalInvarianceBugFixTest {
         buf.getElevation()[0] = 250.0f;
         buf.getTemperature()[0] = 15.0f;
         buf.getBiomassNatural()[0] = 1200.0f;
-        buf.getBiomassHuman()[0] = (float) (5_000 * 0.06);
+        buf.getHumanPopulation()[0] = (float) (5_000);
         buf.getResourceCapital()[0] = 500_000.0f;
         buf.getFluxPressure()[0] = 1.0f;
 
@@ -157,5 +157,19 @@ public class TelemetryAndDimensionalInvarianceBugFixTest {
 
         assertTrue(urbanRate >= 1.5 && urbanRate <= 8.0,
                 "Classical Antiquity urbanization rate at k_pc=185 on Res 4 must be ~2-6% (not 76.7%), got: " + urbanRate);
+
+        // Deep-Time Paleolithic baseline invariance: low-capital foraging bands must yield 0% literacy and < 0.01% urbanization
+        H3Cell paleoBand = new H3Cell(org.ether.society.h3.H3Service.getInstance().latLngToH3(0.0, 36.0, 4), 0.0, 36.0);
+        paleoBand.setPopulation(2_000);
+        paleoBand.setResourceCapital(2_000.0 * 5.0);
+        paleoBand.setBiomassAgriculture(0.0);
+        paleoBand.setBiomassNatural(4000.0);
+        Configuration paleoCfg = new Configuration(null, new Configuration.SimulationConfig(-100000, 100, new int[]{1}), null, null, null);
+        H3SimulationEngine paleoEngine = new H3SimulationEngine(paleoCfg);
+        paleoEngine.setCells(List.of(paleoBand));
+        assertEquals(0.0, paleoEngine.getMetricsAggregator().getLiteracyRate(), 1e-6,
+                "Paleolithic forager literacy rate must stay identically 0.0%");
+        assertTrue(paleoEngine.getMetricsAggregator().getUrbanizationRate() < 0.01,
+                "Paleolithic forager urbanization rate must stay < 0.01%");
     }
 }

@@ -57,8 +57,8 @@ public class WorldBuffer {
     /** Commercial logistics transport flux throughput volume (\(\text{t/yr}\) or \(\text{GJ/yr}\)). */
     private final float[] commercialFluxVolume;
     
-    /** Living human somatic biomass stock (\(\text{t}\)). */
-    private final float[] biomassHuman;
+    /** Living human population count (individuals). */
+    private final float[] humanPopulation;
     /** Domesticated livestock and draft animal biomass stock (\(\text{t}\)). */
     private final float[] biomassLivestock;
     /** Marine and freshwater ichthyological biomass stock (\(\text{t}\)). */
@@ -102,6 +102,13 @@ public class WorldBuffer {
     /** Allometric organism profile governing metabolic scaling across cells. */
     private org.ether.society.model.OrganismBiophysicalProfile organismProfile = org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS;
 
+    /** Empirical baseline temperature snapshot per cell (^{\circ}\text{C}), NaN until captured on first encounter. */
+    private final float[] baselineTemperature;
+    /** Active simulation calendar year (used by time-dependent orbital Tier 1 forcings). */
+    private double currentYear = 2000.0;
+    /** Flag set when {@link DemographicKernel} governs human food consumption and demographic flux in the full pipeline. */
+    private boolean demographicKernelManaged = false;
+
     /**
      * Allocates a contiguous Structure-of-Arrays (SoA) world buffer for {@code capacity} hexagonal cells.
      *
@@ -130,7 +137,7 @@ public class WorldBuffer {
         this.soilOrganicCarbon = new float[capacity];
         this.commercialFluxVolume = new float[capacity];
         
-        this.biomassHuman = new float[capacity];
+        this.humanPopulation = new float[capacity];
         this.biomassLivestock = new float[capacity];
         this.biomassFish = new float[capacity];
         this.biomassAgriculture = new float[capacity];
@@ -152,6 +159,8 @@ public class WorldBuffer {
         this.storage = new float[capacity];
         this.institutionalComplexity = new float[capacity];
         this.pollutionLevel = new float[capacity];
+        this.baselineTemperature = new float[capacity];
+        java.util.Arrays.fill(this.baselineTemperature, Float.NaN);
     }
 
     // Getters for arrays (to be used by kernels)
@@ -204,7 +213,7 @@ public class WorldBuffer {
     public float[] getClayResource() { return clayResource; }
 
     /** @return total human / conscious living agent population count (individuals) */
-    public float[] getBiomassHuman() { return biomassHuman; }
+    public float[] getHumanPopulation() { return humanPopulation; }
 
     /** @return domesticated livestock biomass stock in metric tons */
     public float[] getBiomassLivestock() { return biomassLivestock; }
@@ -466,4 +475,14 @@ public class WorldBuffer {
     public float[] getSoilOrganicCarbon() { return soilOrganicCarbon; }
     /** @return commercial logistics flux volume array */
     public float[] getCommercialFluxVolume() { return commercialFluxVolume; }
+    /** @return empirical cell baseline temperature array (NaN until initialized) */
+    public float[] getBaselineTemperature() { return baselineTemperature; }
+    /** @return current simulation calendar year */
+    public double getCurrentYear() { return currentYear; }
+    /** @param currentYear current simulation calendar year */
+    public void setCurrentYear(double currentYear) { this.currentYear = currentYear; }
+    /** @return true if DemographicKernel owns human consumption/demographics in this pipeline tick */
+    public boolean isDemographicKernelManaged() { return demographicKernelManaged; }
+    /** @param managed flag indicating DemographicKernel manages human consumption */
+    public void setDemographicKernelManaged(boolean managed) { this.demographicKernelManaged = managed; }
 }

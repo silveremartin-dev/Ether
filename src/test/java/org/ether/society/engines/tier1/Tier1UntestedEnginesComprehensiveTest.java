@@ -54,11 +54,11 @@ public class Tier1UntestedEnginesComprehensiveTest {
     @DisplayName("AquiferDepletionEngine: verifies Darcy piezometric flow and replenishment")
     void testAquiferDepletionEngine() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getH3Indexes()[0] = 0x851f1d4bffffffL;
+        buf.getH3Indexes()[0] = org.ether.society.h3.H3Service.getInstance().latLngToH3(30.0, 31.0, 5);
         buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
         buf.getElevation()[0] = 100.0f;
         buf.getTemperature()[0] = 22.0f;
-        buf.getBiomassHuman()[0] = 500000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 500000.0f;
         buf.getRainfall()[0] = 100.0f; // Arid: heavy extraction
         buf.getFreshwaterAquifer()[0] = 1500.0f;
 
@@ -69,30 +69,73 @@ public class Tier1UntestedEnginesComprehensiveTest {
     }
 
     @Test
-    @DisplayName("AlbedoClimateEngine: verifies dynamic albedo and thermal relaxation response")
+    @DisplayName("AlbedoClimateEngine: verifies empirical baseline preservation, desert-forest contrast, mean invariance, and volcanic aerosol recovery")
     void testAlbedoClimateEngine() {
-        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getH3Indexes()[0] = 0x851f1d4bffffff1L;
+        NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(0.0);
+        org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(3);
+        org.ether.society.h3.H3Service h3 = org.ether.society.h3.H3Service.getInstance();
+        // 0: Sahara Desert (23N, 12E); 1: Amazon Rainforest (-3S, -60W); 2: Antarctica Ice Sheet (-78S, 20E)
+        buf.getH3Indexes()[0] = h3.latLngToH3(23.0, 12.0, 4);
         buf.getBiomes()[0] = (byte) Biome.DESERT.ordinal();
-        buf.getElevation()[0] = 200.0f;
+        buf.getElevation()[0] = 450.0f;
         buf.getTemperature()[0] = 32.0f;
-        buf.getBiomassHuman()[0] = 100.0f * 0.06f;
-        buf.getRainfall()[0] = 50.0f;
+        buf.getRainfall()[0] = 40.0f;
+        buf.getBiomassNatural()[0] = 5.0f;
+        buf.getHumanPopulation()[0] = 100.0f;
 
-        new AlbedoClimateEngine().tick(buf, 1.0, 12.0);
-        assertTrue(buf.getTemperature()[0] != 32.0f,
-                "Albedo-climate feedback must update surface temperature toward radiative equilibrium");
+        buf.getH3Indexes()[1] = h3.latLngToH3(-3.0, -60.0, 4);
+        buf.getBiomes()[1] = (byte) Biome.FOREST.ordinal();
+        buf.getElevation()[1] = 80.0f;
+        buf.getTemperature()[1] = 26.0f;
+        buf.getRainfall()[1] = 2400.0f;
+        buf.getBiomassNatural()[1] = 5000.0f;
+        buf.getHumanPopulation()[1] = 500.0f;
+
+        buf.getH3Indexes()[2] = h3.latLngToH3(-78.0, 20.0, 4);
+        buf.getBiomes()[2] = (byte) Biome.GLACIER.ordinal();
+        buf.getElevation()[2] = 2800.0f;
+        buf.getTemperature()[2] = -35.0f;
+        buf.getRainfall()[2] = 120.0f;
+        buf.getBiomassNatural()[2] = 0.0f;
+
+        double initialMeanTemp = (32.0 + 26.0 - 35.0) / 3.0;
+        AlbedoClimateEngine engine = new AlbedoClimateEngine();
+        for (int yr = 0; yr < 20; yr++) {
+            engine.tick(buf, 1.0, 12.0);
+        }
+
+        double desertTemp = buf.getTemperature()[0];
+        double forestTemp = buf.getTemperature()[1];
+        double polarTemp = buf.getTemperature()[2];
+        double finalMeanTemp = (desertTemp + forestTemp + polarTemp) / 3.0;
+
+        assertFalse(Double.isNaN(finalMeanTemp), "Surface temperatures must remain finite");
+        assertTrue(polarTemp < -25.0, "Antarctic polar baseline must never drift toward warm 22C synthetic average, got: " + polarTemp);
+        assertTrue(desertTemp < 32.0 && desertTemp > 30.5, "High desert albedo (0.35) must yield mild equilibrium cooling, got: " + desertTemp);
+        assertTrue(forestTemp > 26.0 && forestTemp < 27.5, "Low dense forest canopy albedo must yield mild equilibrium warming, got: " + forestTemp);
+        assertTrue(Math.abs(finalMeanTemp - initialMeanTemp) < 1.5,
+                "Multi-decadal global mean temperature must stay conserved within 1.5C of empirical baseline");
+
+        // Volcanic / stratospheric soot optical pulse cools sharply and recovers asymptotically
+        NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(1.5);
+        engine.tick(buf, 1.0, 12.0);
+        assertTrue(buf.getTemperature()[1] < forestTemp - 2.0, "Stratospheric aerosol pulse must induce rapid cooling");
+        for (int yr = 0; yr < 15; yr++) {
+            engine.tick(buf, 1.0, 12.0);
+        }
+        assertTrue(buf.getTemperature()[1] > forestTemp - 0.5, "Temperature must recover toward equilibrium once soot decays");
+        NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(0.0);
     }
 
     @Test
     @DisplayName("BioMolecularEpidemiologyEngine: starving populations suffer immune arrest")
     void testBioMolecularEpidemiologyEngine() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getH3Indexes()[0] = 0x851f1d4bffffff2L;
+        buf.getH3Indexes()[0] = org.ether.society.h3.H3Service.getInstance().latLngToH3(30.0, 31.0, 5);
         buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
         buf.getElevation()[0] = 50.0f;
         buf.getTemperature()[0] = 20.0f;
-        buf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getFoodResource()[0] = 0.0f;
         buf.getBiomassAgriculture()[0] = 0.0f;
         buf.getBiomassNatural()[0] = 0.0f;
@@ -120,7 +163,7 @@ public class Tier1UntestedEnginesComprehensiveTest {
         buf.getBiomes()[0] = (byte) Biome.HILLS.ordinal();
         buf.getElevation()[0] = 800.0f;
         buf.getTemperature()[0] = 15.0f;
-        buf.getBiomassHuman()[0] = 500.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 500.0f;
         assertDoesNotThrow(() -> new CrustalGeothermalEngine().tick(buf, 1.0 / 12.0, 1.0));
     }
 
@@ -140,7 +183,7 @@ public class Tier1UntestedEnginesComprehensiveTest {
         buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
         buf.getElevation()[0] = 50.0f;
         buf.getTemperature()[0] = 20.0f;
-        buf.getBiomassHuman()[0] = 1000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 1000.0f;
         buf.getPollutionLevel()[0] = 2000.0f;
         assertDoesNotThrow(() -> new EcotoxicologyFertilityEngine().tick(buf, 1.0 / 12.0, 1.0));
     }
@@ -153,7 +196,7 @@ public class Tier1UntestedEnginesComprehensiveTest {
         buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
         buf.getElevation()[0] = 100.0f;
         buf.getTemperature()[0] = 18.0f;
-        buf.getBiomassHuman()[0] = 2000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 2000.0f;
         buf.getResourceCapital()[0] = 50000.0f;
         buf.getFluxPressure()[0] = 1.0f;
 
@@ -205,17 +248,27 @@ public class Tier1UntestedEnginesComprehensiveTest {
         assertTrue(lowTechEff < highTechEff, "High technology and capital must yield higher recycling efficiency");
 
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getH3Indexes()[0] = 0x851f1d4bfffffa1L;
+        buf.getH3Indexes()[0] = org.ether.society.h3.H3Service.getInstance().latLngToH3(48.8, 2.3, 5);
         buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
         buf.getElevation()[0] = 100.0f;
         buf.getTemperature()[0] = 18.0f;
-        buf.getBiomassHuman()[0] = 5000.0f * 0.06f;
-        buf.getResourceCapital()[0] = 30000.0f;
+        buf.getHumanPopulation()[0] = 5000.0f;
+        buf.getResourceCapital()[0] = 5_000_000.0f; // 1000 kg/capita industrial metropolis
         buf.getInstitutionalComplexity()[0] = 1.0f;
 
         double initialCap = buf.getResourceCapital()[0];
         new ResourceRecyclingEngine().tick(buf, 1.0 / 12.0, 1.0);
-        assertTrue(buf.getResourceCapital()[0] > initialCap, "Recycling must return a portion of capital into production");
+        assertTrue(buf.getResourceCapital()[0] > initialCap, "Industrial recycling must recover capital depreciation");
+
+        // Intensive invariance guard: Paleolithic bands (5 kg/cap) must not generate industrial circular capital
+        org.ether.society.core.dod.WorldBuffer paleoBuf = new org.ether.society.core.dod.WorldBuffer(1);
+        paleoBuf.getH3Indexes()[0] = org.ether.society.h3.H3Service.getInstance().latLngToH3(10.0, 38.0, 5);
+        paleoBuf.getHumanPopulation()[0] = 5000.0f;
+        paleoBuf.getResourceCapital()[0] = 25000.0f; // 5 kg/capita stone toolkit
+        paleoBuf.getInstitutionalComplexity()[0] = 0.5f;
+        new ResourceRecyclingEngine().tick(paleoBuf, 1.0, 12.0);
+        assertEquals(25000.0f, paleoBuf.getResourceCapital()[0], 1e-3f,
+                "Low-kpc Paleolithic bands must not trigger industrial capital recycling");
     }
 
     @Test
@@ -228,11 +281,11 @@ public class Tier1UntestedEnginesComprehensiveTest {
         assertTrue(greenRevFactor > 2.0, "Modern breeding must multiply agricultural yields (> 2.0x)");
 
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getH3Indexes()[0] = 0x851f1d4bfffffa2L;
+        buf.getH3Indexes()[0] = org.ether.society.h3.H3Service.getInstance().latLngToH3(45.0, 10.0, 5);
         buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
         buf.getElevation()[0] = 100.0f;
         buf.getTemperature()[0] = 20.0f;
-        buf.getBiomassHuman()[0] = 1000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 1000.0f;
         buf.getResourceCapital()[0] = 5000.0f;
         buf.getBiomassAgriculture()[0] = 500.0f;
 
@@ -249,7 +302,7 @@ public class Tier1UntestedEnginesComprehensiveTest {
         buf.getBiomes()[0] = (byte) Biome.FOREST.ordinal();
         buf.getElevation()[0] = 100.0f;
         buf.getTemperature()[0] = 10.0f;
-        buf.getBiomassHuman()[0] = 200.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 200.0f;
 
         double initialTemp = buf.getTemperature()[0];
         // High meltwater pulse (0.45 Sv) halts overturning convection and triggers cooling

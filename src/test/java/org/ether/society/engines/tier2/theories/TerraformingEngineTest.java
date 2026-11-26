@@ -32,7 +32,7 @@ public class TerraformingEngineTest {
     public void testTerraformingWarmingRadiativeForcing() {
         WorldBuffer buf = new WorldBuffer(1);
         buf.getTemperature()[0] = 15.0f;
-        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getHumanPopulation()[0] = 5000.0f;
 
         // CO2 doubled (560 ppm) -> radiative forcing ~ 5.35 * ln(2) = 3.71 W/m²
         TerraformingEngine.setCo2Ppm(560.0);
@@ -61,7 +61,7 @@ public class TerraformingEngineTest {
     @Test
     public void testAsteroidMiningMetalFlux() {
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getMetalResource()[0] = 50.0f;
 
         TerraformingEngine.setAsteroidMiningFluxTonnesPerYear(100000.0);

@@ -71,7 +71,7 @@ public class CrustalGeothermalEngine extends AbstractSimulationEngine {
 
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
         double totalWatts = buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i] + buffer.getEnergySolar()[i] + buffer.getEnergyFoodConsumed()[i];

@@ -125,7 +125,7 @@ public class EcologicalStoichiometryEngine extends AbstractSimulationEngine {
         double soc = buffer.getSoilOrganicCarbon()[i] > 0.0f ? buffer.getSoilOrganicCarbon()[i] : 25.0;
         double metal = buffer.getMetalResource()[i];
         double capital = buffer.getResourceCapital()[i];
-        double pop = Math.max(1.0, buffer.getBiomassHuman()[i] / 0.06);
+        double pop = Math.max(1.0, buffer.getHumanPopulation()[i]);
         double capPerCap = capital / pop;
 
         double nRatio = Math.clamp(soc / 30.0 + 0.30 * Math.tanh(capPerCap / 50.0), 0.20, 1.50);

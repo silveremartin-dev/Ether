@@ -15,7 +15,7 @@ public class HistoricalAndHybridEnginesDirectTest {
     @Test
     public void testHandyNasaHybridEngine() {
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 50000.0f;
+        buf.getHumanPopulation()[0] = 50000.0f;
         buf.getBiomassNatural()[0] = 50.0f;
 
         DerivativeAccumulator acc = new DerivativeAccumulator();
@@ -30,7 +30,7 @@ public class HistoricalAndHybridEnginesDirectTest {
         buf.getBiomes()[0] = (byte) Biome.OCEAN.ordinal();
         buf.getElevation()[0] = 0.0f;
         buf.getTemperature()[0] = 15.0f;
-        buf.getBiomassHuman()[0] = 500.0f;
+        buf.getHumanPopulation()[0] = 500.0f;
         buf.getResourceCapital()[0] = 200.0f;
         buf.getEnergyWind()[0] = 5000.0f;
 
@@ -43,7 +43,7 @@ public class HistoricalAndHybridEnginesDirectTest {
     @Test
     public void testMilitaryTechShockEngine() {
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 1000.0f;
+        buf.getHumanPopulation()[0] = 1000.0f;
         buf.getResourceCapital()[0] = 1_500_000.0f; // kPerCap = 1500.0 -> peak shock intensity
 
         DerivativeAccumulator acc = new DerivativeAccumulator();
@@ -68,20 +68,20 @@ public class HistoricalAndHybridEnginesDirectTest {
     @Test
     public void testSpatialCityFractalEngine() {
         WorldBuffer buf = new WorldBuffer(3);
-        buf.getBiomassHuman()[0] = 50000.0f;
-        buf.getBiomassHuman()[1] = 10000.0f;
-        buf.getBiomassHuman()[2] = 1000.0f;
+        buf.getHumanPopulation()[0] = 50000.0f;
+        buf.getHumanPopulation()[1] = 10000.0f;
+        buf.getHumanPopulation()[2] = 1000.0f;
 
         new SpatialCityFractalEngine().tick(buf, 1.0, 1.0);
 
-        double total = buf.getBiomassHuman()[0] + buf.getBiomassHuman()[1] + buf.getBiomassHuman()[2];
+        double total = buf.getHumanPopulation()[0] + buf.getHumanPopulation()[1] + buf.getHumanPopulation()[2];
         assertEquals(61000.0, total, 1.0, "Zipf rank-size relaxation must conserve total urban population");
     }
 
     @Test
     public void testWorld3HybridEngine() {
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getResourceCapital()[0] = 1000.0f;
         buf.getMetalResource()[0] = 5.0f; // Low metal -> high FCAOR
         buf.getPollutionLevel()[0] = 50.0f; // High pollution -> lifespan penalty

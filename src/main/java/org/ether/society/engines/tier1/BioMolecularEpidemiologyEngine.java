@@ -53,8 +53,8 @@ public class BioMolecularEpidemiologyEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
-        double biomassHuman = buffer.getBiomassHuman()[i];
-        double pop = biomassHuman / 0.06;
+        double humanPopulation = buffer.getHumanPopulation()[i];
+        double pop = humanPopulation;
         if (pop <= 0.0) return;
         double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
         double foodRequired = pop * 1.0 * dtMonthlyRatio;

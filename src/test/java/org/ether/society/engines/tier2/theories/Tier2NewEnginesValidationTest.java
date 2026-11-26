@@ -30,7 +30,7 @@ public class Tier2NewEnginesValidationTest {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
         for (int i = 0; i < cells.size(); i++) {
             H3Cell c = cells.get(i);
-            buf.getBiomassHuman()[i] = (float) (c.getPopulationOr(0) * 0.06);
+            buf.getHumanPopulation()[i] = (float) (c.getPopulationOr(0));
             buf.getResourceCapital()[i] = (float) c.getResourceCapitalOr(0.0);
             buf.getFoodResource()[i] = (float) c.getFoodResourceOr(0.0);
             buf.getWaterResource()[i] = (float) c.getWaterResourceOr(0.0);
@@ -56,7 +56,7 @@ public class Tier2NewEnginesValidationTest {
         engine.tick(buf, dtYears, dtYears);
         for (int i = 0; i < cells.size(); i++) {
             H3Cell c = cells.get(i);
-            c.setPopulation((int) Math.max(0, Math.round(buf.getBiomassHuman()[i] / 0.06)));
+            c.setPopulation((int) Math.max(0, Math.round(buf.getHumanPopulation()[i])));
             c.setResourceCapital((double) buf.getResourceCapital()[i]);
             c.setFoodResource((double) buf.getFoodResource()[i]);
             c.setWaterResource((double) buf.getWaterResource()[i]);

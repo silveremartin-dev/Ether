@@ -88,7 +88,7 @@ public class HistoricalBestFitAndTypeBSuiteTest {
     @Test
     public void testEngineHybridsExecution() {
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         double initialCapital = 280.0 * 10000.0;
         buf.getResourceCapital()[0] = (float) initialCapital;
         buf.getEnergyFoodConsumed()[0] = 500.0f;

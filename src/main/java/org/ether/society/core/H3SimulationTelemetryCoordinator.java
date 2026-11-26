@@ -97,6 +97,7 @@ final class H3SimulationTelemetryCoordinator {
         long curYr = timeManager.getCurrentYear();
         double elapsedYrs = Math.max(0.0, (double) (curYr - startYr));
 
+        double baseInfo = currentScenario != null ? currentScenario.getInitialInformationPerCapita() : 0.0;
         TelemetryEvaluationResult res = compiledTelemetryPlan.execute(
                 worldBuffer,
                 agentBuffer,
@@ -108,7 +109,8 @@ final class H3SimulationTelemetryCoordinator {
                 initialPopulationBaseline,
                 initialCo2Baseline,
                 elapsedYrs,
-                currentTPS);
+                currentTPS,
+                baseInfo);
 
         this.cachedTelemetryResult = res;
         this.lastTelemetryTick = tickCounter;

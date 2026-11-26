@@ -48,7 +48,7 @@ public class BifurcationChaosEngine extends AbstractSimulationEngine {
     public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
         if (buf == null || buf.getCapacity() == 0) return;
         int n = buf.getCapacity();
-        float[] popArr = buf.getBiomassHuman();
+        float[] popArr = buf.getHumanPopulation();
         float[] foodArr = buf.getFoodResource();
         float[] giniArr = buf.getGiniIndex();
 

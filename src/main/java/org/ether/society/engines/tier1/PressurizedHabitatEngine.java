@@ -59,13 +59,13 @@ public class PressurizedHabitatEngine extends AbstractSimulationEngine {
         if (!hostile) return;
 
         double dt = Math.max(0.001, Math.min(1.0, deltaYears));
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
         float[] metalArr = buffer.getMetalResource();
         int n = buffer.getCapacity();
 
         for (int i = 0; i < n; i++) {
-            double pop = bioHuman[i] / 0.06;
+            double pop = bioHuman[i];
             if (pop <= 0.0) continue;
 
             double requiredCapital = pop * 5.0 * dt;

@@ -97,8 +97,8 @@ public class WorldBuffer {
     private final float[] metalResource;
     private final float[] clayResource;
     
-    // Biomass Distribution
-    private final float[] biomassHuman;
+    // Demographic Headcount & Biomasses
+    private final float[] humanPopulation;
     private final float[] biomassLivestock;
     private final float[] biomassFish;
     private final float[] biomassAgriculture;

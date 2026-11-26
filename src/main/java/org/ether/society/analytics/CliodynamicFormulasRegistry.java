@@ -13,7 +13,7 @@ import org.ether.society.core.math.SmoothMath;
  *
  * <h2>Physical Foundation: The Garrett-Lotka Exergy-Capital Index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$</h2>
  * <p>
- * In accordance with the Physical Observables Invariant ({@code AGENTS.md} ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§10), no state-level
+ * In accordance with the Physical Observables Invariant ({@code AGENTS.md} §10), no state-level
  * technology variable exists in the simulation. All post-hoc macroeconomic and cliodynamic response
  * envelopes are parameterized by the dimensionless <b>Garrett-Lotka Exergy-Capital Index</b>
  * $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ derived strictly from two conserved physical observables:
@@ -33,9 +33,9 @@ import org.ether.society.core.math.SmoothMath;
  * <h3>Physical Regime Anchors of $\Phi_{\text{exergy}}$</h3>
  * <ul>
  *   <li><b>$\Phi_{\text{exergy}} \le 0.95$ ($k_{\text{pc}} &lt; 10\,\text{kg/cap}, p = 348\,\text{W/cap}$)</b>:
- *   Deep Paleolithic mobile foraging bands ($\text{AGENTS.md}$ ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§8 deep-time invariants: $0\%$ urbanization, $0\%$ literacy, $0$ state debt).</li>
+ *   Deep Paleolithic mobile foraging bands ($\text{AGENTS.md}$ §8 deep-time invariants: $0\%$ urbanization, $0\%$ literacy, $0$ state debt).</li>
  *   <li><b>$\Phi_{\text{exergy}} \approx 1.05\text{--}1.20$ ($k_{\text{pc}} \in [150, 650]\,\text{kg/cap}, p \in [420, 520]\,\text{W/cap}$)</b>:
- *   Agrarian Hydraulic &amp; Iron-Age Empires (Classical Antiquity 165 CE, Song/Medieval 1000ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ1347 CE).</li>
+ *   Agrarian Hydraulic &amp; Iron-Age Empires (Classical Antiquity 165 CE, Song/Medieval 1000–1347 CE).</li>
  *   <li><b>$\Phi_{\text{exergy}} \approx 1.22\text{--}1.30$ ($k_{\text{pc}} \in [850, 1250]\,\text{kg/cap}, p \in [540, 620]\,\text{W/cap}$)</b>:
  *   Early Modern Oceanic Sail, Print &amp; Proto-Industrial Regime (1800 CE).</li>
  *   <li><b>$\Phi_{\text{exergy}} \approx 1.75\text{--}2.05$ ($k_{\text{pc}} \in [2800, 4200]\,\text{kg/cap}, p \in [1000, 1250]\,\text{W/cap}$)</b>:
@@ -81,7 +81,7 @@ public final class CliodynamicFormulasRegistry {
     /**
      * Atmospheric $\text{CO}_2$ concentration ($\text{ppm}$).
      * For paleoclimatic and pre-industrial epochs ($\text{year} < 1850$), retrieves the authoritative
-     * ice-core paleoclimatic baseline (EPICA Dome C, LÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¼thi et al. 2008, e.g. 190 ppm at LGM $-20\,000$ BP).
+     * ice-core paleoclimatic baseline (EPICA Dome C, Lüthi et al. 2008, e.g. 190 ppm at LGM $-20\,000$ BP).
      * For industrial / prospective epochs, evaluates physical anthropogenic exergy forcing.
      *
      * @param phiExergy Garrett-Lotka exergy-capital diagnostic
@@ -108,7 +108,7 @@ public final class CliodynamicFormulasRegistry {
     public static double computeTemperatureAnomalyFromCo2(double co2Ppm) {
         double co2Ratio = Math.max(150.0, co2Ppm) / 280.0;
         double radiativeForcing = 5.35 * Math.log(co2Ratio); // Myhre logarithmic formula
-        return radiativeForcing * 0.80; // Climate sensitivity lambda ~ 0.80 ÃƒÆ’Ã¢a‚¬Å¡Ãƒa€šÃ‚A°C / (W/m^2)
+        return radiativeForcing * 0.80; // Climate sensitivity lambda ~ 0.80 C / (W/m^2)
     }
 
     public static double computeTemperatureAnomaly(int year) {

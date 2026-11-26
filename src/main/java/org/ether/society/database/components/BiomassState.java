@@ -9,11 +9,11 @@ package org.ether.society.database.components;
 /**
  * High-performance Data-Oriented immutable component encapsulating ecological, agricultural, livestock and biotic exergy tensors.
  *
- * @param biomassHuman human biomass in metric tonnes
- * @param biomassLivestock domesticated livestock biomass in metric tonnes
- * @param biomassFish marine and freshwater aquatic biomass in metric tonnes
- * @param biomassAgriculture cultigen and cropland biomass in metric tonnes
- * @param biomassNatural wild floral and faunal biomass in metric tonnes
+ * @param humanPopulation human population headcount (individuals)
+ * @param biomassLivestock domesticated livestock biomass in metric tonnes (t; 1 MJ/kg = 1 GJ/t)
+ * @param biomassFish marine and freshwater aquatic biomass in metric tonnes (t)
+ * @param biomassAgriculture cultigen and cropland harvest stock in kilograms (kg dry grain equivalent)
+ * @param biomassNatural wild floral and faunal biomass in metric tonnes (t)
  * @param foodResource caloric stockpile in Gigajoules (GJ)
  * @param waterResource available freshwater in thousand cubic meters (10³ m³)
  * @param woodResource standing timber biomass in metric tonnes (t)
@@ -24,7 +24,7 @@ package org.ether.society.database.components;
  * @version 1.0.0-beta.3
  */
 public record BiomassState(
-        double biomassHuman,
+        double humanPopulation,
         double biomassLivestock,
         double biomassFish,
         double biomassAgriculture,

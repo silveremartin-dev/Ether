@@ -66,7 +66,7 @@ public final class WorldBufferComponentAdapter {
      */
     public static BiomassState getBiomassState(WorldBuffer buffer, int index) {
         return new BiomassState(
-                buffer.getBiomassHuman()[index],
+                buffer.getHumanPopulation()[index],
                 buffer.getBiomassLivestock()[index],
                 buffer.getBiomassFish()[index],
                 buffer.getBiomassAgriculture()[index],
@@ -88,7 +88,7 @@ public final class WorldBufferComponentAdapter {
      */
     public static void setBiomassState(WorldBuffer buffer, int index, BiomassState state) {
         if (state == null) return;
-        buffer.getBiomassHuman()[index] = (float) state.biomassHuman();
+        buffer.getHumanPopulation()[index] = (float) state.humanPopulation();
         buffer.getBiomassLivestock()[index] = (float) state.biomassLivestock();
         buffer.getBiomassFish()[index] = (float) state.biomassFish();
         buffer.getBiomassAgriculture()[index] = (float) state.biomassAgriculture();
@@ -107,7 +107,7 @@ public final class WorldBufferComponentAdapter {
      */
     public static DemographicState getDemographicState(WorldBuffer buffer, int index) {
         return new DemographicState(
-                (int) buffer.getBiomassHuman()[index],
+                (int) buffer.getHumanPopulation()[index],
                 buffer.getLifespan()[index],
                 buffer.getFertility()[index],
                 buffer.getGiniIndex()[index],
@@ -178,7 +178,7 @@ public final class WorldBufferComponentAdapter {
      */
     public static float computeCellPowerWattsPerCapita(WorldBuffer buffer, int index) {
         if (index < 0 || index >= buffer.getCapacity()) return 0.0f;
-        float pop = buffer.getBiomassHuman()[index];
+        float pop = buffer.getHumanPopulation()[index];
         if (pop <= 0.001f) return 0.0f;
         OrganismBiophysicalProfile organismProfile = buffer.getOrganismProfile();
         double basalW = organismProfile.basalMetabolicPowerWatts();
@@ -206,7 +206,7 @@ public final class WorldBufferComponentAdapter {
      */
     public static float computeEmergentTechnologyDiagnostic(WorldBuffer buffer, int index) {
         if (index < 0 || index >= buffer.getCapacity()) return 0.0f;
-        float pop = buffer.getBiomassHuman()[index];
+        float pop = buffer.getHumanPopulation()[index];
         if (pop > 0.001f) {
             double powerW = computeCellPowerWattsPerCapita(buffer, index);
             double kpc = Math.max(0.0, buffer.getResourceCapital()[index] / pop);

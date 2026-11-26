@@ -125,7 +125,7 @@ public class SoilNutrientNPKEngine extends AbstractSimulationEngine {
         double relaxationRate = 1.0 - Math.exp(-3.0 * safeDt);
         double terraceMaintenanceDecay = Math.min(1.0, 0.004 * safeDt);
 
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         float[] agriArr = buffer.getBiomassAgriculture();
         float[] capArr = buffer.getResourceCapital();
         float[] metalArr = buffer.getMetalResource();
@@ -133,7 +133,7 @@ public class SoilNutrientNPKEngine extends AbstractSimulationEngine {
         int haberBoschActive = 0;
 
         for (int i = 0; i < size; i++) {
-            double pop = bioHuman[i] / 0.06;
+            double pop = bioHuman[i];
             double baseBiomass = agriArr[i];
             if (baseBiomass <= 0.0 || pop <= 0.0) continue;
 

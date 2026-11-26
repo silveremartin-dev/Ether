@@ -37,7 +37,7 @@ public class Demographic1914StepDiagnosisTest {
         // Step by step inside stepForward
         engine.syncCellsToBuffer();
         long pBuffer = 0;
-        for (float v : engine.getWorldBuffer().getBiomassHuman()) pBuffer += (long) v;
+        for (float v : engine.getWorldBuffer().getHumanPopulation()) pBuffer += (long) v;
         System.out.println("0. Pop in WorldBuffer after syncCellsToBuffer: " + pBuffer);
 
         // Run stepForward(1)

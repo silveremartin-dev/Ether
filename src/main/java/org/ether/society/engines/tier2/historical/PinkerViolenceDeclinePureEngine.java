@@ -53,7 +53,7 @@ public class PinkerViolenceDeclinePureEngine extends AbstractSimulationEngine {
 
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
-        double pop = buffer.getBiomassHuman()[i];
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
         double kpc = buffer.getResourceCapital()[i] / pop;
@@ -64,7 +64,7 @@ public class PinkerViolenceDeclinePureEngine extends AbstractSimulationEngine {
         double violentMortalityRate = calculateViolentDeathRatePerCapita(literacy, stateStrength, tradeOpenness);
         double violentDeaths = pop * violentMortalityRate * dtYears;
         if (violentDeaths > 0.0) {
-            acc.dBiomassHuman -= (float) Math.min(Math.max(0.0, pop - 1.0), violentDeaths);
+            acc.dHumanPopulation -= (float) Math.min(Math.max(0.0, pop - 1.0), violentDeaths);
         }
     }
 }

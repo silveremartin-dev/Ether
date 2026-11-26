@@ -55,12 +55,15 @@ public class ResourceRecyclingEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
         double capital = buffer.getResourceCapital()[i];
+        if (capital <= 0.0) return;
+        double kpc = capital / pop;
+        double industrialGate = org.ether.society.core.math.SmoothMath.sigmoid(kpc, 600.0, 150.0);
         double work = buffer.getInstitutionalComplexity()[i] * 100.0;
-        double efficiency = calculateContinuousRecyclingDiscount(capital, work);
+        double efficiency = calculateContinuousRecyclingDiscount(capital, work) * industrialGate;
         if (efficiency > 0.05) {
             acc.dResourceCapital += (float) (capital * efficiency * 0.025 * dtYears);
         }

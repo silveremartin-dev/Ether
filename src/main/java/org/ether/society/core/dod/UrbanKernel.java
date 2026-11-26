@@ -48,7 +48,7 @@ public class UrbanKernel {
     private void tickWithDtYears(WorldBuffer world, float dtYears) {
         float[] prices = world.getLocalPrice();
         float[] capital = world.getResourceCapital();
-        float[] pop = world.getBiomassHuman();
+        float[] pop = world.getHumanPopulation();
         float[] complexity = world.getInstitutionalComplexity();
 
         float dtInYears = dtYears;
@@ -105,8 +105,8 @@ public class UrbanKernel {
             // or high-power industrial grids; mobile foraging bands cannot transport stationary infrastructure (AGENTS.md A§8).
             float[] agri = world.getBiomassAgriculture();
             float cellAgri = (agri != null && i < agri.length) ? agri[i] : 0.0f;
-            double agriActivation = SmoothMath.sigmoid(cellAgri, 100.0, 30.0);
-            double industrialActivation = SmoothMath.sigmoid(powerPerCapitaW, 480.0, 80.0);
+            double agriActivation = SmoothMath.sigmoid(cellAgri, 150.0, 25.0);
+            double industrialActivation = SmoothMath.sigmoid(powerPerCapitaW, 520.0, 25.0);
             double sedentaryCapability = Math.max(agriActivation, industrialActivation);
             kStar = 5.0 + (kStar - 5.0) * sedentaryCapability;
 

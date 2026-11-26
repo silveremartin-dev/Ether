@@ -15,8 +15,8 @@ package org.ether.society.core.engine;
  */
 public final class DerivativeAccumulator {
 
-    /** Derivative increment for human somatic biomass (\(\Delta B_{\text{human}}\)). */
-    public float dBiomassHuman;
+    /** Derivative increment for living human population count (\(\Delta N_{\text{human}}\), individuals). */
+    public float dHumanPopulation;
 
     /** Derivative increment for physical built capital stock (\(\Delta K\)). */
     public float dResourceCapital;
@@ -82,7 +82,7 @@ public final class DerivativeAccumulator {
      * Resets all accumulator fields to zero before evaluating the next cell slot.
      */
     public void clear() {
-        dBiomassHuman = 0.0f;
+        dHumanPopulation = 0.0f;
         dResourceCapital = 0.0f;
         dEnergyFoodConsumed = 0.0f;
         dEnergyFire = 0.0f;
@@ -111,7 +111,7 @@ public final class DerivativeAccumulator {
      * @return {@code true} if any component has pending updates
      */
     public boolean hasNonZeroDerivatives() {
-        return dBiomassHuman != 0.0f
+        return dHumanPopulation != 0.0f
                 || dResourceCapital != 0.0f
                 || dEnergyFoodConsumed != 0.0f
                 || dEnergyFire != 0.0f

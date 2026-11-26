@@ -24,13 +24,15 @@ The foundational purpose of this registry is **epistemic transparency and algori
 * **Canonical Literature**:
   * Kooijman, S. A. L. M. (2010). *Dynamic Energy Budget theory for metabolic organisation*. Cambridge University Press.
   * Jager, T., Martin, B. T., & Baveco, J. M. (2013). *Alternative angels: Predicting rethink dynamic energy budget theory*. Journal of Theoretical Biology, 328, 85–93.
+  * Hatton, I. A., McCann, K. S., Fryxell, J. M., et al. (2015). *The predator-prey power law: Biomass scaling across terrestrial and aquatic biomes*. Science, 349(6252), aac6284.
   * Cahill, G. F. (1970). *Starvation in man*. New England Journal of Medicine, 282(12), 668–675.
 * **Canonical Published Formulation**:
-  * Microscopic individual differential system tracking individual structural volume $V$, reserve density $e$, and maturity $E_H$ with continuous developmental life stages (embryo $\to$ juvenile $\to$ adult).
+  * Microscopic individual differential system tracking individual structural volume $V$, reserve density $e$, and maturity $E_H$ with continuous developmental life stages (embryo $\to$ juvenile $\to$ adult); macro-herbivore community standing biomass scales sub-linearly with primary producer density $\rho_{\text{herb}} = c \cdot \rho_{\text{prod}}^{3/4}$ (Hatton et al. 2015).
 * **Calibrated Ether Formulation**:
   * Scaled to mean demographic cohorts and macro-herbivore guilds per H3 cell ($O(1)$ CPU complexity):
     $$\frac{dV}{dt} = \frac{\kappa \dot{p}_C - [\dot{p}_M] V}{[E_G]}, \qquad \frac{dE}{dt} = \dot{p}_A - \dot{p}_C$$
     $$\dot{p}_R = \max(0.0, \; (1 - \kappa) \dot{p}_C - [\dot{p}_J]), \qquad \mu_{\text{starv}} = \mu_{\max} \cdot \left(\frac{\max(0, \Delta V / V_{\text{healthy}})}{w_{\text{crit}}}\right)^2$$
+    $$\rho_{\text{herb}} = c_{\text{Hatton}} \cdot \left(\frac{B_{\text{natural}}}{A_{\text{cell}}}\right)^{3/4}, \qquad B_{\text{herb}} = \rho_{\text{herb}} \cdot A_{\text{cell}}$$
 * **Parameters, Material Properties & Physical Units**:
   * $\kappa = 0.80$: Somatic allocation fraction [dimensionless, 80% soma / 20% reproduction].
   * $[E_G] = 28.0\text{ GJ/metric ton}$: Specific synthesis cost of structural biomass [$\text{GJ/t} \equiv \text{MJ/kg}$].

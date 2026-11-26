@@ -68,8 +68,8 @@ public class HarrisCulturalMaterialismEngine extends AbstractSimulationEngine {
 
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
-        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (buffer == null || buffer.getHumanPopulation() == null || dtYears <= 0.0) return;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 1.0) return;
 
         double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 0.0;

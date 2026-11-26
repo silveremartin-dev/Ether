@@ -105,7 +105,7 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
 
         double initialPop = 0.0, initialCap = 0.0, initialTech = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            initialPop += buffer.getBiomassHuman()[i];
+            initialPop += buffer.getHumanPopulation()[i];
             initialCap += buffer.getResourceCapital()[i];
             initialTech += buffer.computeEmergentTechnologyDiagnostic(i);
         }
@@ -117,7 +117,7 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
 
         double finalPop = 0.0, finalCap = 0.0, finalTech = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            finalPop += buffer.getBiomassHuman()[i];
+            finalPop += buffer.getHumanPopulation()[i];
             finalCap += buffer.getResourceCapital()[i];
             finalTech += buffer.computeEmergentTechnologyDiagnostic(i);
         }
@@ -157,7 +157,7 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
             engine.stepForward(1);
             double curPop = 0, curCap = 0, curFood = 0;
             for (int i = 0; i < buffer.getCapacity(); i++) {
-                curPop += buffer.getBiomassHuman()[i];
+                curPop += buffer.getHumanPopulation()[i];
                 curCap += buffer.getResourceCapital()[i];
                 curFood += buffer.getFoodResource()[i];
             }

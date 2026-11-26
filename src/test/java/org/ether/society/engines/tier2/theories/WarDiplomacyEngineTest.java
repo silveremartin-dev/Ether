@@ -72,9 +72,9 @@ public class WarDiplomacyEngineTest {
      */
     public void testLinguisticDriftAndLinguaFranca() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
-        buf.getBiomassHuman()[0] = 500.0f;
+        buf.getHumanPopulation()[0] = 500.0f;
         buf.getElevation()[0] = 2500.0f; // Isolated mountain cell
-        buf.getBiomassHuman()[1] = 500.0f;
+        buf.getHumanPopulation()[1] = 500.0f;
         buf.getElevation()[1] = 200.0f; // Connected plain cell
 
         LanguageLinguisticEngine engine = new LanguageLinguisticEngine();
@@ -98,10 +98,10 @@ public class WarDiplomacyEngineTest {
      */
     public void testTechTreeDiffusion() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
-        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getHumanPopulation()[0] = 5000.0f;
         buf.getResourceCapital()[0] = 150000.0f;
         buf.getBiomassNatural()[0] = 2000.0f;
-        buf.getBiomassHuman()[1] = 3000.0f;
+        buf.getHumanPopulation()[1] = 3000.0f;
         buf.getResourceCapital()[1] = 100.0f;
         buf.getNeighborIndexes()[0] = new int[]{1};
         buf.getNeighborIndexes()[1] = new int[]{0};

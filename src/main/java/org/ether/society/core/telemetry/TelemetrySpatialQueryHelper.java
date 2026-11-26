@@ -96,7 +96,7 @@ final class TelemetrySpatialQueryHelper {
             return extractSpatialBufferValue(ch, wb, idx);
         }
         return switch (ch) {
-            case POPULATION_DENSITY -> cell.getBiomassHuman() != null ? cell.getBiomassHuman() : cell.getPopulationOr(0);
+            case POPULATION_DENSITY -> cell.getHumanPopulation() != null ? cell.getHumanPopulation() : cell.getPopulationOr(0);
             case BUILT_CAPITAL -> cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
             case TEMPERATURE -> cell.getTemperature() != null ? cell.getTemperature() : 14.5;
             case BIOME -> cell.getBiome() != null ? cell.getBiome().ordinal() : 0.0;
@@ -116,12 +116,12 @@ final class TelemetrySpatialQueryHelper {
     private static double extractSpatialBufferValue(
             TelemetrySubscription.SpatialChannel ch, WorldBuffer wb, int i) {
         return switch (ch) {
-            case POPULATION_DENSITY -> wb.getBiomassHuman()[i];
+            case POPULATION_DENSITY -> wb.getHumanPopulation()[i];
             case BUILT_CAPITAL -> wb.getResourceCapital()[i];
             case TEMPERATURE -> wb.getTemperature()[i];
             case BIOME -> wb.getBiomes()[i];
             case ECOLOGICAL_FOOTPRINT -> {
-                double pop = wb.getBiomassHuman()[i];
+                double pop = wb.getHumanPopulation()[i];
                 double nat = wb.getBiomassNatural()[i];
                 double agr = wb.getBiomassAgriculture()[i];
                 yield Math.clamp((agr + pop * 0.05) / Math.max(1.0, nat + agr + pop * 0.05), 0.0, 1.0);

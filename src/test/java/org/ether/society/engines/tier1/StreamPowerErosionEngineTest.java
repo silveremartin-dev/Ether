@@ -81,9 +81,12 @@ public class StreamPowerErosionEngineTest {
     public void test500CellCatchmentSimulation() {
         List<H3Cell> mesh = new ArrayList<>();
         // Generate a 500-cell basin with elevation descending from 2000m to 5m
+        org.ether.society.h3.H3Service h3 = org.ether.society.h3.H3Service.getInstance();
         for (int i = 0; i < 500; i++) {
             double elev = 5.0 + (1995.0 * i / 499.0);
-            H3Cell c = new H3Cell(0x883000000000000L + i, 30.0 + (i * 0.01), 30.0 + (i * 0.01));
+            double lat = 30.0 + (i / 25) * 0.03;
+            double lon = 30.0 + (i % 25) * 0.03;
+            H3Cell c = new H3Cell(h3.latLngToH3(lat, lon, 8), lat, lon);
             c.setElevation(elev);
             if (elev > 1000.0) c.setBiome(Biome.MOUNTAINS);
             else if (elev > 300.0) c.setBiome(Biome.HILLS);

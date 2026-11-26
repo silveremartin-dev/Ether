@@ -85,7 +85,7 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
         int sootInjectionEvents = 0;
         invocationCounter++;
 
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         float[] uraniumArr = buffer.getResourceUranium();
         float[] capArr = buffer.getResourceCapital();
         float[] pollutionArr = buffer.getPollutionLevel();
@@ -97,7 +97,7 @@ public class NuclearWarfareClimateEngine extends AbstractSimulationEngine {
 
         // 1. Evaluate conflict triggers & stratospheric soot injection
         for (int i = 0; i < n; i++) {
-            double pop = bioHuman[i] / 0.06;
+            double pop = bioHuman[i];
             if (pop <= 5000.0) continue;
 
             double uranium = uraniumArr[i];

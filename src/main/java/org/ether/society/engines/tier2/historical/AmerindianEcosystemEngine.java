@@ -41,8 +41,8 @@ public class AmerindianEcosystemEngine extends AbstractSimulationEngine {
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
 
-        double biomassHuman = buffer.getBiomassHuman()[i];
-        double pop = biomassHuman / 0.06;
+        double humanPopulation = buffer.getHumanPopulation()[i];
+        double pop = humanPopulation;
         if (pop <= 0.0) return;
 
         double livestock = buffer.getBiomassLivestock()[i];
@@ -55,8 +55,8 @@ public class AmerindianEcosystemEngine extends AbstractSimulationEngine {
 
         if (oldWorldContactTriggered && livestock < 5.0) {
             double survivalRate = Math.max(0.01, 1.0 - epidemicMortalityRate * Math.min(1.0, 0.10 * dtYears));
-            double newBiomass = Math.max(0.60, biomassHuman * survivalRate);
-            acc.dBiomassHuman += (newBiomass - biomassHuman);
+            double newBiomass = Math.max(0.60, humanPopulation * survivalRate);
+            acc.dHumanPopulation += (newBiomass - humanPopulation);
         }
     }
 

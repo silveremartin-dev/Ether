@@ -54,7 +54,7 @@ public class ClosedLoopResourceConservationTest {
     @DisplayName("Thermodynamic Fuel Depletion: Industrial power generation strictly depletes coal and oil reserves")
     void testIndustrialPowerDepletesGeologicalReserves() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 5000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 5000.0f;
         buf.getResourceCapital()[0] = 2000.0f;
         float initialCoal = 1000.0f;
         float initialOil = 800.0f;
@@ -75,7 +75,7 @@ public class ClosedLoopResourceConservationTest {
     @DisplayName("Metallurgy: Replaced arbitrary 0.5 capital multiplier with physical tooling & material wear rate")
     void testMetallurgicalCapitalFormationAndPhysicalWear() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 2000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 2000.0f;
         buf.getMetalResource()[0] = 500.0f;
         buf.getWoodResource()[0] = 1000.0f;
         buf.getBiomassNatural()[0] = 1000.0f;
@@ -92,11 +92,11 @@ public class ClosedLoopResourceConservationTest {
     @DisplayName("Supply Chain: Logistics loss is damped by infrastructure capital rather than fixed 0.02")
     void testInfrastructureCapitalDampsTransportFriction() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
-        buf.getBiomassHuman()[0] = 1000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 1000.0f;
         buf.getEnergyFire()[0] = 1000.0f;
         buf.getResourceCapital()[0] = 10.0f; // Low capital
 
-        buf.getBiomassHuman()[1] = 1000.0f * 0.06f;
+        buf.getHumanPopulation()[1] = 1000.0f;
         buf.getEnergyFire()[1] = 1000.0f;
         buf.getResourceCapital()[1] = 5000.0f; // High paved road / rail infrastructure capital
 
@@ -142,7 +142,7 @@ public class ClosedLoopResourceConservationTest {
     @DisplayName("Precious Metals: Extraction, cupellation enthalpy, and monetary capital formation")
     void testPreciousMetalExtractionAndMonetization() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 3000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 3000.0f;
         buf.getBiomassNatural()[0] = 500.0f;
         buf.getWoodResource()[0] = 500.0f;
         float initialMetal = 200.0f;
@@ -187,7 +187,7 @@ public class ClosedLoopResourceConservationTest {
     @DisplayName("Energy Grid & Critical Minerals: Natural gas and rare earths depletion and labor tracking")
     void testGasAndRareEarthsDepletionAndWorkTracking() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getResourceCapital()[0] = 50_000_000.0f;
         buf.getResourceCoal()[0] = 500.0f;
         buf.getResourceOil()[0] = 500.0f;
@@ -277,14 +277,14 @@ public class ClosedLoopResourceConservationTest {
     void testBronzeAgeTinTradeBottleneckCollapse() {
         // Connected Bronze Age cell
         org.ether.society.core.dod.WorldBuffer bronzeBuf = new org.ether.society.core.dod.WorldBuffer(2);
-        bronzeBuf.getBiomassHuman()[0] = 2000.0f * 0.06f;
+        bronzeBuf.getHumanPopulation()[0] = 2000.0f;
         bronzeBuf.getMetalResource()[0] = 500.0f;
         bronzeBuf.getWoodResource()[0] = 1000.0f;
         bronzeBuf.getResourceCapital()[0] = 50.0f;
         bronzeBuf.getFluxPressure()[0] = 1.0f;
 
         // Isolated Bronze Age cell (no ore, high border friction)
-        bronzeBuf.getBiomassHuman()[1] = 2000.0f * 0.06f;
+        bronzeBuf.getHumanPopulation()[1] = 2000.0f;
         bronzeBuf.getMetalResource()[1] = 0.0f;
         bronzeBuf.getWoodResource()[1] = 1000.0f;
         bronzeBuf.getResourceCapital()[1] = 50.0f;
@@ -313,7 +313,7 @@ public class ClosedLoopResourceConservationTest {
         org.ether.society.database.Polity spanishEmpire = new org.ether.society.database.Polity("BullionEmpire", null, potosiCell);
 
         org.ether.society.core.dod.WorldBuffer potosiBuf = new org.ether.society.core.dod.WorldBuffer(1);
-        potosiBuf.getBiomassHuman()[0] = 5000.0f * 0.06f;
+        potosiBuf.getHumanPopulation()[0] = 5000.0f;
         potosiBuf.getMetalResource()[0] = 500.0f;
         potosiBuf.getWoodResource()[0] = 800.0f;
         potosiBuf.getResourceCapital()[0] = 20.0f;
@@ -335,7 +335,7 @@ public class ClosedLoopResourceConservationTest {
         // 1700 England (Coalbrookdale / Midlands): Early Modern capital,
         // depleted local forests (woodResource = 30 t), abundant iron ore and flooded coal seams
         org.ether.society.core.dod.WorldBuffer englandBuf = new org.ether.society.core.dod.WorldBuffer(1);
-        englandBuf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        englandBuf.getHumanPopulation()[0] = 10000.0f;
         englandBuf.getMetalResource()[0] = 2000.0f;
         englandBuf.getWoodResource()[0] = 30.0f; // Severe local timber/charcoal scarcity
         englandBuf.getResourceCoal()[0] = 5000.0f; // Rich Carboniferous coal basin
@@ -361,7 +361,7 @@ public class ClosedLoopResourceConservationTest {
     @DisplayName("Finite Geological Resource Invariant: Non-renewable subsoil stocks monotonically deplete without spontaneous generation")
     void testFiniteGeologicalResourceMonotonicDepletionInvariant() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 15000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 15000.0f;
         buf.getResourceCapital()[0] = 3000.0f;
         float initialCoal = 2500.0f;
         float initialOil = 1800.0f;

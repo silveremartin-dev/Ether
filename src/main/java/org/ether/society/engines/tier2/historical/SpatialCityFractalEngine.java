@@ -34,7 +34,7 @@ public class SpatialCityFractalEngine extends AbstractSimulationEngine {
     public void tick(org.ether.society.core.dod.WorldBuffer buf, double dtYears, double dtMonthly) {
         if (buf == null || buf.getCapacity() < 2) return;
         int n = buf.getCapacity();
-        float[] popArr = buf.getBiomassHuman();
+        float[] popArr = buf.getHumanPopulation();
 
         int count = 0;
         for (int i = 0; i < n; i++) {

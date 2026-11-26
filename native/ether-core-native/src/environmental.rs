@@ -169,8 +169,8 @@ pub unsafe fn process_environmental(world: &mut WorldBufferRaw, dt_years: f32) {
     } else {
         &[]
     };
-    let human_pop = if !world.biomass_human.is_null() {
-        std::slice::from_raw_parts(world.biomass_human, n)
+    let human_pop = if !world.human_population.is_null() {
+        std::slice::from_raw_parts(world.human_population, n)
     } else {
         &[]
     };

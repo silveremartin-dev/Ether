@@ -70,7 +70,7 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
         double initialTotalWood = 0.0;
         double initialTotalCapital = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            initialTotalPop += buffer.getBiomassHuman()[i];
+            initialTotalPop += buffer.getHumanPopulation()[i];
             initialTotalWood += buffer.getWoodResource()[i];
             initialTotalCapital += buffer.getResourceCapital()[i];
         }
@@ -92,14 +92,14 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
             double currentWood = 0.0;
             double currentCapital = 0.0;
             for (int i = 0; i < buffer.getCapacity(); i++) {
-                currentPop += buffer.getBiomassHuman()[i];
+                currentPop += buffer.getHumanPopulation()[i];
                 currentWood += buffer.getWoodResource()[i];
                 currentCapital += buffer.getResourceCapital()[i];
 
                 // Strict sanity assertions per tick
-                assertFalse(Double.isNaN(buffer.getBiomassHuman()[i]), "NaN Pop at year " + year);
+                assertFalse(Double.isNaN(buffer.getHumanPopulation()[i]), "NaN Pop at year " + year);
                 assertFalse(Double.isNaN(buffer.computeEmergentTechnologyDiagnostic(i)), "NaN Tech at year " + year);
-                assertTrue(buffer.getBiomassHuman()[i] >= 0.0, "Negative Pop at year " + year);
+                assertTrue(buffer.getHumanPopulation()[i] >= 0.0, "Negative Pop at year " + year);
                 assertTrue(buffer.getWaterResource()[i] >= 0.0, "Negative Water at year " + year);
                 assertTrue(buffer.getFoodResource()[i] >= 0.0, "Negative Food at year " + year);
             }
@@ -145,8 +145,8 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
         // Res 4: 91 cells with ring radius 5 (~300,000 kmÂ² at Res 4, cell radius ~25 km)
         List<H3Cell> meshRes4 = createContiguousIsland(20.0, 75.0, 4, 5, 417.0);
 
-        double totalPopRes3 = meshRes3.stream().mapToDouble(H3Cell::getBiomassHuman).sum();
-        double totalPopRes4 = meshRes4.stream().mapToDouble(H3Cell::getBiomassHuman).sum();
+        double totalPopRes3 = meshRes3.stream().mapToDouble(H3Cell::getHumanPopulation).sum();
+        double totalPopRes4 = meshRes4.stream().mapToDouble(H3Cell::getHumanPopulation).sum();
         logger.info("Resolution Invariance Test: Res 3 ({} cells, Pop {}) vs Res 4 ({} cells, Pop {})",
                 meshRes3.size(), (long) totalPopRes3, meshRes4.size(), (long) totalPopRes4);
 
@@ -171,12 +171,12 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
 
         double finalPopRes3 = 0.0;
         for (int i = 0; i < engineRes3.getWorldBuffer().getCapacity(); i++) {
-            finalPopRes3 += engineRes3.getWorldBuffer().getBiomassHuman()[i];
+            finalPopRes3 += engineRes3.getWorldBuffer().getHumanPopulation()[i];
         }
 
         double finalPopRes4 = 0.0;
         for (int i = 0; i < engineRes4.getWorldBuffer().getCapacity(); i++) {
-            finalPopRes4 += engineRes4.getWorldBuffer().getBiomassHuman()[i];
+            finalPopRes4 += engineRes4.getWorldBuffer().getHumanPopulation()[i];
         }
 
         double growthRatioRes3 = finalPopRes3 / totalPopRes3;
@@ -221,9 +221,9 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
         engineB.stepForward((int) YEARS);
 
         double popA = 0.0;
-        for (int i = 0; i < engineA.getWorldBuffer().getCapacity(); i++) popA += engineA.getWorldBuffer().getBiomassHuman()[i];
+        for (int i = 0; i < engineA.getWorldBuffer().getCapacity(); i++) popA += engineA.getWorldBuffer().getHumanPopulation()[i];
         double popB = 0.0;
-        for (int i = 0; i < engineB.getWorldBuffer().getCapacity(); i++) popB += engineB.getWorldBuffer().getBiomassHuman()[i];
+        for (int i = 0; i < engineB.getWorldBuffer().getCapacity(); i++) popB += engineB.getWorldBuffer().getHumanPopulation()[i];
 
         double discrepancy = Math.abs(popA - popB) / Math.max(popA, popB);
         logger.info("Temporal Convergence: dt=60d Pop = {}, dt=365d Pop = {} (Relative Difference: {}%)",
@@ -263,7 +263,7 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
         double popWith = 0.0;
         double techWith = 0.0;
         for (int i = 0; i < engineWith.getWorldBuffer().getCapacity(); i++) {
-            popWith += engineWith.getWorldBuffer().getBiomassHuman()[i];
+            popWith += engineWith.getWorldBuffer().getHumanPopulation()[i];
             techWith += engineWith.getWorldBuffer().computeEmergentTechnologyDiagnostic(i);
         }
         techWith /= engineWith.getWorldBuffer().getCapacity();
@@ -271,7 +271,7 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
         double popWithout = 0.0;
         double techWithout = 0.0;
         for (int i = 0; i < engineWithout.getWorldBuffer().getCapacity(); i++) {
-            popWithout += engineWithout.getWorldBuffer().getBiomassHuman()[i];
+            popWithout += engineWithout.getWorldBuffer().getHumanPopulation()[i];
             techWithout += engineWithout.getWorldBuffer().computeEmergentTechnologyDiagnostic(i);
         }
         techWithout /= engineWithout.getWorldBuffer().getCapacity();
@@ -311,7 +311,7 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
         double initialWood = 0.0;
         double initialCapital = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            initialPop += buffer.getBiomassHuman()[i];
+            initialPop += buffer.getHumanPopulation()[i];
             initialWood += buffer.getWoodResource()[i];
             initialCapital += buffer.getResourceCapital()[i];
         }
@@ -330,7 +330,7 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
             double currentAgri = 0.0;
 
             for (int i = 0; i < buffer.getCapacity(); i++) {
-                float pop_i = buffer.getBiomassHuman()[i];
+                float pop_i = buffer.getHumanPopulation()[i];
                 float wood_i = buffer.getWoodResource()[i];
                 float cap_i = buffer.getResourceCapital()[i];
                 float agri_i = buffer.getBiomassAgriculture()[i];
@@ -397,7 +397,7 @@ public class IslandMultiScaleCliodynamicValidationSuite extends IslandValidation
         double finalCapital = 0.0;
         double finalAgri = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            finalPop += buffer.getBiomassHuman()[i];
+            finalPop += buffer.getHumanPopulation()[i];
             finalWood += buffer.getWoodResource()[i];
             finalCapital += buffer.getResourceCapital()[i];
             finalAgri += buffer.getBiomassAgriculture()[i];

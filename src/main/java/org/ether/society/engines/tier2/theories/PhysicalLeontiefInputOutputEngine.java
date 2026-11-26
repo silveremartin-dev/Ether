@@ -44,7 +44,7 @@ public class PhysicalLeontiefInputOutputEngine extends AbstractSimulationEngine 
         if (buf == null || buf.getCapacity() == 0) return;
         int n = buf.getCapacity();
 
-        float[] popArr = buf.getBiomassHuman();
+        float[] popArr = buf.getHumanPopulation();
         float[] solarArr = buf.getEnergySolar();
         float[] windArr = buf.getEnergyWind();
         float[] fireArr = buf.getEnergyFire();

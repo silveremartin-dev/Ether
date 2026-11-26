@@ -68,7 +68,7 @@ public class LifeHistoryInvariantsEngineTest {
 
         for (int i = 0; i < cellCount; i++) {
             buf.getH3Indexes()[i] = 400000L + i;
-            buf.getBiomassHuman()[i] = (float) (1000 * 0.06);
+            buf.getHumanPopulation()[i] = (float) (1000);
             buf.getTemperature()[i] = (i < 250) ? 18.0f : -25.0f;
         }
 
@@ -78,13 +78,13 @@ public class LifeHistoryInvariantsEngineTest {
         }
 
         for (int i = 0; i < 250; i++) {
-            double pop = buf.getBiomassHuman()[i] / 0.06;
+            double pop = buf.getHumanPopulation()[i];
             assertTrue(pop >= 900.0,
                     "Hospitable cells must maintain stable demographic persistence.");
         }
 
         for (int i = 250; i < 500; i++) {
-            double pop = buf.getBiomassHuman()[i] / 0.06;
+            double pop = buf.getHumanPopulation()[i];
             assertTrue(pop < 1000.0,
                     "Populations subjected to severe thermal stress must contract.");
             assertTrue(pop > 0.0,
@@ -105,7 +105,7 @@ public class LifeHistoryInvariantsEngineTest {
         }
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(run1.getBiomassHuman()[i], run2.getBiomassHuman()[i],
+            assertEquals(run1.getHumanPopulation()[i], run2.getHumanPopulation()[i],
                     "Life history demographic trajectories must be bitwise identical.");
         }
     }
@@ -114,7 +114,7 @@ public class LifeHistoryInvariantsEngineTest {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(count);
         for (int i = 0; i < count; i++) {
             buf.getH3Indexes()[i] = 80000L + i;
-            buf.getBiomassHuman()[i] = (float) (1500 * 0.06);
+            buf.getHumanPopulation()[i] = (float) (1500);
             buf.getTemperature()[i] = (i % 2 == 0) ? 15.0f : -15.0f;
         }
         return buf;

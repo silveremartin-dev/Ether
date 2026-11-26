@@ -30,7 +30,7 @@ public class H3HaloBoundaryExchanger {
         /** Internal state: temperature (float). */
         private final float temperature;
         /** Internal state: biomass human (float). */
-        private final float biomassHuman;
+        private final float humanPopulation;
         /** Internal state: local price (float). */
         private final float localPrice;
 
@@ -40,15 +40,15 @@ public class H3HaloBoundaryExchanger {
          * @param cellIndex the cell index parameter (int)
          * @param fluxPressure the flux pressure parameter (float)
          * @param temperature the temperature parameter (float)
-         * @param biomassHuman the biomass human parameter (float)
+         * @param humanPopulation the biomass human parameter (float)
          * @param localPrice the local price parameter (float)
          * @return the resulting computation or state reference
          */
-        public HaloCellDelta(int cellIndex, float fluxPressure, float temperature, float biomassHuman, float localPrice) {
+        public HaloCellDelta(int cellIndex, float fluxPressure, float temperature, float humanPopulation, float localPrice) {
             this.cellIndex = cellIndex;
             this.fluxPressure = fluxPressure;
             this.temperature = temperature;
-            this.biomassHuman = biomassHuman;
+            this.humanPopulation = humanPopulation;
             this.localPrice = localPrice;
         }
 
@@ -75,7 +75,7 @@ public class H3HaloBoundaryExchanger {
          *
          * @return the resulting computation or state reference
          */
-        public float getBiomassHuman() { return biomassHuman; }
+        public float getHumanPopulation() { return humanPopulation; }
         /**
          * Get local price.
          *
@@ -93,7 +93,7 @@ public class H3HaloBoundaryExchanger {
 
         float[] flux = buffer.getFluxPressure();
         float[] temp = buffer.getTemperature();
-        float[] pop = buffer.getBiomassHuman();
+        float[] pop = buffer.getHumanPopulation();
         float[] price = buffer.getLocalPrice();
 
         for (int idx : boundaryIndices) {
@@ -121,7 +121,7 @@ public class H3HaloBoundaryExchanger {
             buf.putInt(d.getCellIndex());
             buf.putFloat(d.getFluxPressure());
             buf.putFloat(d.getTemperature());
-            buf.putFloat(d.getBiomassHuman());
+            buf.putFloat(d.getHumanPopulation());
             buf.putFloat(d.getLocalPrice());
         }
         return buf.array();
@@ -137,7 +137,7 @@ public class H3HaloBoundaryExchanger {
 
         float[] flux = targetBuffer.getFluxPressure();
         float[] temp = targetBuffer.getTemperature();
-        float[] pop = targetBuffer.getBiomassHuman();
+        float[] pop = targetBuffer.getHumanPopulation();
         float[] price = targetBuffer.getLocalPrice();
         int cap = targetBuffer.getCapacity();
 

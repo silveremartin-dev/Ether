@@ -9,6 +9,7 @@ package org.ether.society.engines.tier1;
 import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.database.H3Cell;
+import org.ether.society.database.H3CellPhysicsAndStateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +41,14 @@ public class InfrastructureEnergyEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         double capital = buffer.getResourceCapital()[i];
-        if (capital > 200.0) {
-            double friction = buffer.getFluxPressure()[i];
-            double targetFriction = Math.max(0.25, 1.0 / (1.0 + Math.log1p((capital - 200.0) / 500.0)));
-            if (friction > targetFriction) {
-                acc.dFluxPressure += (float) ((targetFriction - friction) * Math.min(1.0, dtYears * 0.2));
-            }
-        }
+        if (capital <= 0.0) return;
+        double elev = buffer.getElevation()[i];
+        double tempC = buffer.getTemperature()[i];
+        double bioNat = buffer.getBiomassNatural()[i];
+        double areaKm2 = H3CellPhysicsAndStateHelper.resolveCellAreaKm2(buffer.getH3Indexes(), i);
+        double friction = buffer.getFluxPressure()[i];
+        double targetFriction = H3CellPhysicsAndStateHelper.calculateMovementFrictionFromObservables(
+                elev, tempC, bioNat, capital, areaKm2);
+        acc.dFluxPressure += (float) (targetFriction - friction);
     }
 }

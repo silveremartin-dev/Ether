@@ -55,6 +55,9 @@ public final class TelemetryEvaluationContext {
     final double t0Co2Ppm;
     final double elapsedYears;
     final double engineTps;
+    final long year;
+    final double initialInformationPerCapita;
+    final double cellAreaKm2;
 
     private Double cachedPhiExergy;
 
@@ -67,6 +70,42 @@ public final class TelemetryEvaluationContext {
                                       int polityCount, int cityStatesCount, double avgAsabiyyahPct, double meanPolityInstab,
                                       double meanEliteOverprodPolity, long largestUnitSize, int maxHierarchy,
                                       long initialPop, double t0Co2Ppm, double elapsedYears, double engineTps) {
+        this(capacity, popSum, popLong, foodSum, foodPerCapita, waterSum, bioNatSum, bioAgrSum, bioLivSum,
+                builtCapSum, energyCapturedMw, currentNonRenRes, landCellCount, landTempSum, populatedCount, urbanPop,
+                weightedSoilOrg, arableCells, gini, gdp, lifeExp, fertility, agentBirthRate, agentDeathRate,
+                polityCount, cityStatesCount, avgAsabiyyahPct, meanPolityInstab, meanEliteOverprodPolity,
+                largestUnitSize, maxHierarchy, initialPop, t0Co2Ppm, elapsedYears, engineTps,
+                2000L, 0.0, H3CellPhysicsAndStateHelper.DEFAULT_AREA_RES4_KM2);
+    }
+
+    public TelemetryEvaluationContext(int capacity, double popSum, long popLong, double foodSum, double foodPerCapita,
+                                      double waterSum, double bioNatSum, double bioAgrSum, double bioLivSum,
+                                      double builtCapSum, double energyCapturedMw, double currentNonRenRes,
+                                      int landCellCount, double landTempSum, int populatedCount, double urbanPop,
+                                      double weightedSoilOrg, int arableCells, float gini, float gdp,
+                                      float lifeExp, float fertility, double agentBirthRate, double agentDeathRate,
+                                      int polityCount, int cityStatesCount, double avgAsabiyyahPct, double meanPolityInstab,
+                                      double meanEliteOverprodPolity, long largestUnitSize, int maxHierarchy,
+                                      long initialPop, double t0Co2Ppm, double elapsedYears, double engineTps,
+                                      long year, double initialInformationPerCapita) {
+        this(capacity, popSum, popLong, foodSum, foodPerCapita, waterSum, bioNatSum, bioAgrSum, bioLivSum,
+                builtCapSum, energyCapturedMw, currentNonRenRes, landCellCount, landTempSum, populatedCount, urbanPop,
+                weightedSoilOrg, arableCells, gini, gdp, lifeExp, fertility, agentBirthRate, agentDeathRate,
+                polityCount, cityStatesCount, avgAsabiyyahPct, meanPolityInstab, meanEliteOverprodPolity,
+                largestUnitSize, maxHierarchy, initialPop, t0Co2Ppm, elapsedYears, engineTps,
+                year, initialInformationPerCapita, H3CellPhysicsAndStateHelper.DEFAULT_AREA_RES4_KM2);
+    }
+
+    public TelemetryEvaluationContext(int capacity, double popSum, long popLong, double foodSum, double foodPerCapita,
+                                      double waterSum, double bioNatSum, double bioAgrSum, double bioLivSum,
+                                      double builtCapSum, double energyCapturedMw, double currentNonRenRes,
+                                      int landCellCount, double landTempSum, int populatedCount, double urbanPop,
+                                      double weightedSoilOrg, int arableCells, float gini, float gdp,
+                                      float lifeExp, float fertility, double agentBirthRate, double agentDeathRate,
+                                      int polityCount, int cityStatesCount, double avgAsabiyyahPct, double meanPolityInstab,
+                                      double meanEliteOverprodPolity, long largestUnitSize, int maxHierarchy,
+                                      long initialPop, double t0Co2Ppm, double elapsedYears, double engineTps,
+                                      long year, double initialInformationPerCapita, double cellAreaKm2) {
         this.capacity = capacity;
         this.popSum = popSum;
         this.popLong = popLong;
@@ -102,6 +141,9 @@ public final class TelemetryEvaluationContext {
         this.t0Co2Ppm = t0Co2Ppm;
         this.elapsedYears = elapsedYears;
         this.engineTps = engineTps;
+        this.year = year;
+        this.initialInformationPerCapita = initialInformationPerCapita;
+        this.cellAreaKm2 = Math.max(0.01, cellAreaKm2);
     }
 
     double kpc() {

@@ -92,13 +92,13 @@ public class PhysicalEngineTestSuite {
         buf.getResourceUranium()[0] = 100.0f;
         buf.getResourceCapital()[0] = 300000.0f;
         double initialPollution = buf.getPollutionLevel()[0];
-        double initialBioHuman = buf.getBiomassHuman()[0];
+        double initialBioHuman = buf.getHumanPopulation()[0];
 
         NuclearSafetyRadiotoxicityEngine.setAccidentProbability(1.0);
         NuclearSafetyRadiotoxicityEngine.processNuclearEnergySafety(buf);
 
         assertTrue(buf.getPollutionLevel()[0] > initialPollution + 5000.0, "Core meltdown must cause massive radiotoxic pollution spike");
-        assertEquals(initialBioHuman * 0.70, buf.getBiomassHuman()[0], 1e-2, "Radiation casualties & evacuation must reduce population by 30%");
+        assertEquals(initialBioHuman * 0.70, buf.getHumanPopulation()[0], 1e-2, "Radiation casualties & evacuation must reduce population by 30%");
     }
 
     @Test

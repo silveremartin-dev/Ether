@@ -36,7 +36,7 @@ class DODDataGeneratorTest {
             c.setElevation(150.0 + i * 10);
             c.setBiome(Biome.PLAINS);
             c.setPopulation(5000 + i * 1000);
-            c.setBiomassHuman(5000.0 + i * 1000);
+            c.setHumanPopulation(5000.0 + i * 1000);
             c.setFoodResource(250.0);
             c.setWaterResource(300.0);
             c.setWoodResource(100.0);
@@ -64,7 +64,7 @@ class DODDataGeneratorTest {
         for (int i = 0; i < cellCount; i++) {
             assertEquals(1000 + i, buffer.getH3Indexes()[i]);
             assertEquals(150.0f + i * 10, buffer.getElevation()[i], 1e-3);
-            assertEquals(5000.0f + i * 1000, buffer.getBiomassHuman()[i], 1e-3);
+            assertEquals(5000.0f + i * 1000, buffer.getHumanPopulation()[i], 1e-3);
             assertEquals(250.0f, buffer.getFoodResource()[i], 1e-3);
             assertEquals(300.0f, buffer.getWaterResource()[i], 1e-3);
             assertEquals(45.0f, buffer.getMetalResource()[i], 1e-3);
@@ -80,11 +80,11 @@ class DODDataGeneratorTest {
         int capacity = 2;
         WorldBuffer world = new WorldBuffer(capacity);
         world.getH3Indexes()[0] = 55555L;
-        world.getBiomassHuman()[0] = 1500.0f; // 1500 people
+        world.getHumanPopulation()[0] = 1500.0f; // 1500 people
         world.getResourceCapital()[0] = 300000.0f;
 
         world.getH3Indexes()[1] = 66666L;
-        world.getBiomassHuman()[1] = 0.0f; // Unpopulated cell
+        world.getHumanPopulation()[1] = 0.0f; // Unpopulated cell
 
         AgentBuffer agents = new AgentBuffer(20, 4);
         int cohortSize = 500;

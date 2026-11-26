@@ -288,7 +288,7 @@ public class Polity {
         double normalizedElitePressure = Math.clamp((eliteOverproduction - 0.2) / 4.3, 0.0, 1.0);
         this.stateCapacity = Math.clamp((0.4 * asabiyyah) + (0.6 * (1.0 - normalizedElitePressure)) + fiscalMonetizationBonus - (monetaryInflation * 0.20), 0.1, 1.0);
 
-        // 4. Political Instability Index (PSI) formulation: PSI = (1 - Asabiyyah) * EliteOverproduction * (1 + Gini)
+        // 4. Political Instability Index (PSI) formulation: PSI = (1 - Asabiyyah) * (0.5 + EliteOverproduction) * (1 + Gini + 0.5*Inflation)
         this.politicalInstability = Math.clamp((1.0 - asabiyyah) * (0.5 + eliteOverproduction) * (1.0 + avgGini + monetaryInflation * 0.5), 0.0, 1.0);
     }
 

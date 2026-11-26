@@ -104,7 +104,7 @@ public class PhysicsTransportEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (buffer == null || acc == null) return;
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop > 0.0) {
             double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
             double workPerKgKm = calculateTransportWorkJoules(buffer, i);
@@ -128,12 +128,12 @@ public class PhysicsTransportEngine extends AbstractSimulationEngine {
 
         double totalWorkExpendedJoules = 0.0;
         int activeTransportCells = 0;
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         float[] fluxArr = buffer.getFluxPressure();
         int n = buffer.getCapacity();
 
         for (int i = 0; i < n; i++) {
-            double pop = bioHuman[i] / 0.06;
+            double pop = bioHuman[i];
             if (pop > 0.0) {
                 double workPerKgKm = calculateTransportWorkJoules(buffer, i);
                 double cargoMassKg = pop * 2.0 * dtMonthlyRatio;

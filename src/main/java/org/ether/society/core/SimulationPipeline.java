@@ -109,6 +109,13 @@ public class SimulationPipeline {
             configureScenario(activeScenario);
         }
 
+        if (engine != null && engine.getTimeManager() != null) {
+            worldBuffer.setCurrentYear(engine.getCurrentYear());
+        } else if (activeScenario != null) {
+            worldBuffer.setCurrentYear(activeScenario.getStartDateYear());
+        }
+        worldBuffer.setDemographicKernelManaged(agentBuffer != null);
+
         SimulationTimeStep timeStep = SimulationTimeStep.ofSeconds(dtSlow);
         double dtYears = timeStep.dtYears();
         double dtMonthly = timeStep.dtMonths();

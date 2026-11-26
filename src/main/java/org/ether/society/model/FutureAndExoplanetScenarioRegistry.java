@@ -91,7 +91,7 @@ public final class FutureAndExoplanetScenarioRegistry {
         sFuture.setEndDateYear(2100);
         sFuture.setInitialHumanCount(8264000000L); // 8.264B UN WPP 2024 exact baseline
         sFuture.setInitialCapitalPerCapita(13500.0); // World Bank / Maddison 2024 GWP/capita
-        sFuture.setInitialEnergyPerCapita(73.0); // Vaclav Smil 2021 / IEA: 605 EJ / 8.26B ~ 73.2 GJ/capita
+        sFuture.setInitialEnergyPerCapita(75000.0); // Vaclav Smil / IEA 2026: ~620 EJ / 8.26B ~ 75,000 MJ/capita/yr
         sFuture.setInitialFoodReserveMonths(3.5);
         sFuture.setInitialInformationPerCapita(150000.0);
         sFuture.setPopulationDensityType("URBAN_CLUSTERS");

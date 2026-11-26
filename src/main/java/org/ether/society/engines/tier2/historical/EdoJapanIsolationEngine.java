@@ -52,7 +52,7 @@ public class EdoJapanIsolationEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (!sakokuIsolationActive || buffer == null) return;
-        float pop = buffer.getBiomassHuman() != null ? buffer.getBiomassHuman()[i] : 0.0f;
+        float pop = buffer.getHumanPopulation() != null ? buffer.getHumanPopulation()[i] : 0.0f;
         if (pop > 0.001f && buffer.getPollutionLevel() != null) {
             float pol = buffer.getPollutionLevel()[i];
             if (pol > 0.0f) {

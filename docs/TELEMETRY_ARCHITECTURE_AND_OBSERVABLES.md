@@ -28,7 +28,7 @@ Every simulation step records twelve fundamental physical state variables aggreg
 
 | # | Symbol | Observable Name | Physical Unit | Cellular Buffer Source | Aggregation & Integration Formula |
 |---|---|---|---|---|---|
-| **1** | $N$ | **Human / Agent Population** | Inhabitants | `biomassHuman[i]` | $N = \sum_{i=0}^{C-1} P_i$ |
+| **1** | $N$ | **Human / Agent Population** | Inhabitants | `humanPopulation[i]` | $N = \sum_{i=0}^{C-1} P_i$ |
 | **2** | $K$ | **Physical Built Capital Stock** | $1990\,\$$ / kg | `resourceCapital[i]` | $K = \sum_{i=0}^{C-1} K_i$ |
 | **3** | $P_{\text{watts}}$ | **Primary Power Dissipation** | Watts ($\text{W}$) | `powerWattsPerCapita[i]` | $P_{\text{watts}} = \sum_{i=0}^{C-1} \left( p_{i, \text{metabolic}} + p_{i, \text{mechanical}} + p_{i, \text{grid}} \right) \cdot P_i$ |
 | **4** | $B_{\text{agr}}$ | **Agricultural Crop Biomass** | Metric Tons | `biomassAgriculture[i]` | $B_{\text{agr}} = \sum_{i=0}^{C-1} B_{\text{agr}, i}$ |
@@ -42,7 +42,7 @@ Every simulation step records twelve fundamental physical state variables aggreg
 | **12** | $S_{\text{inst}}$ | **Institutional State Stability** | $[0.0, 100.0]$ | `institutionalStability[i]` | $S_{\text{inst}} = \frac{\sum_{i=0}^{C-1} S_i \cdot P_i}{N}$ |
 
 ### 2.1. Cellular Buffer Extraction Details
-1. **Population ($N$)**: Directly summed from `WorldBuffer.biomassHuman[i]`, representing the total count of living human or agent entities on the planet.
+1. **Population ($N$)**: Directly summed from `WorldBuffer.humanPopulation[i]`, representing the total count of living human or agent entities on the planet.
 2. **Capital Stock ($K$)**: Directly summed from `WorldBuffer.resourceCapital[i]`, tracking physical structural units (masonry, iron, tools, roads, machinery) in constant 1990 Geary-Khamis dollars.
 3. **Power Dissipation ($P_{\text{watts}}$)**: Evaluated per cell as the sum of basal metabolic rate ($80\text{ W/hab}$), animal/somatic mechanical work, and active mechanical/electrical power grids:
    $$p_i = p_{\text{basal}} + p_{\text{mechanical}} + p_{\text{grid}}$$

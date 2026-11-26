@@ -73,6 +73,7 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
             NuclearWarfareClimateEngine.setGlobalSootOpticalDepth(tau * Math.exp(-0.693 * dtSafe));
         }
 
+        float[] baseTempArr = buf.getBaselineTemperature();
         for (int i = 0; i < n; i++) {
             float elev = elevArr[i];
             byte biome = biomes[i];
@@ -81,8 +82,11 @@ public class AlbedoClimateEngine extends AbstractSimulationEngine {
             double bioNat = bioNatArr[i];
             double albedo = (biome == (byte) Biome.DESERT.ordinal()) ? 0.35 : Math.max(0.12, 0.25 - 0.10 * Math.tanh(bioNat / 500.0));
             double currentTemp = tempArr[i];
+            if (Float.isNaN(baseTempArr[i])) {
+                baseTempArr[i] = (float) currentTemp;
+            }
+            double baselineTemp = baseTempArr[i];
             double equilibriumTempAnomaly = (0.30 - albedo) * 6.0;
-            double baselineTemp = 22.0 - 0.0065 * Math.max(0.0, elev);
             double targetTemp = baselineTemp + equilibriumTempAnomaly + aerosolCooling;
             double updatedTemp = currentTemp + (targetTemp - currentTemp) * thermalRelaxationFactor;
             tempArr[i] = (float) Math.clamp(updatedTemp, -250.0, 600.0);

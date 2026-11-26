@@ -106,7 +106,7 @@ public class PhysicalEnergyGridEngine extends AbstractSimulationEngine {
     public static double calculatePerCapitaMechanicalPowerWatts(WorldBuffer buffer, int i) {
         if (buffer == null || i < 0 || i >= buffer.getCapacity()) return 0.0;
 
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return 0.0;
 
         double capital = buffer.getResourceCapital()[i];
@@ -161,7 +161,8 @@ public class PhysicalEnergyGridEngine extends AbstractSimulationEngine {
         if (buffer == null || buffer.getCapacity() == 0) return;
         double dtSafe = Math.max(0.0001, dtYears);
 
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
+        float[] bioAgri = buffer.getBiomassAgriculture();
         float[] capArr = buffer.getResourceCapital();
         float[] coalArr = buffer.getResourceCoal();
         float[] oilArr = buffer.getResourceOil();
@@ -170,7 +171,7 @@ public class PhysicalEnergyGridEngine extends AbstractSimulationEngine {
         int n = buffer.getCapacity();
 
         for (int i = 0; i < n; i++) {
-            double pop = bioHuman[i] / 0.06;
+            double pop = bioHuman[i];
             if (pop <= 0.0) continue;
 
             double powerPerCapitaW = calculatePerCapitaMechanicalPowerWatts(buffer, i);
@@ -209,6 +210,13 @@ public class PhysicalEnergyGridEngine extends AbstractSimulationEngine {
             double kStar = 5.0
                     + 580.0 * Math.tanh(SmoothMath.softplus(powerPerCapitaW - 348.0, 0.2) / 38.0)
                     + 62.0 * Math.pow(SmoothMath.softplus(powerPerCapitaW - 400.0, 0.1) / 100.0, 1.95);
+            double bandConstraint = SmoothMath.sigmoid(pop, 50.0, 15.0);
+            kStar = 5.0 * (1.0 - bandConstraint) + kStar * bandConstraint;
+            double cellAgri = (bioAgri != null && i < bioAgri.length) ? bioAgri[i] : 0.0;
+            double agriActivation = SmoothMath.sigmoid(cellAgri, 150.0, 25.0);
+            double industrialActivation = SmoothMath.sigmoid(powerPerCapitaW, 520.0, 25.0);
+            double sedentaryCapability = Math.max(agriActivation, industrialActivation);
+            kStar = 5.0 + (kStar - 5.0) * sedentaryCapability;
             double deltaAnnual = 0.04;
             double dCapitalPerCapita = deltaAnnual * (kStar - capPerCapita) * dtSafe;
             double newCapPerCapita = Math.max(0.0, capPerCapita + dCapitalPerCapita);

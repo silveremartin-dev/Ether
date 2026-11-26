@@ -44,8 +44,8 @@ public class BoserupAgriculturalIntensificationEngine extends AbstractSimulation
 
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
-        if (buffer == null || buffer.getBiomassHuman() == null) return;
-        float pop = buffer.getBiomassHuman()[i];
+        if (buffer == null || buffer.getHumanPopulation() == null) return;
+        float pop = buffer.getHumanPopulation()[i];
         if (pop > 0.001f) {
             double density = pop / 100.0;
             double densityNorm = Math.pow(Math.max(0.0, density), 1.4);

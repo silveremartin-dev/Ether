@@ -45,7 +45,7 @@ public class LenskiPureEngine extends AbstractSimulationEngine {
     public static void processLenskiPikettyInequality(WorldBuffer buffer, double deltaYears) {
         if (buffer == null || deltaYears <= 0.0) return;
         int n = buffer.getCapacity();
-        float[] popArr = buffer.getBiomassHuman();
+        float[] popArr = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
         float[] giniArr = buffer.getGiniIndex();
         float[] compArr = buffer.getInstitutionalComplexity();

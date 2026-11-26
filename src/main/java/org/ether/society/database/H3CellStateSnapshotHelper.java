@@ -80,7 +80,7 @@ public final class H3CellStateSnapshotHelper {
         copy.setHasDam(src.getHasDam());
         copy.setHasFloatingInfrastructure(src.getHasFloatingInfrastructure());
 
-        copy.setBiomassHuman(src.getBiomassHuman());
+        copy.setHumanPopulation(src.getHumanPopulation());
         copy.setBiomassLivestock(src.getBiomassLivestock());
         copy.setBiomassFish(src.getBiomassFish());
         copy.setBiomassAgriculture(src.getBiomassAgriculture());
@@ -140,7 +140,7 @@ public final class H3CellStateSnapshotHelper {
      */
     public static BiomassState extractBiomassState(H3Cell cell) {
         return new BiomassState(
-                cell.getBiomassHumanOr(0.0),
+                cell.getHumanPopulationOr(0.0),
                 cell.getBiomassLivestockOr(0.0),
                 cell.getBiomassFishOr(0.0),
                 cell.getBiomassAgricultureOr(0.0),
@@ -161,7 +161,7 @@ public final class H3CellStateSnapshotHelper {
      */
     public static void applyBiomassState(H3Cell cell, BiomassState state) {
         if (state == null) return;
-        cell.setBiomassHuman(state.biomassHuman());
+        cell.setHumanPopulation(state.humanPopulation());
         cell.setBiomassLivestock(state.biomassLivestock());
         cell.setBiomassFish(state.biomassFish());
         cell.setBiomassAgriculture(state.biomassAgriculture());

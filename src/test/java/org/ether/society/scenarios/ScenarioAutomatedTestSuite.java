@@ -152,7 +152,7 @@ public class ScenarioAutomatedTestSuite {
 
             long currentPop = 0L;
             for (int i = 0; i < mockCells.size(); i++) {
-                currentPop += Math.round(buf.getBiomassHuman()[i] / 0.06);
+                currentPop += Math.round(buf.getHumanPopulation()[i]);
             }
             assertTrue(currentPop > 0, "Population must persist during paleolithic expansion");
             assertTrue(currentPop <= 5_000_000L, "Population must remain within hunter-gatherer global capacity (<5M)");
@@ -162,7 +162,7 @@ public class ScenarioAutomatedTestSuite {
         long nonOriginPop = 0L;
         for (int i = 0; i < mockCells.size(); i++) {
             if (buf.getH3Indexes()[i] != 1001L) {
-                nonOriginPop += Math.round(buf.getBiomassHuman()[i] / 0.06);
+                nonOriginPop += Math.round(buf.getHumanPopulation()[i]);
             }
         }
         assertTrue(nonOriginPop > 0, "Out-of-Africa demographic wave must migrate to neighboring cells");
@@ -204,7 +204,7 @@ public class ScenarioAutomatedTestSuite {
                 ecoEngine.tick(stabBuf, 1.0, 12.0);
 
                 for (int i = 0; i < mockCells.size(); i++) {
-                    double pop = stabBuf.getBiomassHuman()[i] / 0.06;
+                    double pop = stabBuf.getHumanPopulation()[i];
                     assertTrue(pop >= 0, "Population must be non-negative");
 
                     float capital = stabBuf.getResourceCapital()[i];
@@ -267,7 +267,7 @@ public class ScenarioAutomatedTestSuite {
             world3Engine.tick(tier2Buf, 1.0, 1.0);
 
             for (int i = 0; i < mockCells.size(); i++) {
-                float pop = tier2Buf.getBiomassHuman()[i] / 0.06f;
+                float pop = tier2Buf.getHumanPopulation()[i];
                 float capital = tier2Buf.getResourceCapital()[i];
                 float food = tier2Buf.getFoodResource()[i];
 

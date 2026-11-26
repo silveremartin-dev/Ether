@@ -104,7 +104,7 @@ final class DeterministicExecutionHashSupport {
         for (int i = 0; i < capacity; i++) {
             buffer.getH3Indexes()[i] = 0x882681a33900000L + i;
             float initPop = 100.0f + (float) rng.nextDouble() * 50.0f;
-            buffer.getBiomassHuman()[i] = initPop;
+            buffer.getHumanPopulation()[i] = initPop;
             buffer.getBiomassAgriculture()[i] = 200.0f;
             buffer.getBiomassNatural()[i] = 500.0f;
             buffer.getFoodResource()[i] = 500.0f + (float) rng.nextDouble() * 200.0f;
@@ -123,7 +123,7 @@ final class DeterministicExecutionHashSupport {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         ByteBuffer byteBuf = ByteBuffer.allocate(capacity * 4 * 4);
         for (int i = 0; i < capacity; i++) {
-            byteBuf.putFloat(buffer.getBiomassHuman()[i]);
+            byteBuf.putFloat(buffer.getHumanPopulation()[i]);
             byteBuf.putFloat(buffer.getFoodResource()[i]);
             byteBuf.putFloat(buffer.getResourceCapital()[i]);
             byteBuf.putFloat(buffer.getGiniIndex()[i]);
@@ -147,7 +147,7 @@ final class DeterministicExecutionHashSupport {
             long seed, int totalCells, int clusterCount, int ticks, ClusterScheduleMode mode) throws Exception {
         Random rng = new Random(seed);
         WorldBuffer world = new WorldBuffer(totalCells);
-        float[] pop = world.getBiomassHuman();
+        float[] pop = world.getHumanPopulation();
         float[] food = world.getFoodResource();
         float[] tech = new float[totalCells];
         float[] capital = world.getResourceCapital();
@@ -346,7 +346,7 @@ final class DeterministicExecutionHashSupport {
             cell.setH3Index(h3.latLngToH3(lat, lng, 3));
             cell.setBiome(i % 2 == 0 ? Biome.FOREST : Biome.PLAINS);
             cell.setPopulation(1200 + rng.nextInt(800));
-            cell.setBiomassHuman(600.0 + rng.nextDouble() * 400.0);
+            cell.setHumanPopulation(600.0 + rng.nextDouble() * 400.0);
             cell.setTemperature(14.0 + rng.nextDouble() * 6.0);
             cell.setFoodResource(2500.0 + rng.nextDouble() * 1000.0);
             cell.setWaterResource(80.0 + rng.nextDouble() * 40.0);
@@ -375,7 +375,7 @@ final class DeterministicExecutionHashSupport {
         ByteBuffer buf = ByteBuffer.allocate(finalCells.size() * 8 * 8);
         for (H3Cell c : finalCells) {
             buf.putDouble(c.getPopulation() != null ? c.getPopulation() : 0.0);
-            buf.putDouble(c.getBiomassHuman() != null ? c.getBiomassHuman() : 0.0);
+            buf.putDouble(c.getHumanPopulation() != null ? c.getHumanPopulation() : 0.0);
             buf.putDouble(c.getTemperature() != null ? c.getTemperature() : 0.0);
             buf.putDouble(c.getFoodResource() != null ? c.getFoodResource() : 0.0);
             buf.putDouble(c.getWaterResource() != null ? c.getWaterResource() : 0.0);

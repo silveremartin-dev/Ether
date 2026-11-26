@@ -41,7 +41,7 @@ public class MultiCenturyIntermediateReliabilityTest extends AbstractCliodynamic
 
         double initialPop = 0.0;
         for (int i = 0; i < world.getCapacity(); i++) {
-            initialPop += world.getBiomassHuman()[i];
+            initialPop += world.getHumanPopulation()[i];
         }
         logger.info("🌿 Initial Basin Population: {} across {} cells.", initialPop, basinCells.size());
         assertTrue(initialPop > 0.0);
@@ -51,7 +51,7 @@ public class MultiCenturyIntermediateReliabilityTest extends AbstractCliodynamic
 
         double finalPop = 0.0;
         for (int i = 0; i < world.getCapacity(); i++) {
-            finalPop += world.getBiomassHuman()[i];
+            finalPop += world.getHumanPopulation()[i];
         }
         logger.info("🌿 Final Basin Population after 200 years: {}", finalPop);
 
@@ -72,7 +72,7 @@ public class MultiCenturyIntermediateReliabilityTest extends AbstractCliodynamic
 
         double initialPop = 0.0;
         for (int i = 0; i < world.getCapacity(); i++) {
-            initialPop += world.getBiomassHuman()[i];
+            initialPop += world.getHumanPopulation()[i];
         }
         logger.info("🏝️ Initial Island Population: {} across {} cells.", initialPop, islandCells.size());
 
@@ -81,7 +81,7 @@ public class MultiCenturyIntermediateReliabilityTest extends AbstractCliodynamic
 
         double finalPop = 0.0;
         for (int i = 0; i < world.getCapacity(); i++) {
-            finalPop += world.getBiomassHuman()[i];
+            finalPop += world.getHumanPopulation()[i];
         }
         logger.info("🏝️ Final Island Population after 300 years: {}", finalPop);
 

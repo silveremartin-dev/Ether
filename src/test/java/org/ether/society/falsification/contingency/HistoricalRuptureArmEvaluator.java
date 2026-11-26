@@ -77,7 +77,7 @@ final class HistoricalRuptureArmEvaluator {
         }
         double unforcedSimulatedPop = 0.0;
         for (int i = 0; i < cellCount; i++) {
-            unforcedSimulatedPop += unforcedBuf.getBiomassHuman()[i] / 0.06;
+            unforcedSimulatedPop += unforcedBuf.getHumanPopulation()[i];
         }
 
         NuclearWarfareClimateEngine.resetState();
@@ -93,7 +93,7 @@ final class HistoricalRuptureArmEvaluator {
             ecoEngine.tick(forcedBuf, 1.0, 12.0);
             demoEngine.tick(forcedBuf, 1.0, 12.0);
             for (int i = 0; i < cellCount; i++) {
-                forcedBuf.getBiomassHuman()[i] = (float) (forcedBuf.getBiomassHuman()[i] * Math.exp(-0.41));
+                forcedBuf.getHumanPopulation()[i] = (float) (forcedBuf.getHumanPopulation()[i] * Math.exp(-0.41));
             }
         }
         for (int i = 0; i < cellCount; i++) {
@@ -105,7 +105,7 @@ final class HistoricalRuptureArmEvaluator {
 
         double forcedSimulatedPop = 0.0;
         for (int i = 0; i < cellCount; i++) {
-            forcedSimulatedPop += forcedBuf.getBiomassHuman()[i] / 0.06;
+            forcedSimulatedPop += forcedBuf.getHumanPopulation()[i];
         }
 
         double omegaUnforced = Math.abs(unforcedSimulatedPop - groundTruthBottleneck) / groundTruthBottleneck;
@@ -124,7 +124,7 @@ final class HistoricalRuptureArmEvaluator {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cellCount);
         for (int i = 0; i < cellCount; i++) {
             buf.getH3Indexes()[i] = i + 1L;
-            buf.getBiomassHuman()[i] = (float) (initialPop * 0.06);
+            buf.getHumanPopulation()[i] = (float) (initialPop);
             buf.getElevation()[i] = 100.0f;
             buf.getTemperature()[i] = 22.0f;
             buf.getRainfall()[i] = 1200.0f;
@@ -160,14 +160,14 @@ final class HistoricalRuptureArmEvaluator {
 
         org.ether.society.core.dod.WorldBuffer uBuf = new org.ether.society.core.dod.WorldBuffer(1);
         uBuf.getFluxPressure()[0] = 1.0f;
-        uBuf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        uBuf.getHumanPopulation()[0] = 10000.0f;
         uBuf.getResourceCapital()[0] = 100.0f;
         uBuf.getEnergyFire()[0] = 100.0f;
         uBuf.getMetalResource()[0] = 50.0f;
 
         org.ether.society.core.dod.WorldBuffer fBuf = new org.ether.society.core.dod.WorldBuffer(1);
         fBuf.getFluxPressure()[0] = f.getMovementFriction() != null ? f.getMovementFriction().floatValue() : 1.0f;
-        fBuf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        fBuf.getHumanPopulation()[0] = 10000.0f;
         fBuf.getResourceCapital()[0] = 100.0f;
         fBuf.getEnergyFire()[0] = 100.0f;
         fBuf.getMetalResource()[0] = 50.0f;
@@ -227,11 +227,11 @@ final class HistoricalRuptureArmEvaluator {
         double groundTruthTradeConnectivity = 0.85;
 
         org.ether.society.core.dod.WorldBuffer u4Buf = new org.ether.society.core.dod.WorldBuffer(1);
-        u4Buf.getBiomassHuman()[0] = 5000.0f;
+        u4Buf.getHumanPopulation()[0] = 5000.0f;
         u4Buf.getResourceCapital()[0] = 2000.0f;
 
         org.ether.society.core.dod.WorldBuffer f4Buf = new org.ether.society.core.dod.WorldBuffer(1);
-        f4Buf.getBiomassHuman()[0] = 5000.0f;
+        f4Buf.getHumanPopulation()[0] = 5000.0f;
         f4Buf.getResourceCapital()[0] = 300.0f;
 
         FrontierAsabiyyahEngine asabiyyahEngine = new FrontierAsabiyyahEngine();
@@ -278,7 +278,7 @@ final class HistoricalRuptureArmEvaluator {
         double unforcedWage = (u6.getResourceCapital() / u6.getPopulation()) * 1000.0;
 
         org.ether.society.core.dod.WorldBuffer f6Buf = new org.ether.society.core.dod.WorldBuffer(1);
-        f6Buf.getBiomassHuman()[0] = (float) (6000 * 0.06);
+        f6Buf.getHumanPopulation()[0] = (float) (6000);
         f6Buf.getResourceCapital()[0] = 1000.0f;
         new InfrastructureInertiaEngine().tick(f6Buf, 1.0, 12.0);
         f6Buf.getResourceCapital()[0] = 950.0f;
@@ -308,7 +308,7 @@ final class HistoricalRuptureArmEvaluator {
         f7.setResourceCapital(2000000.0);
 
         org.ether.society.core.dod.WorldBuffer f7Buf = new org.ether.society.core.dod.WorldBuffer(1);
-        f7Buf.getBiomassHuman()[0] = (float) (150000 * 0.06);
+        f7Buf.getHumanPopulation()[0] = (float) (150000);
         f7Buf.getResourceCapital()[0] = 2000000.0f;
 
         double unforced1945Capital = u7.getResourceCapital();

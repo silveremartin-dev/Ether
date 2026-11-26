@@ -61,7 +61,7 @@ public class SelectiveBreedingEngine extends AbstractSimulationEngine {
         double cultivationGate = SmoothMath.sigmoid(currentAgri, 10.0, 3.0);
         if (cultivationGate > 1e-4) {
             double dtSafe = Math.max(0.0001, dtYears);
-            double pop = buffer.getBiomassHuman()[i] / 0.06;
+            double pop = buffer.getHumanPopulation()[i];
             double capPerCap = buffer.getResourceCapital()[i] / Math.max(1.0, pop);
             double breedingFactor = calculateSelectiveBreedingYieldFactor(currentAgri, capPerCap);
             double laborCultivatedBiomass = pop * (400.0 + 150.0 * SmoothMath.softmin(4.0, Math.log1p(capPerCap / 50.0), 4.0));
@@ -88,7 +88,7 @@ public class SelectiveBreedingEngine extends AbstractSimulationEngine {
         if (buffer == null || buffer.getCapacity() == 0) return;
         double dtSafe = Math.max(0.0001, dtYears);
         float[] agriArr = buffer.getBiomassAgriculture();
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
         int n = buffer.getCapacity();
 
@@ -96,7 +96,7 @@ public class SelectiveBreedingEngine extends AbstractSimulationEngine {
             double currentAgri = agriArr[i];
             double cultivationGate = SmoothMath.sigmoid(currentAgri, 10.0, 3.0);
             if (cultivationGate > 1e-4) {
-                double pop = bioHuman[i] / 0.06;
+                double pop = bioHuman[i];
                 double capPerCap = capArr[i] / Math.max(1.0, pop);
                 double breedingFactor = calculateSelectiveBreedingYieldFactor(currentAgri, capPerCap);
                 double laborCultivatedBiomass = pop * (400.0 + 150.0 * SmoothMath.softmin(4.0, Math.log1p(capPerCap / 50.0), 4.0));

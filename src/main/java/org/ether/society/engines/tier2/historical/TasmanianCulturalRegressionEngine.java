@@ -52,11 +52,11 @@ public class TasmanianCulturalRegressionEngine extends AbstractSimulationEngine 
      * @param dtYears elapsed time in years
      */
     public void prepareTick(WorldBuffer buffer, double dtYears) {
-        if (buffer == null || buffer.getBiomassHuman() == null) {
+        if (buffer == null || buffer.getHumanPopulation() == null) {
             currentLossRate = 0.0;
             return;
         }
-        float[] pop = buffer.getBiomassHuman();
+        float[] pop = buffer.getHumanPopulation();
         double totalPop = 0.0;
         int cap = buffer.getCapacity();
         for (int i = 0; i < cap; i++) {

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ThermodynamicWarfareEngine extends AbstractSimulationEngine {
     public ThermodynamicWarfareEngine() {
-        super("ThermodynamicWarfareEngine", "ThermodynamicWarfareEngine", EngineTier.TIER_1_BIOPHYSICAL);
+        super("ThermodynamicWarfareEngine", "ThermodynamicWarfareEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(ThermodynamicWarfareEngine.class);
@@ -38,7 +38,7 @@ public class ThermodynamicWarfareEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (buffer == null || acc == null) return;
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
         double dt = Math.max(0.001, dtYears);
@@ -70,13 +70,13 @@ public class ThermodynamicWarfareEngine extends AbstractSimulationEngine {
         double dt = Math.max(0.001, deltaYears);
         int structuralBreaches = 0;
 
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
         float[] metalArr = buffer.getMetalResource();
         int n = buffer.getCapacity();
 
         for (int i = 0; i < n; i++) {
-            double pop = bioHuman[i] / 0.06;
+            double pop = bioHuman[i];
             if (pop <= 0.0) continue;
 
             double capital = capArr[i];

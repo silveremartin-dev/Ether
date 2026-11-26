@@ -32,7 +32,7 @@ public class World3HybridEngine extends AbstractSimulationEngine {
 
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
-        if (buffer.getBiomassHuman()[i] <= 0.0f) return;
+        if (buffer.getHumanPopulation()[i] <= 0.0f) return;
 
         double metal = buffer.getMetalResource()[i];
         float capital = buffer.getResourceCapital()[i];

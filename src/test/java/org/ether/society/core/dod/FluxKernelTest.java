@@ -28,7 +28,7 @@ public class FluxKernelTest {
         WorldBuffer world = new WorldBuffer(capacity);
 
         float[] food = world.getFoodResource();
-        float[] pop = world.getBiomassHuman();
+        float[] pop = world.getHumanPopulation();
         float[] elev = world.getElevation();
         int[][] neighbors = world.getNeighborIndexes();
 
@@ -85,16 +85,16 @@ public class FluxKernelTest {
         // Flat world: elev = 0 everywhere
         flatWorld.getFoodResource()[0] = 1000.0f;
         flatWorld.getFoodResource()[1] = 100.0f;
-        flatWorld.getBiomassHuman()[0] = 10.0f;
-        flatWorld.getBiomassHuman()[1] = 500.0f;
+        flatWorld.getHumanPopulation()[0] = 10.0f;
+        flatWorld.getHumanPopulation()[1] = 500.0f;
         flatWorld.getNeighborIndexes()[0] = new int[] {1, -1, -1, -1, -1, -1};
         flatWorld.getNeighborIndexes()[1] = new int[] {0, -1, -1, -1, -1, -1};
 
         // Mountain world: massive elevation gradient Delta h = 3000m between 0 and 1
         mountainWorld.getFoodResource()[0] = 1000.0f;
         mountainWorld.getFoodResource()[1] = 100.0f;
-        mountainWorld.getBiomassHuman()[0] = 10.0f;
-        mountainWorld.getBiomassHuman()[1] = 500.0f;
+        mountainWorld.getHumanPopulation()[0] = 10.0f;
+        mountainWorld.getHumanPopulation()[1] = 500.0f;
         mountainWorld.getElevation()[0] = 0.0f;
         mountainWorld.getElevation()[1] = 3000.0f;
         mountainWorld.getNeighborIndexes()[0] = new int[] {1, -1, -1, -1, -1, -1};

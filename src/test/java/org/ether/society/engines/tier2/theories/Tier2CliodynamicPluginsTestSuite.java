@@ -250,7 +250,7 @@ public class Tier2CliodynamicPluginsTestSuite {
      */
     public void testSoilSalinization() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 5000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 5000.0f;
         buf.getRainfall()[0] = 180.0f;
         buf.getTemperature()[0] = 26.0f;
         buf.getElevation()[0] = 50.0f;

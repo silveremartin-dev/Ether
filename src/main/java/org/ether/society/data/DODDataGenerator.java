@@ -68,10 +68,10 @@ public class DODDataGenerator {
                     || cell.getBiome() == org.ether.society.model.Biome.DEEP_OCEAN
                     || (cell.getElevation() != null && cell.getElevation() < 0.0));
             double humanPop = isWater ? 0.0
-                    : ((cell.getBiomassHuman() != null && cell.getBiomassHuman() > 0)
-                            ? cell.getBiomassHuman()
+                    : ((cell.getHumanPopulation() != null && cell.getHumanPopulation() > 0)
+                            ? cell.getHumanPopulation()
                             : (cell.getPopulation() != null ? cell.getPopulation().doubleValue() : 0.0));
-            buffer.getBiomassHuman()[i] = (float) humanPop;
+            buffer.getHumanPopulation()[i] = (float) humanPop;
             buffer.getBiomassLivestock()[i] = cell.getBiomassLivestock() != null ? cell.getBiomassLivestock().floatValue() : 0.0f;
             buffer.getBiomassFish()[i] = cell.getBiomassFish() != null ? cell.getBiomassFish().floatValue() : 0.0f;
             buffer.getBiomassAgriculture()[i] = cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture().floatValue() : 0.0f;
@@ -151,7 +151,7 @@ public class DODDataGenerator {
         int effectiveTarget = Math.max(1, targetCohortSize);
 
         for (int i = 0; i < world.getCapacity(); i++) {
-            float totalCellPop = world.getBiomassHuman()[i];
+            float totalCellPop = world.getHumanPopulation()[i];
             if (totalCellPop <= 0 || agentIndex >= agents.getCapacity()) continue;
 
             int numCohorts = Math.max(1, (int) Math.ceil(totalCellPop / (float) effectiveTarget));

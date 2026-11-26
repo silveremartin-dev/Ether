@@ -30,7 +30,7 @@ public class EndogenousZoonoticSpilloverTest {
     public void testHighLivestockAndMalnutritionTriggersSpillover() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getH3Indexes()[0] = 5001L;
-        buf.getBiomassHuman()[0] = (float) (800 * 0.06);
+        buf.getHumanPopulation()[0] = (float) (800);
         buf.getBiomassLivestock()[0] = 1200.0f;
         buf.getFoodResource()[0] = 10.0f;
         buf.getLifespan()[0] = 38.0f;
@@ -53,7 +53,7 @@ public class EndogenousZoonoticSpilloverTest {
     public void testHealthyIsolatedCellRemainsDiseaseFree() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getH3Indexes()[0] = 5002L;
-        buf.getBiomassHuman()[0] = (float) (300 * 0.06);
+        buf.getHumanPopulation()[0] = (float) (300);
         buf.getBiomassLivestock()[0] = 0.0f;
         buf.getFoodResource()[0] = 50_000.0f;
         buf.getLifespan()[0] = 45.0f;
@@ -75,7 +75,7 @@ public class EndogenousZoonoticSpilloverTest {
     public void testPathogenProgressionAndRecovery() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getH3Indexes()[0] = 5003L;
-        buf.getBiomassHuman()[0] = (float) (1000 * 0.06);
+        buf.getHumanPopulation()[0] = (float) (1000);
         buf.getBiomassLivestock()[0] = 50.0f;
         buf.getFoodResource()[0] = 1500.0f;
         buf.getLifespan()[0] = 40.0f;

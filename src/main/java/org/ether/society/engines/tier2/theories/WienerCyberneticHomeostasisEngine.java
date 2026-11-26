@@ -86,7 +86,7 @@ public class WienerCyberneticHomeostasisEngine extends AbstractSimulationEngine 
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
 
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
         double food = buffer.getFoodResource()[i];

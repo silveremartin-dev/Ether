@@ -90,7 +90,7 @@ public class InvariantConservationGuard {
         boolean boundsOk = true;
 
         int capacity = buffer.getCapacity();
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         float[] bioLive = buffer.getBiomassLivestock();
         float[] bioAgri = buffer.getBiomassAgriculture();
         float[] bioNat = buffer.getBiomassNatural();

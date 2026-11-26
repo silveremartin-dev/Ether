@@ -56,8 +56,8 @@ public class BiologicalDemographicsEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
-        double biomassHuman = buffer.getBiomassHuman()[i];
-        double pop = biomassHuman / 0.06;
+        double humanPopulation = buffer.getHumanPopulation()[i];
+        double pop = humanPopulation;
         if (pop <= 0.0) return;
 
         double elev = buffer.getElevation()[i];
@@ -76,7 +76,7 @@ public class BiologicalDemographicsEngine extends AbstractSimulationEngine {
         double environmentalHazard = hypoxiaHazard + coldHazard;
         if (environmentalHazard > 1e-6) {
             double survivalRate = Math.exp(-environmentalHazard * Math.max(0.001, dtYears));
-            acc.dBiomassHuman += (float) (biomassHuman * (survivalRate - 1.0));
+            acc.dHumanPopulation += (float) (humanPopulation * (survivalRate - 1.0));
         }
     }
 }

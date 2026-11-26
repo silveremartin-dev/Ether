@@ -103,7 +103,7 @@ public class TainterComplexityCollapseEngine extends AbstractSimulationEngine {
         double capital = buffer.getResourceCapital()[i];
         if (capital < 50.0) return;
 
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         double kPerCap = (pop > 0.0) ? (capital / pop) : capital;
         double surplusFlow = (pop * (0.05 + 0.020 * kPerCap)) * dtYears;
 

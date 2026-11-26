@@ -101,8 +101,9 @@ public class H3Cell extends H3CellSocioDemographicBase {
     @Column(nullable = false)
     private Double woodResource = 0.0;
 
-    // --- Detailed Tracking (Biomass in metric tonnes [t]) ---
-    @Column(nullable = false) private Double biomassHuman = 0.0;
+    // --- Detailed Tracking (Human Headcount & Other Biomasses in metric tonnes [t]) ---
+    /** Living human population count (individuals). */
+    @Column(nullable = false) private Double humanPopulation = 0.0;
     @Column(nullable = false) private Double biomassLivestock = 0.0;
     @Column(nullable = false) private Double biomassFish = 0.0;
     @Column(nullable = false) private Double biomassAgriculture = 0.0;
@@ -324,7 +325,7 @@ public class H3Cell extends H3CellSocioDemographicBase {
             this.pop0to4 = null;
         }
         this.population = newPop;
-        this.biomassHuman = (double) newPop;
+        this.humanPopulation = (double) newPop;
     }
 
     public Double getFoodResource() { return foodResource; }
@@ -342,12 +343,12 @@ public class H3Cell extends H3CellSocioDemographicBase {
     @JsonIgnore public Polity getOwner() { return owner; }
     @JsonIgnore public void setOwner(Polity owner) { this.owner = owner; }
 
-    public Double getBiomassHuman() {
-        return biomassHuman != null ? biomassHuman : (population != null ? population.doubleValue() : 0.0);
+    public Double getHumanPopulation() {
+        return humanPopulation != null ? humanPopulation : (population != null ? population.doubleValue() : 0.0);
     }
-    public void setBiomassHuman(Double biomassHuman) {
-        this.biomassHuman = biomassHuman != null ? biomassHuman : 0.0;
-        this.population = (int) Math.round(this.biomassHuman);
+    public void setHumanPopulation(Double humanPopulation) {
+        this.humanPopulation = humanPopulation != null ? humanPopulation : 0.0;
+        this.population = (int) Math.round(this.humanPopulation);
     }
 
     public Double getBiomassLivestock() { return biomassLivestock; }
@@ -444,7 +445,7 @@ public class H3Cell extends H3CellSocioDemographicBase {
     public double getLatitudeOr(double defaultValue) { return latitude != null ? latitude : defaultValue; }
     public double getLongitudeOr(double defaultValue) { return longitude != null ? longitude : defaultValue; }
     public double getWoodResourceOr(double defaultValue) { return woodResource != null ? woodResource : defaultValue; }
-    public double getBiomassHumanOr(double defaultValue) { return biomassHuman != null ? biomassHuman : defaultValue; }
+    public double getHumanPopulationOr(double defaultValue) { return humanPopulation != null ? humanPopulation : defaultValue; }
     public double getBiomassLivestockOr(double defaultValue) { return biomassLivestock != null ? biomassLivestock : defaultValue; }
     public double getBiomassFishOr(double defaultValue) { return biomassFish != null ? biomassFish : defaultValue; }
     public double getBiomassAgricultureOr(double defaultValue) { return biomassAgriculture != null ? biomassAgriculture : defaultValue; }

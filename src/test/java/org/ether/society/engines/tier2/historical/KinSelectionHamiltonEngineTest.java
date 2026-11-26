@@ -21,7 +21,7 @@ public class KinSelectionHamiltonEngineTest {
     @Test
     public void testScarcityKinSupportDerivative() {
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 500.0f;
+        buf.getHumanPopulation()[0] = 500.0f;
         buf.getFoodResource()[0] = 5.0f; // foodPerCapita = 0.01 < 0.05 -> scarcityStress > 0.01
         buf.getResourceCapital()[0] = 100.0f;
 

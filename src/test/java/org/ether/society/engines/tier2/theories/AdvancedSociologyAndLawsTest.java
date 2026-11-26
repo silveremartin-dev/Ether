@@ -97,7 +97,7 @@ public class AdvancedSociologyAndLawsTest {
     public void testCulturalSociologyEngine() {
         CulturalSociologyEngine.setGlobalEnvironmentalStewardship(0.9);
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getHumanPopulation()[0] = 5000.0f;
         buf.getSoilOrganicCarbon()[0] = 40.0f;
         double initialSoc = buf.getSoilOrganicCarbon()[0];
 

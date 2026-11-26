@@ -36,7 +36,7 @@ public class WorldBufferWireCodecTest {
         source.getElevation()[5] = 1250.5f;
         source.getTemperature()[5] = 22.4f;
         source.getRainfall()[5] = 850.0f;
-        source.getBiomassHuman()[5] = 45000.0f;
+        source.getHumanPopulation()[5] = 45000.0f;
         source.getFluxPressure()[5] = 0.88f;
         source.getBiomes()[5] = 3;
         source.getH3Indexes()[5] = 0x881f1d4887fffffL;
@@ -55,7 +55,7 @@ public class WorldBufferWireCodecTest {
         assertEquals(1250.5f, destination.getElevation()[5], 1e-4);
         assertEquals(22.4f, destination.getTemperature()[5], 1e-4);
         assertEquals(850.0f, destination.getRainfall()[5], 1e-4);
-        assertEquals(45000.0f, destination.getBiomassHuman()[5], 1e-4);
+        assertEquals(45000.0f, destination.getHumanPopulation()[5], 1e-4);
         assertEquals(0.88f, destination.getFluxPressure()[5], 1e-4);
         assertEquals(3, destination.getBiomes()[5]);
         assertEquals(0x881f1d4887fffffL, destination.getH3Indexes()[5]);
@@ -73,7 +73,7 @@ public class WorldBufferWireCodecTest {
     public void testEncryptedChunkSerialization() throws Exception {
         EtherSecurityService sec = new EtherSecurityService();
         WorldBuffer source = new WorldBuffer(20);
-        source.getBiomassHuman()[2] = 99999.0f;
+        source.getHumanPopulation()[2] = 99999.0f;
 
         String encrypted = WorldBufferWireCodec.encodeAndEncryptChunk(source, 0, 10, 100L, sec);
         assertNotNull(encrypted);
@@ -82,7 +82,7 @@ public class WorldBufferWireCodecTest {
         WorldBufferWireCodec.ChunkPayload decoded = WorldBufferWireCodec.decryptAndDecodeChunk(encrypted, target, sec);
 
         assertEquals(100L, decoded.getTickId());
-        assertEquals(99999.0f, target.getBiomassHuman()[2], 1e-4);
+        assertEquals(99999.0f, target.getHumanPopulation()[2], 1e-4);
     }
 
     @Test

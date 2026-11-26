@@ -66,4 +66,19 @@ public class StatisticsKernelTest {
         for (int c : dist) totalCount += c;
         assertEquals(values.length, totalCount, "Sum of bin counts must equal array length");
     }
+
+    @Test
+    @DisplayName("Verify Ayres-Warr Exergy-Capital Cobb-Douglas GDP baseline and scaling monotonicity")
+    void testExergyCobbDouglasGDP() {
+        float[] pop = new float[]{1_000_000.0f};
+        float[] capSubsistence = new float[]{0.0f};
+        double gdpSubsistence = kernel.calculateGDP(capSubsistence, pop, 1_000_000.0 * 348.0);
+        assertEquals(102.0e6, gdpSubsistence, 1.0e5,
+                "Zero-capital somatic subsistence must match Maddison 102 Int$1990/capita baseline");
+
+        float[] capIndustrial = new float[]{1_000_000.0f * 3600.0f};
+        double gdpIndustrial = kernel.calculateGDP(capIndustrial, pop, 1_000_000.0 * 1200.0);
+        assertTrue(gdpIndustrial > gdpSubsistence * 5.0 && gdpIndustrial < gdpSubsistence * 12.0,
+                "Industrial regime (kpc=3600, p=1200W) must yield ~7.4x subsistence GWP per Ayres-Warr Cobb-Douglas");
+    }
 }

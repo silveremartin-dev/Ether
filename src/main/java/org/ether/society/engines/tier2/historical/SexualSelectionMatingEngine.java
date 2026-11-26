@@ -36,14 +36,16 @@ public class SexualSelectionMatingEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
-        double pop = buffer.getBiomassHuman()[i];
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
         double gini = buffer.getGiniIndex()[i];
         double matingSkew = 1.0 / (1.0 + Math.exp(-10.0 * (gini - 0.45)));
         if (matingSkew > 0.05) {
-            double capital = Math.max(50.0, buffer.getResourceCapital()[i]);
-            acc.dResourceCapital += (float) (capital * 0.03 * matingSkew * dtYears);
+            double capital = buffer.getResourceCapital()[i];
+            if (capital > 0.0) {
+                acc.dResourceCapital += (float) (capital * 0.03 * matingSkew * dtYears);
+            }
         }
     }
 }

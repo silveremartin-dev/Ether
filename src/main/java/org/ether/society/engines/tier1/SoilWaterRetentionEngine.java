@@ -76,7 +76,7 @@ public class SoilWaterRetentionEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (buffer == null || acc == null) return;
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         double agriBiomass = buffer.getBiomassAgriculture()[i];
         double cap = buffer.getResourceCapital()[i];
         if (agriBiomass <= 0.0 || pop <= 0.0 || (cap / Math.max(1.0, pop)) < 0.1) return;
@@ -101,7 +101,7 @@ public class SoilWaterRetentionEngine extends AbstractSimulationEngine {
     public static void processSoilWaterRetention(WorldBuffer buffer) {
         if (buffer == null || buffer.getCapacity() == 0) return;
 
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         float[] agriArr = buffer.getBiomassAgriculture();
         float[] capArr = buffer.getResourceCapital();
         float[] rainArr = buffer.getRainfall();
@@ -109,7 +109,7 @@ public class SoilWaterRetentionEngine extends AbstractSimulationEngine {
         int n = buffer.getCapacity();
 
         for (int i = 0; i < n; i++) {
-            double pop = bioHuman[i] / 0.06;
+            double pop = bioHuman[i];
             double agriBiomass = agriArr[i];
             double cap = capArr[i];
             if (agriBiomass <= 0.0 || pop <= 0.0 || (cap / Math.max(1.0, pop)) < 0.1) continue;

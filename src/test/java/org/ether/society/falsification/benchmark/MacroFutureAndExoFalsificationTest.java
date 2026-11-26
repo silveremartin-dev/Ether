@@ -43,9 +43,27 @@ public class MacroFutureAndExoFalsificationTest {
     }
 
     public record ScenarioRunConfig(
-            String presetKey, String displayName, int startYear, int endYear,
+            String presetKey, String displayName, Integer startYearOverride, Integer endYearOverride,
             int resolution, boolean windowed, String targetRasterPath
-    ) {}
+    ) {
+        public ScenarioRunConfig(String presetKey, String displayName, int resolution, boolean windowed, String targetRasterPath) {
+            this(presetKey, displayName, null, null, resolution, windowed, targetRasterPath);
+        }
+
+        public int startYear() { return startYearOverride != null ? startYearOverride : 0; }
+        public int endYear() { return endYearOverride != null ? endYearOverride : 0; }
+
+        public ScenarioRunConfig resolveFor(Scenario s) {
+            String pStart = System.getProperty("benchmark.startYear");
+            String pEnd = System.getProperty("benchmark.endYear");
+            int sy = (pStart != null && !pStart.isBlank()) ? Integer.parseInt(pStart.trim())
+                    : (startYearOverride != null ? startYearOverride : (int) s.getStartDateYear());
+            int ey = (pEnd != null && !pEnd.isBlank()) ? Integer.parseInt(pEnd.trim())
+                    : (endYearOverride != null ? endYearOverride : (int) s.getEndDateYear());
+            if (ey <= sy) ey = sy + 100;
+            return new ScenarioRunConfig(presetKey, displayName, sy, ey, resolution, windowed, targetRasterPath);
+        }
+    }
 
     public record EnginePerformanceMetrics(
             String scenarioKey, int resolution, int cellCount, int ticks,
@@ -55,42 +73,42 @@ public class MacroFutureAndExoFalsificationTest {
 
     private static final List<ScenarioRunConfig> TARGET_CONFIGS = List.of(
             // --- Future Earth Trajectories ---
-            new ScenarioRunConfig("business_as_usual", "Earth 2025-2045: Business As Usual Trend Trajectory",
-                    2025, 2045, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
-            new ScenarioRunConfig("earth_2026_future", "Ether Prospective Projection (2026-2046): Standard Biophysics",
-                    2026, 2046, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
-            new ScenarioRunConfig("ssp5_85", "SSP5-8.5 Fossil-Fueled Development & Warming (2026-2046)",
-                    2026, 2046, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
-            new ScenarioRunConfig("nuclear_winter_2035", "Nuclear Winter & Solar Dimming Shock (2035-2055)",
-                    2035, 2055, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
-            new ScenarioRunConfig("singularity_2045", "Technological Singularity & Fusion Energy Takeoff (2045-2065)",
-                    2045, 2065, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
-            new ScenarioRunConfig("peak_phosphate_2050", "Mineral Phosphate Cliff & Soil Crisis (2050-2070)",
-                    2050, 2070, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
-            new ScenarioRunConfig("supervolcano_2060", "Supervolcano Cataclysm & Abrupt Cooling (2060-2080)",
-                    2060, 2080, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("business_as_usual", "Earth 2025-2055: Business As Usual Trend Trajectory",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("earth_2026_future", "Ether Prospective Projection (2026-2100): Standard Biophysics",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("ssp5_85", "SSP5-8.5 Fossil-Fueled Development & Warming (2026-2100)",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("nuclear_winter_2035", "Nuclear Winter & Solar Dimming Shock (2035-2085)",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("singularity_2045", "Technological Singularity & Fusion Energy Takeoff (2045-2100)",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("peak_phosphate_2050", "Mineral Phosphate Cliff & Soil Crisis (2050-2150)",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("supervolcano_2060", "Supervolcano Cataclysm & Abrupt Cooling (2060-2110)",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
 
             // --- Off-Earth Planetary Horizons & Exoplanets ---
-            new ScenarioRunConfig("moon_shackleton_2035", "Shackleton Lunar Base & Marius Hills Lava Tubes (2035-2055)",
-                    2035, 2055, 4, false, "data/maps/ether/moon/0/moon_0_elevation.png"),
-            new ScenarioRunConfig("mars_colony_2050", "Martian Settlement: Jezero & Chryse Planitia (2050-2070)",
-                    2050, 2070, 4, false, "data/maps/ether/mars/0/mars_0_elevation.png"),
-            new ScenarioRunConfig("archipelago_seasteading_2055", "Archipelago: Oceanic Confederation & Seasteading (2055-2075)",
-                    2055, 2075, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
-            new ScenarioRunConfig("venus_cloud_cities_2080", "Venusian Floating Aerostat Habitat (2080-2100)",
-                    2080, 2100, 4, false, "data/maps/ether/venus/0/venus_0_elevation.png"),
-            new ScenarioRunConfig("oceania_aquapolis_2100", "Ocean World: Abyssal Domed Cities (2100-2120)",
-                    2100, 2120, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
-            new ScenarioRunConfig("boreas_subglacial_2120", "Glacial World Boreas: Geothermal Havens (2120-2140)",
-                    2120, 2140, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
-            new ScenarioRunConfig("mercury_caloris_forge_2120", "Solar Forge of Mercury & Caloris Basin (2120-2140)",
-                    2120, 2140, 4, false, "data/maps/ether/mercury/0/mercury_0_elevation.png"),
-            new ScenarioRunConfig("titan_cryo_methane_2150", "Titan Cryogenic Settlement & Hydrocarbon Seas (2150-2170)",
-                    2150, 2170, 4, false, "data/maps/ether/titan/0/titan_0_elevation.png"),
-            new ScenarioRunConfig("super_earth_gaia_2200", "Interstellar Ark: Settlement of Gaia Prime (2200-2220)",
-                    2200, 2220, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
-            new ScenarioRunConfig("eyeball_world_twilight_2220", "Tidally Locked World: Twilight Ring (2220-2240)",
-                    2220, 2240, 4, false, "data/maps/ether/earth/2025/earth_2025_density.png")
+            new ScenarioRunConfig("moon_shackleton_2035", "Shackleton Lunar Base & Marius Hills Lava Tubes (2035-2085)",
+                    4, false, "data/maps/ether/moon/0/moon_0_elevation.png"),
+            new ScenarioRunConfig("mars_colony_2050", "Martian Settlement: Jezero & Chryse Planitia (2050-2150)",
+                    4, false, "data/maps/ether/mars/0/mars_0_elevation.png"),
+            new ScenarioRunConfig("archipelago_seasteading_2055", "Archipelago: Oceanic Confederation & Seasteading (2055-2150)",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("venus_cloud_cities_2080", "Venusian Floating Aerostat Habitat (2080-2180)",
+                    4, false, "data/maps/ether/venus/0/venus_0_elevation.png"),
+            new ScenarioRunConfig("oceania_aquapolis_2100", "Ocean World: Abyssal Domed Cities (2100-2200)",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("boreas_subglacial_2120", "Glacial World Boreas: Geothermal Havens (2120-2220)",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("mercury_caloris_forge_2120", "Solar Forge of Mercury & Caloris Basin (2120-2220)",
+                    4, false, "data/maps/ether/mercury/0/mercury_0_elevation.png"),
+            new ScenarioRunConfig("titan_cryo_methane_2150", "Titan Cryogenic Settlement & Hydrocarbon Seas (2150-2250)",
+                    4, false, "data/maps/ether/titan/0/titan_0_elevation.png"),
+            new ScenarioRunConfig("super_earth_gaia_2200", "Interstellar Ark: Settlement of Gaia Prime (2200-2300)",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png"),
+            new ScenarioRunConfig("eyeball_world_twilight_2220", "Tidally Locked World: Twilight Ring (2220-2320)",
+                    4, false, "data/maps/ether/earth/2025/earth_2025_density.png")
     );
 
     @Test
@@ -108,52 +126,58 @@ public class MacroFutureAndExoFalsificationTest {
         File reportsDir = new File("docs/reports");
         reportsDir.mkdirs();
 
-        for (ScenarioRunConfig cfg : TARGET_CONFIGS) {
+        for (ScenarioRunConfig rawCfg : TARGET_CONFIGS) {
             String filter = System.getProperty("future.scenario");
             if (filter != null && !filter.isBlank()) {
                 List<String> allowed = Arrays.stream(filter.split(","))
                         .map(String::trim).map(String::toLowerCase).toList();
-                if (!allowed.contains(cfg.presetKey().toLowerCase())) continue;
+                if (!allowed.contains(rawCfg.presetKey().toLowerCase())) continue;
             }
+
+            Scenario s = allScenarios.stream()
+                    .filter(sc -> rawCfg.presetKey().equalsIgnoreCase(sc.getPresetKey())
+                            || (sc.getPresetKey() != null && sc.getPresetKey().toLowerCase().contains(rawCfg.presetKey().toLowerCase()))
+                            || (sc.getName() != null && (
+                                    sc.getName().toLowerCase().contains(rawCfg.presetKey().toLowerCase())
+                                    || (rawCfg.presetKey().contains("business_as_usual") && sc.getName().toLowerCase().contains("business as usual"))
+                                    || (rawCfg.presetKey().contains("future") && sc.getName().toLowerCase().contains("future"))
+                                    || (rawCfg.presetKey().contains("ssp5") && sc.getName().toLowerCase().contains("ssp5"))
+                                    || (rawCfg.presetKey().contains("nuclear") && sc.getName().toLowerCase().contains("nuclear"))
+                                    || (rawCfg.presetKey().contains("singularity") && sc.getName().toLowerCase().contains("singularity"))
+                                    || (rawCfg.presetKey().contains("phosphate") && sc.getName().toLowerCase().contains("phosphate"))
+                                    || (rawCfg.presetKey().contains("supervolcano") && sc.getName().toLowerCase().contains("supervolcano"))
+                                    || (rawCfg.presetKey().contains("moon") && sc.getName().toLowerCase().contains("moon"))
+                                    || (rawCfg.presetKey().contains("mars") && sc.getName().toLowerCase().contains("mars"))
+                                    || (rawCfg.presetKey().contains("archipelago") && sc.getName().toLowerCase().contains("archipelago"))
+                                    || (rawCfg.presetKey().contains("venus") && sc.getName().toLowerCase().contains("venus"))
+                                    || (rawCfg.presetKey().contains("oceania") && sc.getName().toLowerCase().contains("oceania"))
+                                    || (rawCfg.presetKey().contains("boreas") && sc.getName().toLowerCase().contains("boreas"))
+                                    || (rawCfg.presetKey().contains("mercury") && sc.getName().toLowerCase().contains("mercury"))
+                                    || (rawCfg.presetKey().contains("titan") && sc.getName().toLowerCase().contains("titan"))
+                                    || (rawCfg.presetKey().contains("gaia") && sc.getName().toLowerCase().contains("gaia"))
+                                    || (rawCfg.presetKey().contains("eyeball") && sc.getName().toLowerCase().contains("eyeball")))))
+                    .findFirst().orElse(null);
+
+            if (s == null) {
+                System.err.println("Scenario not found in built-ins: " + rawCfg.presetKey());
+                continue;
+            }
+            if (s.getPresetKey() == null || s.getPresetKey().isBlank()) {
+                s.setPresetKey(rawCfg.presetKey());
+            }
+
+            ScenarioRunConfig cfg = rawCfg.resolveFor(s);
+            s.setStartDateYear(cfg.startYear());
+            s.setEndDateYear(cfg.endYear());
+            String dtProp = System.getProperty("benchmark.dtDays");
+            if (dtProp != null && !dtProp.isBlank()) {
+                try { s.setTemporalResolutionDays(Double.parseDouble(dtProp.trim())); } catch (NumberFormatException ignored) {}
+            }
+
             System.out.println("================================================================================");
             System.out.printf("🚀 RUNNING FUTURE/EXO BENCHMARK: %s [Res: %d, Years: %d -> %d]%n",
                     cfg.displayName(), cfg.resolution(), cfg.startYear(), cfg.endYear());
             System.out.println("================================================================================");
-
-            Scenario s = allScenarios.stream()
-                    .filter(sc -> cfg.presetKey().equalsIgnoreCase(sc.getPresetKey())
-                            || (sc.getPresetKey() != null && sc.getPresetKey().toLowerCase().contains(cfg.presetKey().toLowerCase()))
-                            || (sc.getStartDateYear() == cfg.startYear() && sc.getName() != null && (
-                                    sc.getName().toLowerCase().contains(cfg.presetKey().toLowerCase())
-                                    || (cfg.presetKey().contains("business_as_usual") && sc.getName().toLowerCase().contains("business as usual"))
-                                    || (cfg.presetKey().contains("future") && sc.getName().toLowerCase().contains("future"))
-                                    || (cfg.presetKey().contains("ssp5") && sc.getName().toLowerCase().contains("ssp5"))
-                                    || (cfg.presetKey().contains("nuclear") && sc.getName().toLowerCase().contains("nuclear"))
-                                    || (cfg.presetKey().contains("singularity") && sc.getName().toLowerCase().contains("singularity"))
-                                    || (cfg.presetKey().contains("phosphate") && sc.getName().toLowerCase().contains("phosphate"))
-                                    || (cfg.presetKey().contains("supervolcano") && sc.getName().toLowerCase().contains("supervolcano"))
-                                    || (cfg.presetKey().contains("moon") && sc.getName().toLowerCase().contains("moon"))
-                                    || (cfg.presetKey().contains("mars") && sc.getName().toLowerCase().contains("mars"))
-                                    || (cfg.presetKey().contains("archipelago") && sc.getName().toLowerCase().contains("archipelago"))
-                                    || (cfg.presetKey().contains("venus") && sc.getName().toLowerCase().contains("venus"))
-                                    || (cfg.presetKey().contains("oceania") && sc.getName().toLowerCase().contains("oceania"))
-                                    || (cfg.presetKey().contains("boreas") && sc.getName().toLowerCase().contains("boreas"))
-                                    || (cfg.presetKey().contains("mercury") && sc.getName().toLowerCase().contains("mercury"))
-                                    || (cfg.presetKey().contains("titan") && sc.getName().toLowerCase().contains("titan"))
-                                    || (cfg.presetKey().contains("gaia") && sc.getName().toLowerCase().contains("gaia"))
-                                    || (cfg.presetKey().contains("eyeball") && sc.getName().toLowerCase().contains("eyeball")))))
-                    .findFirst().orElse(null);
-
-            if (s == null) {
-                System.err.println("Scenario not found in built-ins: " + cfg.presetKey());
-                continue;
-            }
-            if (s.getPresetKey() == null || s.getPresetKey().isBlank()) {
-                s.setPresetKey(cfg.presetKey());
-            }
-
-            s.setStartDateYear(cfg.startYear());
-            s.setEndDateYear(cfg.endYear());
             int targetRes = cfg.resolution();
             s.setH3Resolution(targetRes);
             if (!cfg.windowed()) s.setClippingEnabled(false);
@@ -176,7 +200,7 @@ public class MacroFutureAndExoFalsificationTest {
             int cellCount = (finalSnapshot != null && !finalSnapshot.isEmpty()) ? finalSnapshot.size() : (cfg.windowed() ? 12_500 : 288_122);
             if (record.getSpatialSnapshots() != null) record.getSpatialSnapshots().clear();
 
-            int totalTicks = Math.max(1, (cfg.endYear() - cfg.startYear()) * 12);
+            int totalTicks = Math.max(1, (int) Math.ceil(((cfg.endYear() - cfg.startYear()) * 365.25) / Math.max(1.0, s.getTemporalResolutionDays())));
             double durationSec = Math.max(0.001, elapsedMs / 1000.0);
             double tps = totalTicks / durationSec;
             double msPerTick = (double) elapsedMs / totalTicks;

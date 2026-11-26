@@ -76,7 +76,7 @@ public class AdvancedPhysicalFeaturesTestSuite {
         TerraformingEngine.setTerraformingActive(true);
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getTemperature()[0] = testCells.get(0).getTemperature() != null ? testCells.get(0).getTemperature().floatValue() : 15.0f;
-        buf.getBiomassHuman()[0] = (float) testCells.get(0).getPopulationOr(1000);
+        buf.getHumanPopulation()[0] = (float) testCells.get(0).getPopulationOr(1000);
         buf.getMetalResource()[0] = (float) testCells.get(0).getResourceMetalOr(1.0);
 
         double initialTemp = buf.getTemperature()[0];

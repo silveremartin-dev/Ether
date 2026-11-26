@@ -14,7 +14,7 @@ public class LanguageLinguisticEngineTest {
     @Test
     public void testMountainIslandIsolationPreservesLanguage() {
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 1000.0f;
+        buf.getHumanPopulation()[0] = 1000.0f;
         buf.getElevation()[0] = 2500.0f; // High mountain isolate
 
         DerivativeAccumulator acc = new DerivativeAccumulator();
@@ -27,7 +27,7 @@ public class LanguageLinguisticEngineTest {
     @Test
     public void testDialectDivergenceOnInlandCorridor() {
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getHumanPopulation()[0] = 5000.0f;
         buf.getElevation()[0] = 200.0f;
 
         DerivativeAccumulator acc = new DerivativeAccumulator();

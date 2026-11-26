@@ -66,7 +66,7 @@ public class JancoviciBihouixPhysicalSuiteTest {
      */
     public void testOreGradeThermodynamicsEngine() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getMetalResource()[0] = 50.0f;
         buf.getResourceCapital()[0] = 1000.0f;
         double initialCapital = buf.getResourceCapital()[0];
@@ -86,7 +86,7 @@ public class JancoviciBihouixPhysicalSuiteTest {
      */
     public void testInfrastructureInertiaEngine() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getResourceCapital()[0] = 1000.0f;
         double initialCapital = buf.getResourceCapital()[0];
         new InfrastructureInertiaEngine().tick(buf, 1.0, 12.0);
@@ -124,7 +124,7 @@ public class JancoviciBihouixPhysicalSuiteTest {
      */
     public void testJevonsParadoxEngine() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = (float) testCells.get(0).getPopulationOr(10000);
+        buf.getHumanPopulation()[0] = (float) testCells.get(0).getPopulationOr(10000);
         buf.getResourceCapital()[0] = 50000.0f;
         buf.getEnergyFoodConsumed()[0] = testCells.get(0).getEnergyFoodConsumed() != null ? testCells.get(0).getEnergyFoodConsumed().floatValue() : 0.0f;
         double initialEnergy = buf.getEnergyFoodConsumed()[0];

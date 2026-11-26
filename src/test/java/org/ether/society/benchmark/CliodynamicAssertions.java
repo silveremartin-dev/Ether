@@ -44,7 +44,7 @@ public final class CliodynamicAssertions {
         assertNotNull(buffer, "WorldBuffer must not be null.");
 
         int cap = buffer.getCapacity();
-        float[] bHuman = buffer.getBiomassHuman();
+        float[] bHuman = buffer.getHumanPopulation();
         float[] bAgri = buffer.getBiomassAgriculture();
         float[] bNat = buffer.getBiomassNatural();
         float[] food = buffer.getFoodResource();

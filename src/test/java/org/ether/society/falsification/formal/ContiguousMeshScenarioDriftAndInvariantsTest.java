@@ -156,7 +156,7 @@ public class ContiguousMeshScenarioDriftAndInvariantsTest {
 
         double initialTotalPop = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            initialTotalPop += buffer.getBiomassHuman()[i];
+            initialTotalPop += buffer.getHumanPopulation()[i];
         }
         assertTrue(initialTotalPop > 0.0, "Initial population must be positive");
 
@@ -167,7 +167,7 @@ public class ContiguousMeshScenarioDriftAndInvariantsTest {
 
             double currentPop = 0.0;
             for (int i = 0; i < buffer.getCapacity(); i++) {
-                double cellPop = buffer.getBiomassHuman()[i];
+                double cellPop = buffer.getHumanPopulation()[i];
                 assertFalse(Double.isNaN(cellPop), "Pop NaN at tick " + tick + ", cell " + i);
                 assertTrue(cellPop >= 0.0, "Pop negative at tick " + tick + ", cell " + i);
                 currentPop += cellPop;
@@ -184,7 +184,7 @@ public class ContiguousMeshScenarioDriftAndInvariantsTest {
 
         double finalTotalPop = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            finalTotalPop += buffer.getBiomassHuman()[i];
+            finalTotalPop += buffer.getHumanPopulation()[i];
         }
 
         double totalGrowthRatio = finalTotalPop / initialTotalPop;
@@ -352,7 +352,7 @@ public class ContiguousMeshScenarioDriftAndInvariantsTest {
             for (int i = 0; i < buffer.getCapacity(); i++) {
                 if (buffer.getH3Indexes()[i] == 0) continue;
 
-                float pop = buffer.getBiomassHuman()[i];
+                float pop = buffer.getHumanPopulation()[i];
                 float food = buffer.getFoodResource()[i];
                 float wood = buffer.getWoodResource()[i];
                 float metal = buffer.getMetalResource()[i];

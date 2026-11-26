@@ -57,7 +57,7 @@ public class PhysicalConservationMultiMillennialTest {
         // Initialize planetary cells and agent cohorts
         for (int i = 0; i < cellCount; i++) {
             buffer.getH3Indexes()[i] = 0x882681a33900000L + i;
-            buffer.getBiomassHuman()[i] = 50.0f;
+            buffer.getHumanPopulation()[i] = 50.0f;
             buffer.getBiomassLivestock()[i] = 200.0f;
             buffer.getBiomassAgriculture()[i] = 500.0f;
             buffer.getBiomassNatural()[i] = 1500.0f;

@@ -52,7 +52,7 @@ public class World3VsKurzweilComparator {
         for (int i = 0; i < cells.size(); i++) {
             H3Cell c = cells.get(i);
             if (c == null) continue;
-            buf.getBiomassHuman()[i] = (float) c.getPopulationOr(0);
+            buf.getHumanPopulation()[i] = (float) c.getPopulationOr(0);
             buf.getResourceCapital()[i] = (float) c.getResourceCapitalOr(0.0);
             buf.getMetalResource()[i] = (float) c.getResourceMetalOr(0.0);
             buf.getPollutionLevel()[i] = (float) c.getPollutionLevelOr(0.0);
@@ -70,14 +70,14 @@ public class World3VsKurzweilComparator {
         H3Cell w3Cell = cloneCell(initialCell);
         org.ether.society.core.dod.WorldBuffer w3Buf = toWorldBuffer(List.of(w3Cell));
         World3CouplingEngine w3Engine = new World3CouplingEngine();
-        double w3MaxPop = w3Buf.getBiomassHuman()[0];
+        double w3MaxPop = w3Buf.getHumanPopulation()[0];
         int w3MaxYear = startYear;
         double initialCapital = w3Cell.getResourceCapital() != null ? w3Cell.getResourceCapital() : 1000.0;
 
         for (int yr = startYear; yr < startYear + durationYears; yr++) {
             w3Engine.tick(w3Buf, 1.0, 1.0);
-            if (w3Buf.getBiomassHuman()[0] > w3MaxPop) {
-                w3MaxPop = w3Buf.getBiomassHuman()[0];
+            if (w3Buf.getHumanPopulation()[0] > w3MaxPop) {
+                w3MaxPop = w3Buf.getHumanPopulation()[0];
                 w3MaxYear = yr;
             }
         }
@@ -90,13 +90,13 @@ public class World3VsKurzweilComparator {
         H3Cell kurzCell = cloneCell(initialCell);
         org.ether.society.core.dod.WorldBuffer kurzBuf = toWorldBuffer(List.of(kurzCell));
         KurzweilAcceleratingReturnsEngine kurzEngine = new KurzweilAcceleratingReturnsEngine();
-        double kurzMaxPop = kurzBuf.getBiomassHuman()[0];
+        double kurzMaxPop = kurzBuf.getHumanPopulation()[0];
         int kurzMaxYear = startYear;
 
         for (int yr = startYear; yr < startYear + durationYears; yr++) {
             kurzEngine.tick(kurzBuf, 1.0, 1.0);
-            if (kurzBuf.getBiomassHuman()[0] > kurzMaxPop) {
-                kurzMaxPop = kurzBuf.getBiomassHuman()[0];
+            if (kurzBuf.getHumanPopulation()[0] > kurzMaxPop) {
+                kurzMaxPop = kurzBuf.getHumanPopulation()[0];
                 kurzMaxYear = yr;
             }
         }
@@ -116,10 +116,10 @@ public class World3VsKurzweilComparator {
             kurzEngine.tick(hybridBuf, 1.0, 1.0);
             w3Engine.tick(hybridBuf, 1.0, 1.0);
         }
-        report.hybridPopulation2050 = hybridBuf.getBiomassHuman()[0];
+        report.hybridPopulation2050 = hybridBuf.getHumanPopulation()[0];
 
-        double popDiff = Math.abs(kurzBuf.getBiomassHuman()[0] - w3Buf.getBiomassHuman()[0]);
-        double meanPop = (kurzBuf.getBiomassHuman()[0] + w3Buf.getBiomassHuman()[0]) / 2.0;
+        double popDiff = Math.abs(kurzBuf.getHumanPopulation()[0] - w3Buf.getHumanPopulation()[0]);
+        double meanPop = (kurzBuf.getHumanPopulation()[0] + w3Buf.getHumanPopulation()[0]) / 2.0;
         report.structuralDivergenceIndex = meanPop > 0 ? popDiff / meanPop : 0.0;
 
         if (report.structuralDivergenceIndex > 0.50) {

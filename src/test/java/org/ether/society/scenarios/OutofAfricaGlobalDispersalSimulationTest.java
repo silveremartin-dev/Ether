@@ -140,12 +140,12 @@ public class OutofAfricaGlobalDispersalSimulationTest {
 
         for (int tick = 1; tick <= totalTicks; tick++) {
             for (int i = 0; i < planetaryGrid.size(); i++) {
-                buf.getBiomassHuman()[i] = (float) (planetaryGrid.get(i).getPopulationOr(0) * 0.06);
+                buf.getHumanPopulation()[i] = (float) (planetaryGrid.get(i).getPopulationOr(0));
             }
             // 1. Demographic reproduction & aging
             bioEngine.tick(buf, 1.0, 12.0);
             for (int i = 0; i < planetaryGrid.size(); i++) {
-                planetaryGrid.get(i).setPopulation((int) Math.round(buf.getBiomassHuman()[i] / 0.06));
+                planetaryGrid.get(i).setPopulation((int) Math.round(buf.getHumanPopulation()[i]));
             }
 
             // 2. Spatial 2D H3 neighbor demographic expansion vector push
@@ -238,20 +238,20 @@ public class OutofAfricaGlobalDispersalSimulationTest {
         BiologicalDemographicsEngine bioEngine2 = new BiologicalDemographicsEngine();
         for (int t = 0; t < 50; t++) {
             for (int i = 0; i < singleOriginGrid.size(); i++) {
-                singleBuf.getBiomassHuman()[i] = (float) (singleOriginGrid.get(i).getPopulationOr(0) * 0.06);
+                singleBuf.getHumanPopulation()[i] = (float) (singleOriginGrid.get(i).getPopulationOr(0));
             }
             bioEngine2.tick(singleBuf, 1.0, 12.0);
             for (int i = 0; i < singleOriginGrid.size(); i++) {
-                singleOriginGrid.get(i).setPopulation((int) Math.round(singleBuf.getBiomassHuman()[i] / 0.06));
+                singleOriginGrid.get(i).setPopulation((int) Math.round(singleBuf.getHumanPopulation()[i]));
             }
             processPlanetary2DH3Migration(singleOriginGrid, singleMap, h3Service);
 
             for (int i = 0; i < multiRegionalGrid.size(); i++) {
-                multiBuf.getBiomassHuman()[i] = (float) (multiRegionalGrid.get(i).getPopulationOr(0) * 0.06);
+                multiBuf.getHumanPopulation()[i] = (float) (multiRegionalGrid.get(i).getPopulationOr(0));
             }
             bioEngine2.tick(multiBuf, 1.0, 12.0);
             for (int i = 0; i < multiRegionalGrid.size(); i++) {
-                multiRegionalGrid.get(i).setPopulation((int) Math.round(multiBuf.getBiomassHuman()[i] / 0.06));
+                multiRegionalGrid.get(i).setPopulation((int) Math.round(multiBuf.getHumanPopulation()[i]));
             }
             processPlanetary2DH3Migration(multiRegionalGrid, multiMap, h3Service);
         }

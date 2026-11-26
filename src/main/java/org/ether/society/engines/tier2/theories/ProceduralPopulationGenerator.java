@@ -105,7 +105,7 @@ public final class ProceduralPopulationGenerator {
             H3Cell c = cells.get(i);
             if (c == null) continue;
             c.setPopulation(0);
-            c.setBiomassHuman(0.0);
+            c.setHumanPopulation(0.0);
         }
 
         List<H3Cell> landCells = new ArrayList<>(cells.size());
@@ -154,7 +154,7 @@ public final class ProceduralPopulationGenerator {
 
         for (H3Cell c : landCells) {
             c.setPopulation(0);
-            c.setBiomassHuman(0.0);
+            c.setHumanPopulation(0.0);
             c.setHabitatType(org.ether.society.model.HabitatType.NONE);
         }
 
@@ -216,7 +216,7 @@ public final class ProceduralPopulationGenerator {
                 assignedPop += outpostPop;
 
                 bestCell.setPopulation((int) outpostPop);
-                bestCell.setBiomassHuman((double) outpostPop);
+                bestCell.setHumanPopulation((double) outpostPop);
                 bestCell.setResourceCapital(outpostPop * capitalPerCapita);
                 bestCell.setResourceMetal(outpostPop * capitalPerCapita * 0.20);
                 bestCell.setFoodResource(outpostPop * 36.0 * 10.0);
@@ -336,7 +336,7 @@ public final class ProceduralPopulationGenerator {
             double proportion = weights[i] / totalWeight;
             long pop = Math.round(totalPopulation * proportion);
             cell.setPopulation((int) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
-            cell.setBiomassHuman((double) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
+            cell.setHumanPopulation((double) Math.clamp(pop, 0L, (long) Integer.MAX_VALUE));
 
             if (cell.getPopulation() > maxCellPop) {
                 maxCellPop = cell.getPopulation();
@@ -353,7 +353,7 @@ public final class ProceduralPopulationGenerator {
             long curTopPop = topCell.getPopulationOr(0);
             long newTopPop = Math.clamp(curTopPop + diff, 0L, (long) Integer.MAX_VALUE);
             topCell.setPopulation((int) newTopPop);
-            topCell.setBiomassHuman((double) newTopPop);
+            topCell.setHumanPopulation((double) newTopPop);
             if (newTopPop > maxCellPop) maxCellPop = newTopPop;
         }
 

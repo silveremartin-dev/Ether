@@ -47,8 +47,8 @@ public class RomanImperialCliodynamicEngine extends AbstractSimulationEngine {
 
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
-        if (buffer == null || buffer.getBiomassHuman() == null) return;
-        float pop = buffer.getBiomassHuman()[i];
+        if (buffer == null || buffer.getHumanPopulation() == null) return;
+        float pop = buffer.getHumanPopulation()[i];
         if (pop > 0.001f) {
             float capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0f;
             double overstretchRate = (0.02 * Math.pow(imperialRadiusKm / 1000.0, 2.0) + 0.03 * eliteOverproductionFactor);

@@ -61,7 +61,7 @@ public class TerraformingEngine extends AbstractSimulationEngine {
 
         float[] tempArr = buf.getTemperature();
         float[] elevArr = buf.getElevation();
-        float[] popArr = buf.getBiomassHuman();
+        float[] popArr = buf.getHumanPopulation();
         float[] metalArr = buf.getMetalResource();
 
         for (int i = 0; i < n; i++) {

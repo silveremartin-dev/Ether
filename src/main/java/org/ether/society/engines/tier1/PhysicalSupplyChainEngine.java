@@ -56,7 +56,7 @@ public class PhysicalSupplyChainEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (buffer == null || acc == null) return;
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
         byte biomeOrd = buffer.getBiomes()[i];
@@ -88,7 +88,7 @@ public class PhysicalSupplyChainEngine extends AbstractSimulationEngine {
     public static void processSupplyChains(WorldBuffer buffer, double deltaYears) {
         if (buffer == null || buffer.getCapacity() == 0) return;
 
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         byte[] biomes = buffer.getBiomes();
         float[] capArr = buffer.getResourceCapital();
         float[] energyFireArr = buffer.getEnergyFire();
@@ -99,7 +99,7 @@ public class PhysicalSupplyChainEngine extends AbstractSimulationEngine {
         int n = buffer.getCapacity();
 
         for (int i = 0; i < n; i++) {
-            double pop = bioHuman[i] / 0.06;
+            double pop = bioHuman[i];
             if (pop <= 0.0) continue;
 
             byte biomeOrd = biomes[i];

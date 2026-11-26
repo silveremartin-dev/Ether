@@ -23,7 +23,7 @@ pub unsafe fn process_tier2(world: &mut WorldBufferRaw, dt_years: f32) {
 
     let dt = dt_years.max(0.0001) as f64;
 
-    let pop_slice = std::slice::from_raw_parts(world.biomass_human, n);
+    let pop_slice = std::slice::from_raw_parts(world.human_population, n);
     let cap_ptr = world.resource_capital as usize;
     let comp_ptr = world.institutional_complexity as usize;
     let gini_ptr = world.gini_index as usize;

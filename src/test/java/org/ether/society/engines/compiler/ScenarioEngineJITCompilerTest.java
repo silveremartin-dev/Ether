@@ -77,7 +77,7 @@ public class ScenarioEngineJITCompilerTest {
     public void testCompiledEngineKernelDirectExecution() {
         CompiledEngineKernel kernel = new CompiledEngineKernel();
         kernel.addFusedExpression("temperature", new SymbolicExpression("temperature", 1.1, 2.0));
-        kernel.addFusedExpression("biomassHuman", new SymbolicExpression("biomassHuman", 1.05, 10.0));
+        kernel.addFusedExpression("humanPopulation", new SymbolicExpression("humanPopulation", 1.05, 10.0));
         kernel.addFusedExpression("resourceCapital", new SymbolicExpression("resourceCapital", 1.02, 5.0));
         kernel.addFusedExpression("pollutionLevel", new SymbolicExpression("pollutionLevel", 1.01, 0.1));
 
@@ -101,13 +101,13 @@ public class ScenarioEngineJITCompilerTest {
         // 2. Test WorldBuffer fused execution
         org.ether.society.core.dod.WorldBuffer wb = new org.ether.society.core.dod.WorldBuffer(4);
         wb.getTemperature()[0] = 10.0f;
-        wb.getBiomassHuman()[0] = 50.0f;
+        wb.getHumanPopulation()[0] = 50.0f;
         wb.getResourceCapital()[0] = 20.0f;
 
         kernel.executeFusedKernel(wb, 1.0f);
 
         assertEquals(1.1f * 10.0f + 2.0f, wb.getTemperature()[0], 1e-3f);
-        assertEquals(1.05f * 50.0f + 10.0f, wb.getBiomassHuman()[0], 1e-3f);
+        assertEquals(1.05f * 50.0f + 10.0f, wb.getHumanPopulation()[0], 1e-3f);
         assertEquals(1.02f * 20.0f + 5.0f, wb.getResourceCapital()[0], 1e-3f);
     }
 

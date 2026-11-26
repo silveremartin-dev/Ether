@@ -245,7 +245,7 @@ final class GrataloupBoundaryDebateHelper {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(grid.size());
         for (int i = 0; i < grid.size(); i++) {
             H3Cell c = grid.get(i);
-            buf.getBiomassHuman()[i] = (float) c.getPopulationOr(0);
+            buf.getHumanPopulation()[i] = (float) c.getPopulationOr(0);
             buf.getElevation()[i] = (float) c.getElevationOr(0.0);
         }
         LanguageLinguisticEngine engine = new LanguageLinguisticEngine();

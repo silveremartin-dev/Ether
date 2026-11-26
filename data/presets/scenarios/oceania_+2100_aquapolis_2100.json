@@ -1,4 +1,4 @@
-﻿{
+{
   "cultureVectorDimensions" : 9,
   "culturalDiffusionRate" : 0.05,
   "culturalMutationRate" : 0.01,
@@ -32,7 +32,7 @@
     "BarfieldNomadicSteppeEmpireEngine" : false,
     "BifurcationChaosEngine" : false,
     "BoserupAgriculturalIntensificationEngine" : false,
-    "CliodynamicAdvisorEngine" : false,
+    "CliodynamicAdvisor" : false,
     "CliodynamicsEngine" : false,
     "CoGovernanceTradeEngine" : false,
     "CordenNearyDutchDiseaseEngine" : false,
@@ -98,7 +98,7 @@
     "TasmanianCulturalRegressionEngine" : false,
     "TerraformingEngine" : false,
     "ThermodynamicWarfareEngine" : false,
-    "TradeNetworkEngine" : true,
+    "TradeNetworkRouter" : true,
     "TurchinGoldstoneSDTEngine" : false,
     "UrbanThermodynamicsEngine" : false,
     "VonThunenAgriculturalRingsEngine" : false,
@@ -234,7 +234,7 @@
   "initialCapitalPerCapita" : 90000.0,
   "initialEnergyPerCapita" : 80000.0,
   "initialFoodReserveMonths" : 36.0,
-  "initialInformationPerCapita" : 7.5E7,
+  "initialInformationPerCapita" : 75000000.0,
   "populationDensityType" : "URBAN_CLUSTERS",
   "cellSizeKm2" : 100.0,
   "targetCohortSize" : 1000,

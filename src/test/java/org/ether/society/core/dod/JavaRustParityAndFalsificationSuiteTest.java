@@ -209,9 +209,9 @@ public class JavaRustParityAndFalsificationSuiteTest {
 
         for (int i = 0; i < 20; i++) {
             float popVal = 250.0f + i * 10.0f;
-            javaSimdWorld.getBiomassHuman()[i] = popVal;
-            javaStdWorld.getBiomassHuman()[i] = popVal;
-            rustWorld.getBiomassHuman()[i] = popVal;
+            javaSimdWorld.getHumanPopulation()[i] = popVal;
+            javaStdWorld.getHumanPopulation()[i] = popVal;
+            rustWorld.getHumanPopulation()[i] = popVal;
         }
 
         // 1. Advance Java SIMD Engine

@@ -33,7 +33,7 @@ public class CulturalMaterialismPureEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         double food = buffer.getFoodResource()[i];
-        double pop = buffer.getBiomassHuman()[i];
+        double pop = buffer.getHumanPopulation()[i];
         if (pop > 0.0 && (food / pop) < 0.05) {
             double decay = Math.max(0.0, 1.0 - 0.10 * dtYears);
             float capital = buffer.getResourceCapital()[i];

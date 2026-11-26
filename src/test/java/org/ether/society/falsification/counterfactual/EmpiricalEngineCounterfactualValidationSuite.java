@@ -336,12 +336,12 @@ public class EmpiricalEngineCounterfactualValidationSuite {
             org.ether.society.data.DODDataGenerator.populateWorldBuffer(cells, buf, false);
             double initialPop = 0.0;
             for (int i = 0; i < cells.size(); i++) {
-                initialPop += buf.getBiomassHuman()[i] / 0.06;
+                initialPop += buf.getHumanPopulation()[i];
             }
             new NetEnergyEROEIEngine().tick(buf, 1.0, 12.0);
             double postCollapsePop = 0.0;
             for (int i = 0; i < cells.size(); i++) {
-                postCollapsePop += buf.getBiomassHuman()[i] / 0.06;
+                postCollapsePop += buf.getHumanPopulation()[i];
             }
 
             assertTrue(postCollapsePop < initialPop, "Sub-unity EROEI must trigger rapid energetic starvation and population mortality");

@@ -93,7 +93,7 @@ public class EcologicalDegradationEngine extends AbstractSimulationEngine {
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
         double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
 
         double currPollution = buffer.getPollutionLevel()[i];
         double newPollution;

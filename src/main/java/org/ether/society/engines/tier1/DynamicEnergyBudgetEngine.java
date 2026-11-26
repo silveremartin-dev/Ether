@@ -101,6 +101,19 @@ public class DynamicEnergyBudgetEngine extends AbstractSimulationEngine {
     public static final double MEGAFAUNA_FORAGE_HALF_SAT_TONS = 50.0;
 
     /**
+     * Consumer-to-producer community biomass scaling exponent ($k = 3/4$) across terrestrial biomes
+     * (Hatton et al., 2015, <i>Science</i> 349, aac6284).
+     */
+    public static final double HATTON_BIOMASS_SCALING_EXPONENT = 0.75;
+
+    /**
+     * Normalized terrestrial consumer-producer mass-density coefficient ($c \approx 0.056\;(\text{t/km}^2)^{1/4}$)
+     * linking primary producer standing density $\rho_p$ to equilibrium herbivore biomass density
+     * $\rho_h = c \cdot \rho_p^{3/4}$ (Hatton et al., 2015, <i>Science</i> Fig. 1).
+     */
+    public static final double HATTON_BIOMASS_SCALING_COEFF = 0.056;
+
+    /**
      * Calculates the Arrhenius thermodynamic temperature correction factor:
      * \[
      * k(T) = \exp\left(\frac{T_A}{T_{\text{ref}}} - \frac{T_A}{T}\right)
@@ -152,10 +165,10 @@ public class DynamicEnergyBudgetEngine extends AbstractSimulationEngine {
         double dtSafe = Math.max(1e-4, dtYears);
         double tempC = buffer.getTemperature()[i];
 
-        // 1. Human DEB
-        double biomassHuman = buffer.getBiomassHuman()[i];
-        double pop = biomassHuman / HUMAN_LEAN_STRUCTURAL_MASS_TONS;
-        if (pop > 0.0) {
+        // 1. Human DEB (executed only when DemographicKernel does not already manage human cohort consumption & turnover)
+        double humanPopulation = buffer.getHumanPopulation()[i];
+        double pop = humanPopulation;
+        if (!buffer.isDemographicKernelManaged() && pop > 0.0) {
             double foodStockGJ = buffer.getFoodResource()[i];
             double foodPerCapita = foodStockGJ / Math.max(1.0, pop);
             double f = calculateFunctionalResponse(foodPerCapita, HUMAN_FOOD_HALF_SATURATION_GJ);
@@ -174,7 +187,7 @@ public class DynamicEnergyBudgetEngine extends AbstractSimulationEngine {
             if (somaticAllocation >= somaticDemand) {
                 double netReproductiveSurplus = Math.max(0.0, reproductiveAllocation - HUMAN_MATURITY_MAINTENANCE_GJ_PER_YEAR);
                 double annualBirthRate = Math.min(0.055, netReproductiveSurplus / HUMAN_GESTATION_COST_GJ);
-                acc.dBiomassHuman += (float) (biomassHuman * annualBirthRate * dtSafe);
+                acc.dHumanPopulation += (float) (humanPopulation * annualBirthRate * dtSafe);
             } else {
                 double deficitPerCapitaGJ = (somaticDemand - somaticAllocation) * dtSafe;
                 double structuralLossTons = deficitPerCapitaGJ / SPECIFIC_COST_STRUCTURE_GJ_PER_TON;
@@ -182,15 +195,19 @@ public class DynamicEnergyBudgetEngine extends AbstractSimulationEngine {
                 double normalizedEmaciation = Math.min(2.0, relativeEmaciation / CRITICAL_STRUCTURAL_LOSS_FRACTION);
                 double starvationHazardRate = 0.35 * (normalizedEmaciation * normalizedEmaciation);
                 double survivalFraction = Math.exp(-starvationHazardRate * dtSafe);
-                acc.dBiomassHuman += (float) (biomassHuman * (survivalFraction - 1.0));
+                acc.dHumanPopulation += (float) (humanPopulation * (survivalFraction - 1.0));
             }
         }
 
-        // 2. Ecological DEB
+        // 2. Ecological DEB (trophic scaling via Hatton et al. 2015 Science: rho_herb = c * rho_prod^(3/4))
         double naturalBiomass = buffer.getBiomassNatural()[i];
         if (naturalBiomass > 1.0) {
             double arrhenius = calculateArrheniusCorrection(tempC);
-            double herbivoreBiomass = naturalBiomass * 0.12;
+            double safeAreaKm2 = Math.max(0.01, H3CellPhysicsAndStateHelper.resolveCellAreaKm2(buffer.getH3Indexes(), i));
+            double producerDensityTPerKm2 = naturalBiomass / safeAreaKm2;
+            double herbivoreBiomass = HATTON_BIOMASS_SCALING_COEFF
+                    * Math.pow(producerDensityTPerKm2, HATTON_BIOMASS_SCALING_EXPONENT)
+                    * safeAreaKm2;
             double f = calculateFunctionalResponse(naturalBiomass, MEGAFAUNA_FORAGE_HALF_SAT_TONS);
             double forageIngestedGJ = herbivoreBiomass * MEGAFAUNA_MAX_INGESTION_GJ_PER_TON_YEAR * f * arrhenius * dtSafe;
             double dryVegetationConsumedTons = forageIngestedGJ / 18.0;

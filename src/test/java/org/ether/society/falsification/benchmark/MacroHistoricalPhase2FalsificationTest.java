@@ -44,9 +44,27 @@ public class MacroHistoricalPhase2FalsificationTest {
     }
 
     public record ScenarioRunConfig(
-            String presetKey, String displayName, int startYear, int endYear,
+            String presetKey, String displayName, Integer startYearOverride, Integer endYearOverride,
             int resolution, boolean windowed, String targetRasterPath
-    ) {}
+    ) {
+        public ScenarioRunConfig(String presetKey, String displayName, int resolution, boolean windowed, String targetRasterPath) {
+            this(presetKey, displayName, null, null, resolution, windowed, targetRasterPath);
+        }
+
+        public int startYear() { return startYearOverride != null ? startYearOverride : 0; }
+        public int endYear() { return endYearOverride != null ? endYearOverride : 0; }
+
+        public ScenarioRunConfig resolveFor(Scenario s) {
+            String pStart = System.getProperty("benchmark.startYear");
+            String pEnd = System.getProperty("benchmark.endYear");
+            int sy = (pStart != null && !pStart.isBlank()) ? Integer.parseInt(pStart.trim())
+                    : (startYearOverride != null ? startYearOverride : (int) s.getStartDateYear());
+            int ey = (pEnd != null && !pEnd.isBlank()) ? Integer.parseInt(pEnd.trim())
+                    : (endYearOverride != null ? endYearOverride : (int) s.getEndDateYear());
+            if (ey <= sy) ey = sy + 100;
+            return new ScenarioRunConfig(presetKey, displayName, sy, ey, resolution, windowed, targetRasterPath);
+        }
+    }
 
     public record CulturalLayerAudit(
             String channelKey, String displayName, String empiricalSource,
@@ -60,22 +78,22 @@ public class MacroHistoricalPhase2FalsificationTest {
     ) {}
 
     private static final List<ScenarioRunConfig> TARGET_CONFIGS = List.of(
-            new ScenarioRunConfig("pax_romana_augustus_0", "Pax Romana & Principate of Augustus (0 CE)",
-                    0, 20, 4, false, "data/maps/ether/earth/0/earth_0_density.png"),
-            new ScenarioRunConfig("ramesses_ii", "Ramesses II, Pax Aegyptiaca & Monumental Builders (-1279 BCE)",
-                    -1279, -1259, 4, false, "data/maps/ether/earth/-1279/earth_-1279_density.png"),
-            new ScenarioRunConfig("bronze_age_collapse_1200bc", "Late Bronze Age Collapse & Sea Peoples Cataclysm (-1200 BCE)",
-                    -1200, -1180, 4, false, "data/maps/ether/earth/-1200/earth_-1200_density.png"),
-            new ScenarioRunConfig("mongol_conquest_1206", "Mongol Conquest & Eurasian Steppe Unification (1206 CE)",
-                    1206, 1226, 4, false, "data/maps/ether/earth/1206/earth_1206_density.png"),
-            new ScenarioRunConfig("columbian_contact", "Columbian Contact & Transoceanic Ecological Exchange (1492 CE)",
-                    1492, 1512, 4, false, "data/maps/ether/earth/1492/earth_1492_density.png"),
-            new ScenarioRunConfig("tokugawa_japan", "Tokugawa Shogunate & Sakoku Autarky (1639 CE)",
-                    1639, 1659, 4, false, "data/maps/ether/earth/1639/earth_1639_density.png"),
-            new ScenarioRunConfig("great_acceleration_1950", "Post-War Reconstruction & The Great Acceleration (1950 CE)",
-                    1950, 1970, 4, false, "data/maps/ether/earth/1950/earth_1950_density.png"),
-            new ScenarioRunConfig("out_of_africa", "Out of Africa & Homo Sapiens Expansion (-100,000 BP)",
-                    -100000, -99980, 3, false, "data/maps/ether/earth/-100000/earth_-100000_density.png")
+            new ScenarioRunConfig("pax_romana_augustus_0", "Pax Romana & Principate of Augustus (0-180 CE)",
+                    4, false, "data/maps/ether/earth/0/earth_0_density.png"),
+            new ScenarioRunConfig("ramesses_ii", "Ramesses II, Pax Aegyptiaca & Monumental Builders (-1279 -> -1200 BCE)",
+                    4, false, "data/maps/ether/earth/-1279/earth_-1279_density.png"),
+            new ScenarioRunConfig("bronze_age_collapse_1200bc", "Late Bronze Age Collapse & Sea Peoples Cataclysm (-1200 -> -900 BCE)",
+                    4, false, "data/maps/ether/earth/-1200/earth_-1200_density.png"),
+            new ScenarioRunConfig("mongol_conquest_1206", "Mongol Conquest & Eurasian Steppe Unification (1206-1368 CE)",
+                    4, false, "data/maps/ether/earth/1206/earth_1206_density.png"),
+            new ScenarioRunConfig("columbian_contact", "Columbian Contact & Transoceanic Ecological Exchange (1492-1650 CE)",
+                    4, false, "data/maps/ether/earth/1492/earth_1492_density.png"),
+            new ScenarioRunConfig("tokugawa_japan", "Tokugawa Shogunate & Sakoku Autarky (1639-1853 CE)",
+                    4, false, "data/maps/ether/earth/1639/earth_1639_density.png"),
+            new ScenarioRunConfig("great_acceleration_1950", "Post-War Reconstruction & The Great Acceleration (1950-2024 CE)",
+                    4, false, "data/maps/ether/earth/1950/earth_1950_density.png"),
+            new ScenarioRunConfig("out_of_africa", "Out of Africa & Homo Sapiens Expansion (-100,000 -> -20,000 BP)",
+                    3, false, "data/maps/ether/earth/-100000/earth_-100000_density.png")
     );
 
     @Test
@@ -102,40 +120,55 @@ public class MacroHistoricalPhase2FalsificationTest {
         File reportsDir = new File("docs/reports");
         reportsDir.mkdirs();
 
-        for (ScenarioRunConfig cfg : TARGET_CONFIGS) {
+        for (ScenarioRunConfig rawCfg : TARGET_CONFIGS) {
             String filter = System.getProperty("phase2.scenario");
             if (filter != null && !filter.isBlank()) {
                 List<String> allowed = Arrays.stream(filter.split(","))
                         .map(String::trim).map(String::toLowerCase).toList();
-                if (!allowed.contains(cfg.presetKey().toLowerCase())) continue;
+                if (!allowed.contains(rawCfg.presetKey().toLowerCase())) continue;
             }
+
+            Scenario s = allScenarios.stream()
+                    .filter(sc -> rawCfg.presetKey().equalsIgnoreCase(sc.getPresetKey())
+                            || (sc.getPresetKey() != null && sc.getPresetKey().toLowerCase().contains(rawCfg.presetKey().toLowerCase()))
+                            || (sc.getName() != null && (
+                                    sc.getName().toLowerCase().contains(rawCfg.presetKey().toLowerCase())
+                                    || (rawCfg.presetKey().contains("great_acceleration") && sc.getName().toLowerCase().contains("great acceleration"))
+                                    || (rawCfg.presetKey().contains("out_of_africa") && sc.getName().toLowerCase().contains("out of africa")))))
+                    .findFirst().orElse(null);
+
+            if (s == null) {
+                System.err.println("Scenario not found in built-ins: " + rawCfg.presetKey());
+                continue;
+            }
+            if (s.getPresetKey() == null || s.getPresetKey().isBlank()) {
+                s.setPresetKey(rawCfg.presetKey());
+            }
+
+            ScenarioRunConfig cfg = rawCfg.resolveFor(s);
+            s.setStartDateYear(cfg.startYear());
+            s.setEndDateYear(cfg.endYear());
+            String dtProp = System.getProperty("benchmark.dtDays");
+            if (dtProp != null && !dtProp.isBlank()) {
+                try { s.setTemporalResolutionDays(Double.parseDouble(dtProp.trim())); } catch (NumberFormatException ignored) {}
+            }
+
             System.out.println("================================================================================");
             System.out.printf("🚀 RUNNING PHASE 2 BENCHMARK: %s [Res: %d, Years: %d -> %d]%n",
                     cfg.displayName(), cfg.resolution(), cfg.startYear(), cfg.endYear());
             System.out.println("================================================================================");
-
-            Scenario s = allScenarios.stream()
-                    .filter(sc -> cfg.presetKey().equalsIgnoreCase(sc.getPresetKey())
-                            || (sc.getPresetKey() != null && sc.getPresetKey().toLowerCase().contains(cfg.presetKey().toLowerCase()))
-                            || (sc.getStartDateYear() == cfg.startYear() && sc.getName() != null && (
-                                    sc.getName().toLowerCase().contains(cfg.presetKey().toLowerCase())
-                                    || (cfg.presetKey().contains("great_acceleration") && sc.getName().toLowerCase().contains("great acceleration"))
-                                    || (cfg.presetKey().contains("out_of_africa") && sc.getName().toLowerCase().contains("out of africa")))))
-                    .findFirst().orElse(null);
-
-            if (s == null) {
-                System.err.println("Scenario not found in built-ins: " + cfg.presetKey());
-                continue;
-            }
-            if (s.getPresetKey() == null || s.getPresetKey().isBlank()) {
-                s.setPresetKey(cfg.presetKey());
-            }
-
-            s.setStartDateYear(cfg.startYear());
-            s.setEndDateYear(cfg.endYear());
             int targetRes = cfg.resolution();
             s.setH3Resolution(targetRes);
-            if (!cfg.windowed()) s.setClippingEnabled(false);
+            if (!cfg.windowed() && s.isClippingEnabled()) {
+                s.setClippingEnabled(false);
+                double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
+                        "worldPopulation", (double) cfg.startYear(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+                if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
+                    s.setInitialHumanCount(Math.round(globalPopM * 1_000_000.0));
+                }
+            } else if (!cfg.windowed()) {
+                s.setClippingEnabled(false);
+            }
 
             long startMs = System.currentTimeMillis();
             SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(s);
@@ -163,7 +196,7 @@ public class MacroHistoricalPhase2FalsificationTest {
                     it -> repo.getRun(it.getRunId())
             );
 
-            int totalTicks = Math.max(1, (cfg.endYear() - cfg.startYear()) * 12);
+            int totalTicks = Math.max(1, (int) Math.ceil(((cfg.endYear() - cfg.startYear()) * 365.25) / Math.max(1.0, s.getTemporalResolutionDays())));
             double durationSec = Math.max(0.001, elapsedMs / 1000.0);
             double tps = totalTicks / durationSec;
             double msPerTick = (double) elapsedMs / totalTicks;

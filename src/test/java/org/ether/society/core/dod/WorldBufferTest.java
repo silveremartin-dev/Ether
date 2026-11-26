@@ -25,7 +25,7 @@ class WorldBufferTest {
         assertEquals(100, worldBuffer.getRainfall().length);
         assertEquals(100, worldBuffer.getBiomes().length);
         assertEquals(100, worldBuffer.getFoodResource().length);
-        assertEquals(100, worldBuffer.getBiomassHuman().length);
+        assertEquals(100, worldBuffer.getHumanPopulation().length);
         assertEquals(100, worldBuffer.getNeighborIndexes().length);
         assertEquals(6, worldBuffer.getNeighborIndexes()[0].length);
     }
@@ -35,12 +35,12 @@ class WorldBufferTest {
     void testDataAccess() {
         worldBuffer.getElevation()[5] = 1250.5f;
         worldBuffer.getFoodResource()[5] = 300.0f;
-        worldBuffer.getBiomassHuman()[5] = 50.0f;
+        worldBuffer.getHumanPopulation()[5] = 50.0f;
         worldBuffer.getH3Indexes()[5] = 0x8828308281fffffL;
 
         assertEquals(1250.5f, worldBuffer.getElevation()[5]);
         assertEquals(300.0f, worldBuffer.getFoodResource()[5]);
-        assertEquals(50.0f, worldBuffer.getBiomassHuman()[5]);
+        assertEquals(50.0f, worldBuffer.getHumanPopulation()[5]);
         assertEquals(0x8828308281fffffL, worldBuffer.getH3Indexes()[5]);
     }
 }

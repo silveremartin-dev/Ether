@@ -227,11 +227,20 @@ public class StatisticsKernel {
      * conserved physical capital stock ($Y = K / \beta$, Piketty 2014 $\beta \approx 3.5$) and
      * metabolic subsistence baseline ($400\,\text{GK\$}/\text{capita}$, Maddison 2020), blended smoothly ($C^\infty$).
      *
-     * @param capital      array of cellular physical capital stocks ($K_i$)
-     * @param humanBiomass array of cellular agent populations ($N_i$)
+    /**
+     * Evaluates Gross World Product (GWP) using the Ayres &amp; Warr (2009) / Kümmel (2011)
+     * physical Exergy-Augmented Cobb-Douglas production function anchored to the Maddison Project (2020)
+     * physiological subsistence baseline ($Y_0 = 102\text{ Int\$1990/capita}$):
+     * $$Y = N \cdot Y_0 \cdot \left(\frac{\max(P_{\text{somatic}}, p)}{P_{\text{somatic}}}\right)^{\alpha_E} \cdot \left(1 + \frac{k_{\text{pc}}}{k_0}\right)^{\alpha_K}$$
+     * with empirical output elasticities $\alpha_E = 0.65$ (useful power exergy) and $\alpha_K = 0.35$ (built capital stock),
+     * somatic hearth baseline $P_{\text{somatic}} = 348\text{ W/capita}$, and traditional village capital scale $k_0 = 120\text{ kg/capita}$.
+     *
+     * @param capital         array of cellular physical capital stocks ($K_i$ in kg)
+     * @param humanPopulation array of cellular agent populations ($N_i$ headcount)
+     * @param totalWatts   aggregate useful mechanical/thermal/electrical power dissipation ($\text{W}$)
      * @return annual GWP flow in 1990 Geary-Khamis USD
      */
-    public float calculateGDP(float[] capital, float[] humanBiomass) {
+    public float calculateGDP(float[] capital, float[] humanBiomass, double totalWatts) {
         double totalPop = 0.0;
         if (humanBiomass != null) {
             for (float b : humanBiomass) {
@@ -246,16 +255,30 @@ public class StatisticsKernel {
                 }
             }
         }
-        // Maddison Project Database (2020) & Bolt & van Zanden (2020) + Ayres-Kümmel (2009) Exergy Production:
-        // Deep-time physiological & subsistence baseline is ~102 1990 International Dollars per capita.
         if (totalPop <= 0.0) {
-            return (float) (totalCapitalKg * 0.045);
+            return 0.0f;
         }
         double meanKpc = Math.max(0.0, totalCapitalKg / totalPop);
+        double powerW = (totalWatts > 0.0 && !Double.isNaN(totalWatts) && !Double.isInfinite(totalWatts))
+                ? Math.max(348.0, totalWatts / totalPop)
+                : 348.0;
+        // Ayres & Warr (2009) / Kümmel (2011) Exergy-Capital Cobb-Douglas scaling anchored at Maddison subsistence
         double perCapitaGwp = 102.0
-                + 0.045 * meanKpc
-                + 0.36 * meanKpc * SmoothMath.sigmoid(meanKpc, 2800.0, 400.0);
+                * Math.pow(powerW / 348.0, 0.65)
+                * Math.pow(1.0 + (meanKpc / 120.0), 0.35);
         return (float) (totalPop * perCapitaGwp);
+    }
+
+    /**
+     * Evaluates Gross World Product (GWP) using physical capital stock and somatic power baseline
+     * when aggregate cellular watt telemetry is not separately supplied.
+     *
+     * @param capital      array of cellular physical capital stocks ($K_i$)
+     * @param humanBiomass array of cellular agent populations ($N_i$)
+     * @return annual GWP flow in 1990 Geary-Khamis USD
+     */
+    public float calculateGDP(float[] capital, float[] humanBiomass) {
+        return calculateGDP(capital, humanBiomass, 0.0);
     }
 
     /**
@@ -263,7 +286,7 @@ public class StatisticsKernel {
      * to conserved physical observables {@link #calculateGDP(float[], float[])}.
      */
     public float calculateGDP(float[] capital, float[] humanBiomass, float ignoredLegacyTech) {
-        return calculateGDP(capital, humanBiomass);
+        return calculateGDP(capital, humanBiomass, 0.0);
     }
 
     /**
@@ -298,7 +321,7 @@ public class StatisticsKernel {
      */
     public float calculateLifeExpectancy(WorldBuffer world, float foodSatisfaction) {
         if (world == null) return 30.0f;
-        float[] pop = world.getBiomassHuman();
+        float[] pop = world.getHumanPopulation();
         float[] cap = world.getResourceCapital();
         float[] water = world.getWaterResource();
         float[] cellLifespan = world.getLifespan();

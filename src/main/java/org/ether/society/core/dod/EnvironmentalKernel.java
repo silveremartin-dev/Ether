@@ -188,7 +188,7 @@ public class EnvironmentalKernel {
         float foodRetentionFactor = (float) Math.exp(-0.03 * dtInYears);
 
         float[] waterArr = world.getWaterResource();
-        float[] humanArr = world.getBiomassHuman();
+        float[] humanArr = world.getHumanPopulation();
         float[] capArr = world.getResourceCapital();
         float[] livestockArr = world.getBiomassLivestock();
         float[] bioNatArr = world.getBiomassNatural();

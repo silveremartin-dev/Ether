@@ -427,7 +427,7 @@ final class GroundTruthAuditReportBuilder {
             if (planet == null) planet = run.getParameterMatrix().get("Planet");
             if (planet != null) {
                 String pLower = planet.toLowerCase(Locale.ROOT);
-                if (!pLower.contains("terre") && !pLower.contains("earth")) {
+                if (!pLower.contains("terre") && (!pLower.contains("earth") || pLower.contains("super"))) {
                     return -1.0; // Marker: Non-Earth Realm (Terrestrial benchmarks do not apply)
                 }
             }

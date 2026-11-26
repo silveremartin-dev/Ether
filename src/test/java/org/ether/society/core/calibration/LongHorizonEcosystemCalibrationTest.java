@@ -41,7 +41,7 @@ public class LongHorizonEcosystemCalibrationTest {
             c.setH3Index((long) (2000 + i));
             c.setBiome(biome);
             c.setPopulation(popPerCell);
-            c.setBiomassHuman(popPerCell * 0.45);
+            c.setHumanPopulation(popPerCell * 0.45);
             c.setFoodResource(foodPerCell);
             c.setWaterResource(waterPerCell);
             c.setTemperature(temp);

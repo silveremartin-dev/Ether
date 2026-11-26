@@ -219,7 +219,7 @@ public class ArchipelagoMaritimeValidationSuite extends IslandValidationBase {
         double totalAgri = 0.0;
         double totalFish = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            totalPop += buffer.getBiomassHuman()[i];
+            totalPop += buffer.getHumanPopulation()[i];
             totalWood += buffer.getWoodResource()[i];
             totalAgri += buffer.getBiomassAgriculture()[i];
             totalFish += buffer.getBiomassFish()[i];

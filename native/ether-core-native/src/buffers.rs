@@ -24,7 +24,7 @@ pub struct WorldBufferRaw {
     pub clay_resource: *mut c_float,
 
     // Biomass
-    pub biomass_human: *mut c_float,
+    pub human_population: *mut c_float,
     pub biomass_livestock: *mut c_float,
     pub biomass_fish: *mut c_float,
     pub biomass_agriculture: *mut c_float,

@@ -36,7 +36,7 @@ public class UrbanThermodynamicsEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (buffer == null || acc == null) return;
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop > 50000.0) {
             double dtSafe = Math.max(0.0001, dtYears);
             double aquifer = buffer.getFreshwaterAquifer()[i];
@@ -62,13 +62,13 @@ public class UrbanThermodynamicsEngine extends AbstractSimulationEngine {
         double dtSafe = Math.max(0.0001, deltaYears);
         double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 0.5);
 
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         float[] tempArr = buffer.getTemperature();
         float[] aquiferArr = buffer.getFreshwaterAquifer();
         int n = buffer.getCapacity();
 
         for (int i = 0; i < n; i++) {
-            double pop = bioHuman[i] / 0.06;
+            double pop = bioHuman[i];
             if (pop < 5000.0) continue;
 
             double uhiDeltaT = 0.5 * Math.log10(pop / 1000.0);

@@ -39,7 +39,7 @@ public class CulturalSociologyEngine extends AbstractSimulationEngine {
 
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
-        if (buffer.getBiomassHuman()[i] <= 0.0f) return;
+        if (buffer.getHumanPopulation()[i] <= 0.0f) return;
 
         if (globalEnvironmentalStewardship > 0.6) {
             acc.dSoilOrganicCarbon += (float) ((globalEnvironmentalStewardship - 0.5) * 0.1 * dtYears);

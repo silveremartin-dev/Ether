@@ -15,7 +15,7 @@ public class HydrologicalEngineeringEngineTest {
     public void testChinampasTenochtitlanLakeReclamation() {
         WorldBuffer buf = new WorldBuffer(1);
         buf.getBiomes()[0] = (byte) Biome.LAKE.ordinal();
-        buf.getBiomassHuman()[0] = 2000.0f;
+        buf.getHumanPopulation()[0] = 2000.0f;
         buf.getResourceCapital()[0] = 200.0f;
         buf.getFoodResource()[0] = 100.0f;
         buf.getSoilOrganicCarbon()[0] = 20.0f;

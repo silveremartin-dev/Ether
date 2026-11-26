@@ -135,11 +135,11 @@ public final class CulturalKnowledgeMetricsHelper {
      */
     public double getLiteracyRate() {
         double baseI0 = (engine.getCurrentScenario() != null)
-                ? engine.getCurrentScenario().getInitialInformationPerCapita() : 100.0;
+                ? engine.getCurrentScenario().getInitialInformationPerCapita() : 0.0;
 
         WorldBuffer wb = engine.getWorldBuffer();
-        if (wb != null && wb.getBiomassHuman() != null && wb.getCapacity() > 0) {
-            float[] pop = wb.getBiomassHuman();
+        if (wb != null && wb.getHumanPopulation() != null && wb.getCapacity() > 0) {
+            float[] pop = wb.getHumanPopulation();
             float[] capital = wb.getResourceCapital();
             int cap = wb.getCapacity();
             double totalPop = 0.0;
@@ -164,7 +164,7 @@ public final class CulturalKnowledgeMetricsHelper {
                 double scribal = 3.8 * Math.tanh(Math.max(0.0, cellI - 25.0) / 350.0);
                 double vernacular = 14.0 * Math.tanh(Math.max(0.0, cellI - 550.0) / 19000.0);
                 double massEdu = 81.7 * Math.tanh(Math.max(0.0, cellI - 30000.0) / 220000.0);
-                double cellLit = Math.clamp(scribal + vernacular + massEdu, 0.0, 99.5);
+                double cellLit = (cellI <= 25.0) ? 0.0 : Math.clamp(scribal + vernacular + massEdu, 0.0, 99.5);
                 weightedLit += p * cellLit;
             }
             if (totalPop > 0.0) {
@@ -195,7 +195,7 @@ public final class CulturalKnowledgeMetricsHelper {
             double vernacular = 14.0 * Math.tanh(Math.max(0.0, cellI - 550.0) / 19000.0);
             double massEdu = 81.7 * Math.tanh(Math.max(0.0, cellI - 30000.0) / 220000.0);
 
-            double cellLit = Math.clamp(scribal + vernacular + massEdu, 0.0, 99.5);
+            double cellLit = (cellI <= 25.0) ? 0.0 : Math.clamp(scribal + vernacular + massEdu, 0.0, 99.5);
             weightedLit += p * cellLit;
         }
         return totalPop > 0 ? Math.max(0.0, Math.min(99.5, weightedLit / totalPop)) : 0.0;

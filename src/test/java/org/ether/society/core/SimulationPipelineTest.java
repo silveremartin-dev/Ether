@@ -37,7 +37,7 @@ public class SimulationPipelineTest {
             cell.setH3Index((long) (i + 1));
             cell.setBiome(Biome.FOREST);
             cell.setPopulation(1000);
-            cell.setBiomassHuman(500.0);
+            cell.setHumanPopulation(500.0);
             cell.setTemperature(15.0);
             cell.setFoodResource(2000.0);
             cell.setElevation(100.0);

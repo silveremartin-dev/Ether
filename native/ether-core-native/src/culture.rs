@@ -74,8 +74,8 @@ pub unsafe fn process_culture_full(
     } else {
         &[]
     };
-    let human_pop = if !world.biomass_human.is_null() {
-        std::slice::from_raw_parts(world.biomass_human, w_cap)
+    let human_pop = if !world.human_population.is_null() {
+        std::slice::from_raw_parts(world.human_population, w_cap)
     } else {
         &[]
     };

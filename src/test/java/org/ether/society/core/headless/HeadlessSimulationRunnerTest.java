@@ -34,7 +34,7 @@ public class HeadlessSimulationRunnerTest {
             c.setH3Index((long) (i + 1));
             c.setBiome(Biome.FOREST);
             c.setPopulation(500);
-            c.setBiomassHuman(200.0);
+            c.setHumanPopulation(200.0);
             c.setTemperature(15.0);
             c.setElevation(100.0);
             c.setFoodResource(1000.0);

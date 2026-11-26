@@ -93,7 +93,7 @@ public class HistoricalBehaviorsTestSuite {
      */
     public void testRomeImperialCliodynamics() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = (float) testCells.get(0).getPopulationOr(0);
+        buf.getHumanPopulation()[0] = (float) testCells.get(0).getPopulationOr(0);
         buf.getResourceCapital()[0] = (float) testCells.get(0).getResourceCapitalOr(0.0);
         double initialCapital = buf.getResourceCapital()[0];
 
@@ -115,7 +115,7 @@ public class HistoricalBehaviorsTestSuite {
      */
     public void testEdoJapanIsolationEquilibrium() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 50000.0f; // Exceeds 30k cell target cap
+        buf.getHumanPopulation()[0] = 50000.0f; // Exceeds 30k cell target cap
         buf.getPollutionLevel()[0] = 20.0f;
         buf.getFertility()[0] = 6.0f;
         double initialFertility = buf.getFertility()[0];
@@ -139,9 +139,9 @@ public class HistoricalBehaviorsTestSuite {
     public void testAmerindianEpidemicsAndDraftConstraint() {
         H3Cell cell = testCells.get(0);
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        double initialBiomass = cell.getPopulation() * 0.06;
+        double initialBiomass = cell.getPopulation();
         double initialCapital = Math.max(100.0, cell.getResourceCapitalOr(100.0));
-        buf.getBiomassHuman()[0] = (float) initialBiomass;
+        buf.getHumanPopulation()[0] = (float) initialBiomass;
         buf.getBiomassLivestock()[0] = 0.0f;
         buf.getResourceCapital()[0] = (float) initialCapital;
 
@@ -149,7 +149,7 @@ public class HistoricalBehaviorsTestSuite {
         AmerindianEcosystemEngine.setOldWorldContactTriggered(true);
         new AmerindianEcosystemEngine().tick(buf, 1.0, 1.0);
 
-        assertTrue(buf.getBiomassHuman()[0] < initialBiomass * 0.95,
+        assertTrue(buf.getHumanPopulation()[0] < initialBiomass * 0.95,
             "Amerindian engine: Virgin-soil epidemic shock should cause severe demographic crash upon contact.");
         assertTrue(buf.getResourceCapital()[0] < initialCapital,
             "Amerindian engine: Lack of draft animals should constrain capital accumulation.");
@@ -170,7 +170,7 @@ public class HistoricalBehaviorsTestSuite {
         H3Cell cell = testCells.get(0);
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         double initialFood = cell.getFoodResource();
-        buf.getBiomassHuman()[0] = (float) (cell.getPopulation() * 0.06);
+        buf.getHumanPopulation()[0] = (float) (cell.getPopulation());
         buf.getRainfall()[0] = 200.0f;
         buf.getTemperature()[0] = 25.0f;
         buf.getElevation()[0] = 50.0f;
@@ -195,7 +195,7 @@ public class HistoricalBehaviorsTestSuite {
     public void testPleistoceneMegafaunaOverkill() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getBiomes()[0] = (byte) Biome.PLAINS.ordinal();
-        buf.getBiomassHuman()[0] = 200.0f * 0.06f; // 200 humans vs 500 wild biomass
+        buf.getHumanPopulation()[0] = 200.0f; // 200 humans vs 500 wild biomass
         buf.getBiomassNatural()[0] = 500.0f;
         double initialBiomass = buf.getBiomassNatural()[0];
 
@@ -216,7 +216,7 @@ public class HistoricalBehaviorsTestSuite {
      */
     public void testProtestantWorkEthic() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = (float) testCells.get(0).getPopulationOr(0);
+        buf.getHumanPopulation()[0] = (float) testCells.get(0).getPopulationOr(0);
         buf.getResourceCapital()[0] = (float) testCells.get(0).getResourceCapitalOr(0.0);
         double initialCapital = buf.getResourceCapital()[0];
 
@@ -238,7 +238,7 @@ public class HistoricalBehaviorsTestSuite {
     public void testCelibateMonasticDemographicBuffer() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getFoodResource()[0] = 500.0f;
-        buf.getBiomassHuman()[0] = 10000.0f; // Food stress: food / pop = 0.05 < 0.10 threshold
+        buf.getHumanPopulation()[0] = 10000.0f; // Food stress: food / pop = 0.05 < 0.10 threshold
         buf.getFertility()[0] = 6.0f;
         double initialFertility = buf.getFertility()[0];
 

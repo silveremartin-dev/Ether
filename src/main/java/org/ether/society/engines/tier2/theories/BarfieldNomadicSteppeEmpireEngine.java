@@ -98,16 +98,16 @@ public class BarfieldNomadicSteppeEmpireEngine extends AbstractSimulationEngine 
     @Override
     public void prepareTick(WorldBuffer buffer, double dtYears) {
         totalSedentarySurplusCapital = 0.0;
-        if (buffer == null || buffer.getBiomassHuman() == null) {
+        if (buffer == null || buffer.getHumanPopulation() == null) {
             sedentaryVulnerability = 0.0;
             return;
         }
         int n = buffer.getCapacity();
-        float[] popArr = buffer.getBiomassHuman();
+        float[] popArr = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
         float[] agriArr = buffer.getBiomassAgriculture();
         for (int i = 0; i < n; i++) {
-            double pop = popArr[i] / 0.06;
+            double pop = popArr[i];
             if (pop <= 1.0) continue;
             double cap = capArr != null ? capArr[i] : 0.0;
             double kpc = cap / pop;
@@ -121,8 +121,8 @@ public class BarfieldNomadicSteppeEmpireEngine extends AbstractSimulationEngine 
 
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
-        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (buffer == null || buffer.getHumanPopulation() == null || dtYears <= 0.0) return;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop < 20.0) return;
 
         double cap = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0;

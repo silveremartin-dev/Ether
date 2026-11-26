@@ -504,20 +504,20 @@ public class ScientificModelFalsificationAndValidationSuite {
             for (int i = 0; i < sampleSize; i++) {
                 // H1 Branch: Steppe pastoralist cell paired with wealthy sedentary agrarian core
                 org.ether.society.core.dod.WorldBuffer connectedBuf = new org.ether.society.core.dod.WorldBuffer(2);
-                connectedBuf.getBiomassHuman()[0] = 5000.0f * 0.06f;
+                connectedBuf.getHumanPopulation()[0] = 5000.0f;
                 connectedBuf.getResourceCapital()[0] = 250000.0f;
                 connectedBuf.getBiomassLivestock()[0] = 60000.0f;
                 connectedBuf.getBiomassAgriculture()[0] = 2000.0f;
                 connectedBuf.getInstitutionalComplexity()[0] = 0.60f;
 
-                connectedBuf.getBiomassHuman()[1] = 80000.0f * 0.06f;
+                connectedBuf.getHumanPopulation()[1] = 80000.0f;
                 connectedBuf.getResourceCapital()[1] = 16000000.0f;
                 connectedBuf.getBiomassAgriculture()[1] = 450000.0f;
                 connectedBuf.getBiomassLivestock()[1] = 20000.0f;
 
                 // H0 Branch: Identical steppe pastoralist cell isolated in autarky without sedentary neighbor
                 org.ether.society.core.dod.WorldBuffer isolatedBuf = new org.ether.society.core.dod.WorldBuffer(1);
-                isolatedBuf.getBiomassHuman()[0] = 5000.0f * 0.06f;
+                isolatedBuf.getHumanPopulation()[0] = 5000.0f;
                 isolatedBuf.getResourceCapital()[0] = 250000.0f;
                 isolatedBuf.getBiomassLivestock()[0] = 60000.0f;
                 isolatedBuf.getBiomassAgriculture()[0] = 2000.0f;
@@ -577,13 +577,13 @@ public class ScientificModelFalsificationAndValidationSuite {
 
             // Setup: Steppe Confederation alongside Unified Agrarian Empire (e.g. Xiongnu & Han, or Turks & Tang)
             org.ether.society.core.dod.WorldBuffer empireBuf = new org.ether.society.core.dod.WorldBuffer(2);
-            empireBuf.getBiomassHuman()[0] = 6000.0f * 0.06f;
+            empireBuf.getHumanPopulation()[0] = 6000.0f;
             empireBuf.getResourceCapital()[0] = 300000.0f;
             empireBuf.getBiomassLivestock()[0] = 75000.0f;
             empireBuf.getBiomassAgriculture()[0] = 2500.0f;
             empireBuf.getInstitutionalComplexity()[0] = 0.65f;
 
-            empireBuf.getBiomassHuman()[1] = 100000.0f * 0.06f;
+            empireBuf.getHumanPopulation()[1] = 100000.0f;
             empireBuf.getResourceCapital()[1] = 20000000.0f;
             empireBuf.getBiomassAgriculture()[1] = 500000.0f;
             empireBuf.getBiomassLivestock()[1] = 25000.0f;
@@ -600,7 +600,7 @@ public class ScientificModelFalsificationAndValidationSuite {
             assertTrue(preCollapseWork > 75.0, "Steppe confederation achieves high political cohesion during sedentary unity.");
 
             // Phase 2: Sedentary Agrarian Empire suffers Catastrophic Dynastic Collapse / Civil War
-            empireBuf.getBiomassHuman()[1] = 500.0f * 0.06f;
+            empireBuf.getHumanPopulation()[1] = 500.0f;
             empireBuf.getResourceCapital()[1] = 200.0f;
             empireBuf.getBiomassAgriculture()[1] = 10.0f;
 
@@ -627,19 +627,19 @@ public class ScientificModelFalsificationAndValidationSuite {
             logger.info("🧪 [Scenario 9.3] Testing Nomadic Scale Bifurcation (Small Bands vs Imperial Confederation)...");
 
             org.ether.society.core.dod.WorldBuffer scaleBuf = new org.ether.society.core.dod.WorldBuffer(3);
-            scaleBuf.getBiomassHuman()[0] = 100.0f * 0.06f;
+            scaleBuf.getHumanPopulation()[0] = 100.0f;
             scaleBuf.getResourceCapital()[0] = 3000.0f;
             scaleBuf.getBiomassLivestock()[0] = 80.0f;
             scaleBuf.getBiomassAgriculture()[0] = 50.0f;
             scaleBuf.getInstitutionalComplexity()[0] = 0.40f;
 
-            scaleBuf.getBiomassHuman()[1] = 8000.0f * 0.06f;
+            scaleBuf.getHumanPopulation()[1] = 8000.0f;
             scaleBuf.getResourceCapital()[1] = 400000.0f;
             scaleBuf.getBiomassLivestock()[1] = 120000.0f;
             scaleBuf.getBiomassAgriculture()[1] = 1000.0f;
             scaleBuf.getInstitutionalComplexity()[1] = 0.60f;
 
-            scaleBuf.getBiomassHuman()[2] = 90000.0f * 0.06f;
+            scaleBuf.getHumanPopulation()[2] = 90000.0f;
             scaleBuf.getResourceCapital()[2] = 18000000.0f;
             scaleBuf.getBiomassAgriculture()[2] = 500000.0f;
             scaleBuf.getBiomassLivestock()[2] = 15000.0f;
@@ -669,12 +669,12 @@ public class ScientificModelFalsificationAndValidationSuite {
             logger.info("🧪 [Scenario 10.1] Testing Seshat 100k Population Transition for Moralizing Gods...");
 
             org.ether.society.core.dod.WorldBuffer axialBuf = new org.ether.society.core.dod.WorldBuffer(2);
-            axialBuf.getBiomassHuman()[0] = 1500.0f * 0.06f;
+            axialBuf.getHumanPopulation()[0] = 1500.0f;
             axialBuf.getResourceCapital()[0] = 150000.0f;
             axialBuf.getFluxPressure()[0] = 1.0f;
             axialBuf.getCommercialFluxVolume()[0] = 10.0f;
 
-            axialBuf.getBiomassHuman()[1] = 180000.0f * 0.06f;
+            axialBuf.getHumanPopulation()[1] = 180000.0f;
             axialBuf.getResourceCapital()[1] = 27000000.0f;
             axialBuf.getFluxPressure()[1] = 1.0f;
             axialBuf.getCommercialFluxVolume()[1] = 10.0f;
@@ -742,14 +742,14 @@ public class ScientificModelFalsificationAndValidationSuite {
                 institutionalOnlyCell.setBiomassNatural(20000.0);
 
                 org.ether.society.core.dod.WorldBuffer h1Buf = new org.ether.society.core.dod.WorldBuffer(1);
-                h1Buf.getBiomassHuman()[0] = 8000.0f;
+                h1Buf.getHumanPopulation()[0] = 8000.0f;
                 h1Buf.getResourceCapital()[0] = 800000.0f;
                 h1Buf.getResourceCoal()[0] = 3000.0f;
                 h1Buf.getCommercialFluxVolume()[0] = 35.0f;
                 h1Buf.getBiomassNatural()[0] = 20000.0f;
 
                 org.ether.society.core.dod.WorldBuffer h0Buf = new org.ether.society.core.dod.WorldBuffer(1);
-                h0Buf.getBiomassHuman()[0] = 8000.0f;
+                h0Buf.getHumanPopulation()[0] = 8000.0f;
                 h0Buf.getResourceCapital()[0] = 800000.0f;
                 h0Buf.getResourceCoal()[0] = 0.0f;
                 h0Buf.getCommercialFluxVolume()[0] = 10.0f;
@@ -814,11 +814,11 @@ public class ScientificModelFalsificationAndValidationSuite {
             yangtzeJiangnan.setTradeNetwork(12.0);        // autarkic regional agrarian loop
 
             org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
-            buf.getBiomassHuman()[0] = 10000.0f;
+            buf.getHumanPopulation()[0] = 10000.0f;
             buf.getResourceCapital()[0] = 1000000.0f;
             buf.getResourceCoal()[0] = 3000.0f;
             buf.getCommercialFluxVolume()[0] = 35.0f;
-            buf.getBiomassHuman()[1] = 10000.0f;
+            buf.getHumanPopulation()[1] = 10000.0f;
             buf.getResourceCapital()[1] = 1000000.0f;
             buf.getResourceCoal()[1] = 0.0f;
             buf.getCommercialFluxVolume()[1] = 12.0f;
@@ -827,8 +827,8 @@ public class ScientificModelFalsificationAndValidationSuite {
                 PomeranzGreatDivergenceEngine.processGreatDivergenceDynamics(buf, 1.0);
             }
 
-            double britainKpc = buf.getResourceCapital()[0] / buf.getBiomassHuman()[0];
-            double yangtzeKpc = buf.getResourceCapital()[1] / buf.getBiomassHuman()[1];
+            double britainKpc = buf.getResourceCapital()[0] / buf.getHumanPopulation()[0];
+            double yangtzeKpc = buf.getResourceCapital()[1] / buf.getHumanPopulation()[1];
 
             logger.info("  -> Britain Final K/pc: {}, Yangtze Final K/pc: {}", britainKpc, yangtzeKpc);
 
@@ -859,13 +859,13 @@ public class ScientificModelFalsificationAndValidationSuite {
             ablatedBritain.setTradeNetwork(5.0); // ablated transatlantic imports
 
             org.ether.society.core.dod.WorldBuffer fullBuf = new org.ether.society.core.dod.WorldBuffer(1);
-            fullBuf.getBiomassHuman()[0] = 8000.0f;
+            fullBuf.getHumanPopulation()[0] = 8000.0f;
             fullBuf.getResourceCapital()[0] = 800000.0f;
             fullBuf.getResourceCoal()[0] = 3000.0f;
             fullBuf.getCommercialFluxVolume()[0] = 35.0f;
 
             org.ether.society.core.dod.WorldBuffer ablatedBuf = new org.ether.society.core.dod.WorldBuffer(1);
-            ablatedBuf.getBiomassHuman()[0] = 8000.0f;
+            ablatedBuf.getHumanPopulation()[0] = 8000.0f;
             ablatedBuf.getResourceCapital()[0] = 800000.0f;
             ablatedBuf.getResourceCoal()[0] = 3000.0f;
             ablatedBuf.getCommercialFluxVolume()[0] = 5.0f;

@@ -103,7 +103,7 @@ public class PublicSanitationWaterGridEngine extends AbstractSimulationEngine {
     public static void processSanitationGrids(WorldBuffer buffer, double deltaYears) {
         if (buffer == null || deltaYears <= 0.0) return;
         int n = buffer.getCapacity();
-        float[] pop = buffer.getBiomassHuman();
+        float[] pop = buffer.getHumanPopulation();
         float[] cap = buffer.getResourceCapital();
         float[] water = buffer.getWaterResource();
         float[] lifespan = buffer.getLifespan();
@@ -115,7 +115,7 @@ public class PublicSanitationWaterGridEngine extends AbstractSimulationEngine {
             float kPerCap = capital / p;
             float wAvail = (water != null) ? water[i] : 1.0f;
 
-            double densityPerKm2 = (p / 0.06) / 36.13;
+            double densityPerKm2 = p / 36.13;
             double crowdingPathogenPressure = Math.min(1.0, densityPerKm2 / 200.0);
             double sanitationCoverage = 0.0;
             if (kPerCap > 200.0) {

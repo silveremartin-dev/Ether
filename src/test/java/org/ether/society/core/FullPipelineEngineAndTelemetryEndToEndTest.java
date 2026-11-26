@@ -171,7 +171,7 @@ public class FullPipelineEngineAndTelemetryEndToEndTest {
         assertNotNull(wb);
 
         // Seed epidemic index cases into European populated cells
-        float[] popArr = wb.getBiomassHuman();
+        float[] popArr = wb.getHumanPopulation();
         int seededCell = -1;
         for (int i = 0; i < wb.getCapacity(); i++) {
             if (popArr[i] > 1000.0f) {

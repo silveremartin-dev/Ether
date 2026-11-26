@@ -6,7 +6,7 @@ pub unsafe fn process_flux(world: &mut WorldBufferRaw, dt_seconds: f32) {
     if capacity == 0 { return; }
 
     let food = std::slice::from_raw_parts_mut(world.food_resource, capacity);
-    let pop = std::slice::from_raw_parts(world.biomass_human, capacity);
+    let pop = std::slice::from_raw_parts(world.human_population, capacity);
     let prices = std::slice::from_raw_parts_mut(world.local_price, capacity);
     let elev = std::slice::from_raw_parts(world.elevation, capacity);
     let neighbors = std::slice::from_raw_parts(world.neighbor_indexes, capacity * 6);

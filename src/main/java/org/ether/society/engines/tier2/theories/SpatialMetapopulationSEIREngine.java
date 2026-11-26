@@ -82,7 +82,7 @@ public class SpatialMetapopulationSEIREngine extends AbstractSimulationEngine {
         }
 
         double dtDays = Math.max(0.01, dtYears * 365.25);
-        float[] popArr = buffer.getBiomassHuman();
+        float[] popArr = buffer.getHumanPopulation();
         int[][] neighbors = buffer.getNeighborIndexes();
 
         float[] nextInfected = infectedArray.clone();

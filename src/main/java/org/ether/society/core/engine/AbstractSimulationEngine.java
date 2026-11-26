@@ -106,9 +106,9 @@ public abstract class AbstractSimulationEngine implements SimulationEngineModule
             float[] cap = buffer.getResourceCapital();
             cap[i] = (float) Math.max(0.0, cap[i] + acc.dResourceCapital);
         }
-        if (acc.dBiomassHuman != 0.0f) {
-            float[] pop = buffer.getBiomassHuman();
-            pop[i] = (float) Math.max(0.0, pop[i] + acc.dBiomassHuman);
+        if (acc.dHumanPopulation != 0.0f) {
+            float[] pop = buffer.getHumanPopulation();
+            pop[i] = (float) Math.max(0.0, pop[i] + acc.dHumanPopulation);
         }
         if (acc.dEnergyFoodConsumed != 0.0f) {
             float[] energy = buffer.getEnergyFoodConsumed();

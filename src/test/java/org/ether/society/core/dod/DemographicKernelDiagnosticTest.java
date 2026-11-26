@@ -23,7 +23,7 @@ public class DemographicKernelDiagnosticTest {
         world.getResourceCapital()[0] = 10_000.0f * 3500.0f;
 
         float pop = 10_000.0f;
-        world.getBiomassHuman()[0] = pop;
+        world.getHumanPopulation()[0] = pop;
 
         // Food matching PreComputePhase
         double annualFoodNeedGJ = pop * PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
@@ -51,7 +51,7 @@ public class DemographicKernelDiagnosticTest {
         kernel.tick(world, agents, (long) dtSeconds);
 
         System.out.println("\n--- AFTER 1 TICK ---");
-        System.out.println("Pop in world: " + world.getBiomassHuman()[0]);
+        System.out.println("Pop in world: " + world.getHumanPopulation()[0]);
         System.out.println("Food in world: " + world.getFoodResource()[0]);
         System.out.println("Agent 0 mass: " + agents.getMass()[0] + ", deaths: " + agents.getDeaths()[0]);
     }

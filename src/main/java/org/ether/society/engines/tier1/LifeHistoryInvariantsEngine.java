@@ -138,8 +138,8 @@ public class LifeHistoryInvariantsEngine extends AbstractSimulationEngine {
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
         double dtSafe = Math.max(1e-4, dtYears);
-        double biomassHuman = buffer.getBiomassHuman()[i];
-        if (biomassHuman <= 0.0) return;
+        double humanPopulation = buffer.getHumanPopulation()[i];
+        if (humanPopulation <= 0.0) return;
 
         double tempC = buffer.getTemperature()[i];
         double thermalMortalityHazard = 0.0;
@@ -154,6 +154,6 @@ public class LifeHistoryInvariantsEngine extends AbstractSimulationEngine {
         double baselineAlpha = calculateOptimalReproductiveAge(BASELINE_ADULT_MORTALITY_RATE);
         double adaptiveMitigation = optAlpha / baselineAlpha;
         double netGrowthRate = Math.clamp(0.005 - thermalMortalityHazard * adaptiveMitigation, -0.15, 0.03);
-        acc.dBiomassHuman += (float) (biomassHuman * netGrowthRate * dtSafe);
+        acc.dHumanPopulation += (float) (humanPopulation * netGrowthRate * dtSafe);
     }
 }

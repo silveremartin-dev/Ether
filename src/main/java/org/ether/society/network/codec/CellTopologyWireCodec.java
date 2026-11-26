@@ -85,7 +85,7 @@ public class CellTopologyWireCodec {
 
                 // Full dynamic biophysical observables for post-hoc telemetry extraction
                 dos.writeInt(cell.getPopulationOr(0));
-                dos.writeDouble(cell.getBiomassHuman() != null ? cell.getBiomassHuman() : 0.0);
+                dos.writeDouble(cell.getHumanPopulation() != null ? cell.getHumanPopulation() : 0.0);
                 dos.writeFloat(cell.getBiomassAgriculture() != null ? cell.getBiomassAgriculture().floatValue() : 0.0f);
                 dos.writeFloat(cell.getBiomassNatural() != null ? cell.getBiomassNatural().floatValue() : 0.0f);
                 dos.writeFloat(cell.getBiomassLivestock() != null ? cell.getBiomassLivestock().floatValue() : 0.0f);
@@ -217,7 +217,7 @@ public class CellTopologyWireCodec {
 
                 // Direct reading of dynamic biophysical observables
                 cell.setPopulation(dis.readInt());
-                cell.setBiomassHuman(dis.readDouble());
+                cell.setHumanPopulation(dis.readDouble());
                 cell.setBiomassAgriculture((double) dis.readFloat());
                 cell.setBiomassNatural((double) dis.readFloat());
                 cell.setBiomassLivestock((double) dis.readFloat());

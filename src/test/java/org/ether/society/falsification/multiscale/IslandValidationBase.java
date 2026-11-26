@@ -55,7 +55,7 @@ public abstract class IslandValidationBase {
             cell.setResourceMetal(500.0 * areaScale);
             cell.setResourceClay(800.0 * areaScale);
             cell.setPopulation((int) initialPopPerCell);
-            cell.setBiomassHuman(initialPopPerCell);
+            cell.setHumanPopulation(initialPopPerCell);
             cell.setResourceCapital(initialPopPerCell * (techLevel < 1.5 ? 2.0 : 15.0));
             cell.setLifespan(techLevel < 1.5 ? 35.0 : 48.0);
             cell.setFertility(techLevel < 1.5 ? 2.5 : 3.2);

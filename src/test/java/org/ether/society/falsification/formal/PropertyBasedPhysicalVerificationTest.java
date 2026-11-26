@@ -61,7 +61,7 @@ public class PropertyBasedPhysicalVerificationTest {
                 buffer.getH3Indexes()[c] = 0x882681a33900000L + c;
 
                 // Random positive state generation
-                buffer.getBiomassHuman()[c] = (float) (rng.nextDouble() * 5000.0);
+                buffer.getHumanPopulation()[c] = (float) (rng.nextDouble() * 5000.0);
                 buffer.getBiomassLivestock()[c] = (float) (rng.nextDouble() * 3000.0);
                 buffer.getBiomassAgriculture()[c] = (float) (rng.nextDouble() * 10000.0);
                 buffer.getBiomassNatural()[c] = (float) (rng.nextDouble() * 20000.0);
@@ -164,7 +164,7 @@ public class PropertyBasedPhysicalVerificationTest {
         WorldBuffer buffer = new WorldBuffer(capacity);
         for (int c = 0; c < capacity; c++) {
             buffer.getH3Indexes()[c] = 0x882681a33900000L + c;
-            buffer.getBiomassHuman()[c] = 1000.0f;
+            buffer.getHumanPopulation()[c] = 1000.0f;
             buffer.getFoodResource()[c] = 5000.0f;
             buffer.getBiomassLivestock()[c] = 2000.0f;
         }
@@ -182,7 +182,7 @@ public class PropertyBasedPhysicalVerificationTest {
             if (buffer.getFoodResource()[cellIdx] >= transferAmount) {
                 // Food converted to human biomass (zero net planetary mass delta)
                 buffer.getFoodResource()[cellIdx] -= transferAmount;
-                buffer.getBiomassHuman()[cellIdx] += transferAmount;
+                buffer.getHumanPopulation()[cellIdx] += transferAmount;
             }
 
             var after = guard.captureSnapshot(buffer);

@@ -140,8 +140,8 @@ public class DemographicKernel {
         float[] births = agents.getBirths();
         float[] deaths = agents.getDeaths();
 
-        float[] biomassHuman = world.getBiomassHuman();
-        java.util.Arrays.fill(biomassHuman, 0.0f);
+        float[] humanPopulation = world.getHumanPopulation();
+        java.util.Arrays.fill(humanPopulation, 0.0f);
 
         float dtInYears = Math.max(0.0001f, dtYears);
         float dtMonthlyEquivalent = dtInYears * 12.0f;
@@ -191,13 +191,10 @@ public class DemographicKernel {
                 float cellDemand = (float) (cellPop * annualMetabolicGJ * demandTrophicFactor * dtInYears);
                 cachedCellDemand[h] = cellDemand;
 
-                float edibleAgriFluxAnnual = bioAgriArr[h] * 0.70f * (float) (PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3);
                 float wildHarvestFraction = 0.005f + 0.003f / (1.0f + cellPop / 1500.0f);
-                float edibleNaturalFluxAnnual = bioNatArr[h] * wildHarvestFraction * (float) PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
                 float livestockBio = (bioLivestockArr != null && h < bioLivestockArr.length) ? bioLivestockArr[h] : 0.0f;
-                float edibleFaunaFluxAnnual = livestockBio * 0.15f * (float) (PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG * 1e-3);
-                float edibleFishFluxAnnual = (float) fishBio * 0.25f * (float) (PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3);
-                float totalAnnualFoodFluxGJ = edibleAgriFluxAnnual + edibleNaturalFluxAnnual + edibleFaunaFluxAnnual + edibleFishFluxAnnual;
+                float totalAnnualFoodFluxGJ = (float) computeAnnualEdibleFoodFluxGJ(
+                        bioNatArr[h], bioAgriArr[h], livestockBio, fishBio, wildHarvestFraction);
 
                 float foodHarvestTickGJ = totalAnnualFoodFluxGJ * dtInYears;
                 float totalAvailableFoodGJ = food[h] + foodHarvestTickGJ;
@@ -269,12 +266,10 @@ public class DemographicKernel {
 
             // 3. Malthusian density-dependent negative feedback from physical edible biomass + capital nutrient cycling
             double wildHarvestFrac = 0.005 + 0.003 * foragerWeight;
-            double edibleNaturalBiomassGJ = bioNatArr[hIdx] * wildHarvestFrac * PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
             double edibleAgriBiomassGJ = bioAgriArr[hIdx] * 0.70 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3);
             double livestockBioCell = (bioLivestockArr != null && hIdx < bioLivestockArr.length) ? bioLivestockArr[hIdx] : 0.0;
-            double edibleFaunaBiomassGJ = livestockBioCell * 0.15 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG * 1e-3);
-            double edibleFishBiomassGJ = fishBio * 0.25 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3);
-            double renewableAnnualFlowGJ = edibleNaturalBiomassGJ + edibleAgriBiomassGJ + edibleFaunaBiomassGJ + edibleFishBiomassGJ;
+            double renewableAnnualFlowGJ = computeAnnualEdibleFoodFluxGJ(
+                    bioNatArr[hIdx], bioAgriArr[hIdx], livestockBioCell, fishBio, wildHarvestFrac);
             double annualCellProductivityGJ = renewableAnnualFlowGJ + Math.min(renewableAnnualFlowGJ * 0.20, food[hIdx] * 0.15);
 
             // Smooth Boserupian & synthetic nitrogen intensification driven by physical capital per capita (Smil 2001)
@@ -294,7 +289,7 @@ public class DemographicKernel {
             float maxBiologicalFertility = (float) ((1.0 - neolithicWeight) * foragerFertility + neolithicWeight * agrarianFertility);
             float fertilityModulation = fecundityAgeFactor * Math.min(1.0f, nutritionalFactor) * culturalFertilityMultiplier * densityFeedback;
 
-            // Maximum biological fecundity bound (Wood 1994, Dynamics of Human Reproduction, max biological CBR ~ 48a€°)
+            // Maximum biological fecundity bound (Wood 1994, Dynamics of Human Reproduction, max biological CBR ~ 48 per mille)
             float birthRate = (float) Math.min(0.048 / lifespanScale, maxBiologicalFertility * Math.clamp(fertilityModulation, 0.0f, 1.25f));
             float newBirths = m * birthRate * dtInYears;
             births[i] = m * birthRate;
@@ -361,7 +356,7 @@ public class DemographicKernel {
                 age[i] = Math.clamp(updatedMeanAge, (float) (18.0 * lifespanScale), (float) (50.0 * lifespanScale));
             }
 
-            biomassHuman[hIdx] += mass[i];
+            humanPopulation[hIdx] += mass[i];
             if (mass[i] < minMassThreshold) {
                 hexIds[i] = -1;
             }
@@ -393,5 +388,19 @@ public class DemographicKernel {
 
     private void processMitosis(AgentBuffer agents) {
         this.nextFreeSlotHint = CohortMitosisProcessor.processMitosis(agents, targetCohortSize, baseSeed, nextFreeSlotHint);
+    }
+
+    /**
+     * Computes annual edible caloric food harvest flux (GJ/yr) from cellular agricultural grain stocks
+     * (stored in kg dry grain: $15.0\times 10^{-3}\text{ GJ/kg}$) and terrestrial/aquatic biomass pools
+     * (stored in metric tonnes: $\text{MJ/kg} \equiv \text{GJ/t}$ for wild flora, livestock fauna, and fish).
+     */
+    static double computeAnnualEdibleFoodFluxGJ(
+            double bioNaturalTons, double bioAgriKg, double bioLivestockTons, double bioFishTons, double wildHarvestFrac) {
+        double edibleNaturalGJ = bioNaturalTons * wildHarvestFrac * PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
+        double edibleAgriGJ = bioAgriKg * 0.70 * (PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3);
+        double edibleFaunaGJ = bioLivestockTons * 0.15 * PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG;
+        double edibleFishGJ = bioFishTons * 0.25 * PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
+        return edibleNaturalGJ + edibleAgriGJ + edibleFaunaGJ + edibleFishGJ;
     }
 }

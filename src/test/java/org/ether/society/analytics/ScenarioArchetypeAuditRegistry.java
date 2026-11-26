@@ -249,7 +249,7 @@ public final class ScenarioArchetypeAuditRegistry {
             "Augustan Principate, trans-Mediterranean Pax Romana, Roman climatic optimum, Antonine Plague (165 CE), Third Century Crisis (235 CE), and Western collapse.",
             "Bifurcation at 165 CE (Antonine Plague): Smallpox epidemic wiped out 20-30% of taxpayers and legionaries, while debasement of the denarius (silver fineness falling from 90% to 5%) triggered hyperinflation and military anarchy by 235 CE.",
             "SSIM: 0.729 | Population Density RMSE: 0.184 | Biomes Jaccard: 0.814 | Coin Debasement Pearson r: 0.892.",
-            "Bug: Regional Mediterranean grid was compared against global aggregate telemetry. Remediation: Normalize regional population to global demographic scale via active surface mask."
+            "Bug: Regional Mediterranean grid was compared directly against global aggregate benchmarks without basin-vs-planet domain separation. Remediation: Compare regional presets against regional dasymetric raster integrals via H3RasterAggregator while benchmarking global runs on PLANETARY_MESH."
         ));
 
         register(new ScenarioDetail(

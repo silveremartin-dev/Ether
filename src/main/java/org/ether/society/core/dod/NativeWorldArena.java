@@ -39,7 +39,7 @@ public class NativeWorldArena implements AutoCloseable {
         private final MemorySegment woodResourceSeg;
         private final MemorySegment metalResourceSeg;
         private final MemorySegment clayResourceSeg;
-        private final MemorySegment biomassHumanSeg;
+        private final MemorySegment humanPopulationSeg;
         private final MemorySegment biomassLivestockSeg;
         private final MemorySegment biomassFishSeg;
         private final MemorySegment biomassAgricultureSeg;
@@ -106,7 +106,7 @@ public class NativeWorldArena implements AutoCloseable {
             this.woodResourceSeg = arena.allocate(cap * Float.BYTES, 64);
             this.metalResourceSeg = arena.allocate(cap * Float.BYTES, 64);
             this.clayResourceSeg = arena.allocate(cap * Float.BYTES, 64);
-            this.biomassHumanSeg = arena.allocate(cap * Float.BYTES, 64);
+            this.humanPopulationSeg = arena.allocate(cap * Float.BYTES, 64);
             this.biomassLivestockSeg = arena.allocate(cap * Float.BYTES, 64);
             this.biomassFishSeg = arena.allocate(cap * Float.BYTES, 64);
             this.biomassAgricultureSeg = arena.allocate(cap * Float.BYTES, 64);
@@ -148,7 +148,7 @@ public class NativeWorldArena implements AutoCloseable {
             worldStructSeg.set(ValueLayout.ADDRESS, 72, woodResourceSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 80, metalResourceSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 88, clayResourceSeg);
-            worldStructSeg.set(ValueLayout.ADDRESS, 96, biomassHumanSeg);
+            worldStructSeg.set(ValueLayout.ADDRESS, 96, humanPopulationSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 104, biomassLivestockSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 112, biomassFishSeg);
             worldStructSeg.set(ValueLayout.ADDRESS, 120, biomassAgricultureSeg);
@@ -221,7 +221,7 @@ public class NativeWorldArena implements AutoCloseable {
             if (wb.getFoodResource() != null) MemorySegment.copy(wb.getFoodResource(), 0, foodResourceSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getWaterResource() != null) MemorySegment.copy(wb.getWaterResource(), 0, waterResourceSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getWoodResource() != null) MemorySegment.copy(wb.getWoodResource(), 0, woodResourceSeg, ValueLayout.JAVA_FLOAT, 0, count);
-            if (wb.getBiomassHuman() != null) MemorySegment.copy(wb.getBiomassHuman(), 0, biomassHumanSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getHumanPopulation() != null) MemorySegment.copy(wb.getHumanPopulation(), 0, humanPopulationSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getBiomassLivestock() != null) MemorySegment.copy(wb.getBiomassLivestock(), 0, biomassLivestockSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getBiomassNatural() != null) MemorySegment.copy(wb.getBiomassNatural(), 0, biomassNaturalSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getBiomassAgriculture() != null) MemorySegment.copy(wb.getBiomassAgriculture(), 0, biomassAgricultureSeg, ValueLayout.JAVA_FLOAT, 0, count);
@@ -285,7 +285,7 @@ public class NativeWorldArena implements AutoCloseable {
         public void syncToJavaBuffers(WorldBuffer wb, AgentBuffer ab) {
             int count = Math.min(capacity, wb.getCapacity());
             if (wb.getFoodResource() != null) MemorySegment.copy(foodResourceSeg, ValueLayout.JAVA_FLOAT, 0, wb.getFoodResource(), 0, count);
-            if (wb.getBiomassHuman() != null) MemorySegment.copy(biomassHumanSeg, ValueLayout.JAVA_FLOAT, 0, wb.getBiomassHuman(), 0, count);
+            if (wb.getHumanPopulation() != null) MemorySegment.copy(humanPopulationSeg, ValueLayout.JAVA_FLOAT, 0, wb.getHumanPopulation(), 0, count);
             if (wb.getBiomassLivestock() != null) MemorySegment.copy(biomassLivestockSeg, ValueLayout.JAVA_FLOAT, 0, wb.getBiomassLivestock(), 0, count);
             if (wb.getBiomassNatural() != null) MemorySegment.copy(biomassNaturalSeg, ValueLayout.JAVA_FLOAT, 0, wb.getBiomassNatural(), 0, count);
             if (wb.getBiomassAgriculture() != null) MemorySegment.copy(biomassAgricultureSeg, ValueLayout.JAVA_FLOAT, 0, wb.getBiomassAgriculture(), 0, count);

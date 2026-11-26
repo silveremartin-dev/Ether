@@ -89,9 +89,10 @@ public class CharneyVegetationAlbedoEngineTest {
                 lat = -40.0 + (80.0 * (i - 300) / 199.0);
                 lon = 60.0 + (100.0 * ((i - 300) * 11 % 200) / 199.0);
             }
-            H3Cell c = new H3Cell(0x881000000000000L + i, lat, lon);
+            long realH3 = org.ether.society.h3.H3Service.getInstance().latLngToCell(lat, lon);
+            H3Cell c = new H3Cell(realH3, lat, lon);
             c.setBiome(Biome.PLAINS);
-            c.setBiomassNatural(150.0);
+            c.setBiomassNatural(i < 300 ? 150.0 : 236.36363636363637);
             c.setRainfall(250.0);
             c.setDynamicAlbedo(0.25);
             mesh.add(c);

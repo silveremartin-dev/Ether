@@ -60,7 +60,7 @@ public class InfrastructureInertiaEngine extends AbstractSimulationEngine {
         double dynamicHalfLife = baseCapitalTurnoverHalfLifeYears * Math.clamp(longevityFactor, 0.5, 2.0);
         double decayFactor = Math.exp(-dtYears / dynamicHalfLife);
 
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         double activeReplacement = 0.98 * org.ether.society.core.math.SmoothMath.sigmoid(pop, 10.0, 3.0);
         double netCapital = capital * decayFactor + capital * (1.0 - decayFactor) * activeReplacement;
         acc.dResourceCapital += (float) (netCapital - capital);

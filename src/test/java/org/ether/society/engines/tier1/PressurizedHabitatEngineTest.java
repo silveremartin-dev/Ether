@@ -57,25 +57,25 @@ public class PressurizedHabitatEngineTest {
 
         // Place 1,000 human colonists without a pressurized habitat
         unshieldedCell.setPopulation(1000);
-        unshieldedCell.setBiomassHuman(1000.0);
+        unshieldedCell.setHumanPopulation(1000.0);
         unshieldedCell.setHabitatType(HabitatType.NONE);
 
         // Run 1 monthly simulation step (dt = 1/12 yr)
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 1000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 1000.0f;
         buf.getResourceCapital()[0] = 0.0f;
         buf.getMetalResource()[0] = 0.0f;
         double dt = 1.0 / 12.0;
         PressurizedHabitatEngine.processPressurizedHabitats(buf, marsPreset, dt);
 
-        int survivorsMonth1 = (int) Math.round(buf.getBiomassHuman()[0] / 0.06);
+        int survivorsMonth1 = (int) Math.round(buf.getHumanPopulation()[0]);
         assertTrue(survivorsMonth1 < 1000, "Unsheltered humans in Martian vacuum must experience immediate mortality");
 
         // Integrate full 1-year exposure (dt = 1.0)
-        buf.getBiomassHuman()[0] = 1000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 1000.0f;
         PressurizedHabitatEngine.processPressurizedHabitats(buf, marsPreset, 1.0);
 
-        assertEquals(50, (int) Math.round(buf.getBiomassHuman()[0] / 0.06),
+        assertEquals(50, (int) Math.round(buf.getHumanPopulation()[0]),
                 "One full year on Mars without habitat enforces 95% annual mortality (50 survivors / 1,000)");
     }
 
@@ -103,12 +103,12 @@ public class PressurizedHabitatEngineTest {
 
         // Simulate 1 year under hostile Martian regime with active maintenance
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = initialColonists * 0.06f;
+        buf.getHumanPopulation()[0] = initialColonists;
         buf.getResourceCapital()[0] = 25_000.0f;
         buf.getMetalResource()[0] = 5_000.0f;
         PressurizedHabitatEngine.processPressurizedHabitats(buf, marsPreset, 1.0);
 
-        assertEquals(initialColonists, (int) Math.round(buf.getBiomassHuman()[0] / 0.06),
+        assertEquals(initialColonists, (int) Math.round(buf.getHumanPopulation()[0]),
                 "Zero exposure casualties: Colonists protected by maintained dome must achieve 100% survival");
         assertTrue(buf.getResourceCapital()[0] < 25_000.0f,
                 "Maintenance capital must be consumed for life support operational work");
@@ -139,18 +139,18 @@ public class PressurizedHabitatEngineTest {
         breachedDome.setResourceMetal(2000.0);
 
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
-        buf.getBiomassHuman()[0] = 400.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 400.0f;
         buf.getResourceCapital()[0] = 5000.0f;
         buf.getMetalResource()[0] = 2000.0f;
-        buf.getBiomassHuman()[1] = 400.0f * 0.06f;
+        buf.getHumanPopulation()[1] = 400.0f;
         buf.getResourceCapital()[1] = 0.0f;
         buf.getMetalResource()[1] = 0.0f;
 
         PressurizedHabitatEngine.processPressurizedHabitats(buf, marsPreset, 0.1);
 
-        assertEquals(400, (int) Math.round(buf.getBiomassHuman()[0] / 0.06),
+        assertEquals(400, (int) Math.round(buf.getHumanPopulation()[0]),
                 "Maintained habitat must protect full crew");
-        assertTrue(buf.getBiomassHuman()[1] < buf.getBiomassHuman()[0],
+        assertTrue(buf.getHumanPopulation()[1] < buf.getHumanPopulation()[0],
                 "Unmaintained habitat without capital/metal must suffer exposure casualties");
     }
 
@@ -159,14 +159,14 @@ public class PressurizedHabitatEngineTest {
     public void testModularBulkheadContainmentUnderBreach() {
         PlanetPreset marsPreset = PlanetPreset.MARS_LIKE.withResolution(3);
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 600.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 600.0f;
         buf.getResourceCapital()[0] = 0.0f;
         buf.getMetalResource()[0] = 0.0f;
 
         // 1 month breach exposure (dt = 1/12 yr)
         PressurizedHabitatEngine.processPressurizedHabitats(buf, marsPreset, 1.0 / 12.0);
 
-        int survivors = (int) Math.round(buf.getBiomassHuman()[0] / 0.06);
+        int survivors = (int) Math.round(buf.getHumanPopulation()[0]);
         assertTrue(survivors > 0, "Airlock bulkheads must seal off compromised sector, protecting remaining modules");
         assertTrue(survivors < 600, "Depressurization in breached section must inflict localized casualties");
     }
@@ -176,14 +176,14 @@ public class PressurizedHabitatEngineTest {
     public void testHypoxiaOvercrowdingKinetics() {
         PlanetPreset marsPreset = PlanetPreset.MARS_LIKE.withResolution(3);
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 1500.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 1500.0f;
         buf.getResourceCapital()[0] = 50.0f; // Insufficient to support 1500 colonists
         buf.getMetalResource()[0] = 10.0f;
 
         double dt = 0.5; // 6 months
         PressurizedHabitatEngine.processPressurizedHabitats(buf, marsPreset, dt);
 
-        int remaining = (int) Math.round(buf.getBiomassHuman()[0] / 0.06);
+        int remaining = (int) Math.round(buf.getHumanPopulation()[0]);
         assertTrue(remaining < 1500 && remaining > 0,
                 "Insufficient life-support resources must inflict continuous exposure mortality");
     }

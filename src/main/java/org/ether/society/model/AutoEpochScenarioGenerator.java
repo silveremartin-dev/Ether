@@ -201,39 +201,49 @@ public class AutoEpochScenarioGenerator {
             // Procedural default for colonial/extraterrestrial outposts
             return 100_000L;
         }
-        if (year <= -100000L) return 50_000L;
-        if (year <= -74000L) return 15_000L;
-        if (year <= -50000L) return 100_000L;
-        if (year <= -25000L) return 300_000L;
-        if (year <= -20000L) return 500_000L;
-        if (year <= -10900L) return 2_500_000L;
-        if (year <= -10000L) return 5_000_000L;
-        if (year <= -8000L) return 8_000_000L;
-        if (year <= -6000L) return 15_000_000L;
-        if (year <= -3000L) return 50_000_000L;
-        if (year <= -1900L) return 70_000_000L;
-        if (year <= -1200L) return 85_000_000L;
-        if (year <= -1000L) return 100_000_000L;
-        if (year <= -334L) return 150_000_000L;
-        if (year <= 0L) return 200_000_000L;
-        if (year <= 536L) return 220_000_000L;
-        if (year <= 632L) return 230_000_000L;
-        if (year <= 1000L) return 310_000_000L;
-        if (year <= 1206L) return 380_000_000L;
+        if (year >= -3_000_000L && year <= 2025L) {
+            double benchMillions = org.ether.society.analytics.HistoricalValidationKernel.getInterpolatedBenchmarkValue(
+                    "worldPopulation",
+                    (double) year,
+                    org.ether.society.analytics.HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+            if (!Double.isNaN(benchMillions) && benchMillions > 0.0) {
+                return Math.max(1000L, Math.round(benchMillions * 1_000_000.0));
+            }
+        }
+        if (year <= -100000L) return 15_000L;
+        if (year <= -74000L) return 100_000L;
+        if (year <= -50000L) return 500_000L;
+        if (year <= -25000L) return 1_500_000L;
+        if (year <= -20000L) return 1_800_000L;
+        if (year <= -10900L) return 3_700_000L;
+        if (year <= -10000L) return 4_000_000L;
+        if (year <= -8000L) return 5_000_000L;
+        if (year <= -6000L) return 6_000_000L;
+        if (year <= -3000L) return 14_000_000L;
+        if (year <= -1900L) return 29_000_000L;
+        if (year <= -1200L) return 45_000_000L;
+        if (year <= -1000L) return 50_000_000L;
+        if (year <= -334L) return 127_000_000L;
+        if (year <= 0L) return 170_000_000L;
+        if (year <= 536L) return 195_000_000L;
+        if (year <= 632L) return 205_000_000L;
+        if (year <= 1000L) return 265_000_000L;
+        if (year <= 1206L) return 365_000_000L;
         if (year <= 1324L) return 420_000_000L;
-        if (year <= 1347L) return 350_000_000L; // Black Death Dip
-        if (year <= 1492L) return 500_000_000L;
-        if (year <= 1639L) return 580_000_000L;
-        if (year <= 1800L) return 1_000_000_000L;
+        if (year <= 1347L) return 440_000_000L;
+        if (year <= 1492L) return 420_000_000L;
+        if (year <= 1639L) return 547_000_000L;
+        if (year <= 1800L) return 900_000_000L;
         if (year <= 1900L) return 1_650_000_000L;
         if (year <= 1914L) return 1_800_000_000L;
         if (year <= 1950L) return 2_525_000_000L;
         if (year <= 2000L) return 6_127_000_000L;
-        if (year <= 2026L) return 8_100_000_000L;
-        if (year <= 2035L) return 8_800_000_000L;
-        if (year <= 2045L) return 9_400_000_000L;
-        if (year <= 2050L) return 9_700_000_000L;
-        return 10_000_000_000L;
+        if (year <= 2025L) return 8_232_000_000L;
+        if (year <= 2026L) return 8_301_000_000L;
+        if (year <= 2035L) return 8_885_000_000L;
+        if (year <= 2045L) return 9_440_000_000L;
+        if (year <= 2050L) return 9_664_000_000L;
+        return 9_989_000_000L;
     }
 
     /**
@@ -264,13 +274,14 @@ public class AutoEpochScenarioGenerator {
      * @return the resulting computation or state reference
      */
     public static double estimateEnergyPerCapita(String planetKey, long year) {
-        if (!"earth".equalsIgnoreCase(planetKey)) return 200.0;
-        if (year <= -10000L) return 5.0;    // Fire & wood
-        if (year <= 0L) return 20.0;        // Animal traction & charcoal
-        if (year <= 1800L) return 40.0;     // Water/wind mills & wood
-        if (year <= 1900L) return 120.0;    // Coal steam power
-        if (year <= 1950L) return 250.0;    // Oil, electricity
-        return 450.0;                       // Modern primary energy consumption
+        if (!"earth".equalsIgnoreCase(planetKey)) return 80_000.0; // MJ/capita/year closed-loop off-Earth habitat
+        if (year <= -10000L) return 10_900.0; // Somatic + wood hearth (~348 W, Smil 2017)
+        if (year <= 0L) return 14_000.0;      // Agrarian draft traction & charcoal
+        if (year <= 1800L) return 16_700.0;   // Pre-industrial windmills, coal & wood (~15 EJ / 900M)
+        if (year <= 1900L) return 27_300.0;   // Industrial coal steam (~45 EJ / 1650M)
+        if (year <= 1950L) return 39_600.0;   // Oil, electricity (~100 EJ / 2525M)
+        if (year <= 2000L) return 68_500.0;   // ~420 EJ / 6127M
+        return 75_500.0;                      // Contemporary primary energy (~622 EJ / 8232M, MJ/hab/yr)
     }
 
     /**

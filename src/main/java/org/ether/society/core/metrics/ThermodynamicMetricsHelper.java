@@ -58,7 +58,7 @@ public final class ThermodynamicMetricsHelper {
         org.ether.society.core.dod.WorldBuffer wb = engine.getWorldBuffer();
         if (wb != null) {
             double totalWatts = 0.0;
-            float[] popArr = wb.getBiomassHuman();
+            float[] popArr = wb.getHumanPopulation();
             int cap = wb.getCapacity();
             for (int i = 0; i < cap; i++) {
                 float p = popArr[i];

@@ -24,7 +24,7 @@ public class UrbanKernelTest {
         WorldBuffer buffer = new WorldBuffer(10);
         buffer.getBiomes()[0] = (byte) org.ether.society.model.Biome.PLAINS.ordinal();
         buffer.getH3Indexes()[0] = 0x882681a339fffffL;
-        buffer.getBiomassHuman()[0] = 50_000.0f; // Megacity
+        buffer.getHumanPopulation()[0] = 50_000.0f; // Megacity
         buffer.getResourceCapital()[0] = 1_000_000.0f; // 20 units capital per capita
         buffer.getLocalPrice()[0] = 1.0f;
 
@@ -47,7 +47,7 @@ public class UrbanKernelTest {
         WorldBuffer buffer = new WorldBuffer(10);
         buffer.getBiomes()[0] = (byte) org.ether.society.model.Biome.PLAINS.ordinal();
         buffer.getH3Indexes()[0] = 0x882681a339fffffL;
-        buffer.getBiomassHuman()[0] = 5.0f; // Isolated small clan (below 10.0 threshold)
+        buffer.getHumanPopulation()[0] = 5.0f; // Isolated small clan (below 10.0 threshold)
         buffer.getResourceCapital()[0] = 50.0f;
         buffer.getInstitutionalComplexity()[0] = 0.0f;
 
@@ -66,7 +66,7 @@ public class UrbanKernelTest {
     void testExtremeValuesRobustness() {
         WorldBuffer buffer = new WorldBuffer(5);
         buffer.getH3Indexes()[0] = 0x882681a339fffffL;
-        buffer.getBiomassHuman()[0] = 10_000_000.0f; // Hyper-dense 10M ecumenopolis
+        buffer.getHumanPopulation()[0] = 10_000_000.0f; // Hyper-dense 10M ecumenopolis
         buffer.getResourceCapital()[0] = 1e9f;
         buffer.getLocalPrice()[0] = 5.0f;
 

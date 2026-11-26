@@ -154,7 +154,7 @@ public class KummelAyresExergyEngine extends AbstractSimulationEngine {
     public static void processKummelAyresExergy(WorldBuffer buffer, double deltaYears) {
         if (buffer == null || deltaYears <= 0.0) return;
         int n = buffer.getCapacity();
-        float[] popArr = buffer.getBiomassHuman();
+        float[] popArr = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
         float[] coalArr = buffer.getResourceCoal();
         float[] oilArr = buffer.getResourceOil();

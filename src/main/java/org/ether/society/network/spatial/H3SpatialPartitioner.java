@@ -181,7 +181,7 @@ public class H3SpatialPartitioner {
         int cap = buffer.getCapacity();
         float[] weights = new float[cap];
 
-        float[] pop = buffer.getBiomassHuman();
+        float[] pop = buffer.getHumanPopulation();
         float[] flux = buffer.getFluxPressure();
         float[] complexity = buffer.getInstitutionalComplexity();
 

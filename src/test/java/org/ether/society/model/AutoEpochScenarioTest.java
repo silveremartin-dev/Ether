@@ -42,7 +42,7 @@ class AutoEpochScenarioTest {
         assertNotNull(s);
         assertEquals(-100000L, s.getStartDateYear());
         assertTrue(s.getEndDateYear() > s.getStartDateYear());
-        assertEquals(50_000L, s.getInitialHumanCount());
+        assertEquals(15_000L, s.getInitialHumanCount());
         assertTrue(s.getInitialCapitalPerCapita() < 10.0);
 
         Map<String, Boolean> engines = s.getTypeBEngineStates();
@@ -60,7 +60,7 @@ class AutoEpochScenarioTest {
         Scenario s = AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", -20000L);
         assertNotNull(s);
         assertEquals(-20000L, s.getStartDateYear());
-        assertEquals(500_000L, s.getInitialHumanCount());
+        assertEquals(1_800_000L, s.getInitialHumanCount());
 
         Map<String, Boolean> engines = s.getTypeBEngineStates();
         assertTrue(engines.get("LanguageLinguisticEngine"));
@@ -75,7 +75,8 @@ class AutoEpochScenarioTest {
         Scenario s = AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", 0L);
         assertNotNull(s);
         assertEquals(0L, s.getStartDateYear());
-        assertEquals(200_000_000L, s.getInitialHumanCount());
+        assertTrue(Math.abs(s.getInitialHumanCount() - 170_000_000L) <= 200_000L,
+                "Expected ~170M at 0 CE (PCHIP between -200 BCE and 1 CE), got: " + s.getInitialHumanCount());
         assertTrue(s.getInitialCapitalPerCapita() >= 100.0);
 
         Map<String, Boolean> engines = s.getTypeBEngineStates();
@@ -96,7 +97,7 @@ class AutoEpochScenarioTest {
         Scenario s = AutoEpochScenarioGenerator.generateScenarioForEpoch("earth", 1800L);
         assertNotNull(s);
         assertEquals(1800L, s.getStartDateYear());
-        assertEquals(1_000_000_000L, s.getInitialHumanCount());
+        assertEquals(900_000_000L, s.getInitialHumanCount());
         assertTrue(s.getInitialCapitalPerCapita() >= 1000.0);
 
         Map<String, Boolean> engines = s.getTypeBEngineStates();
@@ -130,7 +131,7 @@ class AutoEpochScenarioTest {
         assertFalse(plio.get("LanguageLinguisticEngine"));
         assertTrue(paleo.get("LanguageLinguisticEngine"));
         assertTrue(paleo.get("DynamicMaritimeRoutingGraph"));
-        assertFalse(mars.get("KinSelectionHamiltonEngine"));
+        assertTrue(mars.get("KinSelectionHamiltonEngine"));
 
         // Category II: Agrarian & classical state engines active from Neolithic/Bronze Age onward on Earth
         assertFalse(plio.get("TurchinGoldstoneSDTEngine"));

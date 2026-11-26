@@ -51,7 +51,7 @@ public class LongDurationEnduranceIntegrationTest extends AbstractCliodynamicBen
 
         double initialPop = 0.0;
         for (int i = 0; i < world.getCapacity(); i++) {
-            initialPop += world.getBiomassHuman()[i];
+            initialPop += world.getHumanPopulation()[i];
         }
         logger.info("🌿 Initial 5,000-Year Endurance Basin Population: {} across {} cells.", initialPop, basinCells.size());
         assertTrue(initialPop > 0.0);
@@ -63,7 +63,7 @@ public class LongDurationEnduranceIntegrationTest extends AbstractCliodynamicBen
 
         double finalPop = 0.0;
         for (int i = 0; i < world.getCapacity(); i++) {
-            finalPop += world.getBiomassHuman()[i];
+            finalPop += world.getHumanPopulation()[i];
         }
         logger.info("🌿 Final Basin Population after 5,000 simulated years: {}", finalPop);
 
@@ -91,7 +91,7 @@ public class LongDurationEnduranceIntegrationTest extends AbstractCliodynamicBen
         runMultiYearSimulation(worldB, agentsB, 1000, 30.0f);
 
         // Assert 100% bit-identical end-state across primitive arrays
-        assertArrayEquals(worldA.getBiomassHuman(), worldB.getBiomassHuman(), 1e-5f, "Human biomass trajectories must be bit-identical.");
+        assertArrayEquals(worldA.getHumanPopulation(), worldB.getHumanPopulation(), 1e-5f, "Human biomass trajectories must be bit-identical.");
         assertArrayEquals(worldA.getFoodResource(), worldB.getFoodResource(), 1e-4f, "Food resource trajectories must be bit-identical.");
         assertArrayEquals(worldA.getResourceCapital(), worldB.getResourceCapital(), 1e-4f, "Capital trajectories must be bit-identical.");
     }

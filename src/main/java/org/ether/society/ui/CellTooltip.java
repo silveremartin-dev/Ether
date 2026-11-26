@@ -177,7 +177,7 @@ public class CellTooltip extends VBox {
         // Population
         int currentPop = 0;
         if (world != null && bufferIndex != null && bufferIndex >= 0 && bufferIndex < world.getCapacity()) {
-            currentPop = (int) world.getBiomassHuman()[bufferIndex];
+            currentPop = (int) world.getHumanPopulation()[bufferIndex];
         } else if (cell != null && cell.getPopulation() != null) {
             currentPop = cell.getPopulation();
         }

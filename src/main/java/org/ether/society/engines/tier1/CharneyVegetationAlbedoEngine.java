@@ -129,6 +129,7 @@ public class CharneyVegetationAlbedoEngine extends AbstractSimulationEngine {
     @Override
     public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
         if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0) return;
+        double orbitalRainAnomaly = calculateOrbitalMonsoonAnomalyMm(buffer.getCurrentYear());
         double dtSafe = Math.clamp(dtYears, 0.001, 50.0);
         double relaxationFactor = 1.0 - Math.exp(-dtSafe / TAU_VEGETATION_YEARS);
         float[] rainArr = buffer.getRainfall();
@@ -155,8 +156,8 @@ public class CharneyVegetationAlbedoEngine extends AbstractSimulationEngine {
             double curVeg = Math.clamp(curBiomass / SAVANNA_MAX_BIOMASS, 0.0, 1.0);
             double curAlbedo = calculateSurfaceAlbedo(curVeg);
 
-            double basePrecip = Math.max(80.0, curRain);
-            double albedoConvectiveBonus = ALBEDO_FEEDBACK_GAMMA * (0.35 - curAlbedo);
+            double basePrecip = 80.0 + orbitalRainAnomaly * saharaWeight;
+            double albedoConvectiveBonus = ALBEDO_FEEDBACK_GAMMA * (0.35 - curAlbedo) * saharaWeight;
             double targetPrecip = Math.max(15.0, basePrecip + albedoConvectiveBonus);
             double targetVeg = calculateEquilibriumVegetation(targetPrecip);
 

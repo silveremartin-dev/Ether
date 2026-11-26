@@ -80,9 +80,9 @@ public class NewImprovementsEngineTestSuite {
      */
     public void testBifurcationChaosEngine() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
-        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getHumanPopulation()[0] = 5000.0f;
         buf.getFoodResource()[0] = 400.0f;
-        buf.getBiomassHuman()[1] = 2000.0f;
+        buf.getHumanPopulation()[1] = 2000.0f;
         buf.getFoodResource()[1] = 300.0f;
         // meanPop = 3500. diffs = +1500, -1500. diff^2 = 2.25e6.
         // variance = (2.25e6 + 2.25e6) / 2 = 2,250,000.0.
@@ -121,7 +121,7 @@ public class NewImprovementsEngineTestSuite {
      */
     public void testPhysicalLeontiefInputOutputEngine() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 5000.0f;
+        buf.getHumanPopulation()[0] = 5000.0f;
         buf.getResourceCapital()[0] = 100.0f;
         buf.getMetalResource()[0] = 500.0f;
         buf.getEnergySolar()[0] = 100.0f;
@@ -150,7 +150,7 @@ public class NewImprovementsEngineTestSuite {
         org.ether.society.core.dod.WorldBuffer indBuf = new org.ether.society.core.dod.WorldBuffer(30);
         for (int i = 0; i < 30; i++) {
             indBuf.getH3Indexes()[i] = 0x882830828100000L + i;
-            indBuf.getBiomassHuman()[i] = 10000.0f * 0.06f;
+            indBuf.getHumanPopulation()[i] = 10000.0f;
             indBuf.getResourceCapital()[i] = 4500.0f * 10000.0f; // (4500 - 2500)/1000 = 2.0 contribution per cell -> 60.0 total
             indBuf.getTemperature()[i] = 20.0f;
             indBuf.getRainfall()[i] = 1000.0f;

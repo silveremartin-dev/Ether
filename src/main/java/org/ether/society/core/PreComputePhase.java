@@ -229,7 +229,7 @@ public class PreComputePhase {
         for (int i = 0; i < cells.size(); i++) {
             H3Cell c = cells.get(i);
             c.setPopulation(0);
-            c.setBiomassHuman(0.0);
+            c.setHumanPopulation(0.0);
             double w = weights[i];
             if (w > 0.0) {
                 if (c.getBiome() == Biome.OCEAN || c.getBiome() == Biome.DEEP_OCEAN || (c.getElevation() != null && c.getElevation() < 0.0)) {
@@ -283,7 +283,7 @@ public class PreComputePhase {
             }
             H3Cell c = cells.get(i);
             c.setPopulation((int) Math.min(Integer.MAX_VALUE, p));
-            c.setBiomassHuman((double) p);
+            c.setHumanPopulation((double) p);
             assigned += p;
             populated++;
         }
@@ -299,7 +299,7 @@ public class PreComputePhase {
                 if (curP > 0) {
                     long newP = Math.max(1L, Math.round(curP * adjRatio));
                     c.setPopulation((int) Math.min(Integer.MAX_VALUE, newP));
-                    c.setBiomassHuman((double) newP);
+                    c.setHumanPopulation((double) newP);
                     reAssigned += newP;
                 }
             }
@@ -341,7 +341,7 @@ public class PreComputePhase {
         for (H3Cell c : cells) {
             if (c == null) continue;
             long pop = c.getPopulation() != null ? c.getPopulation() : 0;
-            double effectiveK0 = (capitalK0 > 15000.0) ? (capitalK0 / 1.85) : capitalK0;
+            double effectiveK0 = Math.max(0.0, capitalK0);
             double cellCapital = pop * effectiveK0;
             if (c.getResourceCapital() == null || c.getResourceCapital() <= 0.0) {
                 c.setResourceCapital(cellCapital);

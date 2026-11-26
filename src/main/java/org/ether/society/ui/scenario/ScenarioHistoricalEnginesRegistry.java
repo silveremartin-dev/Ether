@@ -82,7 +82,7 @@ final class ScenarioHistoricalEnginesRegistry {
                 "Arbitrage biophysique entre biomasse alimentaire humaine et fourrage réservé aux bêtes de trait (bœufs, chevaux). Démultiplie la force de labour au prix d'une surface cultivable préemptée.",
                 "Ref: Sherratt, A. (1981). The Secondary Products Revolution; Smil, V. (2008). Energy in Nature and Society.",
                 "• Surface Fourrage = N_bétail · Besoin_Fourrage_Journalier / Rendement_Herbe\n• Multiplicateur de Traction : Force_Agricole = 1.0 + β_trait · (N_bétail / Pop_Humaine)"),
-            new EngineMeta("TradeNetworkEngine", "🌐 Réseau Commercial Spatial & Arbitrage de Prix (-3 000 BP)",
+            new EngineMeta("TradeNetworkRouter", "🌐 Réseau Commercial Spatial & Arbitrage de Prix (-3 000 BP)",
                 "Réseau de commerce dynamique gravitationnel inter-cellules H3. Évalue les surplus/déficits locaux de grains et métaux et déploie des caravanes marchandes selon le gradient de prix.",
                 "Ref: Tinbergen, J. (1962). Shaping the World Economy; Krugman, P. (1991).",
                 "• Flux Marchand Flux(i,j) = G · (PIB_i · PIB_j) / (Distance_{ij}^1.8)\n• Arbitrage Bénéfice = (Prix_j - Prix_i) - Coût_Transport"),
@@ -326,7 +326,7 @@ final class ScenarioHistoricalEnginesRegistry {
                 "Accélération du progrès matériel et informationnel par recombinaison à haute densité de capital et d'infrastructure de calcul.",
                 "Ref: Moore, G. E. (1965); Kurzweil, R. (2005). The Singularity Is Near.",
                 "• Accélération Combinatoire sous Haute Densité Informationnelle"),
-            new EngineMeta("CliodynamicAdvisorEngine", "⚠️ Conseiller Prédictif Multi-Risques & Alertes Cliodynamiques (2020+)",
+            new EngineMeta("CliodynamicAdvisor", "⚠️ Conseiller Prédictif Multi-Risques & Alertes Cliodynamiques (2020+)",
                 "Moteur de veille cybernétique planétaire. Analyse les gradients de tension sociale, de stress hydrique et d'épuisement des ressources.",
                 "Ref: Turchin, P. (2008). Arise Cliodynamics. Nature; Beer, S. (1972). Brain of the Firm.",
                 "• Indice de Risque Composite R = max(PSI_turchin, Stress_hydrique, Risque_famine)"),
@@ -416,7 +416,7 @@ final class ScenarioHistoricalEnginesRegistry {
             case "DynamicMaritimeRoutingGraph" -> -60000L;
             case "BoserupAgriculturalIntensificationEngine" -> -8000L;
             case "AmerindianEcosystemEngine", "ScottAgainstTheGrainPureEngine" -> -4000L;
-            case "DraftAnimalFodderAllocationEngine", "TradeNetworkEngine", "WarDiplomacyEngine",
+            case "DraftAnimalFodderAllocationEngine", "TradeNetworkRouter", "WarDiplomacyEngine",
                  "ThermodynamicWarfareEngine", "MaritimeHighwayEngine", "HydrologicalEngineeringEngine",
                  "SoilSalinizationHydrologyEngine", "SpatialCityFractalEngine", "VonThunenAgriculturalRingsEngine",
                  "WestBettencourtAllometryEngine", "TurchinGoldstoneSDTEngine",
@@ -454,7 +454,7 @@ final class ScenarioHistoricalEnginesRegistry {
                  "World3PureEngine", "NordhausDiceHybridEngine", "NordhausDicePureEngine",
                  "HandyNasaHybridEngine", "HandyNasaPureEngine", "BifurcationChaosEngine" -> 1950L;
             case "KurzweilAcceleratingReturnsEngine" -> 1990L;
-            case "CliodynamicAdvisorEngine" -> 2020L;
+            case "CliodynamicAdvisor" -> 2020L;
             case "GeoengineeringAlbedoFeedbackEngine" -> 2030L;
             case "IsruAutarkyAndSpaceColonizationEngine" -> 2050L;
             case "TerraformingEngine" -> 2100L;

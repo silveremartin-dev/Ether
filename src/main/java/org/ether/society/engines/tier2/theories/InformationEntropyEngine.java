@@ -64,7 +64,7 @@ public class InformationEntropyEngine extends AbstractSimulationEngine {
 
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
-        double pop = Math.max(1.0, buffer.getBiomassHuman()[i]);
+        double pop = Math.max(1.0, buffer.getHumanPopulation()[i]);
         double kPerCapita = buffer.getResourceCapital()[i] / pop;
         double totalWatts = buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i] + buffer.getEnergySolar()[i]
                 + (buffer.getResourceCoal()[i] * 24.0) + (buffer.getResourceOil()[i] * 42.0);

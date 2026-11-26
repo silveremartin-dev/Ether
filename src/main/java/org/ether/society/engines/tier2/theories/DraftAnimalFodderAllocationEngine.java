@@ -75,8 +75,8 @@ public class DraftAnimalFodderAllocationEngine extends AbstractSimulationEngine 
 
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
-        if (buffer == null || buffer.getBiomassHuman() == null || dtYears <= 0.0) return;
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        if (buffer == null || buffer.getHumanPopulation() == null || dtYears <= 0.0) return;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop < 50.0) return;
 
         double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0;

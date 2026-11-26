@@ -106,14 +106,14 @@ public class NuclearSafetyRadiotoxicityEngine extends AbstractSimulationEngine {
                 ? 1.0
                 : (1.0 - Math.exp(-accidentProbability * Math.max(0.01, deltaYears)));
 
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         float[] uraniumArr = buffer.getResourceUranium();
         float[] pollutionArr = buffer.getPollutionLevel();
         long[] h3Arr = buffer.getH3Indexes();
         int n = buffer.getCapacity();
 
         for (int i = 0; i < n; i++) {
-            double pop = bioHuman[i] / 0.06;
+            double pop = bioHuman[i];
             if (pop <= 0.0) continue;
 
             double uranium = uraniumArr[i];

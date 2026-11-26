@@ -109,7 +109,7 @@ public class WorldBufferWireCodec {
         serializeFloatSlice(byteBuffer, buffer.getWoodResource(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getMetalResource(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getClayResource(), start, validCount);
-        serializeFloatSlice(byteBuffer, buffer.getBiomassHuman(), start, validCount);
+        serializeFloatSlice(byteBuffer, buffer.getHumanPopulation(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getBiomassLivestock(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getBiomassFish(), start, validCount);
         serializeFloatSlice(byteBuffer, buffer.getBiomassAgriculture(), start, validCount);
@@ -177,7 +177,7 @@ public class WorldBufferWireCodec {
             deserializeFloatSlice(byteBuffer, targetBuffer.getWoodResource(), start, writeCount);
             deserializeFloatSlice(byteBuffer, targetBuffer.getMetalResource(), start, writeCount);
             deserializeFloatSlice(byteBuffer, targetBuffer.getClayResource(), start, writeCount);
-            deserializeFloatSlice(byteBuffer, targetBuffer.getBiomassHuman(), start, writeCount);
+            deserializeFloatSlice(byteBuffer, targetBuffer.getHumanPopulation(), start, writeCount);
             deserializeFloatSlice(byteBuffer, targetBuffer.getBiomassLivestock(), start, writeCount);
             deserializeFloatSlice(byteBuffer, targetBuffer.getBiomassFish(), start, writeCount);
             deserializeFloatSlice(byteBuffer, targetBuffer.getBiomassAgriculture(), start, writeCount);

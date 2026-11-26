@@ -70,7 +70,7 @@ public class ClusterSnapshotManagerTest {
         WorldBuffer buffer = new WorldBuffer(50);
         buffer.getElevation()[12] = 2500.0f;
         buffer.getTemperature()[12] = 14.2f;
-        buffer.getBiomassHuman()[12] = 80000.0f;
+        buffer.getHumanPopulation()[12] = 80000.0f;
 
         Path savedFile = snapshotManager.saveSnapshot(12345L, buffer);
         assertNotNull(savedFile);
@@ -82,7 +82,7 @@ public class ClusterSnapshotManagerTest {
         assertEquals(12345L, payload.getTickId());
         assertEquals(2500.0f, target.getElevation()[12], 1e-4);
         assertEquals(14.2f, target.getTemperature()[12], 1e-4);
-        assertEquals(80000.0f, target.getBiomassHuman()[12], 1e-4);
+        assertEquals(80000.0f, target.getHumanPopulation()[12], 1e-4);
     }
 
     @Test

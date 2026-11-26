@@ -379,7 +379,7 @@ public final class H3SimulationEngine implements ISimulationEngine {
     public long getTotalPopulation() {
         if (lastCacheTick == tickCounter && cachedTotalPopulation >= 0) return cachedTotalPopulation;
         if (worldBuffer == null) return 0;
-        double total = 0.0; float[] pop = worldBuffer.getBiomassHuman();
+        double total = 0.0; float[] pop = worldBuffer.getHumanPopulation();
         for (int i = 0; i < worldBuffer.getCapacity(); i++) { if (pop[i] > 0.0f) total += pop[i]; }
         return Math.round(total);
     }
@@ -394,7 +394,7 @@ public final class H3SimulationEngine implements ISimulationEngine {
 
     public long getPopulatedCellCount() {
         if (worldBuffer == null) return 0;
-        long count = 0; float[] pop = worldBuffer.getBiomassHuman();
+        long count = 0; float[] pop = worldBuffer.getHumanPopulation();
         for (int i = 0; i < worldBuffer.getCapacity(); i++) { if (pop[i] > 0.1f) count++; }
         return count;
     }

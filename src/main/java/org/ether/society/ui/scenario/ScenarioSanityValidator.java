@@ -42,8 +42,8 @@ public class ScenarioSanityValidator {
     public static synchronized EngineConflictReport getOrCreateJitReport() {
         if (cachedJitReport == null) {
             ScenarioEngineJITCompiler jit = new ScenarioEngineJITCompiler();
-            jit.registerEngineStep("BiologicalDemographics", "biomassHuman", new SymbolicExpression("biomassHuman", 1.01, 0.0), 10000.0);
-            jit.registerEngineStep("EcologicalDegradation", "biomassHuman", new SymbolicExpression("biomassHuman", 0.995, 0.0), 10000.0);
+            jit.registerEngineStep("BiologicalDemographics", "humanPopulation", new SymbolicExpression("humanPopulation", 1.01, 0.0), 10000.0);
+            jit.registerEngineStep("EcologicalDegradation", "humanPopulation", new SymbolicExpression("humanPopulation", 0.995, 0.0), 10000.0);
             jit.registerEngineStep("AtmosphericSolar", "temperature", new SymbolicExpression("temperature", 1.0, 0.02), 25.0);
             jit.compile();
             cachedJitReport = jit.getConflictReport();

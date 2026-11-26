@@ -43,7 +43,7 @@ class TelemetryAstAndSnapshotTest {
         paris.setBiome(Biome.PLAINS);
         paris.setElevation(50.0);
         paris.setPopulation(250_000);
-        paris.setBiomassHuman(250_000.0);
+        paris.setHumanPopulation(250_000.0);
         paris.setBiomassAgriculture(15_000.0);
         paris.setBiomassNatural(8_000.0);
         paris.setTemperature(12.5);
@@ -60,7 +60,7 @@ class TelemetryAstAndSnapshotTest {
         madrid.setBiome(Biome.PLAINS);
         madrid.setElevation(650.0);
         madrid.setPopulation(120_000);
-        madrid.setBiomassHuman(120_000.0);
+        madrid.setHumanPopulation(120_000.0);
         madrid.setBiomassAgriculture(9_000.0);
         madrid.setBiomassNatural(6_000.0);
         madrid.setTemperature(15.0);
@@ -77,7 +77,7 @@ class TelemetryAstAndSnapshotTest {
         cusco.setBiome(Biome.HILLS);
         cusco.setElevation(3399.0);
         cusco.setPopulation(60_000);
-        cusco.setBiomassHuman(60_000.0);
+        cusco.setHumanPopulation(60_000.0);
         cusco.setBiomassAgriculture(4_000.0);
         cusco.setBiomassNatural(12_000.0);
         cusco.setTemperature(11.0);

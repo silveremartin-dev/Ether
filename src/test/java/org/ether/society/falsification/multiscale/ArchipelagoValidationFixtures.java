@@ -123,17 +123,17 @@ public final class ArchipelagoValidationFixtures {
         double foodA = 0.0, foodB = 0.0, foodC = 0.0;
 
         for (int i = 0; i < 37; i++) {
-            popA += buffer.getBiomassHuman()[i];
+            popA += buffer.getHumanPopulation()[i];
             capA += buffer.getResourceCapital()[i];
             foodA += buffer.getFoodResource()[i];
         }
         for (int i = 37; i < 37 + 61; i++) {
-            popB += buffer.getBiomassHuman()[i];
+            popB += buffer.getHumanPopulation()[i];
             capB += buffer.getResourceCapital()[i];
             foodB += buffer.getFoodResource()[i];
         }
         for (int i = 37 + 61; i < 117; i++) {
-            popC += buffer.getBiomassHuman()[i];
+            popC += buffer.getHumanPopulation()[i];
             capC += buffer.getResourceCapital()[i];
             foodC += buffer.getFoodResource()[i];
         }
@@ -187,7 +187,7 @@ public final class ArchipelagoValidationFixtures {
         double initialPop = 0.0;
         double initialWood = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            initialPop += buffer.getBiomassHuman()[i];
+            initialPop += buffer.getHumanPopulation()[i];
             initialWood += buffer.getWoodResource()[i];
         }
 
@@ -202,7 +202,7 @@ public final class ArchipelagoValidationFixtures {
         double finalFish = 0.0;
         double finalAgri = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            finalPop += buffer.getBiomassHuman()[i];
+            finalPop += buffer.getHumanPopulation()[i];
             finalWood += buffer.getWoodResource()[i];
             finalFish += buffer.getBiomassFish()[i];
             finalAgri += buffer.getBiomassAgriculture()[i];
@@ -351,7 +351,7 @@ public final class ArchipelagoValidationFixtures {
 
         double finalMadagascarPop = 0.0, finalMadagascarCap = 0.0, finalMadagascarFish = 0.0, finalMadagascarTech = 0.0;
         for (H3Cell c : madagascarNW) {
-            finalMadagascarPop += c.getBiomassHuman();
+            finalMadagascarPop += c.getHumanPopulation();
             finalMadagascarCap += c.getResourceCapital();
             finalMadagascarFish += c.getBiomassFish();
             finalMadagascarTech += H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
@@ -360,7 +360,7 @@ public final class ArchipelagoValidationFixtures {
 
         double finalComorosPop = 0.0, finalComorosCap = 0.0, finalComorosFish = 0.0, finalComorosTech = 0.0;
         for (H3Cell c : comorosHub) {
-            finalComorosPop += c.getBiomassHuman();
+            finalComorosPop += c.getHumanPopulation();
             finalComorosCap += c.getResourceCapital();
             finalComorosFish += c.getBiomassFish();
             finalComorosTech += H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);
@@ -369,7 +369,7 @@ public final class ArchipelagoValidationFixtures {
 
         double finalSwahiliPop = 0.0, finalSwahiliCap = 0.0, finalSwahiliFish = 0.0, finalSwahiliTech = 0.0;
         for (H3Cell c : swahiliHub) {
-            finalSwahiliPop += c.getBiomassHuman();
+            finalSwahiliPop += c.getHumanPopulation();
             finalSwahiliCap += c.getResourceCapital();
             finalSwahiliFish += c.getBiomassFish();
             finalSwahiliTech += H3CellPhysicsAndStateHelper.computeEmergentTechnologyDiagnostic(c);

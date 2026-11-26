@@ -140,7 +140,7 @@ class EcologicalStoichiometryEngineTest {
         for (int i = 0; i < 100; i++) {
             farmBuf.getH3Indexes()[i] = 0x887000000000000L + i;
             farmBuf.getBiomes()[i] = (byte) Biome.PLAINS.ordinal();
-            farmBuf.getBiomassHuman()[i] = 2000.0f * 0.06f;
+            farmBuf.getHumanPopulation()[i] = 2000.0f;
             farmBuf.getBiomassAgriculture()[i] = 100.0f;
             farmBuf.getSoilOrganicCarbon()[i] = 45.0f; // Rich initial soil organic carbon
             farmBuf.getMetalResource()[i] = 100.0f;

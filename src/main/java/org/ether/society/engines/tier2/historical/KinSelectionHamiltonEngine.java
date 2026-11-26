@@ -39,15 +39,17 @@ public class KinSelectionHamiltonEngine extends AbstractSimulationEngine {
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
-        double pop = buffer.getBiomassHuman()[i];
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
         double food = buffer.getFoodResource()[i];
         double foodPerCapita = food / pop;
         double scarcityStress = 1.0 / (1.0 + Math.exp(20.0 * (foodPerCapita - 0.05)));
         if (scarcityStress > 0.01) {
-            double capital = Math.max(50.0, buffer.getResourceCapital()[i]);
-            acc.dResourceCapital += (float) (capital * 0.08 * scarcityStress * dtYears);
+            double capital = buffer.getResourceCapital()[i];
+            if (capital > 0.0) {
+                acc.dResourceCapital += (float) (capital * 0.08 * scarcityStress * dtYears);
+            }
         }
     }
 }

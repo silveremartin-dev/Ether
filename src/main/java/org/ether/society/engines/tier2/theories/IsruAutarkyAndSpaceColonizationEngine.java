@@ -38,7 +38,7 @@ public class IsruAutarkyAndSpaceColonizationEngine extends AbstractSimulationEng
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
         double dt = Math.max(0.001, dtYears);
-        double pop = buffer.getBiomassHuman()[i];
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
         double capital = buffer.getResourceCapital()[i];

@@ -47,12 +47,30 @@ public class MacroHistoricalEpochsFalsificationTest {
     public record ScenarioRunConfig(
             String presetKey,
             String displayName,
-            int startYear,
-            int endYear,
+            Integer startYearOverride,
+            Integer endYearOverride,
             int resolution,
             boolean windowed,
             String targetRasterPath
-    ) {}
+    ) {
+        public ScenarioRunConfig(String presetKey, String displayName, int resolution, boolean windowed, String targetRasterPath) {
+            this(presetKey, displayName, null, null, resolution, windowed, targetRasterPath);
+        }
+
+        public int startYear() { return startYearOverride != null ? startYearOverride : 0; }
+        public int endYear() { return endYearOverride != null ? endYearOverride : 0; }
+
+        public ScenarioRunConfig resolveFor(Scenario s) {
+            String pStart = System.getProperty("benchmark.startYear");
+            String pEnd = System.getProperty("benchmark.endYear");
+            int sy = (pStart != null && !pStart.isBlank()) ? Integer.parseInt(pStart.trim())
+                    : (startYearOverride != null ? startYearOverride : (int) s.getStartDateYear());
+            int ey = (pEnd != null && !pEnd.isBlank()) ? Integer.parseInt(pEnd.trim())
+                    : (endYearOverride != null ? endYearOverride : (int) s.getEndDateYear());
+            if (ey <= sy) ey = sy + 100;
+            return new ScenarioRunConfig(presetKey, displayName, sy, ey, resolution, windowed, targetRasterPath);
+        }
+    }
 
     public record CulturalLayerAudit(
             String channelKey,
@@ -82,29 +100,29 @@ public class MacroHistoricalEpochsFalsificationTest {
     private static final List<ScenarioRunConfig> TARGET_CONFIGS = List.of(
             // --- Middle Epochs (Classical, Medieval & Post-Feudal Transitions) ---
             new ScenarioRunConfig("antonine_plague_165", "Antonine Plague & Imperial Crisis under Marcus Aurelius (165-180 CE)",
-                    165, 185, 4, false, "data/maps/ether/earth/160/earth_160_density.png"),
-            new ScenarioRunConfig("late_antique_ice_age", "Late Antique Little Ice Age & Justinian Plague (536 CE)",
-                    536, 556, 4, false, "data/maps/ether/earth/536/earth_536_density.png"),
-            new ScenarioRunConfig("islamic_expansion_632", "Islamic Expansion & Caliphal Commercial Revolution (632 CE)",
-                    632, 652, 4, false, "data/maps/ether/earth/632/earth_632_density.png"),
-            new ScenarioRunConfig("carolingian_800", "Carolingian Renaissance and Caliphal Apex (800 CE)",
-                    800, 820, 4, false, "data/maps/ether/earth/820/earth_820_density.png"),
-            new ScenarioRunConfig("song_dynasty", "Song Dynasty & Hydraulic Pre-Industrialization (1000 CE)",
-                    1000, 1020, 4, false, "data/maps/ether/earth/1000/earth_1000_density.png"),
-            new ScenarioRunConfig("black_death_1347", "The Black Death & Post-Feudal Economic Inversion (1347 CE)",
-                    1347, 1367, 4, false, "data/maps/ether/earth/1347/earth_1347_density.png"),
+                    4, false, "data/maps/ether/earth/160/earth_160_density.png"),
+            new ScenarioRunConfig("late_antique_ice_age", "Late Antique Little Ice Age & Justinian Plague (536-650 CE)",
+                    4, false, "data/maps/ether/earth/536/earth_536_density.png"),
+            new ScenarioRunConfig("islamic_expansion_632", "Islamic Expansion & Caliphal Commercial Revolution (632-900 CE)",
+                    4, false, "data/maps/ether/earth/632/earth_632_density.png"),
+            new ScenarioRunConfig("carolingian_800", "Carolingian Renaissance and Caliphal Apex (800-888 CE)",
+                    4, false, "data/maps/ether/earth/820/earth_820_density.png"),
+            new ScenarioRunConfig("song_dynasty", "Song Dynasty & Hydraulic Pre-Industrialization (1000-1279 CE)",
+                    4, false, "data/maps/ether/earth/1000/earth_1000_density.png"),
+            new ScenarioRunConfig("black_death_1347", "The Black Death & Post-Feudal Economic Inversion (1347-1492 CE)",
+                    4, false, "data/maps/ether/earth/1347/earth_1347_density.png"),
 
             // --- Modern & Contemporary Epochs ---
-            new ScenarioRunConfig("industrial_1800", "Industrial Revolution & Fossil Energy (1800 CE)",
-                    1800, 1820, 4, false, "data/maps/ether/earth/1800/earth_1800_density.png"),
-            new ScenarioRunConfig("world_wars_totalitarian_1914", "World Wars, Totalitarian Rupture & Nuclear Era (1914 CE)",
-                    1914, 1934, 4, false, "data/maps/ether/earth/1914/earth_1914_density.png"),
+            new ScenarioRunConfig("industrial_1800", "Industrial Revolution & Fossil Energy (1800-1900 CE)",
+                    4, false, "data/maps/ether/earth/1800/earth_1800_density.png"),
+            new ScenarioRunConfig("world_wars_totalitarian_1914", "World Wars, Totalitarian Rupture & Nuclear Era (1914-1960 CE)",
+                    4, false, "data/maps/ether/earth/1914/earth_1914_density.png"),
 
             // --- Deep Prehistory & Paleolithic ---
-            new ScenarioRunConfig("fertile_crescent", "Fertile Crescent & Neolithic Agriculture (-8000 BCE)",
-                    -8000, -7980, 7, true, "data/maps/ether/earth/-8000/earth_-8000_density.png"),
-            new ScenarioRunConfig("lgm_solutrean", "Last Glacial Maximum & Solutrean (-20,000 BP)",
-                    -20000, -19980, 4, false, "data/maps/ether/earth/-20000/earth_-20000_density.png")
+            new ScenarioRunConfig("fertile_crescent", "Fertile Crescent & Neolithic Agriculture (-8000 -> -5000 BCE)",
+                    7, true, "data/maps/ether/earth/-8000/earth_-8000_density.png"),
+            new ScenarioRunConfig("lgm_solutrean", "Last Glacial Maximum & Solutrean (-20,000 -> -12,000 BP)",
+                    4, false, "data/maps/ether/earth/-20000/earth_-20000_density.png")
     );
 
     @Test
@@ -123,35 +141,41 @@ public class MacroHistoricalEpochsFalsificationTest {
         File reportsDir = new File("docs/reports");
         reportsDir.mkdirs();
 
-        for (ScenarioRunConfig cfg : TARGET_CONFIGS) {
+        for (ScenarioRunConfig rawCfg : TARGET_CONFIGS) {
             String filter = System.getProperty("phase1.scenario");
             if (filter != null && !filter.isBlank()) {
                 List<String> allowed = Arrays.stream(filter.split(","))
                         .map(String::trim)
                         .map(String::toLowerCase)
                         .toList();
-                if (!allowed.contains(cfg.presetKey().toLowerCase())) {
+                if (!allowed.contains(rawCfg.presetKey().toLowerCase())) {
                     continue;
                 }
             }
-            System.out.println("================================================================================");
-            System.out.printf("🚀 RUNNING PHASE 1 BENCHMARK: %s [Res: %d, Years: %d -> %d]%n",
-                    cfg.displayName(), cfg.resolution(), cfg.startYear(), cfg.endYear());
-            System.out.println("================================================================================");
 
             Scenario s = allScenarios.stream()
-                    .filter(sc -> cfg.presetKey().equalsIgnoreCase(sc.getPresetKey())
-                            || (sc.getPresetKey() != null && sc.getPresetKey().toLowerCase().contains(cfg.presetKey().toLowerCase())))
+                    .filter(sc -> rawCfg.presetKey().equalsIgnoreCase(sc.getPresetKey())
+                            || (sc.getPresetKey() != null && sc.getPresetKey().toLowerCase().contains(rawCfg.presetKey().toLowerCase())))
                     .findFirst()
                     .orElse(null);
 
             if (s == null) {
-                System.err.println("Scenario not found in built-ins: " + cfg.presetKey());
+                System.err.println("Scenario not found in built-ins: " + rawCfg.presetKey());
                 continue;
             }
 
+            ScenarioRunConfig cfg = rawCfg.resolveFor(s);
             s.setStartDateYear(cfg.startYear());
             s.setEndDateYear(cfg.endYear());
+            String dtProp = System.getProperty("benchmark.dtDays");
+            if (dtProp != null && !dtProp.isBlank()) {
+                try { s.setTemporalResolutionDays(Double.parseDouble(dtProp.trim())); } catch (NumberFormatException ignored) {}
+            }
+
+            System.out.println("================================================================================");
+            System.out.printf("🚀 RUNNING PHASE 1 BENCHMARK: %s [Res: %d, Years: %d -> %d]%n",
+                    cfg.displayName(), cfg.resolution(), cfg.startYear(), cfg.endYear());
+            System.out.println("================================================================================");
 
             int targetRes = cfg.resolution();
             String resProp = System.getProperty("phase1.resolution");
@@ -165,7 +189,14 @@ public class MacroHistoricalEpochsFalsificationTest {
             }
             s.setH3Resolution(targetRes);
 
-            if (!cfg.windowed()) {
+            if (!cfg.windowed() && s.isClippingEnabled()) {
+                s.setClippingEnabled(false);
+                double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
+                        "worldPopulation", (double) cfg.startYear(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+                if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
+                    s.setInitialHumanCount(Math.round(globalPopM * 1_000_000.0));
+                }
+            } else if (!cfg.windowed()) {
                 s.setClippingEnabled(false);
             }
 
@@ -204,7 +235,7 @@ public class MacroHistoricalEpochsFalsificationTest {
             );
 
             // Measure Real Engine Performance Metrics
-            int totalTicks = Math.max(1, (cfg.endYear() - cfg.startYear()) * 12);
+            int totalTicks = Math.max(1, (int) Math.ceil(((cfg.endYear() - cfg.startYear()) * 365.25) / Math.max(1.0, s.getTemporalResolutionDays())));
             double durationSec = Math.max(0.001, elapsedMs / 1000.0);
             double tps = totalTicks / durationSec;
             double msPerTick = (double) elapsedMs / totalTicks;

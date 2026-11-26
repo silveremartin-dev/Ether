@@ -69,7 +69,7 @@ final class H3BufferSyncHelper {
                         c.setFoodResource(snap.getFoodResource());
                         c.setWaterResource(snap.getWaterResource());
                         c.setFreshwaterAquifer(snap.getFreshwaterAquifer());
-                        c.setBiomassHuman(snap.getBiomassHuman());
+                        c.setHumanPopulation(snap.getHumanPopulation());
                         c.setBiomassNatural(snap.getBiomassNatural());
                         c.setBiomassLivestock(snap.getBiomassLivestock());
                         c.setBiomassAgriculture(snap.getBiomassAgriculture());
@@ -96,7 +96,7 @@ final class H3BufferSyncHelper {
             List<H3Cell> cells,
             SimulationPerformanceConfig performanceConfig) {
         if (worldBuffer == null || cells == null) return;
-        float[] pop = worldBuffer.getBiomassHuman();
+        float[] pop = worldBuffer.getHumanPopulation();
         float[] food = worldBuffer.getFoodResource();
         float[] water = worldBuffer.getWaterResource();
         float[] wood = worldBuffer.getWoodResource();
@@ -135,7 +135,7 @@ final class H3BufferSyncHelper {
         if (cell == null) return;
         int p = Math.max(0, Math.round(pop[i]));
         cell.setPopulation(p);
-        cell.setBiomassHuman((double) pop[i]);
+        cell.setHumanPopulation((double) pop[i]);
         cell.setFoodResource((double) food[i]);
         cell.setWaterResource((double) water[i]);
         cell.setWoodResource((double) wood[i]);
@@ -182,7 +182,7 @@ final class H3BufferSyncHelper {
             SimulationPerformanceConfig performanceConfig) {
         if (worldBuffer == null || cells == null) return;
 
-        float[] pop = worldBuffer.getBiomassHuman();
+        float[] pop = worldBuffer.getHumanPopulation();
         float[] food = worldBuffer.getFoodResource();
         float[] water = worldBuffer.getWaterResource();
         float[] wood = worldBuffer.getWoodResource();

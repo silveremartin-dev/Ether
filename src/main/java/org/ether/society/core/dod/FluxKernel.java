@@ -67,7 +67,7 @@ public class FluxKernel {
         if (capacity == 0) return;
 
         float[] food = world.getFoodResource();
-        float[] pop = world.getBiomassHuman();
+        float[] pop = world.getHumanPopulation();
         float[] prices = world.getLocalPrice();
         float[] elev = world.getElevation();
         int[][] neighbors = world.getNeighborIndexes();

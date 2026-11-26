@@ -14,7 +14,7 @@ pub unsafe fn process_urban(world: &mut WorldBufferRaw, dt_years: f32) {
     let decay_capital = 0.95_f64.powf(dt_in_years);
     let decay_complexity = 0.90_f64.powf(dt_in_years);
 
-    let pop = std::slice::from_raw_parts(world.biomass_human, n);
+    let pop = std::slice::from_raw_parts(world.human_population, n);
     let biomes = if !world.biomes.is_null() {
         std::slice::from_raw_parts(world.biomes, n)
     } else {
@@ -86,8 +86,8 @@ pub unsafe fn process_urban(world: &mut WorldBufferRaw, dt_years: f32) {
         let band_constraint = sigmoid(p_f64, 50.0, 15.0);
         k_star = 5.0 * (1.0 - band_constraint) + k_star * band_constraint;
 
-        let agri_activation = sigmoid(agri_val as f64, 100.0, 30.0);
-        let industrial_activation = sigmoid(power_per_capita_w, 480.0, 80.0);
+        let agri_activation = sigmoid(agri_val as f64, 150.0, 25.0);
+        let industrial_activation = sigmoid(power_per_capita_w, 520.0, 25.0);
         let sedentary_capability = agri_activation.max(industrial_activation);
         k_star = 5.0 + (k_star - 5.0) * sedentary_capability;
 

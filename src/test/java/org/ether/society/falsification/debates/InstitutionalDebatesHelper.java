@@ -66,7 +66,7 @@ final class InstitutionalDebatesHelper {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(cells.size());
         for (int i = 0; i < cells.size(); i++) {
             H3Cell c = cells.get(i);
-            buf.getBiomassHuman()[i] = (float) c.getPopulationOr(0);
+            buf.getHumanPopulation()[i] = (float) c.getPopulationOr(0);
             buf.getFreshwaterAquifer()[i] = c.getAccessibleAquifer() != null ? c.getAccessibleAquifer().floatValue() : 0.0f;
             buf.getRainfall()[i] = (float) c.getRainfallOr(800.0);
             buf.getResourceCapital()[i] = (float) c.getResourceCapitalOr(0.0);
@@ -143,11 +143,11 @@ final class InstitutionalDebatesHelper {
         mobileForagerCamp.setPollutionLevel(0.0);
 
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
-        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getResourceCapital()[0] = 10000.0f * 150.0f;
         buf.getLifespan()[0] = 40.0f;
         buf.getPollutionLevel()[0] = 0.0f;
-        buf.getBiomassHuman()[1] = 100.0f;
+        buf.getHumanPopulation()[1] = 100.0f;
         buf.getResourceCapital()[1] = 100.0f * 20.0f;
         buf.getLifespan()[1] = 40.0f;
         buf.getPollutionLevel()[1] = 0.0f;
@@ -161,10 +161,10 @@ final class InstitutionalDebatesHelper {
 
     static ZomiaEscapeResult runZomiaEscapeSimulation() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
-        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getResourceCapital()[0] = 10000.0f * 150.0f;
         buf.getLifespan()[0] = 40.0f;
-        buf.getBiomassHuman()[1] = 2000.0f;
+        buf.getHumanPopulation()[1] = 2000.0f;
         buf.getResourceCapital()[1] = 2000.0f * 20.0f;
         buf.getLifespan()[1] = 40.0f;
 
@@ -173,18 +173,18 @@ final class InstitutionalDebatesHelper {
             engine.tick(buf, 1.0, 1.0);
             if (buf.getLifespan()[0] < 35.0f) {
                 float migrants = 150.0f;
-                buf.getBiomassHuman()[0] -= migrants;
-                buf.getBiomassHuman()[1] += migrants;
+                buf.getHumanPopulation()[0] -= migrants;
+                buf.getHumanPopulation()[1] += migrants;
             }
         }
-        return new ZomiaEscapeResult((int) buf.getBiomassHuman()[0], (int) buf.getBiomassHuman()[1]);
+        return new ZomiaEscapeResult((int) buf.getHumanPopulation()[0], (int) buf.getHumanPopulation()[1]);
     }
 
     static TasmanianRegressionResult runTasmanianRegressionSimulation() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(7);
         double initialSum = 0.0;
         for (int i = 0; i < 7; i++) {
-            buf.getBiomassHuman()[i] = 420.0f;
+            buf.getHumanPopulation()[i] = 420.0f;
             buf.getResourceCapital()[i] = 420.0f * 100.0f;
             initialSum += buf.getResourceCapital()[i];
         }
@@ -204,7 +204,7 @@ final class InstitutionalDebatesHelper {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(7);
         double initialSum = 0.0;
         for (int i = 0; i < 7; i++) {
-            buf.getBiomassHuman()[i] = 3500.0f;
+            buf.getHumanPopulation()[i] = 3500.0f;
             buf.getResourceCapital()[i] = 3500.0f * 100.0f;
             initialSum += buf.getResourceCapital()[i];
         }

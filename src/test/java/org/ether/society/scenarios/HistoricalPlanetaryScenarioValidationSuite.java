@@ -260,7 +260,7 @@ public class HistoricalPlanetaryScenarioValidationSuite {
         org.ether.society.core.dod.WorldBuffer romanBuf = new org.ether.society.core.dod.WorldBuffer(planetaryGrid.size());
         for (int i = 0; i < planetaryGrid.size(); i++) {
             H3Cell c = planetaryGrid.get(i);
-            romanBuf.getBiomassHuman()[i] = (float) c.getPopulationOr(0);
+            romanBuf.getHumanPopulation()[i] = (float) c.getPopulationOr(0);
             romanBuf.getResourceCapital()[i] = (float) c.getResourceCapitalOr(0.0);
         }
         RomanImperialCliodynamicEngine romanEngine = new RomanImperialCliodynamicEngine();

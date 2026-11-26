@@ -113,7 +113,7 @@ public abstract class AbstractCliodynamicBenchmarkTest {
         for (int i = 0; i < count; i++) {
             H3Cell c = cells.get(i);
             buffer.getH3Indexes()[i] = c.getH3Index();
-            buffer.getBiomassHuman()[i] = c.getPopulation() != null ? (float) c.getPopulation() : 0.0f;
+            buffer.getHumanPopulation()[i] = c.getPopulation() != null ? (float) c.getPopulation() : 0.0f;
             buffer.getBiomassAgriculture()[i] = c.getBiomassAgriculture() != null ? c.getBiomassAgriculture().floatValue() : 500.0f;
             buffer.getBiomassNatural()[i] = c.getBiomassNatural() != null ? c.getBiomassNatural().floatValue() : 2000.0f;
             buffer.getFoodResource()[i] = c.getFoodResource() != null ? c.getFoodResource().floatValue() : 3000.0f;
@@ -135,7 +135,7 @@ public abstract class AbstractCliodynamicBenchmarkTest {
 
         for (int i = 0; i < capacity; i++) {
             if (world.getH3Indexes()[i] == 0) continue;
-            float pop = world.getBiomassHuman()[i];
+            float pop = world.getHumanPopulation()[i];
             if (pop > 0.0f) {
                 agents.getHexIds()[i] = i;
                 agents.getMass()[i] = pop;

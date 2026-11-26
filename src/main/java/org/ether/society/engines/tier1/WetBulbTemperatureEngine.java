@@ -62,11 +62,11 @@ public class WetBulbTemperatureEngine extends AbstractSimulationEngine {
         double wetBulbTempC = calculateWetBulbTemperatureStull(tempC, rh);
 
         if (wetBulbTempC >= 35.0) {
-            double bioHuman = buffer.getBiomassHuman()[i];
+            double bioHuman = buffer.getHumanPopulation()[i];
             if (bioHuman > 0.0) {
                 double mortalityHazard = 1.0 - Math.exp(-0.25 * (wetBulbTempC - 35.0));
                 double exposureScale = Math.clamp(dtYears * 12.0, 0.05, 1.0);
-                acc.dBiomassHuman -= (float) (bioHuman * mortalityHazard * exposureScale);
+                acc.dHumanPopulation -= (float) (bioHuman * mortalityHazard * exposureScale);
             }
         }
     }
@@ -90,7 +90,7 @@ public class WetBulbTemperatureEngine extends AbstractSimulationEngine {
         int hyperthermiaCasualties = 0;
         float[] tempArr = buffer.getTemperature();
         float[] rainArr = buffer.getRainfall();
-        float[] bioHuman = buffer.getBiomassHuman();
+        float[] bioHuman = buffer.getHumanPopulation();
         int n = buffer.getCapacity();
 
         for (int i = 0; i < n; i++) {

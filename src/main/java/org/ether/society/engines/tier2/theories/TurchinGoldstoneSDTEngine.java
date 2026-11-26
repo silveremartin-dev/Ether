@@ -111,7 +111,7 @@ public class TurchinGoldstoneSDTEngine extends AbstractSimulationEngine {
     public static void processSDTDynamics(WorldBuffer buffer, double deltaYears) {
         if (buffer == null || deltaYears <= 0.0) return;
         int n = buffer.getCapacity();
-        float[] popArr = buffer.getBiomassHuman();
+        float[] popArr = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
         float[] giniArr = buffer.getGiniIndex();
         float[] foodArr = buffer.getFoodResource();
@@ -125,11 +125,11 @@ public class TurchinGoldstoneSDTEngine extends AbstractSimulationEngine {
             float food = (foodArr != null) ? foodArr[i] : 500.0f;
 
             double areaKm2 = 36.13;
-            double density = (p / 0.06) / areaKm2;
-            double foodPerCap = food / Math.max(1.0, (p / 0.06));
+            double density = p / areaKm2;
+            double foodPerCap = food / Math.max(1.0, p);
             double mmp = Math.max(0.2, (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0));
             double emp = Math.max(0.2, Math.pow(Math.max(0.0, gini - 0.25) / 0.20, 2.0));
-            double kPerCap = capital / Math.max(1.0, (p / 0.06));
+            double kPerCap = capital / Math.max(1.0, p);
             double sf = Math.max(0.2, 0.4 * (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(kPerCap / 800.0));
             double psi = mmp * emp * sf;
 

@@ -157,8 +157,8 @@ public class CultureKernel {
             }
         }
 
-        float diffCoeff = (diffusionRate / 6.0f) * dt;
-        float forceCoeff = forcingRate * dt;
+        float diffCoeff = Math.min(0.14f, (diffusionRate / 6.0f) * dt);
+        float forceCoeff = Math.min(0.80f, forcingRate * dt);
 
         for (int i = 0; i < agentCapacity; i++) {
             int myHex = hexIds[i];
@@ -204,7 +204,7 @@ public class CultureKernel {
 
         float elevation = world.getElevation() != null && hexIdx < world.getElevation().length ? world.getElevation()[hexIdx] : 0.0f;
         float instComp = world.getInstitutionalComplexity() != null && hexIdx < world.getInstitutionalComplexity().length ? world.getInstitutionalComplexity()[hexIdx] : 0.0f;
-        float humanPop = world.getBiomassHuman() != null && hexIdx < world.getBiomassHuman().length ? world.getBiomassHuman()[hexIdx] : 0.0f;
+        float humanPop = world.getHumanPopulation() != null && hexIdx < world.getHumanPopulation().length ? world.getHumanPopulation()[hexIdx] : 0.0f;
         float capital = world.getResourceCapital() != null && hexIdx < world.getResourceCapital().length ? world.getResourceCapital()[hexIdx] : 0.0f;
         float capPerCap = humanPop > 0.001f ? (capital / humanPop) : 0.0f;
         float lifespan = world.getLifespan() != null && hexIdx < world.getLifespan().length ? world.getLifespan()[hexIdx] : 35.0f;

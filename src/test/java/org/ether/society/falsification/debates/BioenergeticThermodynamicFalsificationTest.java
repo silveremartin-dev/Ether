@@ -75,7 +75,7 @@ public class BioenergeticThermodynamicFalsificationTest {
                 debEngine.tick(debBuf, 1.0, 12.0);
                 double currentDebPop = 0.0;
                 for (int i = 0; i < grid.size(); i++) {
-                    currentDebPop += debBuf.getBiomassHuman()[i] / 0.06;
+                    currentDebPop += debBuf.getHumanPopulation()[i];
                 }
                 debPopTrajectory.add(currentDebPop);
 

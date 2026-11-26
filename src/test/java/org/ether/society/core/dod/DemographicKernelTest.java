@@ -35,7 +35,7 @@ class DemographicKernelTest {
         demographicKernel.tick(worldBuffer, agentBuffer, 1.0f);
 
         assertTrue(worldBuffer.getFoodResource()[0] < initialFood, "Agent should consume food from world");
-        assertTrue(worldBuffer.getBiomassHuman()[0] > 0, "Human biomass should be updated");
+        assertTrue(worldBuffer.getHumanPopulation()[0] > 0, "Human biomass should be updated");
     }
 
     @Test

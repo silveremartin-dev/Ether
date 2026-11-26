@@ -712,12 +712,13 @@ The numerical solver architecture partitions differential systems based on their
 
 #### 31.3. Standard Dynamic Energy Budget (DEB) Thermodynamics (`DynamicEnergyBudgetEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
-* **Academic Literature Reference**: Kooijman, S. A. L. M. (2010). *Dynamic Energy Budget theory for metabolic organisation*. Cambridge University Press; Jager, T., Martin, B. T., & Baveco, J. M. (2013). *Alternative angels. Predicting rethink dynamic energy budget theory*. Journal of Theoretical Biology, 328, 85-93; Nisbet, R. M., et al. (2000). *From molecules to ecosystems through dynamic energy budget models*. Journal of Animal Ecology, 69(6), 913-926.
+* **Academic Literature Reference**: Kooijman, S. A. L. M. (2010). *Dynamic Energy Budget theory for metabolic organisation*. Cambridge University Press; Jager, T., Martin, B. T., & Baveco, J. M. (2013). *Alternative angels. Predicting rethink dynamic energy budget theory*. Journal of Theoretical Biology, 328, 85-93; Nisbet, R. M., et al. (2000). *From molecules to ecosystems through dynamic energy budget models*. Journal of Animal Ecology, 69(6), 913-926; Hatton, I. A., et al. (2015). *The predator-prey power law: Biomass scaling across terrestrial and aquatic biomes*. Science, 349(6252), aac6284.
 * **Governing Equations**:
   $$\frac{dV}{dt} = \frac{\kappa \dot{p}_C - [\dot{p}_M] V}{[E_G]}, \qquad \frac{dE}{dt} = \dot{p}_A - \dot{p}_C$$
   $$k(T) = \exp\left(\frac{T_A}{T_{\text{ref}}} - \frac{T_A}{T}\right), \qquad f(X) = \frac{X}{X + X_K}$$
   $$\dot{p}_A = \{\dot{p}_{Am}\} \cdot f(X) \cdot k(T), \qquad \dot{p}_M = [\dot{p}_M] \cdot V$$
   $$\dot{p}_R = \max(0.0, \; (1 - \kappa) \dot{p}_C - [\dot{p}_J]), \qquad \mu_{\text{starv}} = \mu_{\text{max}} \cdot \left(\frac{\max(0, \Delta V / V_{\text{healthy}})}{w_{\text{crit}}}\right)^2$$
+  $$\rho_{\text{herb}} = c_{\text{Hatton}} \cdot \rho_{\text{prod}}^{3/4} \quad (c_{\text{Hatton}} = 0.056\;(\text{t/km}^2)^{1/4})$$
 * **Parameters & Physical Units**:
   * $V$: Structural functional tissue biomass [metric tons per cell or kg/capita].
   * $E$: Mobilizable biochemical reserve energy pool [$\text{GJ}$].
@@ -862,13 +863,14 @@ The numerical solver architecture partitions differential systems based on their
 
 #### 35.1. Transport Infrastructure Capital & Spatial Friction Attenuation (`InfrastructureEnergyEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
-* **Academic Literature Reference**: Donaldson, D. (2018). *Railroads of the Raj: Estimating the impact of transportation infrastructure*. American Economic Review, 108(4), 899-934.
-* **Governing Equations**:
+* **Academic Literature Reference**: Minetti, A. E., et al. (2002). *Energy cost of walking and running at extreme uphill and downhill slopes*. J. Appl. Physiol., 93(3), 1039–1046; Donaldson, D. (2018). *Railroads of the Raj: Estimating the impact of transportation infrastructure*. American Economic Review, 108(4), 899-934.
+* **Governing Equations** (shared closed-form with `H3CellPhysicsAndStateHelper.calculateMovementFrictionFromObservables`):
   $$k_{\text{infra}} = \frac{K_{\text{infra}}}{\max(10.0, A_{\text{cell}})} \quad [\text{kg/km}^2]$$
-  $$\tau_{\text{eff}} = \tau_0 \cdot \left[ 0.10 + \frac{0.90}{1.0 + 0.05 \cdot \ln(1.0 + k_{\text{infra}})} \right]$$
+  $$\text{infraMitigation} = 0.15 + \frac{0.85}{1.0 + 0.25 \cdot \ln(1.0 + \text{softplus}(10.0 \cdot k_{\text{infra}}, 0, 0.5))}$$
+  $$\mu_{\text{friction}, i} = \text{smoothClamp}(\tau_{\text{land}, 0} \cdot \text{infraMitigation}, \; 0.30, 25.0, 10.0)$$
 * **Parameters & Physical Units**:
   * $K_{\text{infra}}$: Physical mass of paved roads, canals, and bridges [$\text{kg}$].
-  * $\tau_{\text{eff}}$: Effective transport friction multiplier [dimensionless, $0.10 - 1.0$].
+  * $\mu_{\text{friction}, i}$: Effective closed-form terrestrial/marine transit friction coefficient ($\ge 0.30$ land floor, $\ge 0.40$ sea).
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 36. Pyrometallurgical Reduction Enthalpy (`MetallurgyEnthalpyEngine`)
@@ -2171,6 +2173,9 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
   $$P_{\text{watts/capita}} = \frac{P_{\text{somatic}} + P_{\text{draft}} + P_{\text{mill}} + P_{\text{thermal}}}{N_{\text{human}}}$$
 * **Parameters & Physical Units**:
   * Unifies animal draft power, water/wind mechanical mills, Newcomen/Watt steam engines, and internal combustion turbines into conserved physical Wattage dissipation per capita ($p = P_{\text{watts}}/N$), driving endogenous Garrett-Lotka developmental progression $\Phi_{\text{exergy}}$.
+  * **Atmospheric Carbon Stoichiometry** (`TelemetryDagNodeHelper.java`): Evaluates anthropogenic $\Delta\text{CO}_2$ strictly from fossil fuel share $f_{\text{fossil}}$, useful thermal power $P_{\text{MW}}$, IPCC (2006) mean fossil carbon emission factor ($0.0205\text{ t C/GJ}$), Global Carbon Budget airborne retention ($0.44$), and Ballantyne et al. (2012) atmospheric mass factor ($2.124\text{ GtC/ppm}$): $\frac{d\text{CO}_2}{dt} = \frac{f_{\text{fossil}} \cdot P_{\text{MW}} \cdot 31.5576 \cdot 0.0205 \cdot 0.44}{2.124\times 10^9}\;[\text{ppm/yr}]$.
+  * **Ayres-Warr Exergy-Capital Production Function** (`StatisticsKernel.calculateGDP`): Replaces empirical polynomial fits with physical Cobb-Douglas output scaling anchored at Maddison subsistence ($Y_0 = 102\text{ Int\$1990/cap}$), $Y = N \cdot Y_0 \cdot (\max(348, p)/348)^{0.65} \cdot (1 + k_{\text{pc}}/120)^{0.35}$.
+  * **Human Population Observable Convention**: Across both Java `WorldBuffer.humanPopulation` (`DemographicKernel`, `UrbanKernel`) and Rust FFI `WorldBufferRaw.human_population`, the human slot explicitly stores living individual headcount $N$ (not assumed fixed body mass in tonnes), avoiding age/body-mass drift ambiguity.
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 33. Tier 2 Type B Engine Domain Validity Conditions & Default Scenario Activation (`AutoEpochScenarioHelper.java`)

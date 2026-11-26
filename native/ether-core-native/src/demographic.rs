@@ -49,9 +49,14 @@ pub unsafe fn process_demographics_full(
     let culture_slice = std::slice::from_raw_parts(agents.culture, 4 * a_cap);
 
     let food = std::slice::from_raw_parts_mut(world.food_resource, w_cap);
-    let bio_human = std::slice::from_raw_parts_mut(world.biomass_human, w_cap);
+    let human_pop = std::slice::from_raw_parts_mut(world.human_population, w_cap);
     let bio_natural = std::slice::from_raw_parts(world.biomass_natural, w_cap);
     let bio_agri = std::slice::from_raw_parts(world.biomass_agriculture, w_cap);
+    let bio_livestock = if !world.biomass_livestock.is_null() {
+        std::slice::from_raw_parts(world.biomass_livestock, w_cap)
+    } else {
+        &[]
+    };
     let bio_fish = if !world.biomass_fish.is_null() {
         std::slice::from_raw_parts(world.biomass_fish, w_cap)
     } else {
@@ -66,7 +71,7 @@ pub unsafe fn process_demographics_full(
         &[]
     };
 
-    for b in bio_human.iter_mut() {
+    for b in human_pop.iter_mut() {
         *b = 0.0;
     }
 
@@ -92,6 +97,7 @@ pub unsafe fn process_demographics_full(
         let pop_h = cell_pop[h];
         if pop_h > 0.0001 {
             let cap_per_cap = (capital[h] / pop_h) as f64;
+            let livestock_bio = if !bio_livestock.is_empty() { bio_livestock[h] } else { 0.0 };
             let fish_bio = if !bio_fish.is_empty() { bio_fish[h] } else { 0.0 };
             let demand_trophic_factor = 1.0 + 0.15 * (cap_per_cap / 120.0).tanh();
             let demand = ((pop_h as f64)
@@ -103,8 +109,9 @@ pub unsafe fn process_demographics_full(
             let edible_agri = bio_agri[h] * 0.70 * (BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG * 1e-3);
             let wild_harvest_frac = 0.005 + 0.003 / (1.0 + pop_h / 1500.0);
             let edible_nat = bio_natural[h] * wild_harvest_frac * BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
-            let edible_fish = fish_bio * 0.25 * (BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG * 1e-3);
-            let total_annual_food_flux_gj = edible_agri + edible_nat + edible_fish;
+            let edible_livestock = livestock_bio * 0.15 * BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG;
+            let edible_fish = fish_bio * 0.25 * BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG;
+            let total_annual_food_flux_gj = edible_agri + edible_nat + edible_livestock + edible_fish;
 
             let food_harvest_tick_gj = total_annual_food_flux_gj * dt_in_years;
             let total_avail = food[h] + food_harvest_tick_gj;
@@ -177,8 +184,10 @@ pub unsafe fn process_demographics_full(
         let wild_harvest_frac = 0.005 + 0.003 * forager_weight;
         let edible_nat = (bio_natural[h] as f64) * wild_harvest_frac * (BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG as f64);
         let edible_agri = (bio_agri[h] as f64) * 0.70 * ((BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG as f64) * 1e-3);
-        let edible_fish = fish_bio * 0.25 * ((BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG as f64) * 1e-3);
-        let renewable_flow = edible_nat + edible_agri + edible_fish;
+        let livestock_cell = if !bio_livestock.is_empty() { bio_livestock[h] as f64 } else { 0.0 };
+        let edible_livestock = livestock_cell * 0.15 * (BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG as f64);
+        let edible_fish = fish_bio * 0.25 * (BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG as f64);
+        let renewable_flow = edible_nat + edible_agri + edible_livestock + edible_fish;
         let annual_cell_prod = renewable_flow + (renewable_flow * 0.20).min((food[h] as f64) * 0.15);
 
         let boserup_intensification = 1.0 + 0.36 * (cap_per_cap / 80.0).tanh();
@@ -257,7 +266,7 @@ pub unsafe fn process_demographics_full(
             age[i] = updated_mean_age.clamp(18.0, 50.0);
         }
 
-        bio_human[h] += mass[i];
+        human_pop[h] += mass[i];
         if mass[i] < min_mass_threshold {
             hex_ids[i] = -1;
         }

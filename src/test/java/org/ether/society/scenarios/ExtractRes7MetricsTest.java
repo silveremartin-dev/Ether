@@ -82,7 +82,7 @@ public class ExtractRes7MetricsTest {
             WorldBufferWireCodec.decodeChunkInto(raw, endBuffer);
         }
 
-        float[] bio = endBuffer.getBiomassHuman();
+        float[] bio = endBuffer.getHumanPopulation();
         float[] builtInfra = endBuffer.getInstitutionalComplexity();
 
         double popSumFromBuffer = 0;

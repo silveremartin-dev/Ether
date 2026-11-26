@@ -170,7 +170,7 @@ public class H3CellColorResolver {
                 if (mode == DisplayMode.POPULATION) {
                     int pop = 0;
                     if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {
-                        pop = (int) worldBuffer.getBiomassHuman()[idx];
+                        pop = (int) worldBuffer.getHumanPopulation()[idx];
                     } else if (cell.getPopulation() != null) {
                         pop = cell.getPopulation();
                     }
@@ -225,7 +225,7 @@ public class H3CellColorResolver {
             int index = bufferIndex;
             return switch (mode) {
                 case BIOME -> getBiomeColor(cellBiome);
-                case POPULATION -> getPopulationColor((int) worldBuffer.getBiomassHuman()[index], isWater);
+                case POPULATION -> getPopulationColor((int) worldBuffer.getHumanPopulation()[index], isWater);
                 case FOOD -> isWater ? Color.rgb(10, 20, 50) : getFoodColor(worldBuffer.getFoodResource()[index]);
                 case TEMPERATURE -> getTemperatureColor(worldBuffer.getTemperature()[index]);
                 case PRECIPITATION -> getPrecipitationColor(worldBuffer.getRainfall()[index]);
@@ -410,7 +410,7 @@ public class H3CellColorResolver {
             if (idx != null && idx >= 0 && idx < worldBuffer.getCapacity()) {
                 int index = idx;
                 return switch (mode) {
-                    case POPULATION -> worldBuffer.getBiomassHuman()[index];
+                    case POPULATION -> worldBuffer.getHumanPopulation()[index];
                     case FOOD -> worldBuffer.getFoodResource()[index];
                     case TEMPERATURE -> worldBuffer.getTemperature()[index];
                     case PRECIPITATION -> worldBuffer.getRainfall()[index];

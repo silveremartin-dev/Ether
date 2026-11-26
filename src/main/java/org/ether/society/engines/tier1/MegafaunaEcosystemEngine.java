@@ -39,7 +39,7 @@ public class MegafaunaEcosystemEngine extends AbstractSimulationEngine {
         boolean isOpenGrassland = (biome == (byte) Biome.PLAINS.ordinal());
         if (!isCryosphericSteppe && !isOpenGrassland) return;
         double safeDt = Math.max(1e-4, dtYears);
-        double humanPop = buffer.getBiomassHuman()[i] / 0.06;
+        double humanPop = buffer.getHumanPopulation()[i];
         double naturalBiomass = buffer.getBiomassNatural()[i];
         double domesticLivestock = buffer.getBiomassLivestock()[i];
         double wildGameReliance = 1.0 / (1.0 + (domesticLivestock / Math.max(1.0, humanPop * 0.5)));

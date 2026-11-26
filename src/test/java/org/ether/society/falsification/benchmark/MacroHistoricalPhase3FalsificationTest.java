@@ -43,9 +43,27 @@ public class MacroHistoricalPhase3FalsificationTest {
     }
 
     public record ScenarioRunConfig(
-            String presetKey, String displayName, int startYear, int endYear,
+            String presetKey, String displayName, Integer startYearOverride, Integer endYearOverride,
             int resolution, boolean windowed, String targetRasterPath
-    ) {}
+    ) {
+        public ScenarioRunConfig(String presetKey, String displayName, int resolution, boolean windowed, String targetRasterPath) {
+            this(presetKey, displayName, null, null, resolution, windowed, targetRasterPath);
+        }
+
+        public int startYear() { return startYearOverride != null ? startYearOverride : 0; }
+        public int endYear() { return endYearOverride != null ? endYearOverride : 0; }
+
+        public ScenarioRunConfig resolveFor(Scenario s) {
+            String pStart = System.getProperty("benchmark.startYear");
+            String pEnd = System.getProperty("benchmark.endYear");
+            int sy = (pStart != null && !pStart.isBlank()) ? Integer.parseInt(pStart.trim())
+                    : (startYearOverride != null ? startYearOverride : (int) s.getStartDateYear());
+            int ey = (pEnd != null && !pEnd.isBlank()) ? Integer.parseInt(pEnd.trim())
+                    : (endYearOverride != null ? endYearOverride : (int) s.getEndDateYear());
+            if (ey <= sy) ey = sy + 100;
+            return new ScenarioRunConfig(presetKey, displayName, sy, ey, resolution, windowed, targetRasterPath);
+        }
+    }
 
     public record EnginePerformanceMetrics(
             String scenarioKey, int resolution, int cellCount, int ticks,
@@ -54,34 +72,34 @@ public class MacroHistoricalPhase3FalsificationTest {
     ) {}
 
     private static final List<ScenarioRunConfig> TARGET_CONFIGS = List.of(
-            new ScenarioRunConfig("toba_cataclysm_74k", "Toba Supervolcano Cataclysm & Demographic Bottleneck (-74,000 BP)",
-                    -74000, -73980, 3, false, "data/maps/ether/earth/-74000/earth_-74000_density.png"),
-            new ScenarioRunConfig("sahul", "Sahul & First Peopling of Australia (-50,000 BP)",
-                    -50000, -49980, 3, false, "data/maps/ether/earth/-50000/earth_-50000_density.png"),
-            new ScenarioRunConfig("beringia", "Beringia & Peopling of the Americas (-25,000 BP)",
-                    -25000, -24980, 3, false, "data/maps/ether/earth/-25000/earth_-25000_density.png"),
-            new ScenarioRunConfig("younger_dryas", "Younger Dryas & Natufian Climatic Shock (-10,900 BP)",
-                    -10900, -10880, 4, false, "data/maps/ether/earth/-10900/earth_-10900_density.png"),
-            new ScenarioRunConfig("green_sahara", "Green Sahara & African Humid Period (-6000 BP)",
-                    -6000, -5980, 4, false, "data/maps/ether/earth/-6000/earth_-6000_density.png"),
-            new ScenarioRunConfig("ancient_egypt", "Ancient Egypt & Early Dynastic Nile Valley (-3000 BCE)",
-                    -3000, -2980, 4, false, "data/maps/ether/earth/-3000/earth_-3000_density.png"),
-            new ScenarioRunConfig("assyrian_empire", "Middle Bronze Age & Mesopotamia (-1900 BCE)",
-                    -1900, -1880, 4, false, "data/maps/ether/earth/-1900/earth_-1900_density.png"),
-            new ScenarioRunConfig("mesoamerica", "Mesoamerican Civilizations (Olmecs & Formative Maya) (-1500 BCE)",
-                    -1500, -1480, 4, false, "data/maps/ether/earth/-1500/earth_-1500_density.png"),
-            new ScenarioRunConfig("early_iron_age", "Early Iron Age & Ancient Mediterranean (-1000 BCE)",
-                    -1000, -980, 4, false, "data/maps/ether/earth/-1000/earth_-1000_density.png"),
-            new ScenarioRunConfig("alexander_hellenistic_334bc", "Hellenistic Expansion & Shock of Alexander the Great (-334 BCE)",
-                    -334, -314, 4, false, "data/maps/ether/earth/-334/earth_-334_density.png"),
-            new ScenarioRunConfig("maurya_empire", "Maurya Empire & Magadha Hegemony (-300 BCE)",
-                    -300, -280, 4, false, "data/maps/ether/earth/-300/earth_-300_density.png"),
-            new ScenarioRunConfig("mali_empire", "Mali Empire & Trans-Saharan Gold-Salt Trade (1324 CE)",
-                    1324, 1344, 4, false, "data/maps/ether/earth/1324/earth_1324_density.png"),
-            new ScenarioRunConfig("americas_1491", "Pre-Columbian Americas: Tawantinsuyu & Anahuac (1491 CE)",
-                    1491, 1511, 4, false, "data/maps/ether/earth/1491/earth_1491_density.png"),
-            new ScenarioRunConfig("anthropocene_2000", "Anthropocene & Global Acceleration (2000 CE)",
-                    2000, 2020, 4, false, "data/maps/ether/earth/2000/earth_2000_density.png")
+            new ScenarioRunConfig("toba_cataclysm_74k", "Toba Supervolcano Cataclysm & Demographic Bottleneck (-74,000 -> -50,000 BP)",
+                    3, false, "data/maps/ether/earth/-74000/earth_-74000_density.png"),
+            new ScenarioRunConfig("sahul", "Sahul & First Peopling of Australia (-50,000 -> -10,000 BP)",
+                    3, false, "data/maps/ether/earth/-50000/earth_-50000_density.png"),
+            new ScenarioRunConfig("beringia", "Beringia & Peopling of the Americas (-25,000 -> -10,000 BP)",
+                    3, false, "data/maps/ether/earth/-25000/earth_-25000_density.png"),
+            new ScenarioRunConfig("younger_dryas", "Younger Dryas & Natufian Climatic Shock (-10,900 -> -9,500 BP)",
+                    4, false, "data/maps/ether/earth/-10900/earth_-10900_density.png"),
+            new ScenarioRunConfig("green_sahara", "Green Sahara & African Humid Period (-6000 -> -3500 BCE)",
+                    4, false, "data/maps/ether/earth/-6000/earth_-6000_density.png"),
+            new ScenarioRunConfig("ancient_egypt", "Ancient Egypt & Early Dynastic Nile Valley (-3000 -> -1000 BCE)",
+                    4, false, "data/maps/ether/earth/-3000/earth_-3000_density.png"),
+            new ScenarioRunConfig("assyrian_empire", "Middle Bronze Age & Mesopotamia (-1900 -> -600 BCE)",
+                    4, false, "data/maps/ether/earth/-1900/earth_-1900_density.png"),
+            new ScenarioRunConfig("mesoamerica", "Mesoamerican Civilizations (Olmecs & Formative Maya) (-1500 BCE -> 900 CE)",
+                    4, false, "data/maps/ether/earth/-1500/earth_-1500_density.png"),
+            new ScenarioRunConfig("early_iron_age", "Early Iron Age & Ancient Mediterranean (-1000 -> -300 BCE)",
+                    4, false, "data/maps/ether/earth/-1000/earth_-1000_density.png"),
+            new ScenarioRunConfig("alexander_hellenistic_334bc", "Hellenistic Expansion & Shock of Alexander the Great (-334 -> -150 BCE)",
+                    4, false, "data/maps/ether/earth/-334/earth_-334_density.png"),
+            new ScenarioRunConfig("maurya_empire", "Maurya Empire & Magadha Hegemony (-300 BCE -> 100 CE)",
+                    4, false, "data/maps/ether/earth/-300/earth_-300_density.png"),
+            new ScenarioRunConfig("mali_empire", "Mali Empire & Trans-Saharan Gold-Salt Trade (1324-1591 CE)",
+                    4, false, "data/maps/ether/earth/1324/earth_1324_density.png"),
+            new ScenarioRunConfig("americas_1491", "Pre-Columbian Americas: Tawantinsuyu & Anahuac (1491-1650 CE)",
+                    4, false, "data/maps/ether/earth/1491/earth_1491_density.png"),
+            new ScenarioRunConfig("anthropocene_2000", "Anthropocene & Global Acceleration (2000-2100 CE)",
+                    4, false, "data/maps/ether/earth/2000/earth_2000_density.png")
     );
 
     @Test
@@ -99,52 +117,67 @@ public class MacroHistoricalPhase3FalsificationTest {
         File reportsDir = new File("docs/reports");
         reportsDir.mkdirs();
 
-        for (ScenarioRunConfig cfg : TARGET_CONFIGS) {
+        for (ScenarioRunConfig rawCfg : TARGET_CONFIGS) {
             String filter = System.getProperty("phase3.scenario");
             if (filter != null && !filter.isBlank()) {
                 List<String> allowed = Arrays.stream(filter.split(","))
                         .map(String::trim).map(String::toLowerCase).toList();
-                if (!allowed.contains(cfg.presetKey().toLowerCase())) continue;
+                if (!allowed.contains(rawCfg.presetKey().toLowerCase())) continue;
             }
+
+            Scenario s = allScenarios.stream()
+                    .filter(sc -> rawCfg.presetKey().equalsIgnoreCase(sc.getPresetKey())
+                            || (sc.getPresetKey() != null && sc.getPresetKey().toLowerCase().contains(rawCfg.presetKey().toLowerCase()))
+                            || (sc.getName() != null && (
+                                    sc.getName().toLowerCase().contains(rawCfg.presetKey().toLowerCase())
+                                    || (rawCfg.presetKey().contains("toba") && sc.getName().toLowerCase().contains("toba"))
+                                    || (rawCfg.presetKey().contains("sahul") && sc.getName().toLowerCase().contains("sahul"))
+                                    || (rawCfg.presetKey().contains("beringia") && sc.getName().toLowerCase().contains("beringia"))
+                                    || (rawCfg.presetKey().contains("younger_dryas") && sc.getName().toLowerCase().contains("younger dryas"))
+                                    || (rawCfg.presetKey().contains("green_sahara") && sc.getName().toLowerCase().contains("green sahara"))
+                                    || (rawCfg.presetKey().contains("ancient_egypt") && sc.getName().toLowerCase().contains("egypt"))
+                                    || (rawCfg.presetKey().contains("assyrian") && sc.getName().toLowerCase().contains("assyrian"))
+                                    || (rawCfg.presetKey().contains("mesoamerica") && sc.getName().toLowerCase().contains("mesoamerica"))
+                                    || (rawCfg.presetKey().contains("iron_age") && sc.getName().toLowerCase().contains("iron"))
+                                    || (rawCfg.presetKey().contains("alexander") && sc.getName().toLowerCase().contains("alexander"))
+                                    || (rawCfg.presetKey().contains("maurya") && sc.getName().toLowerCase().contains("maurya"))
+                                    || (rawCfg.presetKey().contains("mali") && sc.getName().toLowerCase().contains("mali"))
+                                    || (rawCfg.presetKey().contains("americas_1491") && sc.getName().toLowerCase().contains("1491"))
+                                    || (rawCfg.presetKey().contains("anthropocene_2000") && sc.getName().toLowerCase().contains("2000")))))
+                    .findFirst().orElse(null);
+
+            if (s == null) {
+                System.err.println("Scenario not found in built-ins: " + rawCfg.presetKey());
+                continue;
+            }
+            if (s.getPresetKey() == null || s.getPresetKey().isBlank()) {
+                s.setPresetKey(rawCfg.presetKey());
+            }
+
+            ScenarioRunConfig cfg = rawCfg.resolveFor(s);
+            s.setStartDateYear(cfg.startYear());
+            s.setEndDateYear(cfg.endYear());
+            String dtProp = System.getProperty("benchmark.dtDays");
+            if (dtProp != null && !dtProp.isBlank()) {
+                try { s.setTemporalResolutionDays(Double.parseDouble(dtProp.trim())); } catch (NumberFormatException ignored) {}
+            }
+
             System.out.println("================================================================================");
             System.out.printf("🚀 RUNNING PHASE 3 BENCHMARK: %s [Res: %d, Years: %d -> %d]%n",
                     cfg.displayName(), cfg.resolution(), cfg.startYear(), cfg.endYear());
             System.out.println("================================================================================");
-
-            Scenario s = allScenarios.stream()
-                    .filter(sc -> cfg.presetKey().equalsIgnoreCase(sc.getPresetKey())
-                            || (sc.getPresetKey() != null && sc.getPresetKey().toLowerCase().contains(cfg.presetKey().toLowerCase()))
-                            || (sc.getStartDateYear() == cfg.startYear() && sc.getName() != null && (
-                                    sc.getName().toLowerCase().contains(cfg.presetKey().toLowerCase())
-                                    || (cfg.presetKey().contains("toba") && sc.getName().toLowerCase().contains("toba"))
-                                    || (cfg.presetKey().contains("sahul") && sc.getName().toLowerCase().contains("sahul"))
-                                    || (cfg.presetKey().contains("beringia") && sc.getName().toLowerCase().contains("beringia"))
-                                    || (cfg.presetKey().contains("younger_dryas") && sc.getName().toLowerCase().contains("younger dryas"))
-                                    || (cfg.presetKey().contains("green_sahara") && sc.getName().toLowerCase().contains("green sahara"))
-                                    || (cfg.presetKey().contains("ancient_egypt") && sc.getName().toLowerCase().contains("egypt"))
-                                    || (cfg.presetKey().contains("assyrian") && sc.getName().toLowerCase().contains("assyrian"))
-                                    || (cfg.presetKey().contains("mesoamerica") && sc.getName().toLowerCase().contains("mesoamerica"))
-                                    || (cfg.presetKey().contains("iron_age") && sc.getName().toLowerCase().contains("iron"))
-                                    || (cfg.presetKey().contains("alexander") && sc.getName().toLowerCase().contains("alexander"))
-                                    || (cfg.presetKey().contains("maurya") && sc.getName().toLowerCase().contains("maurya"))
-                                    || (cfg.presetKey().contains("mali") && sc.getName().toLowerCase().contains("mali"))
-                                    || (cfg.presetKey().contains("americas_1491") && sc.getName().toLowerCase().contains("1491"))
-                                    || (cfg.presetKey().contains("anthropocene_2000") && sc.getName().toLowerCase().contains("2000")))))
-                    .findFirst().orElse(null);
-
-            if (s == null) {
-                System.err.println("Scenario not found in built-ins: " + cfg.presetKey());
-                continue;
-            }
-            if (s.getPresetKey() == null || s.getPresetKey().isBlank()) {
-                s.setPresetKey(cfg.presetKey());
-            }
-
-            s.setStartDateYear(cfg.startYear());
-            s.setEndDateYear(cfg.endYear());
             int targetRes = cfg.resolution();
             s.setH3Resolution(targetRes);
-            if (!cfg.windowed()) s.setClippingEnabled(false);
+            if (!cfg.windowed() && s.isClippingEnabled()) {
+                s.setClippingEnabled(false);
+                double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
+                        "worldPopulation", (double) cfg.startYear(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+                if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
+                    s.setInitialHumanCount(Math.round(globalPopM * 1_000_000.0));
+                }
+            } else if (!cfg.windowed()) {
+                s.setClippingEnabled(false);
+            }
 
             long startMs = System.currentTimeMillis();
             SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(s);
@@ -169,7 +202,7 @@ public class MacroHistoricalPhase3FalsificationTest {
                     it -> repo.getRun(it.getRunId())
             );
 
-            int totalTicks = Math.max(1, (cfg.endYear() - cfg.startYear()) * 12);
+            int totalTicks = Math.max(1, (int) Math.ceil(((cfg.endYear() - cfg.startYear()) * 365.25) / Math.max(1.0, s.getTemporalResolutionDays())));
             double durationSec = Math.max(0.001, elapsedMs / 1000.0);
             double tps = totalTicks / durationSec;
             double msPerTick = (double) elapsedMs / totalTicks;

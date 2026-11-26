@@ -46,7 +46,7 @@ public class MarineSubmersionEngine extends AbstractSimulationEngine {
         int n = buf.getCapacity();
         float[] elevArr = buf.getElevation();
         float[] capArr = buf.getResourceCapital();
-        float[] popArr = buf.getBiomassHuman();
+        float[] popArr = buf.getHumanPopulation();
         byte[] biomes = buf.getBiomes();
         int[][] neighbors = buf.getNeighborIndexes();
 

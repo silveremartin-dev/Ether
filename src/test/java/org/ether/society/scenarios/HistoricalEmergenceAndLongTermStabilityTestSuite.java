@@ -177,7 +177,7 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
         long nonOriginTotalPop = 0L;
         long globalPop = 0L;
         for (int i = 0; i < globalCells.size(); i++) {
-            long pop = Math.round(buf1.getBiomassHuman()[i] / 0.06);
+            long pop = Math.round(buf1.getHumanPopulation()[i]);
             globalPop += pop;
             if (buf1.getH3Indexes()[i] != 2001L) {
                 nonOriginTotalPop += pop;
@@ -223,8 +223,8 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
         // Run 50 simulation ticks with agricultural soil, NPK, and demographic engines
         org.ether.society.core.dod.WorldBuffer buf2 = new org.ether.society.core.dod.WorldBuffer(globalCells.size());
         org.ether.society.data.DODDataGenerator.populateWorldBuffer(globalCells, buf2, false);
-        buf2.getBiomassHuman()[1] = Math.max(buf2.getBiomassHuman()[1], 5000.0f * 0.06f);
-        buf2.getBiomassHuman()[6] = 10.0f * 0.06f;
+        buf2.getHumanPopulation()[1] = Math.max(buf2.getHumanPopulation()[1], 5000.0f);
+        buf2.getHumanPopulation()[6] = 10.0f;
         SoilNutrientNPKEngine npkEngine2 = new SoilNutrientNPKEngine();
         BiologicalDemographicsEngine bioEngine2 = new BiologicalDemographicsEngine();
         EcologicalDegradationEngine ecoEngine2 = new EcologicalDegradationEngine();
@@ -329,7 +329,7 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
 
             // Assert absolute numerical safety across all cells
             for (int i = 0; i < globalCells.size(); i++) {
-                long pop = Math.round(buf4.getBiomassHuman()[i] / 0.06);
+                long pop = Math.round(buf4.getHumanPopulation()[i]);
                 float capital = buf4.getResourceCapital()[i];
                 float food = buf4.getFoodResource()[i];
                 float temp = buf4.getTemperature()[i];
@@ -387,7 +387,7 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
             double totalCap = 0.0;
             double avgTemp = 0.0;
             for (int i = 0; i < globalCells.size(); i++) {
-                long pop = Math.round(buf5.getBiomassHuman()[i] / 0.06);
+                long pop = Math.round(buf5.getHumanPopulation()[i]);
                 totalPop += pop;
                 if (pop > 0) populatedCount++;
                 totalCap += buf5.getResourceCapital()[i];
@@ -404,7 +404,7 @@ public class HistoricalEmergenceAndLongTermStabilityTestSuite {
         logger.info("=== HISTORICAL TELEMETRY CHRONICLE REPORT END ===");
         long finalPop = 0L;
         for (int i = 0; i < globalCells.size(); i++) {
-            finalPop += Math.round(buf5.getBiomassHuman()[i] / 0.06);
+            finalPop += Math.round(buf5.getHumanPopulation()[i]);
         }
         assertTrue(finalPop > 0, "Global population must remain non-zero across 20 chronicle ticks");
         assertFalse(globalCells.isEmpty(), "Global cells must not be empty");

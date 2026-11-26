@@ -13,7 +13,7 @@ public class PhysicalLeontiefInputOutputEngineTest {
     @Test
     public void testLeontiefCapitalExpansionUnderAbundantResources() {
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getResourceCapital()[0] = 5000.0f;
         buf.getMetalResource()[0] = 5000.0f;
         buf.getEnergySolar()[0] = 500.0f;
@@ -29,7 +29,7 @@ public class PhysicalLeontiefInputOutputEngineTest {
     @Test
     public void testLeontiefBottleneckWhenEnergyConstrained() {
         WorldBuffer buf = new WorldBuffer(1);
-        buf.getBiomassHuman()[0] = 10000.0f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getResourceCapital()[0] = 5000.0f;
         buf.getMetalResource()[0] = 5000.0f;
         buf.getEnergySolar()[0] = 0.0f;

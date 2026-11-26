@@ -274,7 +274,7 @@ public final class EventPhysicalImpactExecutor {
                 if (lostPop > 0 && prevPop > 0) {
                     int remaining = Math.max(0, prevPop - lostPop);
                     H3CellPhysicsAndStateHelper.synchronizeCohortsToPopulation(cell, remaining);
-                    cell.setBiomassHuman((double) remaining);
+                    cell.setHumanPopulation((double) remaining);
 
                     if (agentBuffer != null) {
                         if (cellSurvival == null) {
@@ -297,7 +297,7 @@ public final class EventPhysicalImpactExecutor {
                     if (cell.getTemperature() != null) worldBuffer.getTemperature()[i] = cell.getTemperature().floatValue();
                     if (cell.getResourceCapital() != null) worldBuffer.getResourceCapital()[i] = cell.getResourceCapital().floatValue();
                     if (cell.getFoodResource() != null) worldBuffer.getFoodResource()[i] = cell.getFoodResource().floatValue();
-                    if (cell.getPopulation() != null) worldBuffer.getBiomassHuman()[i] = cell.getPopulation().floatValue();
+                    if (cell.getPopulation() != null) worldBuffer.getHumanPopulation()[i] = cell.getPopulation().floatValue();
                     if (cell.getBiomassAgriculture() != null) worldBuffer.getBiomassAgriculture()[i] = cell.getBiomassAgriculture().floatValue();
                     if (cell.getBiomassNatural() != null) worldBuffer.getBiomassNatural()[i] = cell.getBiomassNatural().floatValue();
                     if (cell.getBiomassFish() != null) worldBuffer.getBiomassFish()[i] = cell.getBiomassFish().floatValue();

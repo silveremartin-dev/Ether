@@ -101,7 +101,7 @@ public class Tier1OceanAndHydraulicsTest {
         isolatedBuf.getElevation()[0] = 25.0f;
         isolatedBuf.getRainfall()[0] = 100.0f;
         isolatedBuf.getBiomassAgriculture()[0] = 50.0f;
-        isolatedBuf.getBiomassHuman()[0] = (float) (5000 * 0.06);
+        isolatedBuf.getHumanPopulation()[0] = (float) (5000);
 
         ManningStricklerHydrodynamicsEngine engine = new ManningStricklerHydrodynamicsEngine();
         engine.tick(isolatedBuf, 1.0, 12.0);
@@ -112,7 +112,7 @@ public class Tier1OceanAndHydraulicsTest {
         watershedBuf.getElevation()[0] = 25.0f;
         watershedBuf.getRainfall()[0] = 100.0f;
         watershedBuf.getBiomassAgriculture()[0] = 50.0f;
-        watershedBuf.getBiomassHuman()[0] = (float) (5000 * 0.06);
+        watershedBuf.getHumanPopulation()[0] = (float) (5000);
         for (int i = 1; i < 5; i++) {
             watershedBuf.getBiomes()[i] = (byte) Biome.MOUNTAINS.ordinal();
             watershedBuf.getElevation()[i] = 2500.0f;

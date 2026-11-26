@@ -64,15 +64,15 @@ class DynamicEnergyBudgetEngineTest {
     void testKappaRuleSurplusRegime() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getH3Indexes()[0] = 0x8828308280fffffL;
-        buf.getBiomassHuman()[0] = 5000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 5000.0f;
         // Abundant food resource: 200,000 GJ (~40 GJ/capita, well above annual demand)
         buf.getFoodResource()[0] = 200000.0f;
         buf.getTemperature()[0] = 20.0f;
 
-        double initialBio = buf.getBiomassHuman()[0];
+        double initialBio = buf.getHumanPopulation()[0];
         new DynamicEnergyBudgetEngine().tick(buf, 1.0, 12.0);
 
-        assertTrue(buf.getBiomassHuman()[0] > initialBio, "Populated cohort with abundant food surplus must reproduce via kappa-rule");
+        assertTrue(buf.getHumanPopulation()[0] > initialBio, "Populated cohort with abundant food surplus must reproduce via kappa-rule");
         assertTrue(buf.getFoodResource()[0] < 200000.0f, "Food stock must be consumed and strictly conserved");
         assertTrue(buf.getEnergyFoodConsumed()[0] > 0.0f, "Consumed food must be accurately tracked in telemetry");
     }
@@ -82,23 +82,23 @@ class DynamicEnergyBudgetEngineTest {
     void testStarvationWastingContinuity() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getH3Indexes()[0] = 0x8828308280ffffeL;
-        buf.getBiomassHuman()[0] = 10000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 10000.0f;
         buf.getFoodResource()[0] = 0.0f; // Zero food available
         buf.getTemperature()[0] = 20.0f;
 
-        double bioT0 = buf.getBiomassHuman()[0];
+        double bioT0 = buf.getHumanPopulation()[0];
 
         DynamicEnergyBudgetEngine deb = new DynamicEnergyBudgetEngine();
         // 6 months of acute famine
         deb.tick(buf, 0.5, 6.0);
-        double bioT1 = buf.getBiomassHuman()[0];
+        double bioT1 = buf.getHumanPopulation()[0];
 
         assertTrue(bioT1 < bioT0, "Starvation without food must induce mortality");
         assertTrue(bioT1 > 0.0, "6 months of famine must not trigger instantaneous total extinction cliff");
 
         // Another 6 months of acute famine (1 year total)
         deb.tick(buf, 0.5, 6.0);
-        double bioT2 = buf.getBiomassHuman()[0];
+        double bioT2 = buf.getHumanPopulation()[0];
 
         assertTrue(bioT2 < bioT1, "Prolonged famine must continue to exert actuarial mortality");
         assertTrue(bioT2 >= 0.0, "Population must remain strictly non-negative");
@@ -121,7 +121,7 @@ class DynamicEnergyBudgetEngineTest {
 
             // Populated rural to urban gradient: 200 to 25,000 inhabitants
             int pop = 200 + (int) (24800.0 * Math.pow((i % 50) / 49.0, 2.5));
-            meshBuf.getBiomassHuman()[i] = (float) (pop * DynamicEnergyBudgetEngine.HUMAN_LEAN_STRUCTURAL_MASS_TONS);
+            meshBuf.getHumanPopulation()[i] = (float) (pop);
 
             // Initial food stock: varying from 0.5x to 4.0x annual maintenance
             double annualDemand = pop * DynamicEnergyBudgetEngine.HUMAN_MAX_INGESTION_GJ_PER_YEAR;
@@ -135,7 +135,7 @@ class DynamicEnergyBudgetEngineTest {
 
         double initialTotalPop = 0.0;
         for (int i = 0; i < 500; i++) {
-            initialTotalPop += meshBuf.getBiomassHuman()[i] / DynamicEnergyBudgetEngine.HUMAN_LEAN_STRUCTURAL_MASS_TONS;
+            initialTotalPop += meshBuf.getHumanPopulation()[i];
         }
         assertTrue(initialTotalPop > 100_000, "Initial population across 500 cells must exceed 100k");
 
@@ -144,7 +144,7 @@ class DynamicEnergyBudgetEngineTest {
         for (int year = 1; year <= 30; year++) {
             // Replenish seasonal harvest based on agricultural productivity
             for (int i = 0; i < 500; i++) {
-                double pop = meshBuf.getBiomassHuman()[i] / DynamicEnergyBudgetEngine.HUMAN_LEAN_STRUCTURAL_MASS_TONS;
+                double pop = meshBuf.getHumanPopulation()[i];
                 double harvestGJ = pop * (3.5 + 1.5 * Math.sin(year * 0.4 + lats[i]));
                 meshBuf.getFoodResource()[i] = (float) (meshBuf.getFoodResource()[i] + harvestGJ);
             }
@@ -154,15 +154,15 @@ class DynamicEnergyBudgetEngineTest {
             // Verify physical state invariants at every tick
             for (int i = 0; i < 500; i++) {
                 assertTrue(meshBuf.getFoodResource()[i] >= 0.0f, "Cell food resource must never be negative");
-                assertTrue(meshBuf.getBiomassHuman()[i] >= 0.0f, "Human biomass must never be negative");
+                assertTrue(meshBuf.getHumanPopulation()[i] >= 0.0f, "Human biomass must never be negative");
                 assertFalse(Float.isNaN(meshBuf.getFoodResource()[i]), "Food resource must never be NaN");
-                assertFalse(Float.isNaN(meshBuf.getBiomassHuman()[i]), "Biomass must never be NaN");
+                assertFalse(Float.isNaN(meshBuf.getHumanPopulation()[i]), "Biomass must never be NaN");
             }
         }
 
         double finalTotalPop = 0.0;
         for (int i = 0; i < 500; i++) {
-            finalTotalPop += meshBuf.getBiomassHuman()[i] / DynamicEnergyBudgetEngine.HUMAN_LEAN_STRUCTURAL_MASS_TONS;
+            finalTotalPop += meshBuf.getHumanPopulation()[i];
         }
         assertTrue(finalTotalPop > 500_000, "After 30 years of sustainable harvest, population must maintain vital demographic continuity");
     }
@@ -171,14 +171,15 @@ class DynamicEnergyBudgetEngineTest {
     @DisplayName("1.6 Multi-Year Famine Shock & Post-Crisis Somatic Rebound")
     void testMultiYearFamineShockAndRebound() {
         org.ether.society.core.dod.WorldBuffer valley = new org.ether.society.core.dod.WorldBuffer(50);
+        org.ether.society.h3.H3Service h3 = org.ether.society.h3.H3Service.getInstance();
         for (int i = 0; i < 50; i++) {
-            valley.getH3Indexes()[i] = 0x883100000000000L + i;
-            valley.getBiomassHuman()[i] = 10000.0f * 0.06f;
+            valley.getH3Indexes()[i] = h3.latLngToH3(31.0 + (i / 10) * 0.1, 35.0 + (i % 10) * 0.1, 8);
+            valley.getHumanPopulation()[i] = 10000.0f;
             valley.getFoodResource()[i] = 150.0f; // Minimal food reserve (~0.015 GJ/capita, acute famine)
         }
 
         double startBio = 0.0;
-        for (int i = 0; i < 50; i++) startBio += valley.getBiomassHuman()[i];
+        for (int i = 0; i < 50; i++) startBio += valley.getHumanPopulation()[i];
 
         DynamicEnergyBudgetEngine deb = new DynamicEnergyBudgetEngine();
         // 2 consecutive years of total harvest failure (zero food replenishment, >90% population shock)
@@ -187,21 +188,21 @@ class DynamicEnergyBudgetEngineTest {
         }
 
         double famineBio = 0.0;
-        for (int i = 0; i < 50; i++) famineBio += valley.getBiomassHuman()[i];
+        for (int i = 0; i < 50; i++) famineBio += valley.getHumanPopulation()[i];
         assertTrue(famineBio < startBio, "2 years of acute famine must dramatically reduce valley population");
         assertTrue(famineBio > 0.0, "Famine mortality must be gradual and continuous, not instantaneous wipeout");
 
         // Famine ends: abundant harvests resume for 10 years
         for (int yr = 1; yr <= 10; yr++) {
             for (int i = 0; i < 50; i++) {
-                double pop = valley.getBiomassHuman()[i] / 0.06;
+                double pop = valley.getHumanPopulation()[i];
                 valley.getFoodResource()[i] = (float) (valley.getFoodResource()[i] + pop * 10.0);
             }
             deb.tick(valley, 1.0, 12.0);
         }
 
         double recoveredBio = 0.0;
-        for (int i = 0; i < 50; i++) recoveredBio += valley.getBiomassHuman()[i];
+        for (int i = 0; i < 50; i++) recoveredBio += valley.getHumanPopulation()[i];
         assertTrue(recoveredBio > famineBio, "With abundant food restored, DEB reproduction must rebuild demographic capital");
     }
 
@@ -209,8 +210,9 @@ class DynamicEnergyBudgetEngineTest {
     @DisplayName("1.7 500-Cell Megafauna & Primary Producer Ecological Trophic Coexistence")
     void test500CellEcologicalTrophicCoexistence() {
         org.ether.society.core.dod.WorldBuffer wildDomain = new org.ether.society.core.dod.WorldBuffer(500);
+        org.ether.society.h3.H3Service h3 = org.ether.society.h3.H3Service.getInstance();
         for (int i = 0; i < 500; i++) {
-            wildDomain.getH3Indexes()[i] = 0x884000000000000L + i;
+            wildDomain.getH3Indexes()[i] = h3.latLngToH3(-2.0 + (i / 25) * 0.08, 34.0 + (i % 25) * 0.08, 8);
             wildDomain.getTemperature()[i] = 18.0f + (i % 12);
             wildDomain.getBiomassNatural()[i] = 80.0f + (i % 120); // Pristine savanna/steppe vegetation
         }
@@ -242,12 +244,12 @@ class DynamicEnergyBudgetEngineTest {
 
         for (int i = 0; i < 100; i++) {
             runA.getH3Indexes()[i] = 0x885000000000000L + i;
-            runA.getBiomassHuman()[i] = (1500 + i * 20) * 0.06f;
+            runA.getHumanPopulation()[i] = (1500 + i * 20);
             runA.getFoodResource()[i] = 10000.0f + i * 50.0f;
             runA.getTemperature()[i] = 16.0f;
 
             runB.getH3Indexes()[i] = 0x885000000000000L + i;
-            runB.getBiomassHuman()[i] = (1500 + i * 20) * 0.06f;
+            runB.getHumanPopulation()[i] = (1500 + i * 20);
             runB.getFoodResource()[i] = 10000.0f + i * 50.0f;
             runB.getTemperature()[i] = 16.0f;
         }
@@ -260,7 +262,7 @@ class DynamicEnergyBudgetEngineTest {
         }
 
         for (int i = 0; i < 100; i++) {
-            assertEquals(runA.getBiomassHuman()[i], runB.getBiomassHuman()[i], 0.0f, "Population must be bitwise identical");
+            assertEquals(runA.getHumanPopulation()[i], runB.getHumanPopulation()[i], 0.0f, "Population must be bitwise identical");
             assertEquals(runA.getFoodResource()[i], runB.getFoodResource()[i], 0.0f, "Food stock must be bitwise identical");
             assertEquals(runA.getEnergyFoodConsumed()[i], runB.getEnergyFoodConsumed()[i], 0.0f, "Consumed energy must be bitwise identical");
         }

@@ -63,8 +63,8 @@ public class KurzweilAcceleratingReturnsEngine extends AbstractSimulationEngine 
 
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
-        if (buffer == null || buffer.getBiomassHuman() == null || cachedDW <= 0) return;
-        float pop = buffer.getBiomassHuman()[i];
+        if (buffer == null || buffer.getHumanPopulation() == null || cachedDW <= 0) return;
+        float pop = buffer.getHumanPopulation()[i];
         if (pop > 0.001f) {
             float currentCap = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0f;
             double capPerCapita = currentCap / pop;

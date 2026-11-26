@@ -72,7 +72,7 @@ public class PhysicalCapitalDiffusionEngine implements SimulationEngineModule {
 
     public void processBuffer(WorldBuffer buffer, double dtYears) {
         if (buffer == null || dtYears <= 0) return;
-        float[] popArr = buffer.getBiomassHuman();
+        float[] popArr = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
         float[] woodArr = buffer.getBiomassNatural();
         float[] metalArr = buffer.getMetalResource();

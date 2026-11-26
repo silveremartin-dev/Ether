@@ -65,7 +65,7 @@ public class ManningStricklerHydrodynamicsEngine extends AbstractSimulationEngin
         byte[] biomes = buf.getBiomes();
         float[] elevArr = buf.getElevation();
         float[] rainArr = buf.getRainfall();
-        float[] popArr = buf.getBiomassHuman();
+        float[] popArr = buf.getHumanPopulation();
         float[] agriArr = buf.getBiomassAgriculture();
         float[] waterArr = buf.getWaterResource();
 
@@ -103,7 +103,7 @@ public class ManningStricklerHydrodynamicsEngine extends AbstractSimulationEngin
             double dischargeQ = calculateDischarge(estimatedWidth, estimatedDepth, slope);
             double overbankGate = SmoothMath.sigmoid(dischargeQ, 50.0, 15.0) * lowlandFactor;
             if (overbankGate > 0.01) {
-                double pop = popArr[i] / 0.06;
+                double pop = popArr[i];
                 double currentAgri = agriArr[i] > 0.0f ? agriArr[i] : Math.min(2000.0, Math.max(50.0, pop * 2.5));
                 double floodplainFertilityBoost = SmoothMath.softmin(25.0, dischargeQ * 0.05 * dtYears, 0.2) * overbankGate;
                 agriArr[i] = (float) (currentAgri + floodplainFertilityBoost);

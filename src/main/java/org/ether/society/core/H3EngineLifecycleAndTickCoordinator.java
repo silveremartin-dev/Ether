@@ -410,9 +410,9 @@ final class H3EngineLifecycleAndTickCoordinator {
         if (engine.worldBuffer != null && engine.statisticsKernel != null) {
             engine.currentGini = engine.statisticsKernel.calculateGini(engine.worldBuffer.getResourceCapital());
             engine.densityDistribution = engine.statisticsKernel.calculateDistribution(
-                    engine.worldBuffer.getBiomassHuman(), 20, 1000.0f);
+                    engine.worldBuffer.getHumanPopulation(), 20, 1000.0f);
             engine.currentGDP = engine.statisticsKernel.calculateGDP(
-                    engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getBiomassHuman());
+                    engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getHumanPopulation());
             if (engine.agentBuffer != null) {
                 float foodPerCapVal = (float) engine.getFoodPerCapita();
                 float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
@@ -455,7 +455,7 @@ final class H3EngineLifecycleAndTickCoordinator {
         WorldBuffer wb = engine.worldBuffer;
         if (wb == null) return;
         int cap = wb.getCapacity();
-        float[] pop = wb.getBiomassHuman();
+        float[] pop = wb.getHumanPopulation();
         float[] food = wb.getFoodResource();
         float[] water = wb.getWaterResource();
         float[] bio = wb.getBiomassNatural();

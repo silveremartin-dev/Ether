@@ -131,7 +131,7 @@ public class BergmannAllenMorphologyEngineTest {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(count);
         for (int i = 0; i < count; i++) {
             buf.getH3Indexes()[i] = 60000L + i;
-            buf.getBiomassHuman()[i] = 500.0f * 0.06f;
+            buf.getHumanPopulation()[i] = 500.0f;
             buf.getFoodResource()[i] = 1500.0f;
             buf.getTemperature()[i] = (i % 2 == 0) ? -5.0f : 28.0f;
         }

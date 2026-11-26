@@ -37,6 +37,26 @@ public final class H3CellPhysicsAndStateHelper {
     /** Reference somatic tool capital normalization \(k_0 = 3.0\) physical units/individual. */
     public static final double REFERENCE_SOMATIC_CAPITAL_PER_CAPITA = 3.0;
 
+    /** Standard H3 Resolution 4 global hexagonal cell mean surface area (\(\text{km}^2\)). */
+    public static final double DEFAULT_AREA_RES4_KM2 = 1770.49;
+
+    /**
+     * Resolves cellular hexagonal surface area ($\text{km}^2$) from an H3 index bitmask.
+     *
+     * @param h3Indexes array of 64-bit H3 index identifiers
+     * @param index     target cell index
+     * @return hexagon area in $\text{km}^2$, defaulting to {@link #DEFAULT_AREA_RES4_KM2}
+     */
+    public static double resolveCellAreaKm2(long[] h3Indexes, int index) {
+        if (h3Indexes != null && index >= 0 && index < h3Indexes.length && h3Indexes[index] != 0L) {
+            int res = (int) ((h3Indexes[index] >>> 52) & 0x0FL);
+            if (res >= 0 && res <= 15) {
+                return H3Cell.getAvgHexagonAreaKm2(res);
+            }
+        }
+        return DEFAULT_AREA_RES4_KM2;
+    }
+
     private H3CellPhysicsAndStateHelper() {
         // Static helper utility class
     }
@@ -119,7 +139,26 @@ public final class H3CellPhysicsAndStateHelper {
         double elev = cell.getElevationOr(0.0);
         double capital = cell.getResourceCapitalOr(0.0);
         double tempC = cell.getTemperatureOr(15.0);
+        double areaKm2 = Math.max(10.0, getEffectiveSurfaceAreaKm2(cell));
+        double computed = calculateMovementFrictionFromObservables(
+                elev, tempC, cell.getBiomassNaturalOr(0.0), capital, areaKm2);
+        cell.setMovementFriction(computed);
+        return computed;
+    }
 
+    /**
+     * Evaluates $C^\infty$ Minetti topographic + canopy + snow movement friction mitigated smoothly by local infrastructure density.
+     * Shared canonical closed-form law across both {@link H3Cell} initialization and {@link org.ether.society.core.dod.WorldBuffer} updates.
+     *
+     * @param elev          cell elevation in meters ($>0$ land, $\le 0$ ocean bathymetry)
+     * @param tempC         surface air temperature in $^\circ\text{C}$
+     * @param biomassNatVal natural standing vegetation biomass in metric tonnes ($\text{t}$)
+     * @param capital       physical infrastructure capital stock in $\text{kg}$
+     * @param areaKm2       spatial H3 cell surface area in $\text{km}^2$
+     * @return dimensionless overland/marine transit friction coefficient ($\ge 0.30$ on land, $\ge 0.40$ at sea)
+     */
+    public static double calculateMovementFrictionFromObservables(
+            double elev, double tempC, double biomassNatVal, double capital, double areaKm2) {
         // Smooth bathymetric transition across coastline (elev = 0 m)
         double landWeight = SmoothMath.sigmoid(elev, 0.0, 5.0);
 
@@ -133,19 +172,17 @@ public final class H3CellPhysicsAndStateHelper {
         // Terrestrial Minetti incline cost + canopy impedance + cryospheric snow resistance
         double posElev = SmoothMath.softplus(elev, 0.0, 15.0);
         double fRelief = 1.0 + 4.0 * Math.pow(posElev / 2500.0, 1.35);
-        double biomassNat = SmoothMath.softplus(cell.getBiomassNaturalOr(0.0), 0.0, 10.0);
+        double biomassNat = SmoothMath.softplus(biomassNatVal, 0.0, 10.0);
         double fVeg = 2.5 * Math.tanh(biomassNat / 3500.0);
         double fSnow = 4.5 * SmoothMath.sigmoid(-tempC, 0.0, 2.0);
         double baseLandFriction = fRelief + fVeg + fSnow;
 
-        double areaKm2 = Math.max(10.0, getEffectiveSurfaceAreaKm2(cell));
-        double capDensity = capital / areaKm2;
+        double safeAreaKm2 = Math.max(10.0, areaKm2);
+        double capDensity = capital / safeAreaKm2;
         double infraMitigation = 0.15 + 0.85 / (1.0 + 0.25 * Math.log1p(SmoothMath.softplus(capDensity * 10.0, 0.0, 0.5)));
         double landFriction = SmoothMath.smoothClamp(baseLandFriction * infraMitigation, 0.30, 25.0, 10.0);
 
-        double computed = landWeight * landFriction + (1.0 - landWeight) * seaFriction;
-        cell.setMovementFriction(computed);
-        return computed;
+        return landWeight * landFriction + (1.0 - landWeight) * seaFriction;
     }
 
     /**

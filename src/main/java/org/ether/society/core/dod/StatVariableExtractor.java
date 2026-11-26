@@ -42,11 +42,12 @@ public final class StatVariableExtractor {
                 case "gdp":
                 case "capital":
                 case "resourcecapital":
-                    return buffer.getResourceCapital() != null ? buffer.getResourceCapital() : buffer.getBiomassHuman();
+                    return buffer.getResourceCapital() != null ? buffer.getResourceCapital() : buffer.getHumanPopulation();
                 case "population":
                 case "pop":
+                case "humanpopulation":
                 case "biomasshuman":
-                    return buffer.getBiomassHuman();
+                    return buffer.getHumanPopulation();
                 case "food":
                 case "foodresource":
                     return buffer.getFoodResource() != null ? buffer.getFoodResource() : buffer.getBiomassNatural();
@@ -61,7 +62,7 @@ public final class StatVariableExtractor {
                 case "alt":
                     return buffer.getElevation();
                 case "age":
-                    return buffer.getBiomassHuman();
+                    return buffer.getHumanPopulation();
                 case "tech":
                 case "technology":
                 case "technologylevel": {
@@ -90,6 +91,7 @@ public final class StatVariableExtractor {
                         break;
                     case "population":
                     case "pop":
+                    case "humanpopulation":
                     case "biomasshuman":
                         res[i] = c.getPopulation() != null ? c.getPopulation().floatValue() : 0.0f;
                         break;

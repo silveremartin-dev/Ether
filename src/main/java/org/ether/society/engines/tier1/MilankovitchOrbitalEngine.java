@@ -115,7 +115,8 @@ public class MilankovitchOrbitalEngine extends AbstractSimulationEngine {
 
     @Override
     public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
-        applyMilankovitchForcing(buf, 2000.0, dtYears);
+        double year = buf != null ? buf.getCurrentYear() : 2000.0;
+        applyMilankovitchForcing(buf, year, dtYears);
     }
 
     /**
@@ -151,13 +152,17 @@ public class MilankovitchOrbitalEngine extends AbstractSimulationEngine {
         double thermalRelaxationFactor = 1.0 - Math.exp(-dtSafe / 2.0);
 
         float[] tempArr = buffer.getTemperature();
-        float[] elevArr = buffer.getElevation();
+        float[] baseTempArr = buffer.getBaselineTemperature();
         long[] h3Arr = buffer.getH3Indexes();
         H3Service h3Service = H3Service.getInstance();
         int n = buffer.getCapacity();
 
         for (int i = 0; i < n; i++) {
             double curTemp = tempArr[i];
+            if (Float.isNaN(baseTempArr[i])) {
+                baseTempArr[i] = (float) curTemp;
+            }
+            double baselineTemp = baseTempArr[i];
             double lat = 0.0;
             if (h3Arr != null && h3Arr[i] != 0L) {
                 try {
@@ -166,10 +171,8 @@ public class MilankovitchOrbitalEngine extends AbstractSimulationEngine {
                     lat = 0.0;
                 }
             }
-            double elev = elevArr[i];
-            double baselineTemp = 28.0 - 0.0065 * Math.max(0.0, elev) - 0.45 * Math.abs(lat);
             double latFactor = Math.cos(Math.toRadians(lat));
-            // Polar amplification: higher latitudes experience greater orbital temperature shifts
+            // Polar amplification: higher latitudes experience greater orbital temperature shifts relative to baseline climate
             double localShift = globalTempShiftC * (0.5 + 1.0 * (1.0 - latFactor));
             double targetTemp = baselineTemp + localShift;
             tempArr[i] = (float) (curTemp + (targetTemp - curTemp) * thermalRelaxationFactor);

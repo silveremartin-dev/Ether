@@ -68,16 +68,16 @@ public class NavalHydrodynamicsFreightEngine extends AbstractSimulationEngine {
     @Override
     public void prepareTick(WorldBuffer buffer, double dtYears) {
         currentCostIndex = 1415.0;
-        if (buffer == null || buffer.getBiomassHuman() == null) return;
+        if (buffer == null || buffer.getHumanPopulation() == null) return;
         int n = buffer.getCapacity();
-        float[] popArr = buffer.getBiomassHuman();
+        float[] popArr = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
         float[] fireArr = buffer.getEnergyFire();
 
         double maxKpc = 0.0;
         double maxPw = 0.0;
         for (int i = 0; i < n; i++) {
-            double p = popArr[i] / 0.06;
+            double p = popArr[i];
             if (p <= 1.0) continue;
             double kpc = (capArr != null ? capArr[i] : 0.0) / p;
             if (kpc > maxKpc) maxKpc = kpc;

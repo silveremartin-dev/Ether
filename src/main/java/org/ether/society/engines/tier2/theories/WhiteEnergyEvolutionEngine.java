@@ -71,7 +71,7 @@ public class WhiteEnergyEvolutionEngine extends AbstractSimulationEngine {
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
 
-        double pop = buffer.getBiomassHuman()[i] / 0.06;
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
         double foodEnergy = Math.max(3.5 * pop, buffer.getEnergyFoodConsumed()[i]);

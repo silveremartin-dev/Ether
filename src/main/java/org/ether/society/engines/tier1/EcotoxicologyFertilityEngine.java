@@ -60,9 +60,9 @@ public class EcotoxicologyFertilityEngine extends AbstractSimulationEngine {
         if (pollution > 100.0) {
             double fertilityFactor = calculateEcotoxicFertilityFactor(pollution);
             if (fertilityFactor < 0.999) {
-                double biomassHuman = buffer.getBiomassHuman()[i];
-                if (biomassHuman > 0.0) {
-                    acc.dBiomassHuman -= (float) (biomassHuman * BASELINE_CRUDE_BIRTH_RATE * (1.0 - fertilityFactor) * dtYears);
+                double humanPopulation = buffer.getHumanPopulation()[i];
+                if (humanPopulation > 0.0) {
+                    acc.dHumanPopulation -= (float) (humanPopulation * BASELINE_CRUDE_BIRTH_RATE * (1.0 - fertilityFactor) * dtYears);
                     acc.dFertility -= (float) (0.2 * (1.0 - fertilityFactor) * dtYears);
                 }
             }

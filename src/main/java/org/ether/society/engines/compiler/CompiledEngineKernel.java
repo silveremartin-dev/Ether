@@ -58,9 +58,9 @@ public class CompiledEngineKernel {
         }
 
         // 2. Biomass Human
-        SymbolicExpression popExpr = fusedExpressions.get("biomassHuman");
+        SymbolicExpression popExpr = fusedExpressions.get("humanPopulation");
         if (popExpr != null) {
-            float[] pop = worldBuffer.getBiomassHuman();
+            float[] pop = worldBuffer.getHumanPopulation();
             double coeff = popExpr.getCoefficient();
             double offset = popExpr.getOffset() * dt;
             for (int i = 0; i < capacity; i++) {
@@ -88,7 +88,7 @@ public class CompiledEngineKernel {
     public void executeFusedKernel(List<H3Cell> cells, double dt) {
         if (cells == null || cells.isEmpty()) return;
 
-        SymbolicExpression popExpr = fusedExpressions.get("biomassHuman");
+        SymbolicExpression popExpr = fusedExpressions.get("humanPopulation");
         SymbolicExpression tempExpr = fusedExpressions.get("temperature");
         SymbolicExpression capExpr = fusedExpressions.get("resourceCapital");
         SymbolicExpression pollExpr = fusedExpressions.get("pollutionLevel");

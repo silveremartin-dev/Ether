@@ -42,8 +42,8 @@ public final class DemographicMetricsHelper {
      */
     public double getOccupiedTerritoryArea() {
         WorldBuffer wb = engine.getWorldBuffer();
-        if (wb != null && wb.getBiomassHuman() != null) {
-            float[] pop = wb.getBiomassHuman();
+        if (wb != null && wb.getHumanPopulation() != null) {
+            float[] pop = wb.getHumanPopulation();
             double cellAreaKm2 = 1770.49;
             long[] h3Idx = wb.getH3Indexes();
             if (h3Idx != null && h3Idx.length > 0 && h3Idx[0] != 0L) {
@@ -231,8 +231,8 @@ public final class DemographicMetricsHelper {
      */
     public double getUrbanizationRate() {
         WorldBuffer wb = engine.getWorldBuffer();
-        if (wb != null && wb.getBiomassHuman() != null && wb.getCapacity() > 0) {
-            float[] pop = wb.getBiomassHuman();
+        if (wb != null && wb.getHumanPopulation() != null && wb.getCapacity() > 0) {
+            float[] pop = wb.getHumanPopulation();
             float[] capital = wb.getResourceCapital();
             int cap = wb.getCapacity();
 
@@ -257,24 +257,7 @@ public final class DemographicMetricsHelper {
                 double powerW = wb.computeCellPowerWattsPerCapita(i);
 
                 // Urban nucleation: Bairoch (1988) & de Vries (1984) metabolic surplus & physical capital agglomeration
-                double density = p / cellAreaKm2;
-                double agglomerationFactor = SmoothMath.sigmoid(p, 5000.0, 1500.0);
-                double densityFactor = SmoothMath.sigmoid(density, 12.0, 4.0);
-                double nucleationFactor = Math.max(agglomerationFactor, densityFactor);
-
-                double capAgrarianActivation = SmoothMath.sigmoid(kpc, 150.0, 40.0);
-                double agrarianUrbanShare = 0.052 * capAgrarianActivation * nucleationFactor;
-
-                double capCommercialActivation = SmoothMath.sigmoid(kpc, 1200.0, 250.0);
-                double commercialUrbanShare = 0.055 * capCommercialActivation * nucleationFactor;
-
-                double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 1200.0, 250.0);
-                double capIndustrialActivation = SmoothMath.sigmoid(kpc, 2800.0, 500.0);
-                double industrialUrbanShare = 0.75 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
-
-                double cellUrbanFraction = Math.max(0.0, SmoothMath.smoothClamp(
-                        agrarianUrbanShare + commercialUrbanShare + industrialUrbanShare,
-                        0.0, 0.92, 50.0));
+                double cellUrbanFraction = computeCellUrbanFraction(p, kpc, powerW, cellAreaKm2);
                 urbanPop += p * cellUrbanFraction;
             }
             if (totalPop > 0.0) {
@@ -294,29 +277,46 @@ public final class DemographicMetricsHelper {
             totalPop += p;
             double kpc = c.getResourceCapitalOr(0.0) / p;
             double cellArea = Math.max(1.0, c.getCellAreaKm2());
-            double density = p / cellArea;
-            double agglomerationFactor = SmoothMath.sigmoid(p, 5000.0, 1500.0);
-            double densityFactor = SmoothMath.sigmoid(density, 12.0, 4.0);
-            double nucleationFactor = Math.max(agglomerationFactor, densityFactor);
-
-            double capAgrarianActivation = SmoothMath.sigmoid(kpc, 150.0, 40.0);
-            double agrarianUrbanShare = 0.052 * capAgrarianActivation * nucleationFactor;
-
-            // Commercial / early-modern urbanization: merchant capital & proto-industrial trade (de Vries 1984)
-            double capCommercialActivation = SmoothMath.sigmoid(kpc, 1200.0, 250.0);
-            double commercialUrbanShare = 0.055 * capCommercialActivation * nucleationFactor;
-
-            // Industrial urbanization: powered by mechanical energy grids & factory machinery (Bairoch 1988, de Vries 1984)
             double powerW = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(c);
-            double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 1200.0, 250.0);
-            double capIndustrialActivation = SmoothMath.sigmoid(kpc, 2800.0, 500.0);
-            double industrialUrbanShare = 0.75 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
-
-            double cellUrbanFraction = Math.max(0.0, SmoothMath.smoothClamp(
-                    agrarianUrbanShare + commercialUrbanShare + industrialUrbanShare,
-                    0.0, 0.92, 50.0));
+            double cellUrbanFraction = computeCellUrbanFraction(p, kpc, powerW, cellArea);
             urbanPop += p * cellUrbanFraction;
         }
         return totalPop > 0 ? Math.max(0.0, Math.min(95.0, (urbanPop / totalPop) * 100.0)) : 0.0;
+    }
+
+    /**
+     * Evaluates local cellular urbanization fraction in $[0.0, 0.92]$ from population agglomeration,
+     * areal density, physical capital per capita, and useful mechanical/thermal power per capita
+     * (Bairoch 1988; de Vries 1984). Enforces smooth zero urbanization ($< 0.01\%$) in Paleolithic foraging regimes.
+     *
+     * @param pop         cellular living human population count
+     * @param kpc         physical capital per capita ($\text{kg/person}$)
+     * @param powerW      useful power per capita ($\text{W/person}$)
+     * @param cellAreaKm2 hexagonal cell surface area ($\text{km}^2$)
+     * @return urbanized fraction in $[0.0, 0.92]$
+     */
+    public static double computeCellUrbanFraction(double pop, double kpc, double powerW, double cellAreaKm2) {
+        if (pop <= 0.0) return 0.0;
+        double safeAreaKm2 = Math.max(1.0, cellAreaKm2);
+        double density = pop / safeAreaKm2;
+        double agglomerationFactor = SmoothMath.sigmoid(pop, 5000.0, 1500.0);
+        double densityFactor = SmoothMath.sigmoid(density, 12.0, 4.0);
+        double nucleationFactor = Math.max(agglomerationFactor, densityFactor);
+
+        double capExcessAgr = SmoothMath.softplus(kpc - 25.0, 0.25);
+        double capAgrarianActivation = SmoothMath.sigmoid(kpc, 180.0, 30.0) * Math.tanh(capExcessAgr / 80.0);
+        double agrarianUrbanShare = 0.052 * capAgrarianActivation * nucleationFactor;
+
+        double capExcessCom = SmoothMath.softplus(kpc - 300.0, 0.05);
+        double capCommercialActivation = SmoothMath.sigmoid(kpc, 1200.0, 250.0) * Math.tanh(capExcessCom / 200.0);
+        double commercialUrbanShare = 0.055 * capCommercialActivation * nucleationFactor;
+
+        double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 1200.0, 250.0)
+                * Math.tanh(SmoothMath.softplus(powerW - 450.0, 0.05) / 200.0);
+        double capIndustrialActivation = SmoothMath.sigmoid(kpc, 2800.0, 500.0)
+                * Math.tanh(SmoothMath.softplus(kpc - 500.0, 0.02) / 500.0);
+        double industrialUrbanShare = 0.75 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
+
+        return Math.clamp(agrarianUrbanShare + commercialUrbanShare + industrialUrbanShare, 0.0, 0.92);
     }
 }

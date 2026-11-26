@@ -48,7 +48,7 @@ public class HydrologicalEngineeringEngine extends AbstractSimulationEngine {
         float[] elevArr = buf.getElevation();
         float[] rainArr = buf.getRainfall();
         float[] tempArr = buf.getTemperature();
-        float[] popArr = buf.getBiomassHuman();
+        float[] popArr = buf.getHumanPopulation();
         float[] foodArr = buf.getFoodResource();
         float[] socArr = buf.getSoilOrganicCarbon();
         float[] waterArr = buf.getWaterResource();

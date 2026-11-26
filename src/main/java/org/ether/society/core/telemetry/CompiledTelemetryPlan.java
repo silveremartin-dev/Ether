@@ -128,6 +128,23 @@ public final class CompiledTelemetryPlan {
             double t0Co2Ppm,
             double elapsedYears,
             double engineTps) {
+        return execute(world, agents, cells, nations, statsKernel, tick, year,
+                initialPopulation, t0Co2Ppm, elapsedYears, engineTps, 100.0);
+    }
+
+    public TelemetryEvaluationResult execute(
+            WorldBuffer world,
+            AgentBuffer agents,
+            List<H3Cell> cells,
+            List<Polity> nations,
+            StatisticsKernel statsKernel,
+            long tick,
+            long year,
+            long initialPopulation,
+            double t0Co2Ppm,
+            double elapsedYears,
+            double engineTps,
+            double initialInformationPerCapita) {
         if (isNoOp() || (world == null && inputMask != 0)) {
             return TelemetryEvaluationResult.EMPTY;
         }
@@ -141,7 +158,7 @@ public final class CompiledTelemetryPlan {
         final boolean needEnvSoil      = (inputMask & MASK_ENV_BIOME_SOIL) != 0;
         final boolean needUrban        = (inputMask & MASK_URBAN_POP_WEIGHT) != 0;
 
-        float[] biomassHuman = needPopFoodWater ? world.getBiomassHuman() : null;
+        float[] humanPopulation = needPopFoodWater ? world.getHumanPopulation() : null;
         float[] foodArr      = needPopFoodWater ? world.getFoodResource() : null;
         float[] waterArr     = needPopFoodWater ? world.getWaterResource() : null;
         float[] aquiferArr   = needPopFoodWater ? world.getFreshwaterAquifer() : null;
@@ -193,7 +210,7 @@ public final class CompiledTelemetryPlan {
 
         if (n > 0 && (needPopFoodWater || fertArr != null || lifeArr != null)) {
             for (int i = 0; i < n; i++) {
-                float p = (biomassHuman != null) ? biomassHuman[i] : 0.0f;
+                float p = (humanPopulation != null) ? humanPopulation[i] : 0.0f;
                 if (Float.isNaN(p) || p < 0.0f) p = 0.0f;
 
                 if (p > 0.0f) {
@@ -213,25 +230,9 @@ public final class CompiledTelemetryPlan {
                         float kpc = cellCap / p;
                         double powerW = world.computeCellPowerWattsPerCapita(i);
 
-                        // Urban nucleation: Bairoch (1988) & de Vries (1984) metabolic surplus & physical capital agglomeration
-                        double density = p / cellAreaKm2;
-                        double agglomerationFactor = SmoothMath.sigmoid(p, 5000.0, 1500.0);
-                        double densityFactor = SmoothMath.sigmoid(density, 12.0, 4.0);
-                        double nucleationFactor = Math.max(agglomerationFactor, densityFactor);
-
-                        double capAgrarianActivation = SmoothMath.sigmoid(kpc, 150.0, 40.0);
-                        double agrarianUrbanShare = 0.052 * capAgrarianActivation * nucleationFactor;
-
-                        double capCommercialActivation = SmoothMath.sigmoid(kpc, 1200.0, 250.0);
-                        double commercialUrbanShare = 0.055 * capCommercialActivation * nucleationFactor;
-
-                        double powerIndustrialActivation = SmoothMath.sigmoid(powerW, 1200.0, 250.0);
-                        double capIndustrialActivation = SmoothMath.sigmoid(kpc, 2800.0, 500.0);
-                        double industrialUrbanShare = 0.75 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
-
-                        double cellUrbanFraction = Math.max(0.0, SmoothMath.smoothClamp(
-                                agrarianUrbanShare + commercialUrbanShare + industrialUrbanShare,
-                                0.0, 0.92, 50.0));
+                        // Urban nucleation: shared Bairoch (1988) & de Vries (1984) cellular evaluation
+                        double cellUrbanFraction = org.ether.society.core.metrics.DemographicMetricsHelper
+                                .computeCellUrbanFraction(p, kpc, powerW, cellAreaKm2);
                         urbanPop += p * cellUrbanFraction;
                     }
                 }
@@ -279,13 +280,13 @@ public final class CompiledTelemetryPlan {
         double foodSat = (float) Math.min(1.0, foodPerCapita > 0 ? foodPerCapita / 2.0 : 1.0);
 
         float gini = 0.0f;
-        if ((inputMask & MASK_STAT_GINI) != 0 && capArr != null && biomassHuman != null) {
-            gini = sk.calculateGini(capArr, biomassHuman);
+        if ((inputMask & MASK_STAT_GINI) != 0 && capArr != null && humanPopulation != null) {
+            gini = sk.calculateGini(capArr, humanPopulation);
         }
 
         float gdp = 0.0f;
-        if ((inputMask & MASK_STAT_GDP) != 0 && capArr != null && biomassHuman != null) {
-            gdp = sk.calculateGDP(capArr, biomassHuman);
+        if ((inputMask & MASK_STAT_GDP) != 0 && capArr != null && humanPopulation != null) {
+            gdp = sk.calculateGDP(capArr, humanPopulation, totalWatts);
         }
 
         float lifeExp = 30.0f;
@@ -307,8 +308,8 @@ public final class CompiledTelemetryPlan {
         }
 
         int[] densityBins = new int[0];
-        if ((inputMask & MASK_STAT_DENSITY_BIN) != 0 && biomassHuman != null) {
-            densityBins = sk.calculateDistribution(biomassHuman, 20, 1000.0f);
+        if ((inputMask & MASK_STAT_DENSITY_BIN) != 0 && humanPopulation != null) {
+            densityBins = sk.calculateDistribution(humanPopulation, 20, 1000.0f);
         }
 
         int[] agePyramid = new int[0];
@@ -389,7 +390,8 @@ public final class CompiledTelemetryPlan {
                 weightedSoilOrg, arableCells, gini, gdp, lifeExp, fertility,
                 agentBirthRate, agentDeathRate, nations != null ? nations.size() : 0,
                 cityStatesCount, avgAsabiyyahPct, meanPolityInstab, meanEliteOverprodPolity,
-                largestUnitSize, maxHierarchy, initialPopulation, t0Co2Ppm, elapsedYears, engineTps);
+                largestUnitSize, maxHierarchy, initialPopulation, t0Co2Ppm, elapsedYears, engineTps,
+                year, initialInformationPerCapita, cellAreaKm2);
 
         Map<String, Double> memo = new LinkedHashMap<>(topologicalOrder.size() * 2);
         for (String nodeId : topologicalOrder) {

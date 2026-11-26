@@ -97,7 +97,7 @@ public class ThermodynamicMigrationEngine extends AbstractSimulationEngine {
         int[][] neighborTable = worldBuffer.getNeighborIndexes();
         if (neighborTable == null) return;
 
-        float[] popBuffer = worldBuffer.getBiomassHuman();
+        float[] popBuffer = worldBuffer.getHumanPopulation();
         float[] foodArr = worldBuffer.getFoodResource();
         float[] agriArr = worldBuffer.getBiomassAgriculture();
         float[] natArr = worldBuffer.getBiomassNatural();
@@ -115,7 +115,7 @@ public class ThermodynamicMigrationEngine extends AbstractSimulationEngine {
         int migrationEvents = 0;
 
         for (int i = 0; i < n; i++) {
-            double popOrigin = popBuffer[i] / 0.06;
+            double popOrigin = popBuffer[i];
             if (popOrigin < 10.0) continue;
 
             double foodOrigin = foodArr[i] + agriArr[i] * 0.0105 + natArr[i] * 0.12;
@@ -152,7 +152,7 @@ public class ThermodynamicMigrationEngine extends AbstractSimulationEngine {
                     continue;
                 }
 
-                double popDest = popBuffer[destIdx] / 0.06;
+                double popDest = popBuffer[destIdx];
                 double foodDest = foodArr[destIdx] + agriArr[destIdx] * 0.0105 + natArr[destIdx] * 0.12;
                 double phiDest = (foodDest + waterDest * 0.2) / Math.max(10.0, popDest + 1.0);
 
@@ -167,7 +167,7 @@ public class ThermodynamicMigrationEngine extends AbstractSimulationEngine {
                 migrationEvents++;
                 double fluxFraction = Math.clamp(PhysicalConstants.ONSAGER_BASELINE_MOBILITY * maxDeltaPhi * 0.05, 0.001, 0.015);
                 double migrants = Math.clamp(popOrigin * fluxFraction, 1.0, popOrigin / 10.0);
-                float massMoved = (float) (migrants * 0.06);
+                float massMoved = (float) migrants;
 
                 if (agentBuffer != null) {
                     transferAgentBufferMass(agentBuffer, worldBuffer, i, bestDestIdx, massMoved);
@@ -223,10 +223,10 @@ public class ThermodynamicMigrationEngine extends AbstractSimulationEngine {
             }
         }
 
-        float[] biomassHuman = world.getBiomassHuman();
-        if (biomassHuman != null && originIdx < biomassHuman.length && destIdx < biomassHuman.length) {
-            biomassHuman[originIdx] = Math.max(0.0f, biomassHuman[originIdx] - actuallyTransferred);
-            biomassHuman[destIdx] += actuallyTransferred;
+        float[] humanPopulation = world.getHumanPopulation();
+        if (humanPopulation != null && originIdx < humanPopulation.length && destIdx < humanPopulation.length) {
+            humanPopulation[originIdx] = Math.max(0.0f, humanPopulation[originIdx] - actuallyTransferred);
+            humanPopulation[destIdx] += actuallyTransferred;
         }
     }
 

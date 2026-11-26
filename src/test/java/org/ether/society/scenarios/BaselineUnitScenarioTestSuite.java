@@ -73,7 +73,7 @@ public class BaselineUnitScenarioTestSuite {
     public void testPopulationPersistence() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getH3Indexes()[0] = 613503380827930701L;
-        buf.getBiomassHuman()[0] = 1000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 1000.0f;
         buf.getFoodResource()[0] = 5000.0f;
         buf.getResourceCapital()[0] = 100.0f;
         buf.getLifespan()[0] = 50.0f;
@@ -89,11 +89,11 @@ public class BaselineUnitScenarioTestSuite {
             physEngine.tick(buf, 1.0, 12.0);
             double food = buf.getFoodResource()[0];
             assertTrue(food > 0, "Food resource should remain positive.");
-            assertTrue(buf.getBiomassHuman()[0] > 0, "Population should persist when food is available.");
+            assertTrue(buf.getHumanPopulation()[0] > 0, "Population should persist when food is available.");
             assertFalse(Double.isNaN(food), "Food resource must not be NaN");
         }
 
-        assertTrue(buf.getBiomassHuman()[0] > 0, "Population should persist when food resources are plentiful.");
+        assertTrue(buf.getHumanPopulation()[0] > 0, "Population should persist when food resources are plentiful.");
     }
 
     /**
@@ -108,13 +108,13 @@ public class BaselineUnitScenarioTestSuite {
     public void testCarryingCapacityEquilibrium() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
         buf.getH3Indexes()[0] = 613503380827930701L;
-        buf.getBiomassHuman()[0] = 50000.0f * 0.06f;
+        buf.getHumanPopulation()[0] = 50000.0f;
         buf.getElevation()[0] = 5000.0f;   // 2 km above hypoxia threshold
         buf.getTemperature()[0] = -25.0f;  // 15 C below hypothermia threshold
         buf.getFluxPressure()[0] = 3.0f;   // EPAS1 adaptation = 0 (non-adapted lowland population)
 
         buf.getH3Indexes()[1] = 613503380827930702L;
-        buf.getBiomassHuman()[1] = 50000.0f * 0.06f;
+        buf.getHumanPopulation()[1] = 50000.0f;
         buf.getElevation()[1] = 100.0f;
         buf.getTemperature()[1] = 15.0f;
         buf.getFoodResource()[1] = 5000.0f;
@@ -124,8 +124,8 @@ public class BaselineUnitScenarioTestSuite {
 
         // Expected: mu_hypoxia = 2.0 * 0.08 * (1 - 0.05*0.85) = 0.1532 ; mu_cold = min(0.25, 15 * 0.012) = 0.18
         int expected = (int) Math.round(50000 * Math.exp(-(0.1532 + 0.18)));
-        int hostilePop = (int) Math.round(buf.getBiomassHuman()[0] / 0.06);
-        int controlPop = (int) Math.round(buf.getBiomassHuman()[1] / 0.06);
+        int hostilePop = (int) Math.round(buf.getHumanPopulation()[0]);
+        int controlPop = (int) Math.round(buf.getHumanPopulation()[1]);
         assertEquals(expected, hostilePop, 1,
                 "Hypoxia + hypothermia mortality must follow the analytical exponential survival law");
         assertEquals(50000, controlPop,

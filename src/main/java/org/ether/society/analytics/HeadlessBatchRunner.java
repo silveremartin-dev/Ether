@@ -288,16 +288,19 @@ public class HeadlessBatchRunner {
             perfConfig.setEnableParallelExecution(true);
             perfConfig.setParallelThreadCount(Math.max(1, cores));
         }
+        double stepDays = (scenario.getTemporalResolutionDays() > 0) ? scenario.getTemporalResolutionDays() : 30.0;
         engine.setPerformanceConfig(perfConfig);
-        engine.setTemporalScale(org.ether.society.core.TemporalScale.MONTHLY);
+        engine.setTemporalScale(stepDays < 15.0 ? org.ether.society.core.TemporalScale.DAILY : org.ether.society.core.TemporalScale.MONTHLY);
         if (engine.getHistoryManager() != null) {
             engine.getHistoryManager().setMaxSnapshots(12);
         }
 
         engine.initializeFromScenario(scenario, cells);
+        if (engine.getTimeManager() != null) {
+            engine.getTimeManager().setTimeStep(org.ether.society.core.SimulationTimeStep.ofDays(stepDays));
+        }
 
         // 3. Determine real step-by-step physical integration parameters (Zero-Skip Integration)
-        double stepDays = (scenario.getTemporalResolutionDays() > 0) ? scenario.getTemporalResolutionDays() : 30.0; // default 30 days (monthly)
         long totalDays = (long) (durationYears * 365.25);
         long totalTicks = Math.max(1, (long) Math.ceil(totalDays / stepDays));
 

@@ -48,14 +48,14 @@ public class GeoengineeringAlbedoFeedbackEngine extends AbstractSimulationEngine
         if (buf == null || buf.getCapacity() == 0) return;
         int n = buf.getCapacity();
         double dtSafe = Math.max(0.0001, dtYears);
-        float[] popArr = buf.getBiomassHuman();
+        float[] popArr = buf.getHumanPopulation();
         float[] capArr = buf.getResourceCapital();
         float[] tempArr = buf.getTemperature();
         float[] elevArr = buf.getElevation();
         float[] rainArr = buf.getRainfall();
         double totalIndustrialSaiCapacity = 0.0;
         for (int i = 0; i < n; i++) {
-            double pop = popArr[i] / 0.06;
+            double pop = popArr[i];
             if (pop > 1000.0) {
                 double capPerCap = capArr[i] / pop;
                 if (capPerCap >= 2500.0) { totalIndustrialSaiCapacity += Math.min(10.0, (capPerCap - 2500.0) / 1000.0); }

@@ -106,7 +106,7 @@ public final class AutoEpochScenarioHelper {
         boolean isStateEraOrLater = isEarth && year >= -3000L && withinHorizon;
         // Draft animal fodder allocation applies from Bronze Age plow (-3000 BCE) until tractor mechanization (1950 CE)
         states.put("DraftAnimalFodderAllocationEngine", isEarth && year >= -3000L && year <= 1950L);
-        states.put("TradeNetworkEngine", !isEarth || isStateEraOrLater);
+        states.put("TradeNetworkRouter", !isEarth || isStateEraOrLater);
         states.put("WarDiplomacyEngine", isStateEraOrLater);
         states.put("ThermodynamicWarfareEngine", isStateEraOrLater);
         states.put("MaritimeHighwayEngine", isStateEraOrLater);
@@ -185,7 +185,7 @@ public final class AutoEpochScenarioHelper {
         states.put("World3CouplingEngine", isEarth && year >= 1950L && year <= 2100L);
         // Silicon photolithography Moore's Law up to atomic/Landauer physical limits (1990-2060 CE)
         states.put("KurzweilAcceleratingReturnsEngine", isEarth && year >= 1990L && year <= 2060L);
-        states.put("CliodynamicAdvisorEngine", isEarth && year >= 2020L && withinHorizon);
+        states.put("CliodynamicAdvisor", isEarth && year >= 2020L && withinHorizon);
         // Off-Earth sealed dome In-Situ Resource Utilization (ISRU): false on Earth, active only on Moon/Mars outposts
         states.put("IsruAutarkyAndSpaceColonizationEngine", !isEarth && withinHorizon);
 

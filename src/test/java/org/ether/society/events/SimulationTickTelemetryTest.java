@@ -81,7 +81,7 @@ public class SimulationTickTelemetryTest {
         cell.setBiome(Biome.FOREST);
         cell.setElevation(100.0);
         cell.setPopulation(1000);
-        cell.setBiomassHuman(500.0);
+        cell.setHumanPopulation(500.0);
         cell.setBiomassLivestock(100.0);
         cell.setBiomassFish(0.0);
         cell.setBiomassAgriculture(500.0);

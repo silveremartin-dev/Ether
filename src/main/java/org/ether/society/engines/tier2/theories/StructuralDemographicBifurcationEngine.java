@@ -81,7 +81,7 @@ public class StructuralDemographicBifurcationEngine extends AbstractSimulationEn
 
     public void processBuffer(WorldBuffer buffer, double deltaYears) {
         if (buffer == null || deltaYears <= 0) return;
-        float[] popArr = buffer.getBiomassHuman();
+        float[] popArr = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
         float[] foodArr = buffer.getFoodResource();
         if (popArr == null) return;

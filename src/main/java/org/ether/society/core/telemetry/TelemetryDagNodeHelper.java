@@ -43,7 +43,7 @@ final class TelemetryDagNodeHelper {
         return switch (id) {
             case "population" -> c.popSum;
             case "populatedCellCount" -> (double) c.populatedCount;
-            case "occupiedTerritory" -> c.populatedCount * 225.0; // Mean H3 Res 4 cell area (~225-250 km2 inhabited footprint proxy)
+            case "occupiedTerritory" -> c.populatedCount * c.cellAreaKm2;
             case "populationSurvivalRate" -> {
                 if (c.initialPop <= 0L) yield 100.0;
                 yield Math.clamp((c.popSum / c.initialPop) * 100.0, 0.0, 100.0);
@@ -91,14 +91,16 @@ final class TelemetryDagNodeHelper {
             }
             case "literacyRate" -> {
                 // Canonical endogenous multi-tier literacy emergence (Jack Goody, Graff 1987, Buringh 2009)
-                // Driven continuously by accumulated capital per capita kpc and power per capita, matching CulturalKnowledgeMetricsHelper
+                // Driven continuously by accumulated capital per capita kpc, power per capita, and initial info stock
                 double kpc = c.kpc();
                 double powerW = c.powerWattsPerCapita();
-                if (kpc <= 30.0 && powerW <= 350.0) {
+                double endogenousI = (kpc > 30.0)
+                        ? 0.12 * Math.pow(kpc - 30.0, 1.35) + 0.08 * Math.pow(Math.max(0.0, powerW - 350.0), 1.45)
+                        : 0.0;
+                double cellI = Math.max(c.initialInformationPerCapita, endogenousI);
+                if (cellI <= 25.0) {
                     yield 0.0;
                 }
-                double cellI = 0.12 * Math.pow(Math.max(0.0, kpc - 30.0), 1.35)
-                        + 0.08 * Math.pow(Math.max(0.0, powerW - 350.0), 1.45);
                 double scribal = 3.8 * Math.tanh(Math.max(0.0, cellI - 25.0) / 350.0);
                 double vernacular = 14.0 * Math.tanh(Math.max(0.0, cellI - 550.0) / 19000.0);
                 double massEdu = 81.7 * Math.tanh(Math.max(0.0, cellI - 30000.0) / 220000.0);
@@ -140,11 +142,25 @@ final class TelemetryDagNodeHelper {
                 yield CliodynamicFormulasRegistry.computeSovereignDebtBurden(trade, lit, stab, c.phiExergy());
             }
             case "co2Concentration" -> {
-                double baseCo2 = c.t0Co2Ppm > 0.0 ? c.t0Co2Ppm : 280.0;
-                double exergyDelta = Math.max(0.0, CliodynamicFormulasRegistry.computeCo2Concentration(c.phiExergy()) - 280.0);
+                double baseCo2 = c.t0Co2Ppm >= 0.0 ? c.t0Co2Ppm : 280.0;
+                if (c.t0Co2Ppm > 600.0 || c.t0Co2Ppm < 150.0) {
+                    yield Math.max(0.0, c.t0Co2Ppm);
+                }
                 double fossilIntensity = CliodynamicFormulasRegistry.computeFossilSharePrimaryEnergy(c.phiExergy()) / 100.0;
-                double cumDelta = Math.min(250.0, fossilIntensity * (c.energyCapturedMw / 1.0e6) * 0.015 * Math.max(0.0, c.elapsedYears));
-                yield Math.clamp(baseCo2 + exergyDelta + cumDelta, 160.0, 2000.0);
+                // Exact atmospheric carbon stoichiometry (IPCC 2006 / Global Carbon Budget / Ballantyne et al. 2012):
+                // 1 TW = 31.5576 EJ/yr; mean fossil carbon intensity ~ 20.5 kg C/GJ; airborne fraction ~ 0.44;
+                // atmospheric mass conversion factor = 2.124 GtC/ppm -> ppm/(TW*yr) = 31.5576 * 0.0205 * 0.44 / 2.124 ~ 0.1340
+                final double gjPerMwYear = 31.5576;
+                final double tonnesCPerGjFossil = 0.0205;
+                final double airborneFraction = 0.44;
+                final double tonnesCPerPpmCo2 = 2.124e9;
+                double annualFossilPpm = (fossilIntensity * c.energyCapturedMw * gjPerMwYear
+                        * tonnesCPerGjFossil * airborneFraction) / tonnesCPerPpmCo2;
+                double cumDelta = Math.min(450.0, annualFossilPpm * Math.max(0.0, c.elapsedYears));
+                if (fossilIntensity <= 0.02 && c.year < 1800L) {
+                    yield Math.clamp(CliodynamicFormulasRegistry.computeCo2Concentration(c.phiExergy(), (int) c.year), 160.0, 2000.0);
+                }
+                yield Math.clamp(baseCo2 + cumDelta, 160.0, 2000.0);
             }
             case "temperatureAnomaly" -> {
                 double co2 = m.getOrDefault("co2Concentration", 280.0);
@@ -176,11 +192,13 @@ final class TelemetryDagNodeHelper {
             }
             case "megafaunaIndex" -> {
                 double denom = Math.max(1.0, c.landCellCount * 4500.0);
-                yield Math.clamp(c.bioNatSum / denom, 0.0, 1.0);
+                yield 100.0 * Math.clamp(c.bioNatSum / denom, 0.0, 1.0);
             }
             case "milankovitchInsolation" -> {
-                double meanTemp = c.landCellCount > 0 ? (c.landTempSum / c.landCellCount) : 14.5;
-                yield Math.clamp(495.0 + (meanTemp - 14.5) * 4.5, 420.0, 560.0);
+                org.ether.society.engines.tier1.MilankovitchOrbitalEngine.MilankovitchParameters params =
+                        org.ether.society.engines.tier1.MilankovitchOrbitalEngine.computeOrbitalParameters((double) c.year);
+                double ins = org.ether.society.engines.tier1.MilankovitchOrbitalEngine.calculateDailyInsolation(65.0, 172, params);
+                yield Math.clamp(ins, 410.0, 560.0);
             }
             case "trophicMultiplier" -> Math.clamp(1.05 + 1.8 * SmoothMath.sigmoid(c.phiExergy(), 1.4, 0.4), 1.05, 3.20);
             case "biomassMobilized" -> {

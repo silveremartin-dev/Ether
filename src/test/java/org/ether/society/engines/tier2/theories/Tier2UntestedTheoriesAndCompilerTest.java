@@ -61,7 +61,7 @@ public class Tier2UntestedTheoriesAndCompilerTest {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getElevation()[0] = 100.0f;
         buf.getBiomes()[0] = (byte) Biome.DESERT.ordinal();
-        buf.getBiomassHuman()[0] = 1200.0f;
+        buf.getHumanPopulation()[0] = 1200.0f;
         buf.getResourceCapital()[0] = 500.0f;
         buf.getMetalResource()[0] = 200.0f;
 

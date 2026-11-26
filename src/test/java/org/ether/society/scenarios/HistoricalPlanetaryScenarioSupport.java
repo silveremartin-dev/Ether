@@ -128,7 +128,7 @@ final class HistoricalPlanetaryScenarioSupport {
             org.ether.society.data.DODDataGenerator.populateWorldBuffer(planetaryGrid, buf, false);
             bioEngine.tick(buf, 1.0, 12.0);
             for (int i = 0; i < planetaryGrid.size(); i++) {
-                planetaryGrid.get(i).setPopulation((int) Math.round(buf.getBiomassHuman()[i] / 0.06));
+                planetaryGrid.get(i).setPopulation((int) Math.round(buf.getHumanPopulation()[i]));
             }
             processMaritimeAndTerrestrialDispersal(planetaryGrid, cellMap, h3Service, allowSeafaring);
 

@@ -45,7 +45,7 @@ public class ProtestantWorkEthicEngine extends AbstractSimulationEngine {
 
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
-        double pop = buffer.getBiomassHuman()[i];
+        double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0 || dtYears <= 0.0) return;
         double capital = buffer.getResourceCapital()[i];
         double literacyWeight = SmoothMath.smoothClamp(capital / (pop * 2000.0), 0.10, 1.0, 10.0);

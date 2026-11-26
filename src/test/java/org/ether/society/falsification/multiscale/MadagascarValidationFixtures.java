@@ -80,7 +80,7 @@ final class MadagascarValidationFixtures {
         double initialWood = 0.0;
         double initialCapital = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            initialPop += buffer.getBiomassHuman()[i];
+            initialPop += buffer.getHumanPopulation()[i];
             initialWood += buffer.getWoodResource()[i];
             initialCapital += buffer.getResourceCapital()[i];
         }
@@ -94,7 +94,7 @@ final class MadagascarValidationFixtures {
 
             double currentPop = 0.0;
             for (int i = 0; i < buffer.getCapacity(); i++) {
-                float pop_i = buffer.getBiomassHuman()[i];
+                float pop_i = buffer.getHumanPopulation()[i];
                 float wood_i = buffer.getWoodResource()[i];
                 float cap_i = buffer.getResourceCapital()[i];
                 float agri_i = buffer.getBiomassAgriculture()[i];
@@ -191,7 +191,7 @@ final class MadagascarValidationFixtures {
         double initialCapital = 0.0;
         double initialAgri = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            initialPop += buffer.getBiomassHuman()[i];
+            initialPop += buffer.getHumanPopulation()[i];
             initialWood += buffer.getWoodResource()[i];
             initialCapital += buffer.getResourceCapital()[i];
             initialAgri += buffer.getBiomassAgriculture()[i];
@@ -209,7 +209,7 @@ final class MadagascarValidationFixtures {
         double totalTech = 0.0;
 
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            finalPop += buffer.getBiomassHuman()[i];
+            finalPop += buffer.getHumanPopulation()[i];
             finalWood += buffer.getWoodResource()[i];
             finalAgri += buffer.getBiomassAgriculture()[i];
             finalCapital += buffer.getResourceCapital()[i];
@@ -328,7 +328,7 @@ final class MadagascarValidationFixtures {
 
         double finalPopA = 0; double finalWoodA = 0; double finalAgriA = 0; double finalCapA = 0; double totalTechA = 0;
         for (int i = 0; i < bufA.getCapacity(); i++) {
-            finalPopA += bufA.getBiomassHuman()[i];
+            finalPopA += bufA.getHumanPopulation()[i];
             finalWoodA += bufA.getWoodResource()[i];
             finalAgriA += bufA.getBiomassAgriculture()[i];
             finalCapA += bufA.getResourceCapital()[i];
@@ -337,7 +337,7 @@ final class MadagascarValidationFixtures {
 
         double finalPopAB = 0; double finalWoodAB = 0; double finalAgriAB = 0; double finalCapAB = 0; double totalTechAB = 0;
         for (int i = 0; i < bufAB.getCapacity(); i++) {
-            finalPopAB += bufAB.getBiomassHuman()[i];
+            finalPopAB += bufAB.getHumanPopulation()[i];
             finalWoodAB += bufAB.getWoodResource()[i];
             finalAgriAB += bufAB.getBiomassAgriculture()[i];
             finalCapAB += bufAB.getResourceCapital()[i];
@@ -435,7 +435,7 @@ final class MadagascarValidationFixtures {
         double initialPop = 0.0;
         double initialWood = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            initialPop += buffer.getBiomassHuman()[i];
+            initialPop += buffer.getHumanPopulation()[i];
             initialWood += buffer.getWoodResource()[i];
         }
 
@@ -448,7 +448,7 @@ final class MadagascarValidationFixtures {
         double finalAgri = 0.0;
         double totalTech = 0.0;
         for (int i = 0; i < buffer.getCapacity(); i++) {
-            finalPop += buffer.getBiomassHuman()[i];
+            finalPop += buffer.getHumanPopulation()[i];
             finalWood += buffer.getWoodResource()[i];
             finalAgri += buffer.getBiomassAgriculture()[i];
             totalTech += buffer.computeEmergentTechnologyDiagnostic(i);
