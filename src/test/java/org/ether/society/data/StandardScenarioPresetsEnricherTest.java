@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Ensures that 100% of standard scenario presets explicitly define all 86 Type-B engines,
  * with zero missing keys, zero ambiguous defaults, and preserving any preset-specific overrides.
  */
-@org.junit.jupiter.api.Tag("generation")
 public class StandardScenarioPresetsEnricherTest {
 
     @Test

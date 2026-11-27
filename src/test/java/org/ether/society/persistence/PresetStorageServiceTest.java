@@ -20,21 +20,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@org.junit.jupiter.api.Tag("generation")
 class PresetStorageServiceTest {
 
     @BeforeAll
-    /*
-     * Setup operation.
-     * <p>
-     * Executes operational logic for {@code PresetStorageServiceTest} within the automated verification and regression test suite.
-     * Enforces physical invariants, state continuity, and deterministic boundary conditions.
-     * </p>
-     *
-     */
     static void setup() {
         EtherPaths.initPaths();
-        PresetStorageService.exportAllFactoryPresets();
     }
 
     @Test
