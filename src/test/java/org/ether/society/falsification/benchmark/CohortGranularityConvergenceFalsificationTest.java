@@ -54,6 +54,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @version 1.0.0
  */
 @Tag("academic-paper")
+@org.junit.jupiter.api.Tag("slow")
 public class CohortGranularityConvergenceFalsificationTest {
 
     private static final String GROUND_TRUTH_RASTER = "data/maps/ether/earth/160/earth_160_density.png";

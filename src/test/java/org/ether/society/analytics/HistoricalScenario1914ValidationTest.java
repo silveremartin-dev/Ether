@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @version 1.0.0-beta.3
  */
 @Tag("scientific")
+@org.junit.jupiter.api.Tag("slow")
 public class HistoricalScenario1914ValidationTest {
 
     @Test

@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 @Tag("academic")
 @Tag("scientific")
+@org.junit.jupiter.api.Tag("slow")
 public class MacroHistoricalPhase3FalsificationTest {
 
     public record SimpleBenchmarkItem(String name, String runId) implements ScenarioBenchmarkItem {

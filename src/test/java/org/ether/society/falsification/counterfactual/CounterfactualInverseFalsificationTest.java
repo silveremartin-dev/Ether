@@ -36,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("🔬 Epistemic Laboratory: Counterfactual Inverse Falsification Suite")
 @Tag("academic")
 @Tag("scientific")
+@org.junit.jupiter.api.Tag("slow")
 public class CounterfactualInverseFalsificationTest {
 
     @Test

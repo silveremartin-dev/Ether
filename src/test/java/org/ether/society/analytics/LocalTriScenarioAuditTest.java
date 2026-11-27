@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @version 1.0.0
  */
 @Tag("scientific")
+@org.junit.jupiter.api.Tag("slow")
 public class LocalTriScenarioAuditTest {
 
     public record CulturalMatrixAudit(

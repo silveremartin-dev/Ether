@@ -63,6 +63,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("falsification")
 @Tag("counterfactual")
 @Tag("pillar6")
+@org.junit.jupiter.api.Tag("slow")
 public class SpatialHoldoutCrossValidationTest {
 
     private Scenario loadBuiltInScenario(String presetKey, String fallbackNameFragment) {

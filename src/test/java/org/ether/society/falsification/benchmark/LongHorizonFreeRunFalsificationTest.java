@@ -47,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("scientific")
 @Tag("falsification")
 @Tag("pillar6")
+@org.junit.jupiter.api.Tag("slow")
 public class LongHorizonFreeRunFalsificationTest {
 
     @Test

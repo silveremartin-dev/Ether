@@ -413,7 +413,7 @@
         <profile>
             <id>fast</id>
             <properties>
-                <surefire.excludedGroups>manual,generation,inspection,benchmark,scientific,academic,academic-paper,data-audit</surefire.excludedGroups>
+                <surefire.excludedGroups>slow,manual,generation,inspection,benchmark,data-audit</surefire.excludedGroups>
             </properties>
         </profile>
         <profile>

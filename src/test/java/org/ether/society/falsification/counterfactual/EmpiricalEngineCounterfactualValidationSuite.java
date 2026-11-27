@@ -37,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("🔬 Empirical Engine Counterfactual & Multi-Metric Benchmarking Suite")
 @Tag("academic")
 @Tag("scientific")
+@org.junit.jupiter.api.Tag("slow")
 public class EmpiricalEngineCounterfactualValidationSuite {
     private static final Logger logger = LoggerFactory.getLogger(EmpiricalEngineCounterfactualValidationSuite.class);
 

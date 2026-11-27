@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * </p>
  */
 @Tag("scientific")
+@org.junit.jupiter.api.Tag("slow")
 public class ScenarioSpatial2DFidelityAuditTest {
 
     public record SpatialAuditEntry(

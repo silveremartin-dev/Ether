@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Benchmark test executing Ramsès II specifically in Resolution 6 and Resolution 7.
  */
 @org.junit.jupiter.api.Tag("scientific")
+@org.junit.jupiter.api.Tag("slow")
 public class RamessesResolutionComparisonTest {
 
     @Test

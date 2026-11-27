@@ -27,6 +27,7 @@ import java.util.*;
  * and generates the standardized cliodynamic falsification audit report.</p>
  */
 @org.junit.jupiter.api.Tag("scientific")
+@org.junit.jupiter.api.Tag("slow")
 public class ScenarioFalsificationReportTest {
 
     public record SimpleBenchmarkItem(String name, String runId) implements ScenarioBenchmarkItem {

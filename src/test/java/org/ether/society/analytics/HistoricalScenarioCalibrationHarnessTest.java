@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * cartographic tensor comparison, root cause drift decomposition, and multi-scale sensitivity matrices.
  */
 @Tag("scientific")
+@org.junit.jupiter.api.Tag("slow")
 public class HistoricalScenarioCalibrationHarnessTest {
     private static final Logger logger = LoggerFactory.getLogger(HistoricalScenarioCalibrationHarnessTest.class);
 
