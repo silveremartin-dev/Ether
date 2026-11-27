@@ -12,7 +12,7 @@
 ### 1. Centralized SI Dimensional Consistency & Unified Simulation Clock
 * **Authoritative SI Unit Conversion (`PhysicalUnitsHelper`)**: Centralized all physical, thermodynamic, and temporal unit conversions (`J`, `GJ`, `W`, `kg`, `t`, `K`, Julian days/years) across simulation engines, DOD kernels, telemetry aggregators, and data loaders, eliminating inline conversion literals.
 * **Canonical Human Population Nomenclature (`humanPopulation`)**: Refactored cellular population buffers from `biomassHuman` to `humanPopulation` across Java, native Rust (`ether-core-native`), wire codecs, and technical documentation, accompanied by grounded Hatton (2015), Ayres-Warr, and IPCC stoichiometric formulations.
-* **Deterministic 32D Culture & Mitosis Kernels**: Synchronized 32-dimensional cultural trait vectors in the native Rust engine, enforced strict SplitMix64 PRNG determinism in `DemographicKernel` mitosis, and unified single-clock temporal progression.
+* **Deterministic 32D Culture, Mitosis & DOD Polity Kernels**: Synchronized 32-dimensional cultural trait vectors in the native Rust engine, enforced strict SplitMix64 PRNG determinism in `DemographicKernel` mitosis, migrated `Polity` / `CliodynamicsEngine` / `SovereignTreasuryBondEngine` cycles to contiguous `WorldBuffer` slot indices, and unified single-clock temporal progression.
 
 ### 2. Unified `SimulationTemporalEvent` Architecture & Geophysical Forcings
 * **Immutable `SimulationDate` & `SimulationTemporalEvent` Contract**: Introduced linear step-independent temporal progression, enum-dispatched physical shock execution, and continuous intensity envelopes (bell curve, two-phase radioecological decay, sigmoidal plateau).
