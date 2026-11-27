@@ -151,7 +151,7 @@ final class ScenarioArchetypeModernAndExoCatalog {
         register.accept(new ScenarioDetail(
             "earth_+2035_nuclear_winter_2035",
             "Nuclear Winter & Stratospheric Soot Veil (2035 -> 2085 CE)",
-            2035, 2085, 7.0,
+            2035, 2085, 30.0,
             "Future Earth Trajectories",
             "Detonation of 150 Tg black carbon soot from global nuclear exchange, lofting into the upper stratosphere and encircling the globe.",
             "Bifurcation at 2035 CE: Direct surface solar radiation drops by 90% in mid-latitudes, causing summer frost, global agriculture collapse, and a multi-year famine killing 5 billion people.",
@@ -184,7 +184,7 @@ final class ScenarioArchetypeModernAndExoCatalog {
         register.accept(new ScenarioDetail(
             "earth_+2060_supervolcano_2060",
             "Yellowstone Super-Eruption & Abrupt Volcanic Winter (2060 -> 2110 CE)",
-            2060, 2110, 7.0,
+            2060, 2110, 30.0,
             "Future Earth Trajectories",
             "Super-eruption injecting 1,000 km³ of pyroclastic ash and 200 Mt SO2 into the atmosphere, blanket covering the North American grain belt.",
             "Bifurcation at 2060 CE: Synchronous agricultural blackout in North America; ash fallout collapses continental power grids and municipal water supply filtration.",

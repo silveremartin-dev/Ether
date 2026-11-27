@@ -199,14 +199,7 @@ public final class CompiledTelemetryPlan {
         double weightedSoilOrg = 0.0;
         int arableCells = 0;
 
-        double cellAreaKm2 = 1770.49;
-        long[] h3Idx = world.getH3Indexes();
-        if (h3Idx != null && h3Idx.length > 0 && h3Idx[0] != 0L) {
-            int res = (int) ((h3Idx[0] >>> 52) & 0x0FL);
-            if (res >= 0 && res <= 15) {
-                cellAreaKm2 = H3Cell.getAvgHexagonAreaKm2(res);
-            }
-        }
+        double cellAreaKm2 = org.ether.society.model.SpatialSurfaceHelper.resolveMeanCellAreaKm2(world);
 
         if (n > 0 && (needPopFoodWater || fertArr != null || lifeArr != null)) {
             for (int i = 0; i < n; i++) {

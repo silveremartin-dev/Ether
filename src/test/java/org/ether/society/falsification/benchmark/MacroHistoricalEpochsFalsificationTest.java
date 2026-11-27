@@ -177,7 +177,8 @@ public class MacroHistoricalEpochsFalsificationTest {
                     cfg.displayName(), cfg.resolution(), cfg.startYear(), cfg.endYear());
             System.out.println("================================================================================");
 
-            int targetRes = cfg.resolution();
+            int targetRes = Boolean.getBoolean("benchmark.usePresetResolution") && s.getH3Resolution() > 0
+                    ? s.getH3Resolution() : cfg.resolution();
             String resProp = System.getProperty("phase1.resolution");
             if (resProp == null || resProp.isBlank()) {
                 resProp = System.getProperty("benchmark.resolution");
@@ -189,15 +190,17 @@ public class MacroHistoricalEpochsFalsificationTest {
             }
             s.setH3Resolution(targetRes);
 
-            if (!cfg.windowed() && s.isClippingEnabled()) {
-                s.setClippingEnabled(false);
-                double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
-                        "worldPopulation", (double) cfg.startYear(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
-                if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
-                    s.setInitialHumanCount(Math.round(globalPopM * 1_000_000.0));
+            if (!Boolean.getBoolean("benchmark.usePresetResolution")) {
+                if (!cfg.windowed() && s.isClippingEnabled()) {
+                    s.setClippingEnabled(false);
+                    double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
+                            "worldPopulation", (double) cfg.startYear(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+                    if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
+                        s.setInitialHumanCount(Math.round(globalPopM * 1_000_000.0));
+                    }
+                } else if (!cfg.windowed()) {
+                    s.setClippingEnabled(false);
                 }
-            } else if (!cfg.windowed()) {
-                s.setClippingEnabled(false);
             }
 
             long startMs = System.currentTimeMillis();

@@ -214,9 +214,10 @@ public class MetabolicEcologyEngine extends AbstractSimulationEngine {
             double livestockWatts = calculateMetabolicRateWatts(350.0, tempK, TaxonGuild.ENDOTHERM_MAMMAL);
             double annualLivestockGJ = livestockWatts * 0.0315576;
             double forageDemandTons = (annualLivestockGJ * livestockBiomass / 350.0) / 18.0 * dtYears;
+            double forageDemandKg = org.ether.society.model.PhysicalUnitsHelper.metricTonnesToKg(forageDemandTons);
             double currentAgri = buffer.getBiomassAgriculture()[i];
-            if (currentAgri > forageDemandTons) {
-                acc.dBiomassAgriculture -= (float) (forageDemandTons * 0.25);
+            if (currentAgri > forageDemandKg) {
+                acc.dBiomassAgriculture -= (float) (forageDemandKg * 0.25);
             }
         }
     }

@@ -102,7 +102,9 @@ public class DemographicKernel {
 
     private void tickWithDtYears(WorldBuffer world, AgentBuffer agents, float dtYears) {
         processMetabolism(world, agents, dtYears);
-        processMitosis(agents);
+        double lifespanScale = world.getOrganismProfile().referenceLifespanYears()
+                / OrganismBiophysicalProfile.HOMO_SAPIENS.referenceLifespanYears();
+        CohortMitosisProcessor.processMitosis(agents, targetCohortSize, baseSeed, 0, lifespanScale);
     }
 
     /**

@@ -90,6 +90,7 @@ public class WhitePaperCompiler {
         System.out.println("Loaded " + loadedRuns.size() + " simulation runs into repo in " + (System.currentTimeMillis() - startTime) + " ms.");
         File chartsDir = new File("docs/images/charts");
         BenchmarkSynthesisChartGenerator.generateAllSynthesisCharts(chartsDir);
+        AcademicPaperEmpiricalUpdater.syncAcademicPaperChartAliases(chartsDir);
         File outFile = new File("docs/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md");
         if (outFile.getParentFile() != null) outFile.getParentFile().mkdirs();
 
@@ -98,8 +99,11 @@ public class WhitePaperCompiler {
             writeVisualSynthesisChartsSection(pw);
             writeMasterRankingTable(pw, loadedRuns);
             writeAll45ScenarioChapters(pw, loadedRuns);
+            AcademicPaperEmpiricalUpdater.writeCalibrationCounterfactualAndFreeRunSection(pw, loadedRuns);
             writeMasterSynthesisAndRoadmap(pw);
         }
+        AcademicPaperEmpiricalUpdater.updateAcademicManuscript(
+                Path.of("docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md"), loadedRuns);
         long totalElapsed = System.currentTimeMillis() - startTime;
         System.out.println("================================================================================");
         System.out.println(" ✔ WHITE PAPER SUCCESSFULLY GENERATED: " + outFile.getAbsolutePath() + " (" + (totalElapsed / 1000.0) + "s)");
@@ -349,21 +353,38 @@ public class WhitePaperCompiler {
 
     private void writeSpatialRows(PrintWriter pw, ScenarioArchetypeAuditRegistry.ScenarioDetail d, SimulationRunRecord run) {
         String s = d.cartographicMetricsSummary();
-        double ssim = extractMetricFromSummary(s, "SSIM", 0.78), rmse = extractMetricFromSummary(s, "RMSE", 0.14);
-        double jacc = extractMetricFromSummary(s, "Jaccard", 0.82), r = extractMetricFromSummary(s, "Pearson r", 0.76);
-        Object[][] layers = {
-            {"1. Population Density (density)", rmse, r, ssim, jacc * 0.75, jacc * 0.85, 1.25 * (1.0 - Math.max(0.0, r))},
-            {"2. Biomes & Land Cover (biomes)", rmse * 0.5, Math.min(0.99, r + 0.12), Math.min(0.99, ssim + 0.10), jacc, Math.min(0.99, jacc * 1.08), 0.15 * (1.0 - jacc)},
-            {"3. Topography & Elevation (elevation)", 0.0, 1.0, 1.0, 1.0, 1.0, 0.0},
-            {"4. Annual Precipitation (precip)", rmse * 0.35, Math.min(0.98, r + 0.15), Math.min(0.98, ssim + 0.12), Math.min(0.95, jacc * 1.05), Math.min(0.97, jacc * 1.1), 0.10 * (1.0 - Math.max(0.0, r))},
-            {"5. Territorial Sovereignty (sovereignty)", rmse * 1.3, Math.max(0.20, r - 0.25), Math.max(0.40, ssim - 0.18), Math.max(0.25, jacc * 0.55), Math.max(0.35, jacc * 0.70), 1.50 * (1.0 - Math.max(0.0, r))},
-            {"6. Trade Networks (tradenetwork)", rmse * 1.6, Math.max(0.18, r - 0.30), Math.max(0.35, ssim - 0.22), Math.max(0.18, jacc * 0.40), Math.max(0.25, jacc * 0.50), 2.10 * (1.0 - Math.max(0.0, r))},
-            {"7. Groundwater & Aquifers (aquifers)", rmse * 0.4, Math.min(0.95, r + 0.08), Math.min(0.95, ssim + 0.07), Math.min(0.92, jacc * 0.95), Math.min(0.94, jacc * 0.98), 0.18 * (1.0 - jacc)}
-        };
-        for (Object[] row : layers) {
-            pw.println(String.format(Locale.US, "| %s | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f |",
-                    row[0], (double)row[1], (double)row[2], (double)row[3], (double)row[4], (double)row[5], (double)row[6]));
+        double ssim = extractMetricFromSummary(s, "SSIM", Double.NaN);
+        double rmse = extractMetricFromSummary(s, "RMSE", Double.NaN);
+        double jacc = extractMetricFromSummary(s, "Jaccard", Double.NaN);
+        double r = extractMetricFromSummary(s, "Pearson r", Double.NaN);
+        double dice = Double.NaN;
+        if (run != null && run.getSpatialSnapshots() != null && !run.getSpatialSnapshots().isEmpty()) {
+            int endYr = Collections.max(run.getSpatialSnapshots().keySet());
+            var endCells = run.getSpatialSnapshotAt(endYr);
+            if (endCells != null && !endCells.isEmpty()) {
+                try {
+                    var comp = SpatialRasterFidelityAuditHelper.evaluateEndStateRasterFidelity(endCells, null, endYr);
+                    if (comp != null && comp.getSsim() > 0.0) {
+                        ssim = comp.getSsim();
+                        rmse = comp.getRmse();
+                        jacc = comp.getJaccardIndex();
+                        r = comp.getPearsonR();
+                        dice = comp.getDiceCoefficient();
+                    }
+                } catch (Exception ignored) { }
+            }
         }
+        if (Double.isNaN(ssim)) {
+            pw.println("| 1. Population Density (density) | N/A | N/A | N/A | N/A | N/A | N/A |");
+            return;
+        }
+        if (Double.isNaN(dice)) {
+            dice = (2.0 * jacc) / Math.max(1e-6, 1.0 + jacc);
+        }
+        pw.println(String.format(Locale.US,
+                "| 1. Population Density (density) | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f |",
+                rmse, r, ssim, jacc, dice, Math.max(0.0, 1.0 - Math.max(0.0, r))));
+        pw.println("| 2. Topography & Elevation (elevation — boundary invariant) | 0.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 0.0000 |");
     }
 
     private double extractMetricFromSummary(String summary, String key, double defaultVal) {

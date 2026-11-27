@@ -104,6 +104,10 @@ public class WorldBuffer {
 
     /** Empirical baseline temperature snapshot per cell (^{\circ}\text{C}), NaN until captured on first encounter. */
     private final float[] baselineTemperature;
+    /** Precomputed physical surface area per cell (\(\text{km}^2\)), accounting for H3 resolution and planet radius. */
+    private final float[] cellAreaKm2;
+    /** Planetary mean radius in kilometers (\(6\,371.0\text{ km}\) for Earth). */
+    private double planetRadiusKm = org.ether.society.model.PhysicalConstants.EARTH_RADIUS_KM;
     /** Active simulation calendar year (used by time-dependent orbital Tier 1 forcings). */
     private double currentYear = 2000.0;
     /** Single authoritative simulation tick counter propagated from {@link org.ether.society.core.H3SimulationEngine}. */
@@ -162,71 +166,45 @@ public class WorldBuffer {
         this.institutionalComplexity = new float[capacity];
         this.pollutionLevel = new float[capacity];
         this.baselineTemperature = new float[capacity];
+        this.cellAreaKm2 = new float[capacity];
         java.util.Arrays.fill(this.baselineTemperature, Float.NaN);
     }
 
     // Getters for arrays (to be used by kernels)
     
-    /**
-     * Get capacity.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return number of allocated hexagonal cells */
     public int getCapacity() { return capacity; }
-    /**
-     * Get h3indexes.
-     *
-     * @return the resulting computation or state reference
-     */
+    /** @return 64-bit H3 spatial index array */
     public long[] getH3Indexes() { return h3Indexes; }
-
-    /**
-     * Retrieves the 2D neighbor adjacency table across all cells.
-     *
-     * @return 2D array mapping each cell index to its contiguous topological neighbor indices
-     */
+    /** @return 2D neighbor adjacency table across all cells */
     public int[][] getNeighborIndexes() { return neighborIndexes; }
-
     /** @return topographic elevation buffer in meters above sea level (m) */
     public float[] getElevation() { return elevation; }
-
     /** @return thermodynamic mean annual surface temperature buffer in degrees Celsius (°C) */
     public float[] getTemperature() { return temperature; }
-
     /** @return annual precipitation rainfall buffer in millimeters per year (mm/yr) */
     public float[] getRainfall() { return rainfall; }
-
     /** @return discrete biome categorical classification ordinal identifiers */
     public byte[] getBiomes() { return biomes; }
-
-    /** @return local available edible food biomass stock buffer in gigacalories (Gcal) */
+    /** @return local available edible food stockpile in Gigajoules (GJ) */
     public float[] getFoodResource() { return foodResource; }
-
-    /** @return local available potable freshwater flux buffer in cubic meters (m³) */
+    /** @return local available potable freshwater flux buffer (10³ m³) */
     public float[] getWaterResource() { return waterResource; }
-
-    /** @return local standing timber / combustible fuelwood biomass buffer in tons dry matter */
+    /** @return local standing timber / combustible fuelwood biomass buffer in metric tonnes (t) */
     public float[] getWoodResource() { return woodResource; }
-
-    /** @return accessible structural and industrial metal reserves buffer in metric tons */
+    /** @return accessible structural and industrial metal reserves buffer in metric tonnes (t) */
     public float[] getMetalResource() { return metalResource; }
-
-    /** @return ceramic clay and earthen structural minerals buffer in metric tons */
+    /** @return ceramic clay and earthen structural minerals buffer in metric tonnes (t) */
     public float[] getClayResource() { return clayResource; }
-
     /** @return total human / conscious living agent population count (individuals) */
     public float[] getHumanPopulation() { return humanPopulation; }
-
-    /** @return domesticated livestock biomass stock in metric tons */
+    /** @return domesticated livestock biomass stock in metric tonnes (t) */
     public float[] getBiomassLivestock() { return biomassLivestock; }
-
-    /** @return marine and freshwater harvestable fish biomass stock in metric tons */
+    /** @return marine and freshwater harvestable fish biomass stock in metric tonnes (t) */
     public float[] getBiomassFish() { return biomassFish; }
-
-    /** @return cultivated crop standing agricultural biomass in kilograms of dry grain equivalent (\(\text{kg}\)) */
+    /** @return cultivated crop standing agricultural biomass in kilograms of dry grain equivalent (kg) */
     public float[] getBiomassAgriculture() { return biomassAgriculture; }
-
-    /** @return primary wild vegetative ecosystem biomass stock in metric tons (\(\text{t}\)) */
+    /** @return primary wild vegetative ecosystem biomass stock in metric tonnes (t) */
     public float[] getBiomassNatural() { return biomassNatural; }
 
     /** @return kinetic wind energy flux captured in gigajoules per year (\(\text{GJ/yr}\); \(1\text{ GJ/yr} \approx 31.688\text{ W}\)) */
@@ -479,6 +457,16 @@ public class WorldBuffer {
     public float[] getCommercialFluxVolume() { return commercialFluxVolume; }
     /** @return empirical cell baseline temperature array (NaN until initialized) */
     public float[] getBaselineTemperature() { return baselineTemperature; }
+    /** @return precomputed cell surface area array in square kilometers */
+    public float[] getCellAreaKm2Array() { return cellAreaKm2; }
+    /** @param index cell slot index @return authoritative cell surface area in square kilometers */
+    public double getCellAreaKm2(int index) { return org.ether.society.model.SpatialSurfaceHelper.resolveCellAreaKm2(this, index); }
+    /** @param index cell slot index @return living human population density in individuals per square kilometer */
+    public double getPopulationDensityPerKm2(int index) { return org.ether.society.model.SpatialSurfaceHelper.resolvePopulationDensityPerKm2(this, index); }
+    /** @return planetary mean radius in kilometers */
+    public double getPlanetRadiusKm() { return planetRadiusKm; }
+    /** @param planetRadiusKm planetary mean radius in kilometers */
+    public void setPlanetRadiusKm(double planetRadiusKm) { if (planetRadiusKm > 0.0) this.planetRadiusKm = planetRadiusKm; }
     /** @return current simulation calendar year */
     public double getCurrentYear() { return currentYear; }
     /** @param currentYear current simulation calendar year */

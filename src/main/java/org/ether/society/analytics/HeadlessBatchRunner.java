@@ -346,6 +346,7 @@ public class HeadlessBatchRunner {
                 
                 // Capture spatial state snapshot only when spatial channel is subscribed
                 if (effectiveSub.isSpatialSubscribed() && record.getSpatialSnapshots().size() < 8 && (currentSimYear % 25 == 0 || ticksExecuted >= totalTicks)) {
+                    engine.syncBufferToCells();
                     record.addSpatialSnapshot((int) currentSimYear, engine.getCells());
                 }
                 lastSampledYear = currentSimYear;
@@ -374,6 +375,7 @@ public class HeadlessBatchRunner {
             recordTelemetrySnapshot(record, engine, (int) finalSimYear);
         }
         if (!record.getSpatialSnapshots().containsKey((int) finalSimYear)) {
+            engine.syncBufferToCells();
             record.addSpatialSnapshot((int) finalSimYear, engine.getCells());
         }
 

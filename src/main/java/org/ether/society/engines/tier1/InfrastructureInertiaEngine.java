@@ -61,7 +61,11 @@ public class InfrastructureInertiaEngine extends AbstractSimulationEngine {
         double decayFactor = Math.exp(-dtYears / dynamicHalfLife);
 
         double pop = buffer.getHumanPopulation()[i];
-        double activeReplacement = 0.98 * org.ether.society.core.math.SmoothMath.sigmoid(pop, 10.0, 3.0);
+        // Unmet structural maintenance deficit only: when metal/institutional maintenance inputs are sufficient,
+        // activeReplacement -> 1.0 so UrbanKernel remains sole owner of baseline 4%/yr Solow-Swan depreciation.
+        double maintenanceSufficiency = Math.tanh(maintenanceRatio * 2.5);
+        double activeReplacement = (0.98 + 0.02 * maintenanceSufficiency)
+                * org.ether.society.core.math.SmoothMath.sigmoid(pop, 10.0, 3.0);
         double netCapital = capital * decayFactor + capital * (1.0 - decayFactor) * activeReplacement;
         acc.dResourceCapital += (float) (netCapital - capital);
     }

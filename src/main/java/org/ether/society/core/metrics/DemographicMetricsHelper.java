@@ -236,15 +236,7 @@ public final class DemographicMetricsHelper {
             float[] capital = wb.getResourceCapital();
             int cap = wb.getCapacity();
 
-            double cellAreaKm2 = 1770.49;
-            long[] h3Idx = wb.getH3Indexes();
-            if (h3Idx != null && h3Idx.length > 0 && h3Idx[0] != 0L) {
-                int res = (int) ((h3Idx[0] >>> 52) & 0x0FL);
-                if (res >= 0 && res <= 15) {
-                    cellAreaKm2 = H3Cell.getAvgHexagonAreaKm2(res);
-                }
-            }
-            double macroScale = 1770.49 / Math.max(0.1, cellAreaKm2);
+            double cellAreaKm2 = org.ether.society.model.SpatialSurfaceHelper.resolveMeanCellAreaKm2(wb);
 
             double totalPop = 0.0;
             double urbanPop = 0.0;
@@ -257,7 +249,7 @@ public final class DemographicMetricsHelper {
                 double powerW = wb.computeCellPowerWattsPerCapita(i);
 
                 // Urban nucleation: Bairoch (1988) & de Vries (1984) metabolic surplus & physical capital agglomeration
-                double cellUrbanFraction = computeCellUrbanFraction(p, kpc, powerW, cellAreaKm2);
+                double cellUrbanFraction = computeCellUrbanFraction(p, kpc, powerW, wb.getCellAreaKm2(i));
                 urbanPop += p * cellUrbanFraction;
             }
             if (totalPop > 0.0) {
@@ -315,7 +307,7 @@ public final class DemographicMetricsHelper {
                 * Math.tanh(SmoothMath.softplus(powerW - 450.0, 0.05) / 200.0);
         double capIndustrialActivation = SmoothMath.sigmoid(kpc, 2800.0, 500.0)
                 * Math.tanh(SmoothMath.softplus(kpc - 500.0, 0.02) / 500.0);
-        double industrialUrbanShare = 0.75 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation);
+        double industrialUrbanShare = 0.75 * SmoothMath.harmonicCoupling(powerIndustrialActivation, capIndustrialActivation) * nucleationFactor;
 
         return Math.clamp(agrarianUrbanShare + commercialUrbanShare + industrialUrbanShare, 0.0, 0.92);
     }

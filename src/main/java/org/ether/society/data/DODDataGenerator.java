@@ -49,10 +49,13 @@ public class DODDataGenerator {
             logger.info("Populating WorldBuffer with {} cells...", cells.size());
         }
 
+        double planetRadiusKm = buffer.getPlanetRadiusKm();
         for (int i = 0; i < cells.size() && i < buffer.getCapacity(); i++) {
             H3Cell cell = cells.get(i);
 
-            buffer.getH3Indexes()[i] = cell.getH3Index() != null ? cell.getH3Index() : 0L;
+            long h3Idx = cell.getH3Index() != null ? cell.getH3Index() : 0L;
+            buffer.getH3Indexes()[i] = h3Idx;
+            buffer.getCellAreaKm2Array()[i] = (float) org.ether.society.model.SpatialSurfaceHelper.resolveEffectiveCellAreaKm2(cell, planetRadiusKm);
             buffer.getElevation()[i] = cell.getElevation() != null ? cell.getElevation().floatValue() : 0.0f;
             buffer.getTemperature()[i] = cell.getTemperature() != null ? cell.getTemperature().floatValue() : 15.0f;
             buffer.getRainfall()[i] = cell.getRainfall() != null ? cell.getRainfall().floatValue() : 500.0f;

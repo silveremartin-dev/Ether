@@ -73,13 +73,14 @@ public class VonThunenAgriculturalRingsEngine extends AbstractSimulationEngine {
         boolean isCoastal = buffer.getBiomes()[i] == (byte) org.ether.society.model.Biome.OCEAN.ordinal()
                 || buffer.getElevation()[i] < 0.0f;
 
+        double areaScale = org.ether.society.model.SpatialSurfaceHelper.resolveAreaScaleVsRes4(buffer, i);
         double maxSustainableAgglomeration;
         if (isCoastal) {
-            maxSustainableAgglomeration = 500_000.0 + capitalPerCapita * 2500.0;
+            maxSustainableAgglomeration = (500_000.0 + capitalPerCapita * 2500.0) * areaScale;
         } else {
-            double ancientInlandBase = 25_000.0;
-            double earlyModernExpansion = 55_000.0 * org.ether.society.core.math.SmoothMath.sigmoid(capitalPerCapita, 250.0, 75.0);
-            double industrialRailExpansion = 5000.0 * org.ether.society.core.math.SmoothMath.softplus(capitalPerCapita - 800.0, 0.0, 100.0);
+            double ancientInlandBase = 25_000.0 * areaScale;
+            double earlyModernExpansion = 55_000.0 * areaScale * org.ether.society.core.math.SmoothMath.sigmoid(capitalPerCapita, 250.0, 75.0);
+            double industrialRailExpansion = 5000.0 * areaScale * org.ether.society.core.math.SmoothMath.softplus(capitalPerCapita - 800.0, 0.0, 100.0);
             maxSustainableAgglomeration = ancientInlandBase + earlyModernExpansion + industrialRailExpansion;
         }
 

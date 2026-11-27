@@ -68,7 +68,7 @@ public final class TelemetryAstCompiler {
 
         // Socio-economic & environmental DAG
         reg("urbanizationRate", MASK_POP_FOOD_WATER | MASK_URBAN_POP_WEIGHT | MASK_ENERGY_CAPITAL);
-        reg("literacyRate", MASK_POP_FOOD_WATER | MASK_ENERGY_CAPITAL, "avgTechLevel");
+        reg("literacyRate", MASK_POP_FOOD_WATER | MASK_ENERGY_CAPITAL | MASK_URBAN_POP_WEIGHT, "avgTechLevel", "urbanizationRate");
         reg("asabiyyah", MASK_POP_FOOD_WATER | MASK_ENERGY_CAPITAL | MASK_POLITIES, "avgTechLevel");
         reg("asabiyyahSocialCohesion", 0, "asabiyyah");
         reg("currencyDebasement", 0, "avgTechLevel", "asabiyyah");

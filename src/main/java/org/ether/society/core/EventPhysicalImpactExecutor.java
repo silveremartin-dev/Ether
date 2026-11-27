@@ -281,6 +281,21 @@ public final class EventPhysicalImpactExecutor {
                     if (worldBuffer.getPollutionLevel() != null) {
                         cell.setPollutionLevel((double) worldBuffer.getPollutionLevel()[i]);
                     }
+                    if (worldBuffer.getFreshwaterAquifer() != null) {
+                        cell.setFreshwaterAquifer((double) worldBuffer.getFreshwaterAquifer()[i]);
+                    }
+                    if (worldBuffer.getWoodResource() != null) {
+                        cell.setWoodResource((double) worldBuffer.getWoodResource()[i]);
+                    }
+                    if (worldBuffer.getElevation() != null) {
+                        cell.setElevation((double) worldBuffer.getElevation()[i]);
+                    }
+                    if (worldBuffer.getRainfall() != null) {
+                        cell.setRainfall((double) worldBuffer.getRainfall()[i]);
+                    }
+                    if (worldBuffer.getFluxPressure() != null) {
+                        cell.setMovementFriction((double) worldBuffer.getFluxPressure()[i]);
+                    }
                 }
                 int prevPop = cell.getPopulationOr(0);
 
@@ -319,6 +334,21 @@ public final class EventPhysicalImpactExecutor {
                     if (cell.getBiomassLivestock() != null) worldBuffer.getBiomassLivestock()[i] = cell.getBiomassLivestock().floatValue();
                     if (cell.getPollutionLevel() != null && worldBuffer.getPollutionLevel() != null) {
                         worldBuffer.getPollutionLevel()[i] = cell.getPollutionLevel().floatValue();
+                    }
+                    if (cell.getFreshwaterAquifer() != null && worldBuffer.getFreshwaterAquifer() != null) {
+                        worldBuffer.getFreshwaterAquifer()[i] = cell.getFreshwaterAquifer().floatValue();
+                    }
+                    if (cell.getWoodResource() != null && worldBuffer.getWoodResource() != null) {
+                        worldBuffer.getWoodResource()[i] = cell.getWoodResource().floatValue();
+                    }
+                    if (cell.getElevation() != null && worldBuffer.getElevation() != null) {
+                        worldBuffer.getElevation()[i] = cell.getElevation().floatValue();
+                    }
+                    if (cell.getRainfall() != null && worldBuffer.getRainfall() != null) {
+                        worldBuffer.getRainfall()[i] = cell.getRainfall().floatValue();
+                    }
+                    if (cell.getMovementFriction() != null && worldBuffer.getFluxPressure() != null) {
+                        worldBuffer.getFluxPressure()[i] = cell.getMovementFriction().floatValue();
                     }
                 }
             }

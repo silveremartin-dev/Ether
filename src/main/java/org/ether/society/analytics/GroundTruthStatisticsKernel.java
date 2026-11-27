@@ -226,9 +226,9 @@ public final class GroundTruthStatisticsKernel {
                     ? "🟡 " + I18n.getOrDefault("analytics.status.moderate_drift", "Moderate drift")
                     : "🔴 " + I18n.getOrDefault("analytics.status.severe_drift", "Severe drift");
         } else {
-            if (pearsonR >= 0.85 && (theilUM >= 0.50 || theilUC >= 0.40)) {
+            if (mape <= 50.0 && pearsonR >= 0.85 && (theilUM >= 0.50 || theilUC >= 0.40)) {
                 status = "🟢 " + I18n.getOrDefault("analytics.status.trajectory_aligned", "Trajectory Aligned (T0 Offset)");
-            } else if (pearsonR >= 0.65 || logGrowthCorr >= 0.60) {
+            } else if (mape <= 85.0 && (pearsonR >= 0.65 || logGrowthCorr >= 0.60)) {
                 status = "🟡 " + I18n.getOrDefault("analytics.status.moderate_trend", "Moderate Trend Alignment");
             } else {
                 status = "🔴 " + I18n.getOrDefault("analytics.status.severe_drift", "Severe drift");

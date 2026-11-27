@@ -110,6 +110,7 @@ public class BagehotFractionalReserveEngine extends AbstractSimulationEngine {
                     acc.dMetalResource -= (float) liquidityInjected;
                 } else {
                     acc.dResourceCapital -= (float) (cap * creditFreezeLoss);
+                    acc.dInstitutionalComplexity -= (float) (0.04 * bankingActivation * systemicStress * dtYears);
                 }
             } else {
                 double creditExpansion = 0.02 * bankingActivation * dtYears;

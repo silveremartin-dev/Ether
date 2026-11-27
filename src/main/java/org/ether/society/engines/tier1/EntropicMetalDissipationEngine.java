@@ -71,7 +71,7 @@ public class EntropicMetalDissipationEngine extends AbstractSimulationEngine {
         double dissipated = metal - remainingMetal;
         if (dissipated > 0.0) {
             acc.dMetalResource -= (float) dissipated;
-            acc.dPollutionLevel += (float) ((dissipated / 1770.49) * 0.1);
+            acc.dPollutionLevel += (float) (org.ether.society.model.SpatialSurfaceHelper.resolveArealDensityPerKm2(buffer, i, dissipated) * 0.1);
         }
     }
 }

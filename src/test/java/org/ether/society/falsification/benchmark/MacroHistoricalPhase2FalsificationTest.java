@@ -80,6 +80,8 @@ public class MacroHistoricalPhase2FalsificationTest {
     private static final List<ScenarioRunConfig> TARGET_CONFIGS = List.of(
             new ScenarioRunConfig("pax_romana_augustus_0", "Pax Romana & Principate of Augustus (0-180 CE)",
                     4, false, "data/maps/ether/earth/0/earth_0_density.png"),
+            new ScenarioRunConfig("roman_empire", "Roman Empire & Mediterranean Integration (0-476 CE)",
+                    6, true, "data/maps/ether/earth/0/earth_0_density.png"),
             new ScenarioRunConfig("ramesses_ii", "Ramesses II, Pax Aegyptiaca & Monumental Builders (-1279 -> -1200 BCE)",
                     4, false, "data/maps/ether/earth/-1279/earth_-1279_density.png"),
             new ScenarioRunConfig("bronze_age_collapse_1200bc", "Late Bronze Age Collapse & Sea Peoples Cataclysm (-1200 -> -900 BCE)",
@@ -157,17 +159,20 @@ public class MacroHistoricalPhase2FalsificationTest {
             System.out.printf("🚀 RUNNING PHASE 2 BENCHMARK: %s [Res: %d, Years: %d -> %d]%n",
                     cfg.displayName(), cfg.resolution(), cfg.startYear(), cfg.endYear());
             System.out.println("================================================================================");
-            int targetRes = cfg.resolution();
+            int targetRes = Boolean.getBoolean("benchmark.usePresetResolution") && s.getH3Resolution() > 0
+                    ? s.getH3Resolution() : cfg.resolution();
             s.setH3Resolution(targetRes);
-            if (!cfg.windowed() && s.isClippingEnabled()) {
-                s.setClippingEnabled(false);
-                double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
-                        "worldPopulation", (double) cfg.startYear(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
-                if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
-                    s.setInitialHumanCount(Math.round(globalPopM * 1_000_000.0));
+            if (!Boolean.getBoolean("benchmark.usePresetResolution")) {
+                if (!cfg.windowed() && s.isClippingEnabled()) {
+                    s.setClippingEnabled(false);
+                    double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
+                            "worldPopulation", (double) cfg.startYear(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+                    if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
+                        s.setInitialHumanCount(Math.round(globalPopM * 1_000_000.0));
+                    }
+                } else if (!cfg.windowed()) {
+                    s.setClippingEnabled(false);
                 }
-            } else if (!cfg.windowed()) {
-                s.setClippingEnabled(false);
             }
 
             long startMs = System.currentTimeMillis();

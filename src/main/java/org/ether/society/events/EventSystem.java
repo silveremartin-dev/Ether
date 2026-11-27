@@ -224,6 +224,23 @@ public class EventSystem {
      * @param cells domain active cellular grid
      */
     public void checkEvents(int year, int month, int day, long totalPopulation, double totalFood, List<H3Cell> cells) {
+        checkEvents(year, month, day, totalPopulation, totalFood, cells, null, null, null);
+    }
+
+    /**
+     * Evaluates historical milestones, leader interventions, and stochastic natural disasters,
+     * propagating physical forcing directly into both {@link H3Cell} and DOD {@link org.ether.society.core.dod.WorldBuffer} / {@link org.ether.society.core.dod.AgentBuffer}.
+     */
+    public void checkEvents(
+            int year,
+            int month,
+            int day,
+            long totalPopulation,
+            double totalFood,
+            List<H3Cell> cells,
+            org.ether.society.core.dod.WorldBuffer worldBuffer,
+            org.ether.society.core.dod.AgentBuffer agentBuffer,
+            List<Polity> nations) {
         // 1. Historical milestone markers with exact temporal trigger
         if (enableHistoricalMilestones) {
             for (HistoricalEvent event : historicalEvents) {
@@ -290,13 +307,13 @@ public class EventSystem {
             }
         }
 
-        // 4. Apply Active Interventions Effects
-        applyActiveInterventions(year, cells);
+        // 4. Apply Active Interventions Effects (propagated directly to WorldBuffer when present)
+        applyActiveInterventions(year, cells, worldBuffer);
 
         // 5. Stochastic natural disasters (physical exogenous shocks only - famines are endogenous in Tier 1)
         if (enableRandomEvents) {
-            naturalDisasterEvaluator.checkPlague(year, month, totalPopulation, cells);
-            naturalDisasterEvaluator.checkNaturalDisasters(year, month, totalPopulation, cells);
+            naturalDisasterEvaluator.checkPlague(year, month, totalPopulation, cells, worldBuffer, agentBuffer, nations);
+            naturalDisasterEvaluator.checkNaturalDisasters(year, month, totalPopulation, cells, worldBuffer, agentBuffer, nations);
         }
         naturalDisasterEvaluator.checkAchievements(year, month, totalPopulation, cells, firedHistoricalEvents);
     }
@@ -308,7 +325,7 @@ public class EventSystem {
         checkEvents(year, month, 1, totalPopulation, totalFood, cells);
     }
 
-    private void applyActiveInterventions(int year, List<H3Cell> cells) {
+    private void applyActiveInterventions(int year, List<H3Cell> cells, org.ether.society.core.dod.WorldBuffer worldBuffer) {
         if (cells == null || cells.isEmpty()) return;
 
         // Clean expired interventions
@@ -320,23 +337,46 @@ public class EventSystem {
             return false;
         });
 
+        int wbCap = worldBuffer != null ? worldBuffer.getCapacity() : 0;
         for (HistoricalIntervention hi : activeInterventions) {
             if (!hi.isActive(year)) continue;
 
-            for (H3Cell cell : cells) {
+            for (int i = 0; i < cells.size(); i++) {
+                H3Cell cell = cells.get(i);
                 if (cell == null || cell.getLatitude() == null || cell.getLongitude() == null) continue;
                 if (hi.isInsideRadius(cell.getLatitude(), cell.getLongitude())) {
+                    boolean hasWb = (worldBuffer != null && i < wbCap);
                     if (hi.getMovementFrictionMultiplier() < 1.0) {
-                        double friction = cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0;
-                        cell.setMovementFriction(Math.max(0.2, friction * hi.getMovementFrictionMultiplier()));
+                        double friction = hasWb && worldBuffer.getFluxPressure() != null
+                                ? worldBuffer.getFluxPressure()[i]
+                                : (cell.getMovementFriction() != null ? cell.getMovementFriction() : 1.0);
+                        double newFriction = Math.max(0.2, friction * hi.getMovementFrictionMultiplier());
+                        cell.setMovementFriction(newFriction);
+                        if (hasWb && worldBuffer.getFluxPressure() != null) {
+                            worldBuffer.getFluxPressure()[i] = (float) newFriction;
+                        }
                     }
                     if (hi.getCapitalBonusGJ() != 0) {
-                        double cap = cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0;
-                        cell.setResourceCapital(Math.max(0.0, cap + (hi.getCapitalBonusGJ() / (Math.max(1, hi.getDurationYears()) * 12.0))));
+                        double deltaCap = hi.getCapitalBonusGJ() / (Math.max(1, hi.getDurationYears()) * 12.0);
+                        double cap = hasWb && worldBuffer.getResourceCapital() != null
+                                ? worldBuffer.getResourceCapital()[i]
+                                : (cell.getResourceCapital() != null ? cell.getResourceCapital() : 0.0);
+                        double newCap = Math.max(0.0, cap + deltaCap);
+                        cell.setResourceCapital(newCap);
+                        if (hasWb && worldBuffer.getResourceCapital() != null) {
+                            worldBuffer.getResourceCapital()[i] = (float) newCap;
+                        }
                     }
                     if (hi.getCarryingCapacityMultiplier() > 1.0) {
-                        double food = cell.getFoodResource() != null ? cell.getFoodResource() : 0.0;
-                        cell.setFoodResource(food * (1.0 + (hi.getCarryingCapacityMultiplier() - 1.0) * 0.05));
+                        double mult = 1.0 + (hi.getCarryingCapacityMultiplier() - 1.0) * 0.05;
+                        double food = hasWb && worldBuffer.getFoodResource() != null
+                                ? worldBuffer.getFoodResource()[i]
+                                : (cell.getFoodResource() != null ? cell.getFoodResource() : 0.0);
+                        double newFood = food * mult;
+                        cell.setFoodResource(newFood);
+                        if (hasWb && worldBuffer.getFoodResource() != null) {
+                            worldBuffer.getFoodResource()[i] = (float) newFood;
+                        }
                     }
 
                     Polity owner = cell.getOwner();

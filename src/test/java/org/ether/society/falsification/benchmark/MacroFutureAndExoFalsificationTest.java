@@ -178,9 +178,12 @@ public class MacroFutureAndExoFalsificationTest {
             System.out.printf("🚀 RUNNING FUTURE/EXO BENCHMARK: %s [Res: %d, Years: %d -> %d]%n",
                     cfg.displayName(), cfg.resolution(), cfg.startYear(), cfg.endYear());
             System.out.println("================================================================================");
-            int targetRes = cfg.resolution();
+            int targetRes = Boolean.getBoolean("benchmark.usePresetResolution") && s.getH3Resolution() > 0
+                    ? s.getH3Resolution() : cfg.resolution();
             s.setH3Resolution(targetRes);
-            if (!cfg.windowed()) s.setClippingEnabled(false);
+            if (!Boolean.getBoolean("benchmark.usePresetResolution") && !cfg.windowed()) {
+                s.setClippingEnabled(false);
+            }
 
             long startMs = System.currentTimeMillis();
             SimulationRunRecord record = HeadlessBatchRunner.executeScenarioHeadless(s);

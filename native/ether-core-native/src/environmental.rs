@@ -272,10 +272,10 @@ pub unsafe fn process_environmental(world: &mut WorldBufferRaw, dt_years: f32) {
         };
         let natural_prod = base_prod * agro_climatic_factor * dt;
 
-        let growth = natural_prod + ag_prod;
+        let wild_forage_addition = natural_prod * 0.15;
         let food_val = *((food_ptr as *mut f32).add(i));
         let retained_food = food_val * food_retention_factor;
-        *((food_ptr as *mut f32).add(i)) = (retained_food + growth).clamp(0.0, 50000.0 * area_scale);
+        *((food_ptr as *mut f32).add(i)) = (retained_food + wild_forage_addition).clamp(0.0, 50000.0 * area_scale);
 
         if bio_nat_ptr != 0 {
             let bio_val = *((bio_nat_ptr as *mut f32).add(i));
@@ -293,13 +293,21 @@ pub unsafe fn process_environmental(world: &mut WorldBufferRaw, dt_years: f32) {
         if bio_agri_ptr != 0 {
             let bio_agri_val = *((bio_agri_ptr as *mut f32).add(i));
             let cultivation_share = (((cap_per_cap / 15.0) as f64).tanh()) as f32;
+            let max_cell_agri_kg = max_ag_potential / 0.0105;
             let per_capita_ag_target = pop * (250.0 + 370.0 * cultivation_share) * cultivation_share;
             let annual_ag_flux_kg = if ag_prod > 0.0 {
                 per_capita_ag_target.max((ag_prod / dt.max(0.0001)) / 0.0105 * cultivation_share)
             } else {
                 per_capita_ag_target
+            }
+            .min(max_cell_agri_kg);
+            let ag_relax = (1.8 * dt).min(1.0);
+            let updated_agri = if bio_agri_val <= 0.0 && annual_ag_flux_kg > 0.0 && dt >= 0.05 {
+                annual_ag_flux_kg * ag_relax
+            } else {
+                bio_agri_val + (annual_ag_flux_kg - bio_agri_val) * ag_relax
             };
-            *((bio_agri_ptr as *mut f32).add(i)) = (bio_agri_val * food_retention_factor).max(annual_ag_flux_kg);
+            *((bio_agri_ptr as *mut f32).add(i)) = updated_agri.clamp(0.0, max_cell_agri_kg);
         }
     });
 }

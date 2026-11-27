@@ -838,6 +838,65 @@ Ultimately, human civilizations are revealed neither as arbitrary literary accid
 
 ---
 
+
+---
+
+<!-- BEGIN_AUTO_EMPIRICAL_SYNTHESIS -->
+## 🧪 9.5. CONSOLIDATED CALIBRATION, COUNTERFACTUAL TWINS, 9 CONTINUOUS EPOCHS & FREE-RUN TELEMETRY
+
+> **Automated Empirical Synchronization Timestamp**: `2026-11-27 02:21:42` — Total persisted runs indexed in `saves/`: **123**.
+
+### 9.5.1 Nine Continuous Gapless Macro-Epochs (`-100,000 BP` → `2026 CE`)
+
+| Epoch Key | Chronological Window | Snapshots Persisted | Initial Pop. (Sim) | Terminal Pop. (Sim) | Target Empirical Pop. | Status |
+|---|:---:|:---:|---:|---:|---:|:---:|
+| `EPOCH_1_PALEOLITHIC_DISPERSAL` | `-100000 -> -50000` | 14 | 0.20 M | 0.30 M | 1.50 M | 🟢 Persisted |
+| `EPOCH_2_UPPER_PALEOLITHIC_LGM` | `-50000 -> -10000` | 28 | 1.50 M | 4.63 M | 4.50 M | 🟢 Persisted |
+| `EPOCH_3_NEOLITHIC_FERTILE_CRESCENT` | `-10000 -> -3000` | 73 | 4.43 M | 47.02 M | 45.00 M | 🟢 Persisted |
+| `EPOCH_4_BRONZE_AGE_URBANIZATION` | `-3000 -> -500` | 29 | 44.23 M | 101.11 M | 100.00 M | 🟢 Persisted |
+| `EPOCH_5_CLASSICAL_ANTIQUITY` | `-500 -> 500` | 34 | 98.72 M | 209.78 M | 205.00 M | 🟢 Persisted |
+| `EPOCH_6_EARLY_MEDIEVAL_ISLAMIC` | `500 -> 1000` | 31 | 205.12 M | 262.97 M | 265.00 M | 🟢 Persisted |
+| `EPOCH_7_HIGH_LATE_MEDIEVAL` | `1000 -> 1500` | 33 | 264.79 M | 422.29 M | 425.00 M | 🟢 Persisted |
+| `EPOCH_8_EARLY_MODERN_GLOBAL` | `1500 -> 1850` | 22 | 424.06 M | 1283.70 M | 1260.00 M | 🟢 Persisted |
+| `EPOCH_9_INDUSTRIAL_ANTHROPOCENE` | `1850 -> 2026` | 14 | 1257.76 M | 8413.18 M | 8050.00 M | 🟢 Persisted |
+
+### 9.5.2 Steady-Regime Baseline Calibration Scenarios (5 Canonical Regimes)
+
+| Calibration Key | Chronological Window | Snapshots Persisted | Initial Pop. (Sim) | Terminal Pop. (Sim) | Target Empirical Pop. | Status |
+|---|:---:|:---:|---:|---:|---:|:---:|
+| `CLASSICAL_AGRARIAN_EXPANSION` | `-500 -> 100` | 13 | 98.72 M | 181.11 M | 180.00 M | 🟢 Persisted |
+| `HIGH_MEDIEVAL_GROWTH` | `1000 -> 1300` | 19 | 264.79 M | 402.76 M | 400.00 M | 🟢 Persisted |
+| `PRE_INDUSTRIAL_CONTINUITY` | `1500 -> 1750` | 16 | 424.06 M | 717.35 M | 710.00 M | 🟢 Persisted |
+| `SECOND_INDUSTRIAL_ACCELERATION` | `1850 -> 1910` | 11 | 1257.76 M | 1775.93 M | 1750.00 M | 🟢 Persisted |
+| `POST_WAR_GOLDEN_AGE` | `1950 -> 1990` | 11 | 2521.57 M | 5440.55 M | 5327.00 M | 🟢 Persisted |
+
+### 9.5.3 Counterfactual Bifurcation Twins (10 Runs) & Archaeological Detective Suite (3 Runs)
+
+| Counterfactual / Detective Key | Chronological Window | Snapshots Persisted | Initial Pop. (Sim) | Terminal Pop. (Sim) | Reference Target Pop. | Status |
+|---|:---:|:---:|---:|---:|---:|:---:|
+| `BRONZE_AGE_COLLAPSE_1200BCE_UNFORCED` | `-1250 -> -1150` | 11 | 49.53 M | 34.86 M | 35.00 M | 🟢 Persisted |
+| `BRONZE_AGE_COLLAPSE_1200BCE_COUNTERFACTUAL` | `-1250 -> -1150` | 11 | 49.53 M | 58.35 M | 58.00 M | 🟢 Persisted |
+| `LATE_ANTIQUE_COOLING_536CE_UNFORCED` | `530 -> 600` | 11 | 210.10 M | 182.36 M | 185.00 M | 🟢 Persisted |
+| `LATE_ANTIQUE_COOLING_536CE_COUNTERFACTUAL` | `530 -> 600` | 11 | 210.10 M | 227.70 M | 230.00 M | 🟢 Persisted |
+| `BLACK_DEATH_1347CE_UNFORCED` | `1340 -> 1400` | 11 | 376.15 M | 459.09 M | 300.00 M | 🟢 Persisted |
+| `BLACK_DEATH_1347CE_COUNTERFACTUAL` | `1340 -> 1400` | 11 | 374.85 M | 303.74 M | 310.00 M | 🟢 Persisted |
+| `COLUMBIAN_EXCHANGE_1492CE_UNFORCED` | `1490 -> 1600` | 11 | 459.98 M | 522.43 M | 520.00 M | 🟢 Persisted |
+| `COLUMBIAN_EXCHANGE_1492CE_COUNTERFACTUAL` | `1490 -> 1600` | 11 | 459.98 M | 542.93 M | 540.00 M | 🟢 Persisted |
+| `TOKUGAWA_SAKOKU_1639CE_UNFORCED` | `1630 -> 1720` | 11 | 538.99 M | 605.48 M | 610.00 M | 🟢 Persisted |
+| `TOKUGAWA_SAKOKU_1639CE_COUNTERFACTUAL` | `1630 -> 1720` | 11 | 538.99 M | 630.80 M | 635.00 M | 🟢 Persisted |
+| `HARAPPA_INDUS_COLLAPSE_1900BCE` | `-1900 -> -1500` | 11 | 34.71 M | 31.51 M | 32.00 M | 🟢 Persisted |
+| `ROMAN_THIRD_CENTURY_CRISIS_235CE` | `235 -> 284` | 14 | 190.50 M | 176.44 M | 175.00 M | 🟢 Persisted |
+| `CLASSIC_MAYA_COLLAPSE_800CE` | `800 -> 950` | 11 | 220.23 M | 231.44 M | 235.00 M | 🟢 Persisted |
+
+### 9.5.4 Multi-Century Open-Loop Free-Runs & 2025–2200 Calibrated Future Baseline
+
+| Validation Suite / Trajectory | Horizon | Recorded Points | Conservation & Stability Verdict |
+|---|:---:|:---:|---|
+| **500-Year Bronze-to-Iron Age Open-Loop Free-Run** (`LongHorizonFreeRunFalsificationTest`) | `-1279 -> -779 BCE` | 6,000 ticks (Pillar 6) | 🟢 Verified via `LongHorizonFreeRunFalsificationTest` |
+| **250-Year Post-Black Death Open-Loop Free-Run** (`LongHorizonFreeRunFalsificationTest`) | `1347 -> 1597 CE` | 3,000 ticks (Pillar 6) | 🟢 Verified via `LongHorizonFreeRunFalsificationTest` |
+| **Ether Calibrated Future Projection** (`ether_calibrated_projection_1d.json`) | `2025 -> 2200 CE` | 7 exported 1D series | 🟢 Active Baseline (`ETHER_CALIBRATED`) |
+<!-- END_AUTO_EMPIRICAL_SYNTHESIS -->
+
 ## References
 
 [^Acemoglu2001]: Acemoglu, D., Johnson, S., & Robinson, J. A. (2001). The Colonial Origins of Comparative Development: An Empirical Investigation. *American Economic Review*, 91(5), 1369–1401.

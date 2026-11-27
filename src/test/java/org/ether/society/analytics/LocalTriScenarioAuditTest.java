@@ -55,6 +55,7 @@ public class LocalTriScenarioAuditTest {
             String name,
             long startYear,
             long endYear,
+            String tickCadenceLabel,
             double durationSeconds,
             long totalTicks,
             double tps,
@@ -215,6 +216,47 @@ public class LocalTriScenarioAuditTest {
     }
 
     @Test
+    @DisplayName("Execute Heavyweight Long-Horizon High-Resolution Official Audit (Roman Empire 200 yrs Res 3, Tokugawa Japan 200 yrs Res 4)")
+    public void testExecuteHeavyweightLongHorizonHighResAudit() throws IOException {
+        System.out.println("================================================================================");
+        System.out.println("🚀 HEAVYWEIGHT LONG-HORIZON HIGH-RESOLUTION OFFICIAL AUDIT (200 YEARS EACH)");
+        System.out.println("================================================================================");
+
+        List<ScenarioAuditResult> results = new ArrayList<>();
+
+        // 1. Pax Romana -> Antonine Plague -> Severan Crisis (0 -> 200 CE, 200 years, H3 Res 3 Mediterranean ~12,391 km2/cell)
+        results.add(executeScenarioRun(
+                "roman_empire",
+                0, 200,
+                1500,
+                3,
+                "data/maps/ether/earth/200/earth_200_density.png"
+        ));
+
+        // 2. Tokugawa Edo Sakoku Autarky (1639 -> 1839 CE, 200 years, H3 Res 4 Japan ~1,770 km2/cell)
+        results.add(executeScenarioRun(
+                "tokugawa_japan",
+                1639, 1839,
+                1500,
+                4,
+                "data/maps/ether/earth/1840/earth_1840_density.png"
+        ));
+
+        assertEquals(2, results.size());
+        for (ScenarioAuditResult r : results) {
+            assertNotNull(r);
+            assertTrue(r.snapshotsCount() > 0, "Scenario " + r.key() + " must produce telemetry snapshots");
+            assertTrue(r.endPopulation() > 0, "Scenario " + r.key() + " population must remain positive");
+            assertFalse(Double.isNaN(r.endPopulation()), "Population must not be NaN");
+            assertFalse(Double.isInfinite(r.endPopulation()), "Population must not be Infinite");
+            assertTrue(r.categoryAAnomalies().isEmpty(), "No Category A code bugs or crashes allowed in " + r.key());
+        }
+
+        generateTriScenarioAuditReport(results, "LOCAL_HEAVYWEIGHT_LONG_HORIZON_AUDIT_REPORT.md",
+                "2 Heavyweight Long-Horizon High-Resolution Official Scenarios (Roman Empire 0->200 CE [H3 Res 3], Tokugawa Japan 1639->1839 CE [H3 Res 4])");
+    }
+
+    @Test
     @DisplayName("Execute Tri-Scenario Local Physical Audit Group 2 (Fertile Crescent, Late Antique Ice Age, Industrial Revolution)")
     public void testExecuteTriScenarioAuditGroup2() throws IOException {
         System.out.println("================================================================================");
@@ -320,11 +362,26 @@ public class LocalTriScenarioAuditTest {
 
         for (Map.Entry<String, Double> entry : finalMatrix.entrySet()) {
             Double initVal = initialMatrix.get(entry.getKey());
-            if (initVal != null && Math.abs(initVal - entry.getValue()) > 1e-3) {
+            if (initVal == null) {
+                modifiedPairsCount++;
+                if (sampleModifications.size() < 8) {
+                    sampleModifications.add(String.format(Locale.US, "`%s`: (emergent pair) -> %.1f",
+                            entry.getKey(), entry.getValue()));
+                }
+            } else if (Math.abs(initVal - entry.getValue()) > 1e-3) {
                 modifiedPairsCount++;
                 if (sampleModifications.size() < 8) {
                     sampleModifications.add(String.format(Locale.US, "`%s`: %.1f -> %.1f (\u0394 %+.1f)",
                             entry.getKey(), initVal, entry.getValue(), entry.getValue() - initVal));
+                }
+            }
+        }
+        for (Map.Entry<String, Double> entry : initialMatrix.entrySet()) {
+            if (!finalMatrix.containsKey(entry.getKey())) {
+                modifiedPairsCount++;
+                if (sampleModifications.size() < 8) {
+                    sampleModifications.add(String.format(Locale.US, "`%s`: %.1f -> (dissolved)",
+                            entry.getKey(), entry.getValue()));
                 }
             }
         }
@@ -443,21 +500,33 @@ public class LocalTriScenarioAuditTest {
             }
         }
 
+        long horizonYears = Math.max(1L, endYear - startYear);
+        int stepDaysInt = Math.max(1, (int) Math.round(scenario.getTemporalResolutionDays()));
+        String tickCadence = resolveTickCadenceLabel(stepDaysInt);
+        double meanCellAreaKm2 = org.ether.society.model.SpatialSurfaceHelper.resolveCellAreaKm2(h3Resolution);
+
         // Cultural Affinity Shifts (Category B / C)
         if (modifiedPairsCount == 0) {
-            catC.add("Cultural Matrix Stagnation: Zero bilateral affinity shifts occurred during 20-year horizon (peaceful border stasis)");
+            catC.add(String.format(Locale.US,
+                    "Cultural Matrix Stagnation: Zero bilateral affinity shifts occurred during %d-year horizon (peaceful border stasis)",
+                    horizonYears));
         } else {
-            catB.add(String.format(Locale.US, "Cultural Matrix Dynamic Drift: %d pairs modified by warfare/diplomacy (Mean affinity: %.1f -> %.1f)",
-                    modifiedPairsCount, initialMeanAffinity, finalMeanAffinity));
+            catB.add(String.format(Locale.US,
+                    "Cultural Matrix Dynamic Drift: %d pair(s) modified/emerged (Pairs: %d -> %d, Mean affinity: %.1f -> %.1f)",
+                    modifiedPairsCount, initialPairs, finalPairs, initialMeanAffinity, finalMeanAffinity));
         }
 
         // Add structural macro-limits (Category C)
-        catC.add(String.format(Locale.US, "H3 Res %d spatial aggregation (~12,000 km²/cell) smooths sub-regional micro-fluctuations", h3Resolution));
-        catC.add("Step integration (dt = 30 days) averages seasonal day-to-day weather extremes and intra-monthly epidemic spikes");
+        catC.add(String.format(Locale.US,
+                "H3 Res %d spatial aggregation (~%,.0f km²/cell) smooths sub-regional micro-fluctuations",
+                h3Resolution, meanCellAreaKm2));
+        catC.add(String.format(Locale.US,
+                "Step integration (dt = %d day(s), %s cadence over %d-year horizon) smooths sub-step weather and epidemic transients",
+                stepDaysInt, tickCadence, horizonYears));
         catC.add("HYDE 3.4 & Maddison datasets are reconstructed historical estimates with ±25% inherent antiquity/medieval variance");
 
         return new ScenarioAuditResult(
-                presetKey, scenario.getName(), startYear, endYear,
+                presetKey, scenario.getName(), startYear, endYear, tickCadence,
                 durationSec, totalTicks, tps, snapCount,
                 endPop, endCapital, endEnergy,
                 mapes, drifts, spatialResult, culturalAudit,
@@ -507,6 +576,19 @@ public class LocalTriScenarioAuditTest {
         return null;
     }
 
+    private static String resolveTickCadenceLabel(int dtDays) {
+        if (dtDays <= 1) return "daily";
+        if (dtDays == 7) return "weekly";
+        if (dtDays >= 28 && dtDays <= 31) return "monthly";
+        if (dtDays >= 89 && dtDays <= 92) return "quarterly";
+        if (dtDays >= 360 && dtDays <= 366) return "annual";
+        return dtDays + "-day";
+    }
+
+    private static String formatCalendarYear(long year) {
+        return year < 0 ? (-year) + " BCE" : year + " CE";
+    }
+
     private void generateTriScenarioAuditReport(List<ScenarioAuditResult> results, String fileName, String scopeDescription) {
         StringBuilder sb = new StringBuilder();
         sb.append("# 🔬 LOCAL TRI-SCENARIO PHYSICAL EXECUTION & COMPREHENSIVE ANOMALY AUDIT\n\n");
@@ -532,8 +614,9 @@ public class LocalTriScenarioAuditTest {
 
         for (ScenarioAuditResult r : results) {
             sb.append(String.format(Locale.US, "### 🔎 Scenario: `%s` (%s)\n\n", r.key(), r.name()));
-            sb.append(String.format(Locale.US, "* **Horizon**: %d to %d CE (%d years / %d monthly ticks)\n",
-                    r.startYear(), r.endYear(), r.endYear() - r.startYear(), r.totalTicks()));
+            sb.append(String.format(Locale.US, "* **Horizon**: %s to %s (%d years / %,d %s ticks)\n",
+                    formatCalendarYear(r.startYear()), formatCalendarYear(r.endYear()),
+                    r.endYear() - r.startYear(), r.totalTicks(), r.tickCadenceLabel()));
             sb.append(String.format(Locale.US, "* **Local Execution Duration**: %.2f seconds (mean throughput: %.2f TPS)\n\n",
                     r.durationSeconds(), r.tps()));
 

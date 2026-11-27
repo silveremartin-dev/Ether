@@ -99,14 +99,22 @@ public final class RegionalRasterBenchmarkExtractor {
     }
 
     /**
-     * Indicates whether an extensive global indicator lacks a spatial 2D ground-truth dataset
-     * and therefore cannot be fairly compared by downscaling a global scalar aggregate.
+     * Indicates whether a global/planetary benchmark indicator lacks a spatial 2D regional ground-truth
+     * dataset and represents a planetary-system aggregate (e.g., trans-oceanic global trade, Atlantic shipping
+     * freight, UK-led global coal share, or European national war debt) that cannot be validly evaluated
+     * against an isolated sub-global regional bounding box (such as Edo Japan Sakoku or Mediterranean Antiquity).
      *
      * @param benchKey canonical benchmark key
-     * @return {@code true} if global scalar scaling would be scientifically invalid in a regional run
+     * @return {@code true} if planetary-scalar comparison would be scientifically invalid in a regional window
      */
     public static boolean isUnrasteredExtensiveGlobalMetric(String benchKey) {
-        return "grossWorldProduct".equals(benchKey) || "primaryEnergy".equals(benchKey);
+        if (benchKey == null) return false;
+        return switch (benchKey) {
+            case "grossWorldProduct", "primaryEnergy", "globalTradeVolume",
+                 "shippingFreightCostIndex", "fossilSharePrimaryEnergy",
+                 "sovereignDebtBurden", "zeroContainmentScore" -> true;
+            default -> false;
+        };
     }
 
     /**

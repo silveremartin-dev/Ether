@@ -184,6 +184,9 @@ final class H3EngineLifecycleAndTickCoordinator {
         long initialPop = engine.currentScenario != null ? engine.currentScenario.getInitialHumanCount() : 1_000_000L;
         int estimatedAgents = (int) Math.max(engine.cells.size(), Math.min(10_000_000L, initialPop / Math.max(1, cohortSize)));
         engine.worldBuffer = new WorldBuffer(engine.cells.size());
+        if (engine.currentScenario != null && engine.currentScenario.getPlanetRadiusKm() > 0.0) {
+            engine.worldBuffer.setPlanetRadiusKm(engine.currentScenario.getPlanetRadiusKm());
+        }
 
         int cDims = engine.currentScenario != null ? engine.currentScenario.getCultureVectorDimensions() : 9;
         int agentCapacity = Math.min(10_000_000, Math.max(8192, Math.max(engine.cells.size() * 24, estimatedAgents * 8)));
@@ -250,6 +253,7 @@ final class H3EngineLifecycleAndTickCoordinator {
                 if (engine.currentScenario != null && engine.timeManager.getCurrentYear() > engine.currentScenario.getEndDateYear()) {
                     logger.info("Simulation reached scenario target end date (Year {}). Auto-pausing.", engine.currentScenario.getEndDateYear());
                     if (engine.historyManager != null) {
+                        H3BufferSyncHelper.syncBufferToCells(engine.worldBuffer, engine.cells, engine.performanceConfig);
                         engine.historyManager.captureSnapshot(engine);
                         engine.historyManager.captureWorldSnapshot(engine);
                     }
@@ -286,7 +290,8 @@ final class H3EngineLifecycleAndTickCoordinator {
                         engine.eventSystem, engine.cells, engine.worldBuffer, engine.agentBuffer);
                 engine.eventSystem.checkEvents(
                         engine.timeManager.getCurrentYear(), engine.timeManager.getCurrentMonth(), engine.timeManager.getCurrentDay(),
-                        engine.getTotalPopulation(), engine.getTotalFood(), engine.cells);
+                        engine.getTotalPopulation(), engine.getTotalFood(), engine.cells,
+                        engine.worldBuffer, engine.agentBuffer, engine.nations);
                 engine.eventSystem.checkCellEvents(
                         engine.timeManager.getCurrentYear(), engine.timeManager.getCurrentMonth(), engine.timeManager.getCurrentDay(),
                         engine.cells);
@@ -378,6 +383,7 @@ final class H3EngineLifecycleAndTickCoordinator {
             }
         }
         engine.running.set(false);
+        H3BufferSyncHelper.syncBufferToCells(engine.worldBuffer, engine.cells, engine.performanceConfig);
         if (engine.historyManager != null) {
             engine.historyManager.captureWorldSnapshot(engine);
             engine.historyManager.flushSnapshots();

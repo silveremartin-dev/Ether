@@ -31,9 +31,27 @@ public final class CohortMitosisProcessor {
      * @return updated {@code nextFreeSlotHint} pointer after allocations
      */
     public static int processMitosis(AgentBuffer agents, float targetCohortSize, long baseSeed, int nextFreeSlotHint) {
+        return processMitosis(agents, targetCohortSize, baseSeed, nextFreeSlotHint, 1.0);
+    }
+
+    /**
+     * Manages Dunbar mitosis of oversized population cohorts with organism-scaled maturation age
+     * and complete multi-dimensional cultural tensor inheritance ($0 \dots D_{\text{culture}}-1$).
+     */
+    public static int processMitosis(
+            AgentBuffer agents,
+            float targetCohortSize,
+            long baseSeed,
+            int nextFreeSlotHint,
+            double lifespanScale) {
         float[] mass = agents.getMass();
         float[] energy = agents.getEnergy();
         int[] hexIds = agents.getHexIds();
+        float[][] genetics = agents.getGenetics();
+        float[][] culture = agents.getCulture();
+        int genDims = genetics != null ? Math.min(4, genetics.length) : 0;
+        int culDims = culture != null ? culture.length : 0;
+        float scaleF = (float) Math.max(0.05, lifespanScale);
         int slotHint = nextFreeSlotHint;
 
         for (int i = 0; i < agents.getCapacity(); i++) {
@@ -51,13 +69,15 @@ public final class CohortMitosisProcessor {
                     agents.getH3Indexes()[newSlot] = agents.getH3Indexes()[i];
                     agents.getGenerationCount()[newSlot] = agents.getGenerationCount()[i] + 1;
                     float ageRnd = (float) DeterministicPRNG.nextDouble(baseSeed, 0L, newSlot, 403L);
-                    agents.getAge()[newSlot] = Math.max(16.0f, 18.0f + ageRnd * 8.0f);
+                    agents.getAge()[newSlot] = Math.max(16.0f, 18.0f + ageRnd * 8.0f) * scaleF;
 
-                    for (int d = 0; d < 4; d++) {
+                    for (int d = 0; d < genDims; d++) {
                         float mutG = (float) (DeterministicPRNG.nextDouble(baseSeed, 0L, newSlot, 405L + d) - 0.5) * 0.05f;
+                        genetics[d][newSlot] = Math.clamp(genetics[d][i] + mutG, 0.0f, 1.0f);
+                    }
+                    for (int d = 0; d < culDims; d++) {
                         float mutC = (float) (DeterministicPRNG.nextDouble(baseSeed, 0L, newSlot, 415L + d) - 0.5) * 0.05f;
-                        agents.getGenetics()[d][newSlot] = Math.clamp(agents.getGenetics()[d][i] + mutG, 0.0f, 1.0f);
-                        agents.getCulture()[d][newSlot] = Math.clamp(agents.getCulture()[d][i] + mutC, 0.0f, 1.0f);
+                        culture[d][newSlot] = Math.clamp(culture[d][i] + mutC, 0.0f, 1.0f);
                     }
                 } else {
                     break;

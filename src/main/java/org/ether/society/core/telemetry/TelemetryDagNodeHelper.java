@@ -55,7 +55,7 @@ final class TelemetryDagNodeHelper {
             case "avgTechLevel" -> c.phiExergy();
             case "primaryEnergy" -> {
                 double eMw = m.getOrDefault("energyCaptured", c.energyCapturedMw);
-                if (eMw > 0.0) yield eMw * 3.15576e-5; // MW -> EJ/yr
+                if (eMw > 0.0) yield eMw * org.ether.society.model.PhysicalUnitsHelper.EJ_PER_MW_YEAR;
                 yield CliodynamicFormulasRegistry.computePrimaryEnergyEJ(c.popLong, m.getOrDefault("avgTechLevel", c.phiExergy()));
             }
             case "kardashevScale" -> CliodynamicFormulasRegistry.computeKardashevScale(c.powerWattsPerCapita(), c.popLong);
@@ -90,21 +90,12 @@ final class TelemetryDagNodeHelper {
                 yield Math.clamp(spatialUrbanPct, 0.0, 95.0);
             }
             case "literacyRate" -> {
-                // Canonical endogenous multi-tier literacy emergence (Jack Goody, Graff 1987, Buringh 2009)
-                // Driven continuously by accumulated capital per capita kpc, power per capita, and initial info stock
+                // Canonical C^1 endogenous multi-tier literacy emergence (Goody 1986; Graff 1987; Buringh & van Zanden 2009)
+                // Continuously driven by live physical capital per capita, power per capita, and urban agglomeration
                 double kpc = c.kpc();
                 double powerW = c.powerWattsPerCapita();
-                double endogenousI = (kpc > 30.0)
-                        ? 0.12 * Math.pow(kpc - 30.0, 1.35) + 0.08 * Math.pow(Math.max(0.0, powerW - 350.0), 1.45)
-                        : 0.0;
-                double cellI = Math.max(c.initialInformationPerCapita, endogenousI);
-                if (cellI <= 25.0) {
-                    yield 0.0;
-                }
-                double scribal = 3.8 * Math.tanh(Math.max(0.0, cellI - 25.0) / 350.0);
-                double vernacular = 14.0 * Math.tanh(Math.max(0.0, cellI - 550.0) / 19000.0);
-                double massEdu = 81.7 * Math.tanh(Math.max(0.0, cellI - 30000.0) / 220000.0);
-                yield Math.clamp(scribal + vernacular + massEdu, 0.0, 99.5);
+                double urbanPct = m.getOrDefault("urbanizationRate", c.popSum > 0.0 ? (c.urbanPop / c.popSum) * 100.0 : 0.0);
+                yield CliodynamicFormulasRegistry.computeLiteracyRate(kpc, powerW, urbanPct, c.initialInformationPerCapita);
             }
             case "asabiyyah" -> {
                 if (c.polityCount > 0) yield c.avgAsabiyyahPct;
@@ -148,18 +139,17 @@ final class TelemetryDagNodeHelper {
                 }
                 double fossilIntensity = CliodynamicFormulasRegistry.computeFossilSharePrimaryEnergy(c.phiExergy()) / 100.0;
                 // Exact atmospheric carbon stoichiometry (IPCC 2006 / Global Carbon Budget / Ballantyne et al. 2012):
-                // 1 TW = 31.5576 EJ/yr; mean fossil carbon intensity ~ 20.5 kg C/GJ; airborne fraction ~ 0.44;
-                // atmospheric mass conversion factor = 2.124 GtC/ppm -> ppm/(TW*yr) = 31.5576 * 0.0205 * 0.44 / 2.124 ~ 0.1340
-                final double gjPerMwYear = 31.5576;
+                // 1 MW*yr = 31,557.6 GJ; mean fossil carbon intensity ~ 0.0205 tC/GJ; airborne fraction ~ 0.44;
+                // atmospheric mass conversion = 2.124e9 tC/ppm
+                final double gjPerMwYear = org.ether.society.model.PhysicalUnitsHelper.GJ_PER_MW_YEAR;
                 final double tonnesCPerGjFossil = 0.0205;
                 final double airborneFraction = 0.44;
                 final double tonnesCPerPpmCo2 = 2.124e9;
                 double annualFossilPpm = (fossilIntensity * c.energyCapturedMw * gjPerMwYear
                         * tonnesCPerGjFossil * airborneFraction) / tonnesCPerPpmCo2;
-                double cumDelta = Math.min(450.0, annualFossilPpm * Math.max(0.0, c.elapsedYears));
-                if (fossilIntensity <= 0.02 && c.year < 1800L) {
-                    yield Math.clamp(CliodynamicFormulasRegistry.computeCo2Concentration(c.phiExergy(), (int) c.year), 160.0, 2000.0);
-                }
+                // Pre-industrial agrarian land-use clearing carbon flux (Ruddiman 2003: ~0.002-0.015 ppm/yr)
+                double agrarianLandUsePpm = 0.008 * Math.tanh(Math.max(0.0, c.phiExergy() - 0.94) * 2.5);
+                double cumDelta = Math.min(450.0, (annualFossilPpm + agrarianLandUsePpm) * Math.max(0.0, c.elapsedYears));
                 yield Math.clamp(baseCo2 + cumDelta, 160.0, 2000.0);
             }
             case "temperatureAnomaly" -> {
@@ -191,8 +181,15 @@ final class TelemetryDagNodeHelper {
                 yield CliodynamicFormulasRegistry.computeZeroContainmentScoreFromTrade(trade);
             }
             case "megafaunaIndex" -> {
-                double denom = Math.max(1.0, c.landCellCount * 4500.0);
-                yield 100.0 * Math.clamp(c.bioNatSum / denom, 0.0, 1.0);
+                // Barnosky (2008) & Sandom et al. (2014): resolution-invariant areal wild biomass density (t/km^2)
+                // coupled with human trophic dispersal & habitat fragmentation pressure (hab/km^2)
+                double totalLandAreaKm2 = Math.max(1.0, c.landCellCount * c.cellAreaKm2);
+                double wildDensityTonnesPerKm2 = c.bioNatSum / totalLandAreaKm2;
+                double habitatFactor = Math.pow(Math.clamp(wildDensityTonnesPerKm2 / 12.0, 0.05, 1.0), 0.25);
+                double humanDensityPerKm2 = c.popSum / totalLandAreaKm2;
+                double overkillPressure = 1.0 + 3.6 * Math.pow(humanDensityPerKm2 / 0.027, 0.18)
+                        + 0.45 * Math.pow(Math.max(0.0, humanDensityPerKm2 - 2.0), 0.65);
+                yield Math.clamp((100.0 * habitatFactor) / overkillPressure, 0.0, 100.0);
             }
             case "milankovitchInsolation" -> {
                 org.ether.society.engines.tier1.MilankovitchOrbitalEngine.MilankovitchParameters params =

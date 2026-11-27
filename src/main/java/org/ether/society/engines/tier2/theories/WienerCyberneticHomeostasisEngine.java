@@ -98,20 +98,25 @@ public class WienerCyberneticHomeostasisEngine extends AbstractSimulationEngine 
         // when surplus is high, stabilize institutional/work pressure.
         double dampingAdjustment = -DAMPING_FEEDBACK_GAIN * error * dtYears;
         if (error < 0.0) {
-            double desiredEmergencyFood = Math.min(pop * 0.1, -error * pop * 0.02 * dtYears);
-            double agri = buffer.getBiomassAgriculture() != null ? Math.max(0.0, buffer.getBiomassAgriculture()[i]) : 0.0;
-            double nat = buffer.getBiomassNatural() != null ? Math.max(0.0, buffer.getBiomassNatural()[i]) : 0.0;
-            double harvestableAgri = agri * 0.15 * Math.min(1.0, dtYears);
-            double harvestableNat = nat * 0.05 * Math.min(1.0, dtYears);
-            double fromAgri = Math.min(desiredEmergencyFood, harvestableAgri);
-            double fromNat = Math.min(desiredEmergencyFood - fromAgri, harvestableNat);
-            double actualHarvest = fromAgri + fromNat;
-            if (actualHarvest > 0.0) {
-                acc.dFoodResource += (float) actualHarvest;
-                acc.dBiomassAgriculture -= (float) fromAgri;
-                acc.dBiomassNatural -= (float) fromNat;
+            double desiredEmergencyFoodGJ = Math.min(pop * 0.1, -error * pop * 0.02 * dtYears);
+            double agriKg = buffer.getBiomassAgriculture() != null ? Math.max(0.0, buffer.getBiomassAgriculture()[i]) : 0.0;
+            double natTonnes = buffer.getBiomassNatural() != null ? Math.max(0.0, buffer.getBiomassNatural()[i]) : 0.0;
+            double grainMjPerKg = org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG;
+            double floraMjPerKg = org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG;
+            double harvestableAgriGJ = org.ether.society.model.PhysicalUnitsHelper.biomassKgToEnergyGJ(
+                    agriKg * 0.15 * Math.min(1.0, dtYears), grainMjPerKg);
+            double harvestableNatGJ = org.ether.society.model.PhysicalUnitsHelper.biomassTonnesToEnergyGJ(
+                    natTonnes * 0.05 * Math.min(1.0, dtYears), floraMjPerKg);
+            double fromAgriGJ = Math.min(desiredEmergencyFoodGJ, harvestableAgriGJ);
+            double fromNatGJ = Math.min(desiredEmergencyFoodGJ - fromAgriGJ, harvestableNatGJ);
+            double actualHarvestGJ = fromAgriGJ + fromNatGJ;
+            if (actualHarvestGJ > 0.0) {
+                acc.dFoodResource += (float) actualHarvestGJ;
+                acc.dBiomassAgriculture -= (float) (org.ether.society.model.PhysicalUnitsHelper.gigajoulesToMegajoules(fromAgriGJ) / grainMjPerKg);
+                acc.dBiomassNatural -= (float) (fromNatGJ / floraMjPerKg);
             }
         }
         acc.dFluxPressure += Math.clamp(dampingAdjustment, -0.05, 0.05);
+        acc.dInstitutionalComplexity += (float) Math.clamp(dampingAdjustment * 0.25, -0.03, 0.03);
     }
 }

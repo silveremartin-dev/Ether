@@ -60,7 +60,7 @@ public class HandyNasaHybridEngine extends AbstractSimulationEngine {
         if (pop <= 0.0) return;
 
         double biomass = buffer.getBiomassNatural()[i];
-        double density = pop / 100.0;
+        double density = buffer.getPopulationDensityPerKm2(i);
         double maxBiomass = 100.0;
         double regeneration = 0.02 * biomass * Math.max(0.0, 1.0 - biomass / maxBiomass);
         // Motesharrei et al. (2014) HANDY bilinear depletion term (delta * x * y) without artificial cap

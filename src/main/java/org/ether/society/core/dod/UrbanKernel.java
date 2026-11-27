@@ -86,43 +86,56 @@ public class UrbanKernel {
 
             // 2. Institutional Maintenance Overhead (Tainter Law of Diminishing Marginal Returns):
             double cappedComp = SmoothMath.softmin(5.0, newComp, 4.0);
-            double baselineDepreciation = 0.02;
-            double complexityOverhead = 0.001 * Math.pow(Math.max(0.0, cappedComp), 1.5);
-            double depreciationRate = SmoothMath.softmin(0.08, baselineDepreciation + complexityOverhead, 40.0);
+            double baselineTurnover = 0.04;
+            double complexityOverhead = 0.0008 * Math.pow(Math.max(0.0, cappedComp), 1.5);
+            double effectiveDepreciationRate = SmoothMath.softmin(0.075, baselineTurnover + complexityOverhead, 40.0);
 
-            // 3. Physical Capital Steady-State Convergence & Accumulation (Solow 1956, Swan 1956, Garrett 2011, Krausmann et al. 2017):
-            // Steady-state material capital stock per capita k* scales thermodynamically with available power above somatic hearth baseline (~348 W):
+            // 3. Physical Capital Steady-State Convergence (Solow 1956, Swan 1956, Garrett 2011, Krausmann et al. 2017):
+            // Single-responsibility base physical capital ODE: \dot{k} = \delta_0 \cdot k^* - \delta_{\text{eff}}(C) \cdot k
             double powerPerCapitaW = world.computeCellPowerWattsPerCapita(i);
             double kStar = 5.0
                     + 580.0 * Math.tanh(SmoothMath.softplus(powerPerCapitaW - 348.0, 0.2) / 38.0)
                     + 62.0 * Math.pow(SmoothMath.softplus(powerPerCapitaW - 400.0, 0.1) / 100.0, 1.95);
 
-            // In mobile hunter-gatherer bands (low population p < 50), somatic transport bounds capital stock to portable tools (AGENTS.md A§8)
+            // In mobile hunter-gatherer bands (low population p < 50), somatic transport bounds capital stock to portable tools (AGENTS.md §8)
             double bandConstraint = SmoothMath.sigmoid(p, 50.0, 15.0);
             kStar = 5.0 * (1.0 - bandConstraint) + kStar * bandConstraint;
 
             // Sedentary infrastructure (mudbrick/masonry/granaries/plows) requires agricultural biomass
-            // or high-power industrial grids; mobile foraging bands cannot transport stationary infrastructure (AGENTS.md A§8).
+            // or high-power industrial grids; mobile foraging bands cannot transport stationary infrastructure (AGENTS.md §8).
             float[] agri = world.getBiomassAgriculture();
             float cellAgri = (agri != null && i < agri.length) ? agri[i] : 0.0f;
             double agriActivation = SmoothMath.sigmoid(cellAgri, 150.0, 25.0);
             double industrialActivation = SmoothMath.sigmoid(powerPerCapitaW, 520.0, 25.0);
             double sedentaryCapability = Math.max(agriActivation, industrialActivation);
-            kStar = 5.0 + (kStar - 5.0) * sedentaryCapability;
+            // Krausmann et al. (2017): sedentary agrarian masonry, granaries, canals & plows sustain ~145 kg/cap above foraging tools
+            double agrarianMasonryStock = 145.0 * Math.tanh(Math.max(0.0, cellAgri) / (p * 180.0 + 1.0)) * bandConstraint;
+            kStar = 5.0 + (kStar - 5.0 + agrarianMasonryStock) * sedentaryCapability;
 
-            // Physical capital dynamics: Solow-Swan accumulation with thermodynamic exergy feedback:
-            // \dot{k} = \delta \cdot (k^* - k) + s \cdot y_{\text{pc}}
-            // Net gross capital investment from active surplus power above subsistence (Krausmann 2017; Ayres 2009):
-            // s = 0.20 (global gross fixed capital formation share), productive power converted at ~0.08 kg material capital per Watt-year:
-            double netProductiveSurplusW = Math.max(0.0, powerPerCapitaW - 380.0);
-            double grossAnnualInvestmentPerCapita = 0.08 * 0.20 * netProductiveSurplusW * sedentaryCapability;
-
-            // Physical capital depreciation rate delta = 4.0% per year (entropy of physical structures/tools)
-            double deltaAnnual = 0.04;
-            double dCapitalPerCapita = (deltaAnnual * (kStar - capitalPerCapita) + grossAnnualInvestmentPerCapita) * dtInYears;
+            double dCapitalPerCapita = (baselineTurnover * kStar - effectiveDepreciationRate * capitalPerCapita) * dtInYears;
             double targetCapital = Math.max(0.0, (capitalPerCapita + dCapitalPerCapita) * p);
             double decayedCap = capital[i] * decayCapital;
-            capital[i] = (float) (activeSettlement * targetCapital + (1.0 - activeSettlement) * decayedCap);
+            float nextCap = (float) (activeSettlement * targetCapital + (1.0 - activeSettlement) * decayedCap);
+
+            // Lavoisier mass conservation on net positive capital formation (Krausmann et al. 2017 stoichiometry: 5% metal, 7% timber, 10% clay)
+            double netAddedKg = nextCap - capital[i];
+            if (netAddedKg > 0.0) {
+                double consumedTonnes = netAddedKg * 1.0e-3;
+                double dtClamped = Math.min(1.0, Math.max(0.0001, dtInYears));
+                float[] metalArr = world.getMetalResource();
+                if (metalArr != null && i < metalArr.length && metalArr[i] > 0.0f) {
+                    metalArr[i] = (float) Math.max(0.0, metalArr[i] - Math.min(metalArr[i] * 0.05 * dtClamped, consumedTonnes * 0.05));
+                }
+                float[] woodArr = world.getWoodResource();
+                if (woodArr != null && i < woodArr.length && woodArr[i] > 0.0f) {
+                    woodArr[i] = (float) Math.max(0.0, woodArr[i] - Math.min(woodArr[i] * 0.05 * dtClamped, consumedTonnes * 0.07));
+                }
+                float[] clayArr = world.getClayResource();
+                if (clayArr != null && i < clayArr.length && clayArr[i] > 0.0f) {
+                    clayArr[i] = (float) Math.max(0.0, clayArr[i] - Math.min(clayArr[i] * 0.05 * dtClamped, consumedTonnes * 0.10));
+                }
+            }
+            capital[i] = nextCap;
 
             // 4. Smooth Tainter Simplification: when complexity overextends beyond physical capital, complexity contracts
             double maintenanceDrag = SmoothMath.sigmoid(newComp, 4.0, 0.8);

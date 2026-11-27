@@ -109,6 +109,19 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
      * Evaluates territorial adjacency, war desire, and resolves border skirmishes.
      */
     public static void processGeopoliticalConflicts(List<Polity> nations, List<H3Cell> cells, org.ether.society.model.Scenario scenario) {
+        processGeopoliticalConflicts(nations, cells, null, null, scenario);
+    }
+
+    /**
+     * Executes geopolitical conflict pass across active nations, reading and writing live DOD {@link org.ether.society.core.dod.WorldBuffer}
+     * observables when present so wartime casualties, capital destruction, and camp epidemics persist in the simulation.
+     */
+    public static void processGeopoliticalConflicts(
+            List<Polity> nations,
+            List<H3Cell> cells,
+            org.ether.society.core.dod.WorldBuffer wb,
+            Map<Long, Integer> h3ToSlot,
+            org.ether.society.model.Scenario scenario) {
         if (nations == null || nations.size() < 2) return;
 
         // Precompute bounding boxes once per tick for all nations (O(N) total)
@@ -162,7 +175,7 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
                     // Continuous escalation threshold (Bueno de Mesquita 1981): border skirmishes escalate when net war desire is positive
                     double escalationProbability = org.ether.society.core.math.SmoothMath.sigmoid(warDesire, 0.0, 0.12);
                     if (escalationProbability > 0.50) {
-                        resolveBorderBattle(aggressor, defender, contact);
+                        resolveBorderBattle(aggressor, defender, contact, wb, h3ToSlot);
                         if (scenario != null) {
                             // Border clash degrades bilateral diplomatic affinity dynamically
                             double affinityDrop = 2.0 + 10.0 * escalationProbability;
@@ -273,7 +286,7 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
      */
     private record ForceProfile(long force, double capital, double mobility, double capitalPerCapita) {}
 
-    private static ForceProfile computeForceProfile(Polity polity) {
+    private static ForceProfile computeForceProfile(Polity polity, org.ether.society.core.dod.WorldBuffer wb, Map<Long, Integer> h3ToSlot) {
         if (polity == null || polity.getTerritory() == null || polity.getTerritory().isEmpty()) {
             return new ForceProfile(0L, 0.0, 0.0, 20.0);
         }
@@ -284,23 +297,38 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
         int count = 0;
         for (H3Cell c : polity.getTerritory()) {
             if (c == null) continue;
-            force += c.getPop15to24Or(0);
-            double cap = c.getResourceCapitalOr(0.0);
-            capital += cap;
-            mobility += c.getBiomassLivestockOr(0.0) * 0.2 + c.getResourceOilOr(0.0) * 0.5;
-            capitalPerCapitaSum += cap / Math.max(1.0, (double) c.getPopulationOr(1));
+            Integer slot = (wb != null && h3ToSlot != null && c.getH3Index() != null) ? h3ToSlot.get(c.getH3Index()) : null;
+            if (slot != null && slot >= 0 && slot < wb.getCapacity()) {
+                double pop = Math.max(0.0, wb.getHumanPopulation()[slot]);
+                force += Math.round(pop * 0.16);
+                double cap = Math.max(0.0, wb.getResourceCapital()[slot]);
+                capital += cap;
+                mobility += wb.getBiomassLivestock()[slot] * 0.2 + wb.getResourceOil()[slot] * 0.5;
+                capitalPerCapitaSum += cap / Math.max(1.0, pop);
+            } else {
+                force += c.getPop15to24Or(0);
+                double cap = c.getResourceCapitalOr(0.0);
+                capital += cap;
+                mobility += c.getBiomassLivestockOr(0.0) * 0.2 + c.getResourceOilOr(0.0) * 0.5;
+                capitalPerCapitaSum += cap / Math.max(1.0, (double) c.getPopulationOr(1));
+            }
             count++;
         }
         double avgKpc = count > 0 ? capitalPerCapitaSum / count : 20.0;
         return new ForceProfile(force, capital, mobility, avgKpc);
     }
 
-    private static void resolveBorderBattle(Polity aggressor, Polity defender, BorderContact contact) {
+    private static void resolveBorderBattle(
+            Polity aggressor,
+            Polity defender,
+            BorderContact contact,
+            org.ether.society.core.dod.WorldBuffer wb,
+            Map<Long, Integer> h3ToSlot) {
         if (contact == null) return;
         double borderFriction = contact.avgFriction();
 
-        ForceProfile aggProfile = computeForceProfile(aggressor);
-        ForceProfile defProfile = computeForceProfile(defender);
+        ForceProfile aggProfile = computeForceProfile(aggressor, wb, h3ToSlot);
+        ForceProfile defProfile = computeForceProfile(defender, wb, h3ToSlot);
 
         long aggressorForce = aggProfile.force();
         long defenderForce = defProfile.force();
@@ -337,13 +365,19 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
         defender.setTreasuryBullion(Math.max(0.0, defender.getTreasuryBullion() * (1.0 - defCostFraction)));
 
         for (H3Cell c : aggressor.getTerritory()) {
-            if (c != null && c.getResourceCapital() != null) {
-                c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.997));
+            if (c == null) continue;
+            if (c.getResourceCapital() != null) c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.997));
+            Integer slot = (wb != null && h3ToSlot != null && c.getH3Index() != null) ? h3ToSlot.get(c.getH3Index()) : null;
+            if (slot != null && slot >= 0 && slot < wb.getCapacity()) {
+                wb.getResourceCapital()[slot] = Math.max(0.0f, wb.getResourceCapital()[slot] * 0.997f);
             }
         }
         for (H3Cell c : defender.getTerritory()) {
-            if (c != null && c.getResourceCapital() != null) {
-                c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.996));
+            if (c == null) continue;
+            if (c.getResourceCapital() != null) c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.996));
+            Integer slot = (wb != null && h3ToSlot != null && c.getH3Index() != null) ? h3ToSlot.get(c.getH3Index()) : null;
+            if (slot != null && slot >= 0 && slot < wb.getCapacity()) {
+                wb.getResourceCapital()[slot] = Math.max(0.0f, wb.getResourceCapital()[slot] * 0.996f);
             }
         }
 
@@ -367,6 +401,16 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
             }
 
             if (conqueredCell != null) {
+                Integer conqSlot = (wb != null && h3ToSlot != null && conqueredCell.getH3Index() != null)
+                        ? h3ToSlot.get(conqueredCell.getH3Index()) : null;
+                if (conqSlot != null && conqSlot >= 0 && conqSlot < wb.getCapacity()) {
+                    int livePop = Math.max(0, Math.round(wb.getHumanPopulation()[conqSlot]));
+                    if (livePop != conqueredCell.getPopulationOr(0)) {
+                        conqueredCell.setPopulation(livePop);
+                        org.ether.society.database.H3CellPhysicsAndStateHelper.updateAgePyramidFromObservables(conqueredCell);
+                    }
+                    conqueredCell.setResourceCapital((double) wb.getResourceCapital()[conqSlot]);
+                }
                 defender.removeCell(conqueredCell);
                 aggressor.addCell(conqueredCell);
                 conqueredCell.setBoundaryCell(true);
@@ -465,7 +509,24 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
 
                 // Collateral infrastructure & capital destruction on the battlefield cell
                 double cellCap = conqueredCell.getResourceCapitalOr(0.0);
-                conqueredCell.setResourceCapital(Math.max(0.0, cellCap * (1.0 - 0.25 * casualtyRate)));
+                double survivingCap = Math.max(0.0, cellCap * (1.0 - 0.25 * casualtyRate));
+                conqueredCell.setResourceCapital(survivingCap);
+                if (conqSlot != null && conqSlot >= 0 && conqSlot < wb.getCapacity()) {
+                    wb.getHumanPopulation()[conqSlot] = (float) conqueredCell.getPopulationOr(10);
+                    wb.getResourceCapital()[conqSlot] = (float) survivingCap;
+                    if (conqueredCell.getFertility() != null) {
+                        wb.getFertility()[conqSlot] = conqueredCell.getFertility().floatValue();
+                    }
+                    if (conqueredCell.getLifespan() != null) {
+                        wb.getLifespan()[conqSlot] = conqueredCell.getLifespan().floatValue();
+                    }
+                    if (conqueredCell.getEpidemicInfectedOr(0) > 0) {
+                        var seirMod = org.ether.society.core.engine.SimulationEngineRegistry.getInstance().getEngine("SpatialMetapopulationSEIREngine");
+                        if (seirMod instanceof SpatialMetapopulationSEIREngine seir) {
+                            seir.seedInfection(conqSlot, (float) conqueredCell.getEpidemicInfectedOr(0));
+                        }
+                    }
+                }
 
                 logger.info("War Resolution: Nation '{}' conquered frontline border cell {} from Nation '{}' (Boundary Friction: {}). Casualties: {} military, {} civilian.",
                         aggressor.getName(), conqueredCell.getH3Index(), defender.getName(),

@@ -64,11 +64,16 @@ public class LenskiPureEngine extends AbstractSimulationEngine {
             double complexity = (compArr != null) ? compArr[i] : 0.0;
             double rMinusG = 0.05 - 0.02 * Math.tanh(kPerCap / 1000.0);
             double muExtract = 0.20 + 0.70 * SmoothMath.sigmoid(rMinusG, 0.0, 0.02) * SmoothMath.sigmoid(complexity, 0.25, 0.10);
-            double targetGini = Math.clamp(0.20 + muExtract * gMax, 0.20, 0.75);
+            double targetGini = Math.clamp(Math.max(calculateLenskiGini(kPerCap), 0.20 + muExtract * gMax), 0.20, 0.75);
 
             if (giniArr != null) {
                 float currentGini = giniArr[i] > 0.0f ? giniArr[i] : 0.35f;
                 giniArr[i] = (float) Math.clamp(currentGini + 0.04 * (targetGini - currentGini) * deltaYears, 0.18, 0.80);
+            }
+            // Lenski (1966) extractive rent-seeking drag in high-inequality agrarian regimes
+            if (capArr != null && targetGini > 0.45 && kPerCap > sMin) {
+                double drag = Math.min(0.25, 0.025 * (targetGini - 0.45) * deltaYears);
+                capArr[i] = (float) Math.max(p * sMin, capital * (1.0 - drag));
             }
         }
     }

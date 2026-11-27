@@ -136,22 +136,22 @@ public final class TelemetrySubscription {
             "realUnskilledWage",
             "politicalStressIndex",
             "asabiyyahSocialCohesion",
-            "conflict",
             "sociopoliticalInstability",
             "gini",
             "sovereignDebtBurden",
             "globalTradeVolume",
             "temperatureAnomaly",
             "soilErosionRate",
-            "soilNPK",
             "agriculturalEroei",
             "deforestationRate",
             "informationSpeed",
+            "megafaunaIndex",
+            "milankovitchInsolation",
+            "zeroContainmentScore",
             "lifeExpectancy",
             "metalSmeltingPerCapita",
             "fossilSharePrimaryEnergy",
-            "shippingFreightCostIndex",
-            "zeroContainmentScore"
+            "shippingFreightCostIndex"
     );
 
     /** Empty default subscription: zero metrics, zero spatial queries, zero runtime overhead. */

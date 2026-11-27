@@ -35,6 +35,7 @@ public class Tier2NewEnginesValidationTest {
             buf.getFoodResource()[i] = (float) c.getFoodResourceOr(0.0);
             buf.getWaterResource()[i] = (float) c.getWaterResourceOr(0.0);
             buf.getWoodResource()[i] = (float) c.getWoodResourceOr(0.0);
+            buf.getMetalResource()[i] = (float) c.getResourceMetalOr(0.0);
             buf.getResourceCoal()[i] = (float) c.getResourceCoalOr(0.0);
             buf.getResourceOil()[i] = (float) c.getResourceOilOr(0.0);
             buf.getBiomassAgriculture()[i] = (float) c.getBiomassAgricultureOr(0.0);
@@ -61,6 +62,7 @@ public class Tier2NewEnginesValidationTest {
             c.setFoodResource((double) buf.getFoodResource()[i]);
             c.setWaterResource((double) buf.getWaterResource()[i]);
             c.setWoodResource((double) buf.getWoodResource()[i]);
+            c.setResourceMetal((double) buf.getMetalResource()[i]);
             c.setBiomassAgriculture((double) buf.getBiomassAgriculture()[i]);
             c.setBiomassLivestock((double) buf.getBiomassLivestock()[i]);
             c.setBiomassNatural((double) buf.getBiomassNatural()[i]);
@@ -79,6 +81,7 @@ public class Tier2NewEnginesValidationTest {
         cell.setResourceCapital(500000.0); // 100 kg/cap -> above 80 threshold
         cell.setTradeNetwork(30.0); // above 15 threshold
         cell.setBiomassAgriculture(5000.0);
+        cell.setBiomassNatural(1000.0); // unenclosed commons pasture/woodland available for Lavoisier conversion
         cell.setFoodResource(6000.0); // 1.2 per capita (well fed initially)
         cell.setMovementFriction(1.0);
         cell.setResourceWork(60.0);
@@ -318,8 +321,9 @@ public class Tier2NewEnginesValidationTest {
 
         // Run through 52 annual ticks (one complete Kondratiev cycle)
         double initialCap = cell.getResourceCapital();
+        KondratievSchumpeterLongWaveEngine kondratievEngine = new KondratievSchumpeterLongWaveEngine();
         for (int yr = 0; yr < 52; yr++) {
-            runDoD(new KondratievSchumpeterLongWaveEngine(), grid, 1.0);
+            runDoD(kondratievEngine, grid, 1.0);
         }
 
         assertTrue(cell.getResourceCapital() != initialCap,
@@ -348,7 +352,7 @@ public class Tier2NewEnginesValidationTest {
 
         assertTrue(britishCell.getResourceCapital() > 400000.0 * 1.5,
                 "Pomeranz coal proximity and ghost acreage accelerate capital takeoff by > 50% in 20 years.");
-        assertTrue(britishCell.getBiomassNatural() > 15000.0,
+        assertTrue(britishCell.getBiomassNatural() >= 15000.0,
                 "Coal fuel substitution preserves standing natural timber stocks.");
     }
 

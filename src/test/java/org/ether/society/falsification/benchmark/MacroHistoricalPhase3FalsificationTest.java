@@ -80,6 +80,8 @@ public class MacroHistoricalPhase3FalsificationTest {
                     3, false, "data/maps/ether/earth/-25000/earth_-25000_density.png"),
             new ScenarioRunConfig("younger_dryas", "Younger Dryas & Natufian Climatic Shock (-10,900 -> -9,500 BP)",
                     4, false, "data/maps/ether/earth/-10900/earth_-10900_density.png"),
+            new ScenarioRunConfig("benchmark_standard", "Benchmark Standard Planetary Scenario (-10,000 -> -5,000 BCE)",
+                    3, false, "data/maps/ether/earth/-10000/earth_-10000_density.png"),
             new ScenarioRunConfig("green_sahara", "Green Sahara & African Humid Period (-6000 -> -3500 BCE)",
                     4, false, "data/maps/ether/earth/-6000/earth_-6000_density.png"),
             new ScenarioRunConfig("ancient_egypt", "Ancient Egypt & Early Dynastic Nile Valley (-3000 -> -1000 BCE)",
@@ -166,17 +168,20 @@ public class MacroHistoricalPhase3FalsificationTest {
             System.out.printf("🚀 RUNNING PHASE 3 BENCHMARK: %s [Res: %d, Years: %d -> %d]%n",
                     cfg.displayName(), cfg.resolution(), cfg.startYear(), cfg.endYear());
             System.out.println("================================================================================");
-            int targetRes = cfg.resolution();
+            int targetRes = Boolean.getBoolean("benchmark.usePresetResolution") && s.getH3Resolution() > 0
+                    ? s.getH3Resolution() : cfg.resolution();
             s.setH3Resolution(targetRes);
-            if (!cfg.windowed() && s.isClippingEnabled()) {
-                s.setClippingEnabled(false);
-                double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
-                        "worldPopulation", (double) cfg.startYear(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
-                if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
-                    s.setInitialHumanCount(Math.round(globalPopM * 1_000_000.0));
+            if (!Boolean.getBoolean("benchmark.usePresetResolution")) {
+                if (!cfg.windowed() && s.isClippingEnabled()) {
+                    s.setClippingEnabled(false);
+                    double globalPopM = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
+                            "worldPopulation", (double) cfg.startYear(), HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+                    if (!Double.isNaN(globalPopM) && globalPopM > 0.0) {
+                        s.setInitialHumanCount(Math.round(globalPopM * 1_000_000.0));
+                    }
+                } else if (!cfg.windowed()) {
+                    s.setClippingEnabled(false);
                 }
-            } else if (!cfg.windowed()) {
-                s.setClippingEnabled(false);
             }
 
             long startMs = System.currentTimeMillis();

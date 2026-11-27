@@ -92,8 +92,7 @@ public class StructuralDemographicBifurcationEngine extends AbstractSimulationEn
             float capital = capArr != null ? capArr[i] : 100.0f;
             float food = foodArr != null ? foodArr[i] : 1000.0f;
 
-            double areaKm2 = 1770.49;
-            double density = pop / areaKm2;
+            double density = buffer.getPopulationDensityPerKm2(i);
             double foodPerCap = food / Math.max(1.0, pop);
             double mmp = Math.clamp((1.5 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0), 0.2, 5.0);
 

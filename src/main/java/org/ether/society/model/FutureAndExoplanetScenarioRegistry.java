@@ -135,7 +135,8 @@ public final class FutureAndExoplanetScenarioRegistry {
         s7.setInitialFoodReserveMonths(1.5);
         s7.setInitialInformationPerCapita(500000.0);
         s7.setPopulationDensityType("URBAN_CLUSTERS");
-        s7.setTargetCohortSize(250);
+        s7.setTargetCohortSize(10000);
+        s7.setTemporalResolutionDays(30.0);
         s7.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s7.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s7.setDescription("""
@@ -261,7 +262,8 @@ public final class FutureAndExoplanetScenarioRegistry {
         s9.setInitialFoodReserveMonths(3.0);
         s9.setInitialInformationPerCapita(5000000.0);
         s9.setPopulationDensityType("URBAN_CLUSTERS");
-        s9.setTargetCohortSize(250);
+        s9.setTargetCohortSize(10000);
+        s9.setTemporalResolutionDays(30.0);
         s9.setPlanetPreset(PlanetPreset.EARTH_LIKE);
         s9.setEcologyPreset(EcologyPreset.EARTH_STANDARD);
         s9.setDescription("""

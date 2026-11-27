@@ -66,8 +66,40 @@ public class LenskiEcologicalEvolutionaryEngine extends AbstractSimulationEngine
     }
 
     @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (buffer == null || buffer.getHumanPopulation() == null || dtYears <= 0.0) return;
+        float p = buffer.getHumanPopulation()[i];
+        if (p <= 0.001f) return;
+        float capital = (buffer.getResourceCapital() != null) ? buffer.getResourceCapital()[i] : 10.0f;
+        float kPerCap = capital / p;
+        double sMin = 15.0;
+        double gMax = Math.clamp(1.0 - (sMin / Math.max(sMin + 1.0, (double) kPerCap)), 0.0, 0.85);
+        double complexity = (buffer.getInstitutionalComplexity() != null) ? buffer.getInstitutionalComplexity()[i] : 0.0;
+        double rMinusG = 0.05 - 0.02 * Math.tanh(kPerCap / 1000.0);
+        double muExtract = 0.20 + 0.70 * org.ether.society.core.math.SmoothMath.sigmoid(rMinusG, 0.0, 0.02)
+                * org.ether.society.core.math.SmoothMath.sigmoid(complexity, 0.25, 0.10);
+        double lenskiBaseGini = LenskiPureEngine.calculateLenskiGini(kPerCap);
+        double targetGini = Math.clamp(Math.max(lenskiBaseGini, 0.20 + muExtract * gMax), 0.20, 0.75);
+        if (buffer.getGiniIndex() != null) {
+            float currentGini = buffer.getGiniIndex()[i] > 0.0f ? buffer.getGiniIndex()[i] : 0.35f;
+            float nextGini = (float) Math.clamp(currentGini + 0.04 * (targetGini - currentGini) * dtYears, 0.18, 0.80);
+            acc.dGiniIndex += (nextGini - currentGini);
+        }
+        if (targetGini > 0.45 && kPerCap > sMin) {
+            double drag = Math.min(0.25, 0.025 * (targetGini - 0.45) * dtYears);
+            double nextCap = Math.max(p * sMin, capital * (1.0 - drag));
+            acc.dResourceCapital += (float) (nextCap - capital);
+        }
+    }
+
+    @Override
     public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
-        processBuffer(buffer, dtYears);
+        super.tick(buffer, dtYears, dtMonthly);
     }
 
     @Override

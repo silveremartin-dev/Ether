@@ -188,6 +188,39 @@ public class InvariantConservationGuard {
      * @return the resulting computation or state reference
      */
     public double getRelativeTolerance() { return relativeTolerance; }
+
+    /**
+     * Enforces non-negativity, finiteness, and physical domain bounds across primary
+     * conserved {@link WorldBuffer} observables at the end of a simulation tick.
+     *
+     * @param buffer active DOD world buffer
+     * @return count of clamped/sanitized out-of-bounds cell entries
+     */
+    public static int enforcePositivityAndBounds(WorldBuffer buffer) {
+        if (buffer == null) return 0;
+        int n = buffer.getCapacity();
+        int clamped = 0;
+        float[] pop = buffer.getHumanPopulation();
+        float[] cap = buffer.getResourceCapital();
+        float[] food = buffer.getFoodResource();
+        float[] bioNat = buffer.getBiomassNatural();
+        float[] bioAgr = buffer.getBiomassAgriculture();
+        float[] bioLiv = buffer.getBiomassLivestock();
+        float[] gini = buffer.getGiniIndex();
+        for (int i = 0; i < n; i++) {
+            if (pop != null && (!Float.isFinite(pop[i]) || pop[i] < 0.0f)) { pop[i] = 0.0f; clamped++; }
+            if (cap != null && (!Float.isFinite(cap[i]) || cap[i] < 0.0f)) { cap[i] = 0.0f; clamped++; }
+            if (food != null && (!Float.isFinite(food[i]) || food[i] < 0.0f)) { food[i] = 0.0f; clamped++; }
+            if (bioNat != null && (!Float.isFinite(bioNat[i]) || bioNat[i] < 0.0f)) { bioNat[i] = 0.0f; clamped++; }
+            if (bioAgr != null && (!Float.isFinite(bioAgr[i]) || bioAgr[i] < 0.0f)) { bioAgr[i] = 0.0f; clamped++; }
+            if (bioLiv != null && (!Float.isFinite(bioLiv[i]) || bioLiv[i] < 0.0f)) { bioLiv[i] = 0.0f; clamped++; }
+            if (gini != null) {
+                if (!Float.isFinite(gini[i])) { gini[i] = 0.35f; clamped++; }
+                else if (gini[i] < 0.0f || gini[i] > 1.0f) { gini[i] = Math.clamp(gini[i], 0.0f, 1.0f); clamped++; }
+            }
+        }
+        return clamped;
+    }
     /**
      * Is throw on violation.
      *

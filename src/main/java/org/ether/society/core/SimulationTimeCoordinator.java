@@ -40,6 +40,10 @@ import java.util.Locale;
  * @since 1.0.0
  */
 public class SimulationTimeCoordinator {
+    /** Internal state: initial anchor year (int). */
+    private int startYear;
+    /** Internal state: exact accumulated astronomical Julian days since startYear. */
+    private double elapsedJulianDays;
     /** Internal state: current year (int). */
     private int currentYear;
     private int currentMonth; // 0-11 (0 = January)
@@ -55,6 +59,8 @@ public class SimulationTimeCoordinator {
      * @param startYear The starting year (negative for BC)
      */
     public SimulationTimeCoordinator(int startYear) {
+        this.startYear = startYear;
+        this.elapsedJulianDays = 0.0;
         this.currentYear = startYear;
         this.currentMonth = 0;
         this.currentDay = 1;
@@ -82,14 +88,26 @@ public class SimulationTimeCoordinator {
     }
 
     /**
-     * Advances time by one discrete canonical simulation time step.
+     * Advances time by one exact canonical simulation time step without calendar rounding drift.
+     * Uses exact IAU Julian years ($365.25\text{ days}$) and synodic months ($30.4375\text{ days}$),
+     * guaranteeing zero multi-millennial drift between {@link SimulationTimeStep#dtYears()} and calendar year.
      */
     public void advanceTick() {
-        advanceDays((int) Math.round(timeStep.dtDays()));
+        elapsedJulianDays += timeStep.dtDays();
+        totalTicks++;
+        final double daysPerYear = org.ether.society.model.PhysicalConstants.DAYS_PER_JULIAN_YEAR;
+        final double daysPerMonth = org.ether.society.model.PhysicalConstants.DAYS_PER_SYNODIC_MONTH;
+        long fullYears = (long) Math.floor((elapsedJulianDays + 1.0e-9) / daysPerYear);
+        double remDaysInYear = Math.max(0.0, elapsedJulianDays - fullYears * daysPerYear);
+        int m = Math.min(11, (int) Math.floor((remDaysInYear + 1.0e-9) / daysPerMonth));
+        double remDaysInMonth = Math.max(0.0, remDaysInYear - m * daysPerMonth);
+        this.currentYear = (int) (this.startYear + fullYears);
+        this.currentMonth = m;
+        this.currentDay = Math.clamp((int) Math.floor(remDaysInMonth + 1.0e-9) + 1, 1, 30);
     }
 
     /**
-     * Advances time by one day.
+     * Advances time by one schematic calendar day (30-day schematic month for step-by-step UI controls).
      */
     public void advanceDay() {
         currentDay++;
@@ -98,11 +116,12 @@ public class SimulationTimeCoordinator {
             advanceMonth();
         } else {
             totalTicks++;
+            syncElapsedJulianDaysFromCalendar();
         }
     }
 
     /**
-     * Advances time by the specified number of days.
+     * Advances time by the specified number of schematic days.
      */
     public void advanceDays(int days) {
         int count = Math.max(1, days);
@@ -112,7 +131,7 @@ public class SimulationTimeCoordinator {
     }
 
     /**
-     * Advances time by one month.
+     * Advances time by one calendar month.
      */
     public void advanceMonth() {
         currentDay = 1;
@@ -122,6 +141,14 @@ public class SimulationTimeCoordinator {
             currentYear++;
         }
         totalTicks++;
+        syncElapsedJulianDaysFromCalendar();
+    }
+
+    private void syncElapsedJulianDaysFromCalendar() {
+        long yearDelta = (long) this.currentYear - (long) this.startYear;
+        this.elapsedJulianDays = yearDelta * org.ether.society.model.PhysicalConstants.DAYS_PER_JULIAN_YEAR
+                + this.currentMonth * org.ether.society.model.PhysicalConstants.DAYS_PER_SYNODIC_MONTH
+                + Math.max(0, this.currentDay - 1);
     }
 
     /**
@@ -229,6 +256,7 @@ public class SimulationTimeCoordinator {
         this.currentMonth = Math.max(0, Math.min(11, month));
         this.currentDay = Math.max(1, Math.min(30, day));
         this.totalTicks = Math.max(0, totalTicks);
+        syncElapsedJulianDaysFromCalendar();
     }
 
     /**
@@ -246,6 +274,8 @@ public class SimulationTimeCoordinator {
      * @param startYear The year to reset to
      */
     public void reset(int startYear) {
+        this.startYear = startYear;
+        this.elapsedJulianDays = 0.0;
         this.currentYear = startYear;
         this.currentMonth = 0;
         this.currentDay = 1;

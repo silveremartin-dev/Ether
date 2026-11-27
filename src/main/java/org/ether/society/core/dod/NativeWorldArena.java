@@ -11,13 +11,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 
-/**
- * Zero-Copy Native Off-Heap Arena managing direct unmanaged memory segments for a
- * {@link WorldBuffer} and {@link AgentBuffer} across high-frequency simulation ticks.
- *
- * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.3
- */
+/** Zero-copy native off-heap arena managing direct unmanaged segments for {@link WorldBuffer} and {@link AgentBuffer}. */
 public class NativeWorldArena implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(NativeWorldArena.class);
 
@@ -254,6 +248,15 @@ public class NativeWorldArena implements AutoCloseable {
             if (wb.getInstitutionalComplexity() != null) MemorySegment.copy(wb.getInstitutionalComplexity(), 0, institutionalComplexitySeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getLocalPrice() != null) MemorySegment.copy(wb.getLocalPrice(), 0, localPriceSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getEnergyFoodConsumed() != null) MemorySegment.copy(wb.getEnergyFoodConsumed(), 0, energyFoodConsumedSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getEnergyWind() != null) MemorySegment.copy(wb.getEnergyWind(), 0, energyWindSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getEnergySolar() != null) MemorySegment.copy(wb.getEnergySolar(), 0, energySolarSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getEnergyFire() != null) MemorySegment.copy(wb.getEnergyFire(), 0, energyFireSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getEnergySlaves() != null) MemorySegment.copy(wb.getEnergySlaves(), 0, energySlavesSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getMetalResource() != null) MemorySegment.copy(wb.getMetalResource(), 0, metalResourceSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getClayResource() != null) MemorySegment.copy(wb.getClayResource(), 0, clayResourceSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getGiniIndex() != null) MemorySegment.copy(wb.getGiniIndex(), 0, giniIndexSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getFluxPressure() != null) MemorySegment.copy(wb.getFluxPressure(), 0, fluxPressureSeg, ValueLayout.JAVA_FLOAT, 0, count);
+            if (wb.getStorage() != null) MemorySegment.copy(wb.getStorage(), 0, storageSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getResourceCoal() != null) MemorySegment.copy(wb.getResourceCoal(), 0, resourceCoalSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getResourceOil() != null) MemorySegment.copy(wb.getResourceOil(), 0, resourceOilSeg, ValueLayout.JAVA_FLOAT, 0, count);
             if (wb.getResourceGas() != null) MemorySegment.copy(wb.getResourceGas(), 0, resourceGasSeg, ValueLayout.JAVA_FLOAT, 0, count);
@@ -276,11 +279,14 @@ public class NativeWorldArena implements AutoCloseable {
             if (ab != null) {
                 int aCount = Math.min(agentCapacity, ab.getCapacity());
                 if (ab.getHexIds() != null) MemorySegment.copy(ab.getHexIds(), 0, hexIdsSeg, ValueLayout.JAVA_INT, 0, aCount);
+                if (ab.getH3Indexes() != null) MemorySegment.copy(ab.getH3Indexes(), 0, agentH3Seg, ValueLayout.JAVA_LONG, 0, aCount);
                 if (ab.getMass() != null) MemorySegment.copy(ab.getMass(), 0, massSeg, ValueLayout.JAVA_FLOAT, 0, aCount);
                 if (ab.getEnergy() != null) MemorySegment.copy(ab.getEnergy(), 0, energySeg, ValueLayout.JAVA_FLOAT, 0, aCount);
+                if (ab.getSigmaCost() != null) MemorySegment.copy(ab.getSigmaCost(), 0, sigmaCostSeg, ValueLayout.JAVA_FLOAT, 0, aCount);
                 if (ab.getAge() != null) MemorySegment.copy(ab.getAge(), 0, ageSeg, ValueLayout.JAVA_FLOAT, 0, aCount);
                 if (ab.getBirths() != null) MemorySegment.copy(ab.getBirths(), 0, birthsSeg, ValueLayout.JAVA_FLOAT, 0, aCount);
                 if (ab.getDeaths() != null) MemorySegment.copy(ab.getDeaths(), 0, deathsSeg, ValueLayout.JAVA_FLOAT, 0, aCount);
+                if (ab.getGenerationCount() != null) MemorySegment.copy(ab.getGenerationCount(), 0, genCountSeg, ValueLayout.JAVA_INT, 0, aCount);
 
                 if (ab.getGenetics() != null) {
                     float[][] gen = ab.getGenetics();
@@ -310,6 +316,9 @@ public class NativeWorldArena implements AutoCloseable {
             syncOrganismProfile(wb.getOrganismProfile());
             int count = Math.min(capacity, wb.getCapacity());
             if (wb.getFoodResource() != null) MemorySegment.copy(foodResourceSeg, ValueLayout.JAVA_FLOAT, 0, wb.getFoodResource(), 0, count);
+            if (wb.getWoodResource() != null) MemorySegment.copy(woodResourceSeg, ValueLayout.JAVA_FLOAT, 0, wb.getWoodResource(), 0, count);
+            if (wb.getMetalResource() != null) MemorySegment.copy(metalResourceSeg, ValueLayout.JAVA_FLOAT, 0, wb.getMetalResource(), 0, count);
+            if (wb.getClayResource() != null) MemorySegment.copy(clayResourceSeg, ValueLayout.JAVA_FLOAT, 0, wb.getClayResource(), 0, count);
             if (wb.getHumanPopulation() != null) MemorySegment.copy(humanPopulationSeg, ValueLayout.JAVA_FLOAT, 0, wb.getHumanPopulation(), 0, count);
             if (wb.getBiomassLivestock() != null) MemorySegment.copy(biomassLivestockSeg, ValueLayout.JAVA_FLOAT, 0, wb.getBiomassLivestock(), 0, count);
             if (wb.getBiomassNatural() != null) MemorySegment.copy(biomassNaturalSeg, ValueLayout.JAVA_FLOAT, 0, wb.getBiomassNatural(), 0, count);
@@ -319,15 +328,21 @@ public class NativeWorldArena implements AutoCloseable {
             if (wb.getLocalPrice() != null) MemorySegment.copy(localPriceSeg, ValueLayout.JAVA_FLOAT, 0, wb.getLocalPrice(), 0, count);
             if (wb.getEnergyFoodConsumed() != null) MemorySegment.copy(energyFoodConsumedSeg, ValueLayout.JAVA_FLOAT, 0, wb.getEnergyFoodConsumed(), 0, count);
             if (wb.getCommercialFluxVolume() != null) MemorySegment.copy(commercialFluxVolumeSeg, ValueLayout.JAVA_FLOAT, 0, wb.getCommercialFluxVolume(), 0, count);
+            if (wb.getGiniIndex() != null) MemorySegment.copy(giniIndexSeg, ValueLayout.JAVA_FLOAT, 0, wb.getGiniIndex(), 0, count);
+            if (wb.getLifespan() != null) MemorySegment.copy(lifespanSeg, ValueLayout.JAVA_FLOAT, 0, wb.getLifespan(), 0, count);
+            if (wb.getFluxPressure() != null) MemorySegment.copy(fluxPressureSeg, ValueLayout.JAVA_FLOAT, 0, wb.getFluxPressure(), 0, count);
 
             if (ab != null) {
                 int aCount = Math.min(agentCapacity, ab.getCapacity());
                 if (ab.getHexIds() != null) MemorySegment.copy(hexIdsSeg, ValueLayout.JAVA_INT, 0, ab.getHexIds(), 0, aCount);
+                if (ab.getH3Indexes() != null) MemorySegment.copy(agentH3Seg, ValueLayout.JAVA_LONG, 0, ab.getH3Indexes(), 0, aCount);
                 if (ab.getMass() != null) MemorySegment.copy(massSeg, ValueLayout.JAVA_FLOAT, 0, ab.getMass(), 0, aCount);
                 if (ab.getEnergy() != null) MemorySegment.copy(energySeg, ValueLayout.JAVA_FLOAT, 0, ab.getEnergy(), 0, aCount);
+                if (ab.getSigmaCost() != null) MemorySegment.copy(sigmaCostSeg, ValueLayout.JAVA_FLOAT, 0, ab.getSigmaCost(), 0, aCount);
                 if (ab.getAge() != null) MemorySegment.copy(ageSeg, ValueLayout.JAVA_FLOAT, 0, ab.getAge(), 0, aCount);
                 if (ab.getBirths() != null) MemorySegment.copy(birthsSeg, ValueLayout.JAVA_FLOAT, 0, ab.getBirths(), 0, aCount);
                 if (ab.getDeaths() != null) MemorySegment.copy(deathsSeg, ValueLayout.JAVA_FLOAT, 0, ab.getDeaths(), 0, aCount);
+                if (ab.getGenerationCount() != null) MemorySegment.copy(genCountSeg, ValueLayout.JAVA_INT, 0, ab.getGenerationCount(), 0, aCount);
 
                 if (ab.getGenetics() != null) {
                     float[][] gen = ab.getGenetics();

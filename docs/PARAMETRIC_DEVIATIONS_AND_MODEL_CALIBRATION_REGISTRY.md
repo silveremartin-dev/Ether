@@ -83,9 +83,10 @@ The foundational purpose of this registry is **epistemic transparency and algori
 * **Canonical Published Formulation**:
   * Discontinuous Liebig Law of the Minimum: $Y = \min(R_1/k_1, R_2/k_2, \dots, R_n/k_n)$ with non-differentiable gradient jumps.
 * **Calibrated Ether Formulation**:
-  * Continuous $C^\infty$ softmin representation of multi-nutrient soil balance (N-P-K) coupled to atmospheric carbon dilution:
+  * Continuous $C^\infty$ softmin representation of multi-nutrient soil balance (N-P-K) coupled to atmospheric carbon dilution and Lavoisier-conserved SI caloric conversion ($e_{\text{grain}} = 15.0\text{ MJ/kg} = 0.015\text{ GJ/kg}$, debiting harvested mass from `biomassAgriculture`):
     $$L(\text{N}, \text{P}, \text{K}) = \text{softmin}\left(\frac{\text{N}}{\text{N}_0}, \; \text{softmin}\left(\frac{\text{P}}{\text{P}_0}, \; \frac{\text{K}}{\text{K}_0}, \; 8.0\right), \; 8.0\right)$$
     $$D_{\text{protein}}(\text{CO}_2) = 1.0 - \delta_{\max} \cdot \tanh\left(\frac{\max(0, \text{CO}_2 - 280.0)}{350.0}\right)$$
+    $$\Delta M_{\text{harv}} = \min(0.50\,B_{\text{agr}},\; 0.12\,B_{\text{agr}}\,L\,D_{\text{protein}}\,\Delta t), \qquad \Delta F = \Delta M_{\text{harv}} \cdot 0.015\text{ GJ/kg}, \qquad \Delta B_{\text{agr}} = 0.20\,B_{\text{agr}}(L D_{\text{protein}} - 1)\Delta t - \Delta M_{\text{harv}}$$
 * **Parameters, Material Properties & Physical Units**:
   * $\text{C:N:P} = 106:16:1$ molar ($\approx 41.1 : 7.23 : 1.0$ by mass): Redfield marine invariant.
   * Plant foliar C fraction $= 0.45$: Terrestrial autotroph carbon mass fraction.
@@ -403,15 +404,15 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 16: USLE Topsoil Erosion Agrarian Ard Activation
-* **Subsystem**: `PedologyKernel.java`
+### Entry 16: USLE Topsoil Erosion Agrarian Ard & Mechanized Tillage Activation
+* **Subsystem**: `PedologyKernel.java` & `CliodynamicFormulasRegistry.java`
 * **Canonical Literature**:
   * Montgomery, D. R. (2007). *Soil erosion and agricultural sustainability*. PNAS, 104(33), 13268–13272.
   * Wischmeier, W. H., & Smith, D. D. (1978). *Predicting rainfall erosion losses*. USDA Agricultural Handbook No. 537.
 * **Canonical Published Formulation**:
   * Universal Soil Loss Equation: $A = R \cdot K_{\text{soil}} \cdot LS \cdot C \cdot P$ [$\text{t/ha/year}$].
 * **Calibrated Ether Formulation**:
-  $$E_{\text{soil}} = \max\left(0.03, \; 0.03 + 35.0 \cdot \tanh(\max(0.0, \Phi_{\text{exergy}} - 0.88) \cdot 2.5) \cdot C_{\text{slope}} \right) \quad [\text{t/ha/year}]$$
+  $$E_{\text{soil}}(\Phi) = \operatorname{clamp}\!\left( 23.5 \tanh\!\left(\max(0.0, \Phi_{\text{exergy}} - 0.93)^{1.30} \cdot 2.4\right) + \frac{42.0}{1.0 + \exp\!\left(-\frac{\Phi_{\text{exergy}} - 2.05}{0.25}\right)}, \; 0.0, \; 75.0 \right)$$
 * **Parameters & Physical Units**:
   * $E_{\text{soil}}$: Topsoil loss rate [$\text{metric tons/ha/year}$].
   * $0.03\text{ t/ha/year}$: Pristine Holocene background geological weathering rate (Montgomery 2007).
@@ -570,18 +571,18 @@ The foundational purpose of this registry is **epistemic transparency and algori
     $$\dot{K} = s Y - \delta K = s A K^\alpha L^{1-\alpha} - \delta K$$
   * Garrett (2011) proposes that global physical economic capacity is thermodynamically tied to current primary power consumption: $P(t) = \lambda \cdot K(t)$, where $\lambda \approx 9.7 \pm 0.3\text{ mW per 1990 USD}$.
 * **Calibrated Ether Formulation**:
-  * To eliminate abstract non-physical variables ($A(t)$, abstract currency $Y$) and avoid numerical singularities during demographic collapses ($N \to 0$), Ether formalizes physical capital $k_{\text{pc}} = K / N$ (kg of durable material infrastructure, tools, machines per capita; Krausmann et al. 2017) as an analytical $O(1)$ ODE coupled to useful dissipated mechanical/electrical power per capita $P_{\text{watts}}$:
-    $$\dot{k}_{\text{pc}} = \delta \cdot (k^* - k_{\text{pc}}) + \dot{i}_{\text{gross}}$$
-  * The thermodynamic steady-state target capital $k^*(P_{\text{watts}})$ scales with power above somatic/hearth subsistence ($P_0 \approx 348\text{ W}$):
-    $$k^* = 5.0 + 580.0 \tanh\left(\frac{\text{softplus}(P_{\text{watts}} - 348.0, 0.2)}{38.0}\right) + 62.0 \cdot \left(\frac{\text{softplus}(P_{\text{watts}} - 400.0, 0.1)}{100.0}\right)^{1.95}$$
-  * Gross capital formation from useful exergy surplus:
-    $$\dot{i}_{\text{gross}} = \gamma \cdot s \cdot \max(0.0, P_{\text{watts}} - 380.0) \cdot \text{sedentaryCapability}$$
-    where $s = 0.20$ is the global gross fixed capital formation share, and $\gamma \approx 0.08\text{ kg}/(\text{Watt}\cdot\text{year})$ represents the physical capital synthesis yield per unit continuous surplus power.
+  * To eliminate abstract non-physical variables ($A(t)$, abstract currency $Y$), prevent double-counting with pluggable Tier 2 theories, and avoid numerical singularities during demographic collapses ($N \to 0$), Ether establishes `UrbanKernel` / `urban.rs` as the single-responsibility owner of baseline physical capital $k_{\text{pc}} = K / N$ (kg of durable material infrastructure, tools, masonry, and machinery per capita; Krausmann et al. 2017) coupled to useful somatic + exosomatic power per capita $P_{\text{watts}}$ (including domesticated draft animal traction) and Tainter institutional maintenance drag $\delta_{\text{eff}}(C)$:
+    $$\dot{k}_{\text{pc}} = \delta_0 \cdot k^*(P_{\text{watts}}, B_{\text{agr}}, N) - \delta_{\text{eff}}(C) \cdot k_{\text{pc}}$$
+    $$\delta_{\text{eff}}(C) = \operatorname{softmin}\!\left(0.075,\; \delta_0 + 0.0008 \cdot \max(0, \operatorname{softmin}(5.0, C, 4.0))^{1.5},\; 40.0\right)$$
+  * The thermodynamic and sedentary agrarian steady-state target capital $k^*$ scales smoothly above somatic/hearth subsistence ($P_0 \approx 348\text{ W}$):
+    $$k^*_{\text{pow}} = 5.0 + 580.0 \tanh\left(\frac{\text{softplus}(P_{\text{watts}} - 348.0, 0.2)}{38.0}\right) + 62.0 \cdot \left(\frac{\text{softplus}(P_{\text{watts}} - 400.0, 0.1)}{100.0}\right)^{1.95}$$
+    $$k^*_{\text{agr}} = 145.0 \tanh\!\left(\frac{\max(0, B_{\text{agr}})}{180 N + 1}\right) \cdot \sigma(N, 50, 15)$$
+    $$k^* = 5.0 + \left[(k^*_{\text{pow}} - 5.0)\,\sigma(N, 50, 15) + k^*_{\text{agr}}\right] \cdot \text{sedentaryCapability}$$
+    with Lavoisier raw-material debit ($5\%$ metal, $7\%$ timber, $10\%$ clay) applied on net positive capital additions $\Delta K^+ > 0$ in both Java and Rust.
 * **Parameters, Material Properties & Physical Units**:
-  * $k_{\text{pc}}$: Physical capital stock per capita [$\text{kg/person}$] ($5\text{ kg}$ Paleolithic tools, $120\text{ kg}$ Neolithic/agrarian infrastructure, $4\,500\text{--}15\,000\text{ kg}$ 20th century industrial built environment; Krausmann et al. 2017).
-  * $P_{\text{watts}}$: Continuous useful power dissipation per capita [$\text{W/person}$] (somatic basal + fire + draft + hydraulic + fossil/electric grid).
-  * $\delta = 0.04\text{ yr}^{-1}$: Physical infrastructure entropic depreciation rate ($4\%$ annual depreciation of buildings, masonry, machinery, and tools).
-  * $s = 0.20$: Gross fixed capital formation savings share ($20\%$ of surplus exergy redirected to structural investment).
+  * $k_{\text{pc}}$: Physical capital stock per capita [$\text{kg/person}$] ($5\text{ kg}$ Paleolithic tools, $150\text{--}450\text{ kg}$ sedentary agrarian masonry/granaries/plows, $4\,500\text{--}16\,500\text{ kg}$ industrial built environment; Krausmann et al. 2017).
+  * $P_{\text{watts}}$: Continuous useful power dissipation per capita [$\text{W/person}$] (somatic basal + fire + draft animal traction + hydraulic/wind + fossil/electric grid).
+  * $\delta_0 = 0.04\text{ yr}^{-1}$: Baseline physical infrastructure entropic turnover rate ($4\%/\text{yr}$), rising to $\delta_{\text{eff}}(C) \le 0.075\text{ yr}^{-1}$ under high Tainter complexity overhead.
   * $\text{sedentaryCapability} = \max(\sigma(B_{\text{agr}}, 150, 25), \sigma(P_{\text{watts}}, 520, 25))$: Biophysical mobility constraint preventing mobile hunter-gatherer bands from accumulating stationary capital stock.
 * **Academic Justification & Root Cause of Divergence**:
   1. *Replacement of Abstract Technology with Conserved Exergy*: Canonical Solow-Swan treats technology $A$ as an exogenous residual (Solow residual) without energy conservation constraints. In Ether, capital accumulation is grounded in physical thermodynamics: structural machinery cannot be built or maintained without continuous useful power dissipation.
@@ -638,12 +639,12 @@ The foundational purpose of this registry is **epistemic transparency and algori
 | **13** | Tier 2 | Chalcolithic Gate | Hotelling (1931), Radivojević (2010) | Third-order Hill furnace gate $k^3/(k^3+65^3)$ | Enforces Pleistocene zero-smelting without calendar hacks ($k_{\text{chalco}} = 65\text{ kg/cap}$) |
 | **14** | Tier 2 | Carrier Bandwidth | Shannon (1948), Brillouin (1956) | $B = B_0 + \alpha_k k_{\text{pc}} + \alpha_p p_{\text{exo}}^2$ | Grounds communication bandwidth in physical roads and power ($B_0 = 1\text{ Hz}$) |
 | **15** | Tier 2 | SDT Stress Index | Turchin (2016), Goldstone (1991) | Normalized spatial $\Psi \in [0, 100]$ | Spatial normalization of local demographic/food/Gini stress to Seshat $[0, 100]$ scale |
-| **16** | Tier 2 | Soil Erosion Gate | Montgomery (2007), USDA | $\tanh(\max(0, \Phi - 0.88) \cdot 2.5)$ | Preserves $0.03\text{ t/ha/yr}$ geological baseline for foragers |
+| **16** | Tier 2 | Soil Erosion Gate | Montgomery (2007), USDA | Two-regime ard + mechanized tillage $E_{\text{soil}}(\Phi)$ | Preserves $0\%$ Paleolithic baseline; separates ard plow from deep mechanized tillage |
 | **17** | Tier 2 | Krugman Agglomeration | Krugman (1991), Fujita et al. (1999) | Centripetal $\Phi_{\text{cent}}$ vs. centrifugal congestion $dK_i/dt$ | $O(N_{\text{cells}})$ continuous cellular formulation on H3 mesh |
 | **18** | Tier 2 | Areal Entropic Dissipation | Bihouix (2014) | $\Delta P_i \propto \Delta M_i / A_{\text{cell}, i}$ | Resolution-invariant intensive areal concentration on H3 mesh ($\lambda_{\text{diss}} = 0.015\text{ yr}^{-1}$) |
 | **19** | Tier 2 | Ricardo Differential Rent | Ricardo (1817), Sraffa (1960) | $\text{Margin}_{\text{ext}} = \sigma(N/(B_{\text{agr}}+1) - 1.25, 0.40)$ | Profit compression & Gini dilation from cultivating diminishing extensive margins |
 | **20** | Tier 2 | Lewis Dual-Sector Model | Lewis (1954), Ranis & Fei (1961) | $\text{TurningPoint} = \sigma(k_{\text{pc}}, 250, 40) \cdot \sigma(\text{Trade}, 20, 5)$ | Continuous transition from surplus labor phase to induced capital-deepening mechanization |
 | **21** | Tier 2 | Kondratiev Long Wave | Kondratiev (1925), Schumpeter (1939) | $\phi(t) = \sin(2\pi(t-1780)/52)$, creative destruction trough | Infrastructure cycle coupled to physical capital scrapping and scrap metal recovery |
 | **22** | Tier 2 | Pomeranz Great Divergence | Pomeranz (2000), Allen (2009), Wrigley | $\mathcal{P}_{\text{div}} = \text{CoalProx} \cdot (1 + 0.8 \cdot \text{GhostAcreage})$ | Energy transport proximity & transoceanic land relief driving takeoff vs organic involution |
-| **23** | Tier 2 | Solow-Swan Capital Accumulation | Solow (1956), Garrett (2011), Ayres (2009) | $\dot{k}_{\text{pc}} = \delta(k^* - k_{\text{pc}}) + \dot{i}_{\text{gross}}$, $k^*(P_{\text{watts}})$ | Thermodynamic grounding of capital formation in useful surplus power, replacing abstract Solow residual |
+| **23** | Tier 1 | Solow-Swan Capital Accumulation | Solow (1956), Garrett (2011), Krausmann (2017) | $\dot{k}_{\text{pc}} = \delta_0 k^*(P_{\text{watts}}, B_{\text{agr}}, N) - \delta_{\text{eff}}(C) k_{\text{pc}}$ | Single-responsibility base capital ODE with sedentary agrarian masonry stock & Lavoisier debit |
 | **24** | Tier 1 | Two-Phase Radioecological Decay | UNSCEAR (2000), Steinhauser et al. (2014) | Piecewise chemical ($0.92^{\Delta t}$) vs $^{137}\text{Cs}$ half-life ($T_{1/2}=30\text{ yr}$) | Single-variable memory closure ensuring nuclear exclusion zones ($P>1500$) remain uninhabitable for $>80\text{ yr}$ |

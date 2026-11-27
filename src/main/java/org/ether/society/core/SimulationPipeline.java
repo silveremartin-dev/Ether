@@ -40,6 +40,10 @@ public class SimulationPipeline {
     private org.ether.society.core.dod.NativeRustBridge.NativeWorldArena cachedNativeArena = null;
     private int cachedNativeArenaCapacity = -1;
     private int cachedNativeArenaAgentCapacity = -1;
+    private float[] cachedPopBeforeEngines = null;
+    private java.util.Map<Long, Integer> cachedH3ToSlot = null;
+    private long cachedH3FirstIndex = 0L;
+    private int cachedH3SlotCapacity = -1;
 
     public SimulationPipeline(DemographicKernel demographicKernel,
                               UrbanKernel urbanKernel,
@@ -138,6 +142,7 @@ public class SimulationPipeline {
                     cachedNativeArenaCapacity = cap;
                 }
                 long sSeed = activeScenario != null && activeScenario.getSeed() != 0L ? activeScenario.getSeed() : 42L;
+                long cSeed = cultureKernel != null ? cultureKernel.getBaseSeed() : sSeed;
                 long tickCount = engine != null ? engine.getTickCounter() : 1L;
                 float dtY = timeStep.dtYearsF();
                 float dtSec = timeStep.dtSecondsF();
@@ -147,7 +152,7 @@ public class SimulationPipeline {
                 cachedNativeArena.tickDemographic(demographicKernel.getTargetCohortSize(), dtY, sSeed);
                 cachedNativeArena.tickUrban(dtY);
                 cachedNativeArena.tickFlux(dtSec);
-                cachedNativeArena.tickCulture(dtY, cultureKernel.getDiffusionRate(), cultureKernel.getForcingRate(), cultureKernel.getMutationRate(), sSeed, tickCount);
+                cachedNativeArena.tickCulture(dtY, cultureKernel.getDiffusionRate(), cultureKernel.getForcingRate(), cultureKernel.getMutationRate(), cSeed, tickCount);
                 cachedNativeArena.syncToJavaBuffers(worldBuffer, agentBuffer);
                 executedNative = true;
             } catch (Throwable t) {
@@ -170,6 +175,16 @@ public class SimulationPipeline {
 
         profiler.endPhase("3_DemographicsAndCulture");
 
+        // Snapshot living human population prior to Tier 1 & Tier 2 passes so any exogenous/cliodynamic
+        // demographic changes (SEIR epidemics, wet-bulb lethality, warfare, SDT crises) are closed onto AgentBuffer.mass
+        int wbCap = worldBuffer.getCapacity();
+        if (agentBuffer != null && worldBuffer.getHumanPopulation() != null) {
+            if (cachedPopBeforeEngines == null || cachedPopBeforeEngines.length < wbCap) {
+                cachedPopBeforeEngines = new float[wbCap];
+            }
+            System.arraycopy(worldBuffer.getHumanPopulation(), 0, cachedPopBeforeEngines, 0, wbCap);
+        }
+
         // --- Phase 1b: Essential Tier 1 Biophysical Engines (Thermodynamics, Degradation, Pollution, Metallurgy) ---
         profiler.beginPhase("3b_Tier1Biophysical");
         typeBPassRunner.executeActiveTier1Engines(worldBuffer, dtYears, dtMonthly, activeScenario);
@@ -180,17 +195,24 @@ public class SimulationPipeline {
 
         boolean runTier2 = perfConfig == null || perfConfig.isEnableTier2Cliodynamics();
         if (runTier2 && engine != null && engine.getWorldBuffer() != null) {
-            typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), dtYears, dtMonthly, activeScenario, compiledKernel);
+            WorldBuffer wb = engine.getWorldBuffer();
+            typeBPassRunner.executeActiveTypeBEngines(wb, dtYears, dtMonthly, activeScenario, compiledKernel);
 
             if (engine.getNations() != null && !engine.getNations().isEmpty()) {
-                WorldBuffer wb = engine.getWorldBuffer();
                 long[] h3Idx = wb.getH3Indexes();
-                java.util.Map<Long, Integer> h3ToSlot = new java.util.HashMap<>(wb.getCapacity());
-                for (int s = 0; s < wb.getCapacity(); s++) {
-                    if (h3Idx[s] != 0L) h3ToSlot.put(h3Idx[s], s);
+                long firstH3 = (h3Idx != null && h3Idx.length > 0) ? h3Idx[0] : 0L;
+                if (cachedH3ToSlot == null || cachedH3SlotCapacity != wb.getCapacity() || cachedH3FirstIndex != firstH3) {
+                    cachedH3ToSlot = new java.util.HashMap<>(wb.getCapacity());
+                    if (h3Idx != null) {
+                        for (int s = 0; s < wb.getCapacity() && s < h3Idx.length; s++) {
+                            if (h3Idx[s] != 0L) cachedH3ToSlot.put(h3Idx[s], s);
+                        }
+                    }
+                    cachedH3SlotCapacity = wb.getCapacity();
+                    cachedH3FirstIndex = firstH3;
                 }
                 for (org.ether.society.database.Polity p : engine.getNations()) {
-                    if (p != null) p.syncBufferIndices(h3ToSlot);
+                    if (p != null) p.syncBufferIndices(cachedH3ToSlot);
                 }
                 java.util.Map<String, Boolean> states = activeScenario != null ? activeScenario.getTypeBEngineStates() : null;
                 if (states == null || Boolean.TRUE.equals(states.get("CliodynamicsEngine"))) {
@@ -198,7 +220,8 @@ public class SimulationPipeline {
                 }
                 if (states == null || Boolean.TRUE.equals(states.get("WarDiplomacyEngine"))) {
                     if (cells != null && !cells.isEmpty()) {
-                        org.ether.society.engines.tier2.theories.WarDiplomacyEngine.processGeopoliticalConflicts(engine.getNations(), cells, activeScenario);
+                        org.ether.society.engines.tier2.theories.WarDiplomacyEngine.processGeopoliticalConflicts(
+                                engine.getNations(), cells, wb, cachedH3ToSlot, activeScenario);
                     }
                 }
                 if (states == null || Boolean.TRUE.equals(states.get("SovereignTreasuryBondEngine"))) {
@@ -206,6 +229,12 @@ public class SimulationPipeline {
                 }
             }
         }
+
+        // Enforce strict demographic mass conservation closure between WorldBuffer.humanPopulation and AgentBuffer.mass
+        if (agentBuffer != null && cachedPopBeforeEngines != null && worldBuffer.getHumanPopulation() != null) {
+            H3BufferSyncHelper.reconcileEngineDemographicDeltas(worldBuffer, agentBuffer, cachedPopBeforeEngines, wbCap);
+        }
+        org.ether.society.core.dod.InvariantConservationGuard.enforcePositivityAndBounds(worldBuffer);
 
         profiler.endPhase("4_ProceduralEngines");
     }

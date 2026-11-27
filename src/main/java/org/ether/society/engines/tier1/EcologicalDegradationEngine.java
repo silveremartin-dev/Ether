@@ -114,7 +114,7 @@ public class EcologicalDegradationEngine extends AbstractSimulationEngine {
             newPollution = attenuatedPollution;
             if (pop > 0.0) {
                 double capPerCapita = buffer.getResourceCapital()[i] / Math.max(1.0, pop);
-                double popDensity = pop / 1770.49;
+                double popDensity = buffer.getPopulationDensityPerKm2(i);
                 double industrialGate = SmoothMath.sigmoid(capPerCapita, 1500.0, 350.0);
                 double fossilCombustion = (buffer.getResourceCoal()[i] * 0.05 + buffer.getResourceOil()[i] * 0.08 + buffer.getResourceGas()[i] * 0.04) * industrialGate;
                 double miningGate = SmoothMath.sigmoid(capPerCapita, 1100.0, 250.0);

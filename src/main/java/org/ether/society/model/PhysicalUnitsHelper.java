@@ -57,6 +57,12 @@ public final class PhysicalUnitsHelper {
     /** Exact number of Watts corresponding to an energy flux of $1\,\text{GJ/yr}$ ($10^9 / 31\,557\,600 \approx 31.6880878\,\text{W}$). */
     public static final double WATTS_PER_GJ_PER_YEAR = JOULES_PER_GJ / SECONDS_PER_JULIAN_YEAR;
 
+    /** Exact number of Gigajoules integrated over one IAU Julian year per Megawatt ($10^6 \times 31\,557\,600 / 10^9 = 31\,557.6\,\text{GJ/(MW}\cdot\text{yr)}$). */
+    public static final double GJ_PER_MW_YEAR = (JOULES_PER_MJ * SECONDS_PER_JULIAN_YEAR) / JOULES_PER_GJ;
+
+    /** Exact number of Exajoules integrated over one IAU Julian year per Megawatt ($10^6 \times 31\,557\,600 / 10^{18} = 3.15576 \times 10^{-5}\,\text{EJ/(MW}\cdot\text{yr)}$). */
+    public static final double EJ_PER_MW_YEAR = (JOULES_PER_MJ * SECONDS_PER_JULIAN_YEAR) / 1.0e18;
+
     /** Exact number of kilograms per metric tonne ($1\,000\,\text{kg/t}$). */
     public static final double KG_PER_METRIC_TONNE = 1_000.0;
 

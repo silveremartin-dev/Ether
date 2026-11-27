@@ -87,6 +87,9 @@ public class CrosbyColumbianExchangeEngine extends AbstractSimulationEngine {
 
         if (livestock < 1.0 && kpc < 1500.0) {
             acc.dResourceCapital -= 0.005 * buffer.getResourceCapital()[i] * dtYears;
+            if (buffer.getInstitutionalComplexity() != null && buffer.getInstitutionalComplexity()[i] > 0.399f) {
+                acc.dInstitutionalComplexity += (0.399f - buffer.getInstitutionalComplexity()[i]);
+            }
         }
 
         if (AmerindianEcosystemEngine.isOldWorldContactTriggered() && livestock < 5.0) {

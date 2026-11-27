@@ -1915,14 +1915,16 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
     $$U(\Phi) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 0.95) \cdot 5.0) \cdot \frac{85.0}{1.0 + \exp(-(\Phi - 1.65) / 0.30)}, \; 0.0, \; 90.0 \right)$$
 
 #### 6. Adult Literacy Rate ($L$)
-* **Model Classification**: Tier 2 Cultural Telemetry
-* **Academic Literature Reference**: Buringh, E., & van Zanden, J. L. (2009). *Charting the "Rise of the West"*. Journal of Economic History; Graff, H. J. (1987). *The Legacies of Literacy*. Indiana University Press.
+* **Model Classification**: Tier 2 Cultural Telemetry (`CliodynamicFormulasRegistry.computeLiteracyRate`, `TelemetryDagNodeHelper`, `CulturalKnowledgeMetricsHelper`)
+* **Academic Literature Reference**: Goody, J. (1986). *The Logic of Writing and the Organization of Society*; Buringh, E., & van Zanden, J. L. (2009). *Charting the "Rise of the West"*. Journal of Economic History; Graff, H. J. (1987). *The Legacies of Literacy*. Indiana University Press.
 * **Output Unit**: Percentage of adult population [$\%$].
 * **Governing Equation**:
-  * Direct State Observable (`CulturalKnowledgeMetricsCalculator.java`):
-    $$L = L_{\max} \cdot \frac{B_{\text{pc}}}{B_{\text{pc}} + 2.5} \cdot \frac{k_{\text{edu}}}{k_{\text{edu}} + 150.0}$$
-  * Analytical Closed-Form (`CliodynamicAnalyticalFormulasCatalog.java`):
-    $$L(\Phi) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 0.95) \cdot 5.0) \cdot \frac{98.0}{1.0 + \exp(-(\Phi - 1.60) / 0.28)}, \; 0.0, \; 99.0 \right)$$
+  * Continuous $C^1$ Endogenous Three-Regime Emergence from physical built capital $k_{\text{pc}}$ ($\text{kg/cap}$), power flux $p$ ($\text{W/cap}$), and urbanization share $U$ ($\%$):
+    $$L_{\text{scribal}}(k_{\text{pc}}) = \begin{cases} 0.0 & \text{if } k_{\text{pc}} \le 25.0 \\ 4.0 \tanh\!\left(\frac{(k_{\text{pc}} - 25.0)^2}{(k_{\text{pc}} + 100.0) \cdot 260.0}\right) & \text{if } k_{\text{pc}} > 25.0 \end{cases}$$
+    $$L_{\text{vern}}(k_{\text{pc}}, U) = 16.0 \tanh\!\left(\frac{\max(0, k_{\text{pc}} - 450.0)^{1.30}}{7500.0} + 0.025 \max(0, U - 4.5)\right)$$
+    $$L_{\text{mass}}(k_{\text{pc}}, p) = 70.0 \tanh\!\left(\frac{\max(0, k_{\text{pc}} - 2800.0)^{1.35}}{230\,000.0} + \frac{\max(0, p - 820.0)^{1.40}}{68\,000.0}\right)$$
+    $$L = \operatorname{clamp}\!\left(L_{\text{scribal}} + L_{\text{vern}} + L_{\text{mass}} + L_{\text{colonial}}(I_0),\; 0.0,\; 99.5\right)$$
+  * Enforces exact $0.0\%$ Paleolithic oral baseline ($k_{\text{pc}} \le 25.0\text{ kg/cap}$), positive endogenous $\partial L / \partial k_{\text{pc}} > 0$ across all historical regimes (eliminating flat `Math.max(I0, I)` clamping), and crew literacy retention $L_{\text{colonial}} = 99.4\,\sigma(\log_{10} I_0, 7.28, 0.07)$ for off-Earth spacefaring missions ($I_0 \ge 2 \times 10^7\text{ bits/cap}$).
 
 #### 7. Cohort Life Expectancy at Birth ($e_0$)
 * **Model Classification**: Tier 1 Demographic Telemetry
@@ -1976,11 +1978,12 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
   $$G(\Phi) = \operatorname{clamp}\left( 0.23 + 0.25 \cdot \tanh(\max(0.0, \Phi_{\text{exergy}} - 0.90) \cdot 2.2), \; 0.18, \; 0.75 \right)$$
 
 #### 13. Coinage Precious Metal Purity / Currency Debasement ($D_{\text{currency}}$)
-* **Model Classification**: Tier 2 - Type B Monetary Policy Indicator
-* **Academic Literature Reference**: Butcher, K., & Ponting, M. (2014); Sargent, T. J., & Velde, F. R. (2002). *The Big Problem of Small Change*. Princeton University Press.
+* **Model Classification**: Tier 2 - Type B Monetary Policy Indicator (`CliodynamicFormulasRegistry.computeCurrencyDebasement`)
+* **Academic Literature Reference**: Butcher, K., & Ponting, M. (2014); Cipolla, C. M. (1963); Sargent, T. J., & Velde, F. R. (2002). *The Big Problem of Small Change*. Princeton University Press.
 * **Output Unit**: Precious metal purity percentage [$\%$].
 * **Governing Equation**:
-  $$P_{\text{coin}}(\Phi, S) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 0.95) \cdot 4.0) \cdot 100.0 \cdot \left[ 1.0 - 0.70 \left(1.0 - \frac{S}{100.0}\right) \right], \; 5.0, \; 100.0 \right)$$
+  $$P_{\text{bullion}}(S) = 96.0 \cdot \left[1.0 - 0.78 \left(1.0 - \frac{S}{100.0}\right)^{1.20}\right], \qquad f_{\text{fiat}}(\Phi) = 0.88 \, \sigma(\Phi, 1.48, 0.22)$$
+  $$P_{\text{coin}}(\Phi, S) = \operatorname{clamp}\!\left( \sigma(\Phi, 0.955, 0.010) \cdot \left[ P_{\text{bullion}}(S) (1 - f_{\text{fiat}}(\Phi)) + 5.0 \, f_{\text{fiat}}(\Phi) \right], \; 0.0, \; 98.5 \right) \quad (\equiv 0.0 \text{ for } \Phi \le 0.91)$$
 
 #### 14. Sovereign Debt Burden ($D_{\text{sovereign}}$)
 * **Model Classification**: Tier 2 - Type B Fiscal Debt Telemetry
@@ -2004,39 +2007,35 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
 ### 8.3. Logistics, Communications & Environmental Indicators
 
 #### 15. Global Maritime Trade Volume ($V_{\text{trade}}$)
-* **Model Classification**: Tier 2 - Type B Trade Volume Telemetry
-* **Academic Literature Reference**: Federico, G., & Tena-Junguito, A. (2017). *A Tale of Two Globalizations*. Review of World Economics; Tinbergen, J. (1962).
+* **Model Classification**: Tier 2 - Type B Trade Volume Telemetry (`CliodynamicFormulasRegistry.computeGlobalTradeVolume`)
+* **Academic Literature Reference**: Federico, G., & Tena-Junguito, A. (2017). *A Tale of Two Globalizations*. Review of World Economics; Harley, C. K. (1988).
 * **Output Unit**: Trade volume index (1913 = 100).
 * **Governing Equation**:
-  $$V_{\text{trade}}(\Phi) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 0.94) \cdot 5.0) \cdot 3.5 \cdot \left(\frac{\max(0.94, \Phi)}{0.94}\right)^{4.5}, \; 0.0, \; 3000.0 \right)$$
+  $$V_{\text{trade}}(\Phi) = \operatorname{clamp}\!\left( \tanh(\max(0.0, \Phi - 0.94) \cdot 4.0) \cdot 1.8 \cdot \left(\frac{1400.0}{\max(15.0, C_{\text{freight}}(\Phi))}\right)^{1.52} \cdot \max(1.0, \Phi)^{1.4}, \; 0.0, \; 3500.0 \right)$$
 
 #### 16. Real Maritime Shipping Freight Cost ($C_{\text{freight}}$)
-* **Model Classification**: Tier 2 - Type B Transport Economics Indicator
+* **Model Classification**: Tier 2 - Type B Transport Economics Indicator (`CliodynamicFormulasRegistry.computeShippingFreightCostIndex`)
 * **Academic Literature Reference**: Harley, C. K. (1988). *Ocean Freight Rates and New World Expansion 1750-1913*. Journal of Economic History; Mohammed, S. I., & Williamson, J. G. (2004).
 * **Output Unit**: Real freight cost index (1913 = 100).
 * **Governing Equation**:
-  $$C_{\text{freight}}(\Phi) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 1.02) \cdot 10.0) \cdot \left[ 20.0 + \frac{1400.0}{1.0 + \left(\frac{\max(0.0, \Phi - 1.02)}{0.22}\right)^3} \right], \; 15.0, \; 1415.0 \right)$$
+  $$C_{\text{freight}}(\Phi) = \operatorname{clamp}\!\left( 20.0 + \frac{1400.0}{1.0 + \left(\frac{\max(0.0, \Phi - 1.02)}{0.22}\right)^3}, \; 15.0, \; 1415.0 \right)$$
 
 #### 17. Long-Distance Information Travel Speed ($v_{\text{info}}$)
-* **Model Classification**: Tier 1 Communications Physical Diagnostic
+* **Model Classification**: Tier 1 Communications Physical Diagnostic (`CliodynamicFormulasRegistry.computeInformationTravelSpeed`)
 * **Academic Literature Reference**: Scheidel, W. (2014). *The Shape of the Roman World: Modelling Imperium (ORBIS)*. JRA; Standage, T. (1998). *The Victorian Internet*. Walker & Company.
 * **Output Unit**: Velocity in kilometers per day [$\text{km/day}$].
 * **Governing Equation**:
-  $$v_{\text{info}}(\Phi) = \operatorname{clamp}\left( 35.0 + 45.0 \tanh\left(\frac{\Phi - 1.0}{0.2}\right) + 300.0 \cdot \sigma(\Phi, 2.30, 0.08) + \frac{1.0 \times 10^7}{1.0 + \exp\left(-\frac{\Phi - 3.80}{0.15}\right)}, \; 4.0, \; 3.0 \times 10^8 \right)$$
+  $$v_{\text{info}}(\Phi) = \operatorname{clamp}\!\left( 28.0 + 92.0 \tanh(\max(0, \Phi - 0.92)\cdot 1.8) + \frac{28\,000.0}{1 + \exp\!\left(-\frac{\Phi - 1.72}{0.06}\right)} + \frac{550\,000.0}{1 + \exp\!\left(-\frac{\Phi - 2.08}{0.05}\right)} + \frac{2.6 \times 10^8}{1 + \exp\!\left(-\frac{\Phi - 2.42}{0.04}\right)}, \; 4.0, \; 3.0 \times 10^8 \right)$$
 * **Parameters & Physical Units**:
-  * Ancient courier relay (Rome Cursus Publicus, Persian Chapar Khaneh, Song relay posts): $35 - 80\text{ km/day}$ for pre-industrial agrarian regimes ($\Phi < 2.0$).
-  * Chappe optical semaphore (1792): $250 - 350\text{ km/day}$ ($\Phi \approx 2.30 - 2.50$).
-  * Electric copper telegraph / transatlantic cable: $\sim 10^7\text{ km/day}$ requiring modern electrical power grid infrastructure ($\Phi \ge 3.80$).
-  * Speed of light in vacuum ceiling: $3.0 \times 10^8\text{ km/day}$ ($300,000\text{ km/s}$).
+  * Ancient/medieval courier relay (Rome Cursus Publicus, Song relay posts): $28 - 120\text{ km/day}$ ($\Phi \in [0.92, 1.45]$).
+  * Electric telegraphy ($\Phi \approx 1.72$), wireless radio ($\Phi \approx 2.08$), and optical fiber ($\Phi \approx 2.42$), bounded by vacuum speed of light $3.0 \times 10^8\text{ km/day}$.
 
 #### 18. Per-Capita Structural Metal Smelting Production ($M_{\text{smelt}}$)
-* **Model Classification**: Tier 1 Chemical Smelting Output
+* **Model Classification**: Tier 1 Chemical Smelting Output (`CliodynamicFormulasRegistry.computeMetalSmeltingPerCapita`)
 * **Academic Literature Reference**: Malandra, W. W. (1990). *Archaeometallurgy in Global Context*; USGS Mineral Commodity Summaries (2023).
 * **Output Unit**: Kilograms per person per year [$\text{kg/(person}\cdot\text{year)}$].
 * **Governing Equation**:
-  * Direct State Observable (`MacroeconomicMetricsCalculator.java`): Evaluates actual elemental iron/copper output produced by `MetallurgyEnthalpyEngine`.
-  * Analytical Closed-Form (`CliodynamicAnalyticalFormulasCatalog.java`):
-    $$M_{\text{smelt}}(\Phi) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 0.90) \cdot 4.0) \cdot \left[ 1.5 + 60.0 (\operatorname{softplus}(\Phi - 1.35, 0.0, 5.0))^2 \right], \; 0.0, \; 350.0 \right)$$
+  $$M_{\text{smelt}}(\Phi) = \operatorname{clamp}\!\left( \tanh(\max(0.0, \Phi - 0.90) \cdot 4.0) \cdot \left[ 1.4 + 85.0 (\operatorname{softplus}(\Phi - 1.38, 0.0, 6.0))^{1.85} \right], \; 0.0, \; 350.0 \right)$$
 
 #### 19. Real Unskilled Wage Purchasing Power ($W_{\text{unskilled}}$)
 * **Model Classification**: Tier 1 Economic Welfare Diagnostic
@@ -2049,27 +2048,27 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
     $$W_{\text{unskilled}}(\Phi) = \operatorname{clamp}\left( 100.0 + 150.0 (\operatorname{softplus}(\Phi - 1.20, 0.0, 10.0))^{1.8}, \; 50.0, \; 1000.0 \right)$$
 
 #### 20. Pristine Forest Cover Remaining ($F_{\text{forest}}$)
-* **Model Classification**: Tier 1 Ecological State Observable
+* **Model Classification**: Tier 1 Ecological State Observable (`CliodynamicFormulasRegistry.computeForestCoverRemaining`)
 * **Academic Literature Reference**: Williams, M. (2003). *Deforesting the Earth: From Prehistory to Global Crisis*. University of Chicago Press; Kaplan, J. O., et al. (2009).
 * **Output Unit**: Percentage of pre-anthropogenic forest area [$\%$].
 * **Governing Equation**:
-  $$F_{\text{forest}}(\Phi) = \operatorname{clamp}\left( 99.0 - 55.0 \cdot \tanh(\max(0.0, \Phi_{\text{exergy}} - 0.935) \cdot 1.8), \; 30.0, \; 99.0 \right)$$
+  $$F_{\text{forest}}(\Phi) = \operatorname{clamp}\!\left( 100.0 - 35.0 \tanh(\max(0.0, \Phi_{\text{exergy}} - 0.92) \cdot 1.45) - \frac{28.0}{1.0 + \exp\!\left(-\frac{\Phi_{\text{exergy}} - 1.95}{0.28}\right)}, \; 25.0, \; 100.0 \right)$$
 
-#### 21. Topsoil Erosion Loss Rate ($E_{\text{soil}}$)
-* **Model Classification**: Tier 1 Geomorphic Transport Diagnostic
-* **Academic Literature Reference**: Montgomery, D. R. (2007). *Soil erosion and agricultural sustainability*. PNAS, 104(33), 13268-13272.
-* **Output Unit**: Metric tons per hectare per year [$\text{t/(ha}\cdot\text{year)}$].
+#### 21. Topsoil Erosion Loss ($E_{\text{soil}}$)
+* **Model Classification**: Tier 1 Geomorphic Transport Diagnostic (`CliodynamicFormulasRegistry.computeTopsoilErosionLoss`)
+* **Academic Literature Reference**: Montgomery, D. R. (2007). *Dirt: The Erosion of Civilizations* & *PNAS*, 104(33), 13268-13272.
+* **Output Unit**: Cumulative percentage topsoil loss [$\%$].
 * **Governing Equation**:
-  $$E_{\text{soil}}(\Phi) = \operatorname{clamp}\left( 0.03 + 35.0 \cdot \tanh(\max(0.0, \Phi_{\text{exergy}} - 0.88) \cdot 2.5), \; 0.03, \; 70.0 \right)$$
+  $$E_{\text{soil}}(\Phi) = \operatorname{clamp}\!\left( 23.5 \tanh\!\left(\max(0.0, \Phi_{\text{exergy}} - 0.93)^{1.30} \cdot 2.4\right) + \frac{42.0}{1.0 + \exp\!\left(-\frac{\Phi_{\text{exergy}} - 2.05}{0.25}\right)}, \; 0.0, \; 75.0 \right)$$
 
-#### 22. Atmospheric $\text{CO}_2$ Concentration ($C_{\text{CO2}}$)
-* **Model Classification**: Tier 1 Atmospheric Reservoir Observable
-* **Academic Literature Reference**: Lüthi, D., et al. (2008). *High-resolution carbon dioxide concentration record 650,000-800,000 years before present*. Nature, 453(7193), 379-382 (EPICA Dome C); Keeling, C. D., et al. (2005).
-* **Output Unit**: Parts per million by volume [$\text{ppm}$].
-* **Governing Equation**:
-  For $t < 1850\text{ CE}$, retrieved directly from EPICA Dome C ice cores (PCHIP monotone spline interpolation).
-  For modern industrial and prospective epochs ($t \ge 1850\text{ CE}$):
-  $$C_{\text{CO2}}(\Phi) = 280.0 + 22.0 \tanh(\operatorname{softplus}(\Phi - 3.65, 50.0) \cdot 1.10) + \sigma(\Phi; 4.60, 0.05) \cdot \frac{125.0}{1.0 + \exp(-2.00 (\Phi - 6.40))}$$
+#### 22. Atmospheric $\text{CO}_2$ Concentration ($C_{\text{CO2}}$) & Fossil Fuel Share ($f_{\text{fossil}}$)
+* **Model Classification**: Tier 1 Atmospheric Reservoir Observable (`TelemetryDagNodeHelper`, `CliodynamicFormulasRegistry`)
+* **Academic Literature Reference**: Lüthi, D., et al. (2008); Ballantyne, A. P., et al. (2012); Smil, V. (2017); Ruddiman, W. F. (2003).
+* **Output Unit**: Parts per million by volume [$\text{ppm}$] and percentage [$\%$].
+* **Governing Equations**:
+  $$f_{\text{fossil}}(\Phi) = \operatorname{clamp}\!\left( \sigma(\Phi, 1.36, 0.025) \cdot \frac{85.0}{1.0 + \exp\!\left(-\frac{\Phi - 1.78}{0.14}\right)}, \; 0.0, \; 95.0 \right)$$
+  $$C_{\text{CO2}}(t) = \operatorname{clamp}\!\left( C_{\text{CO2}}(t_0) + \left[\frac{\frac{f_{\text{fossil}}}{100} \cdot P_{\text{MW}} \cdot 31\,557.6 \cdot 0.0205 \cdot 0.44}{2.124 \times 10^9} + 0.008 \tanh(\max(0, \Phi - 0.94)\cdot 2.5)\right] (t - t_0), \; 160.0, \; 2000.0 \right)$$
+  (strictly initialized from $t_0$ scenario paleoclimatic $\text{CO}_2$ without runtime benchmark lookup).
 
 #### 23. Mean Global Surface Temperature Anomaly ($\Delta T$)
 * **Model Classification**: Tier 1 Climate Diagnostic
@@ -2175,11 +2174,11 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
   $$P_{\text{watts/capita}} = \frac{P_{\text{somatic}} + P_{\text{draft}} + P_{\text{mill}} + P_{\text{thermal}}}{N_{\text{human}}}$$
 * **Parameters & Physical Units**:
   * Unifies animal draft power, water/wind mechanical mills, Newcomen/Watt steam engines, and internal combustion turbines into conserved physical Wattage dissipation per capita ($p = P_{\text{watts}}/N$), driving endogenous Garrett-Lotka developmental progression $\Phi_{\text{exergy}}$.
-  * **Atmospheric Carbon Stoichiometry** (`TelemetryDagNodeHelper.java`): Evaluates anthropogenic $\Delta\text{CO}_2$ strictly from fossil fuel share $f_{\text{fossil}}$, useful thermal power $P_{\text{MW}}$, IPCC (2006) mean fossil carbon emission factor ($0.0205\text{ t C/GJ}$), Global Carbon Budget airborne retention ($0.44$), and Ballantyne et al. (2012) atmospheric mass factor ($2.124\text{ GtC/ppm}$): $\frac{d\text{CO}_2}{dt} = \frac{f_{\text{fossil}} \cdot P_{\text{MW}} \cdot 31.5576 \cdot 0.0205 \cdot 0.44}{2.124\times 10^9}\;[\text{ppm/yr}]$.
+  * **Atmospheric Carbon Stoichiometry** (`TelemetryDagNodeHelper.java`, `PhysicalUnitsHelper.GJ_PER_MW_YEAR`): Evaluates anthropogenic $\Delta\text{CO}_2$ strictly from fossil fuel share $f_{\text{fossil}}$, useful thermal power $P_{\text{MW}}$, exact SI unit factor $1\text{ MW}\cdot\text{yr} = 31\,557.6\text{ GJ}$, IPCC (2006) mean fossil carbon emission factor ($0.0205\text{ t C/GJ}$), Global Carbon Budget airborne retention ($0.44$), and Ballantyne et al. (2012) atmospheric mass factor ($2.124\text{ GtC/ppm}$): $\frac{d\text{CO}_2}{dt} = \frac{f_{\text{fossil}} \cdot P_{\text{MW}} \cdot 31\,557.6 \cdot 0.0205 \cdot 0.44}{2.124\times 10^9}\;[\text{ppm/yr}]$.
   * **Ayres-Warr Exergy-Capital Production Function** (`StatisticsKernel.calculateGDP`): Replaces empirical polynomial fits with physical Cobb-Douglas output scaling anchored at Maddison subsistence ($Y_0 = 102\text{ Int\$1990/cap}$), $Y = N \cdot Y_0 \cdot (\max(348, p)/348)^{0.65} \cdot (1 + k_{\text{pc}}/120)^{0.35}$.
-  * **Human Population Observable Convention**: Across both Java `WorldBuffer.humanPopulation` (`DemographicKernel`, `UrbanKernel`) and Rust FFI `WorldBufferRaw.human_population`, the human slot explicitly stores living individual headcount $N$ (not assumed fixed body mass in tonnes), avoiding age/body-mass drift ambiguity.
-  * **Lavoisier Mass & Carnot Exergy Conservation Closure vs. Non-Rival Information (`TypeBEnginePassRunner.java`, `AGENTS.md` §19)**: Informational states (knowledge, culture, institutions, literacy) are non-rival and may multiply/recombine freely (Romer 1990; Arthur 2009), whereas physical matter and energy strictly obey Lavoisier and Carnot conservation. Individual Tier 2 engines retain their exact published equations; when $M > 1$ overlapping Tier 2 socio-economic theories emit capital derivatives on the same cell, `TypeBEnginePassRunner` combines them via non-diluting upper/lower envelopes ($\Delta K_{\text{env}}^+ = \max_e \Delta K_e^+$, $\Delta K_{\text{env}}^- = \min_e \Delta K_e^-$) and enforces Carnot exergy conservation (Smil 2017; Garrett 2011) together with Krausmann et al. (2017, *PNAS* 114:1880) structural material stoichiometry (~5% `metalResource`, ~7% `woodResource`/`biomassNatural`, ~10% `clayResource`, ~78% continental crustal stone/sand/concrete aggregates on land; ocean cells strictly bounded by explicit stocks):
-    $$\Delta K_{\text{Carnot}} = \frac{s_{\max}\cdot \max\!\left(0,\; E_{\text{cell}} - N E_{\text{basal}} - \lambda_{\text{Garrett}} K\right)\cdot \Delta t}{e_{\text{embodied}}}, \qquad e_{\text{embodied}} = 15\,\text{MJ/kg}, \; s_{\max} = 0.25$$
+  * **Human Population Observable & Demographic Closure Convention**: Across both Java `WorldBuffer.humanPopulation` (`DemographicKernel`, `UrbanKernel`) and Rust FFI `WorldBufferRaw.human_population`, the human slot stores living individual headcount $N$, and `SimulationPipeline` closes all Phase 1b/Phase 2 demographic deltas onto `AgentBuffer.mass` via $m_k(t^+) = m_k(t^-) \cdot \frac{N_{\text{after}}[h_k]}{N_{\text{before}}[h_k]}$.
+  * **Single-Responsibility Solow-Swan Base Capital (`UrbanKernel.java` & `urban.rs`) & Marginal Tier 2 Carnot-Lavoisier Closure (`TypeBEnginePassRunner.java`, `AGENTS.md` §19–§20)**: Phase 1 `UrbanKernel` (synchronized with `urban.rs`) is the sole owner of baseline Solow-Swan equilibrium and Tainter turnover ($\dot{k}_{\text{pc}} = \delta_0 k^*(p, B_{\text{agr}}, N) - \delta_{\text{eff}}(C) k_{\text{pc}}$, $\delta_0 = 0.04\text{ yr}^{-1}$) with Lavoisier raw-material debit. In Phase 2, for any active Tier 2 configuration (`engineCount >= 1`), `TypeBEnginePassRunner` combines overlapping theories via upper/lower envelopes ($\Delta K_{\text{env}}^+ = \max_e \Delta K_e^+$, $\Delta K_{\text{env}}^- = \min_e \Delta K_e^-$) and bounds marginal positive capital deepening by remaining net exergy surplus after deducting basal demand, Garrett maintenance, and Phase 1 replacement ($E_{\text{repl,P1}} = 0.04 K \cdot e_{\text{embodied}}$):
+    $$\Delta K_{\text{Carnot}} = \frac{s_{\text{marg}}\cdot \max\!\left(0,\; E_{\text{cell}} - N E_{\text{basal}} - \lambda_{\text{Garrett}} K - 0.04 K e_{\text{embodied}}\right)\cdot \Delta t}{e_{\text{embodied}}}, \qquad e_{\text{embodied}} = 15\,\text{MJ/kg}, \; s_{\text{marg}} = 0.12$$
     $$\Delta K^+_{\text{phys}} = \min\!\left(\Delta K_{\text{env}}^+,\; \Delta K_{\text{Carnot}}\right) \quad (\text{land}), \qquad \Delta M_{\text{metal}} = 0.05\,\Delta K^+_{\text{t}}, \;\; \Delta M_{\text{timber}} = 0.07\,\Delta K^+_{\text{t}}, \;\; \Delta M_{\text{clay}} = 0.10\,\Delta K^+_{\text{t}}$$
     while discrete catastrophic shocks in `EventPhysicalImpactExecutor` remain unconstrained ($\Delta S \ge 0$). Across all audited non-capital engines, upstream stocks are strictly debited: `ThermodynamicPrimeMoversEngine` and `JevonsParadoxEngine` debit fossil/timber fuels ($24\,\text{GJ/t}$ coal, $42\,\text{GJ/t}$ oil, $15\,\text{GJ/t}$ wood); `WienerCyberneticHomeostasisEngine`, `PolanyiFictitiousCommoditiesEngine`, and `DraftAnimalFodderAllocationEngine` debit `biomassAgriculture`, `biomassNatural`, and `biomassLivestock`; `KondratievSchumpeterLongWaveEngine` converts scrapped capital via `PhysicalUnitsHelper.kgToMetricTonnes`; and `AiryIsostasyCrustalRootEngine` runs at tectonic timescale ($10^{-6}\,\text{yr}^{-1}$).
 * **Computational Complexity**: $O(1)$ per cell.

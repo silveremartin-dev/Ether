@@ -73,8 +73,9 @@ public final class CliodynamicFormulasRegistry {
      * @return atmospheric $\text{CO}_2$ concentration in $\text{ppm}$
      */
     public static double computeCo2Concentration(double phiExergy) {
-        double earlyIndustrial = 22.0 * Math.tanh(sp(phiExergy, 3.65) * 1.10);
-        double greatAcceleration = SmoothMath.sigmoid(phiExergy, 4.60, 0.05) * (125.0 / (1.0 + Math.exp(-2.00 * (phiExergy - 6.40))));
+        double earlyIndustrial = 25.0 * Math.tanh(sp(phiExergy, 1.55) * 2.20);
+        double greatAcceleration = SmoothMath.sigmoid(phiExergy, 2.05, 0.08)
+                * (130.0 / (1.0 + Math.exp(-5.50 * (phiExergy - 2.38))));
         return 280.0 + earlyIndustrial + greatAcceleration;
     }
 
@@ -174,18 +175,69 @@ public final class CliodynamicFormulasRegistry {
 
 
     /**
-     * Evaluates state coinage precious metal purity (%) based on Butcher &amp; Ponting (2014)
-     * and Sargent &amp; Velde (2002).
+     * Evaluates adult literacy rate (%) endogenously from physical built capital per capita,
+     * per-capita power dissipation, urban agglomeration share, and optional carried-in colonial
+     * digital archive stock (Goody 1986; Graff 1987; Buringh &amp; van Zanden 2009).
+     *
+     * <p>Strictly $C^1$-continuous, enforcing {@code 0.0%} oral baseline in Deep Paleolithic
+     * foraging regimes ($k_{\text{pc}} \le 25\,\text{kg/cap}$) while varying dynamically with
+     * capital accumulation and energy transitions without flat {@code Math.max(I0, I)} clamping.</p>
+     *
+     * @param kpc                  physical built capital per capita ($\text{kg/capita}$)
+     * @param powerWattsPerCapita  useful power flux per capita ($\text{W/capita}$)
+     * @param urbanizationPct      urbanized population share in $[0, 100]$ (%)
+     * @param initialInfoPerCapita scenario initial information density ($\text{bits/capita}$)
+     * @return adult literacy rate in $[0.0, 99.5]$ (%)
+     */
+    public static double computeLiteracyRate(double kpc, double powerWattsPerCapita,
+                                             double urbanizationPct, double initialInfoPerCapita) {
+        double safeKpc = Math.max(0.0, kpc);
+        double scribal = 0.0;
+        if (safeKpc > 25.0) {
+            double dk = safeKpc - 25.0;
+            scribal = 4.0 * Math.tanh((dk * dk) / ((safeKpc + 100.0) * 260.0));
+        }
+        double dkVern = Math.max(0.0, safeKpc - 450.0);
+        double vernacular = 16.0 * Math.tanh(Math.pow(dkVern, 1.30) / 7500.0
+                + 0.025 * Math.max(0.0, urbanizationPct - 4.5));
+        double dkMass = Math.max(0.0, safeKpc - 2800.0);
+        double dpMass = Math.max(0.0, powerWattsPerCapita - 820.0);
+        double massEdu = 70.0 * Math.tanh(Math.pow(dkMass, 1.35) / 230_000.0
+                + Math.pow(dpMass, 1.40) / 68_000.0);
+        double endogenousLit = scribal + vernacular + massEdu;
+
+        // Off-Earth / high-archive colonial missions (>= 20M bits/cap) retain adult crew literacy
+        if (initialInfoPerCapita >= 2.0e7) {
+            double logArchive = Math.log10(initialInfoPerCapita);
+            double colonialRetention = 99.4 * SmoothMath.sigmoid(logArchive, 7.28, 0.07);
+            endogenousLit += colonialRetention * Math.max(0.0, 1.0 - endogenousLit / 99.5);
+        }
+        return Math.clamp(endogenousLit, 0.0, 99.5);
+    }
+
+    /**
+     * Evaluates state coinage precious metal purity (%) based on Butcher &amp; Ponting (2014),
+     * Cipolla (1963), and Sargent &amp; Velde (2002).
+     *
+     * <p>Enforces {@code 0.0%} pre-metallurgical Deep-Time baseline ($\Phi_{\text{exergy}} \le 0.94$),
+     * high initial bullion fineness in early coined states ($\sim 90\text{--}96\%$), seigniorage erosion
+     * under fiscal instability, and structural fiduciary/paper-money substitution ($\Phi_{\text{exergy}} > 1.30$).</p>
      *
      * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
      * @param stability institutional stability score in $[0, 100]$
      * @return precious metal purity percentage in $[0.0, 100.0]$
      */
     public static double computeCurrencyDebasement(double phiExergy, double stability) {
-        double mintingActivation = Math.tanh(Math.max(0.0, phiExergy - 0.95) * 4.0);
+        if (phiExergy <= 0.91) {
+            return 0.0;
+        }
+        double mintingGate = SmoothMath.sigmoid(phiExergy, 0.955, 0.010);
         double stress = Math.clamp(1.0 - (stability / 100.0), 0.0, 1.0);
-        double purity = 100.0 * (1.0 - 0.70 * stress);
-        return Math.clamp(mintingActivation * purity, 5.0, 100.0);
+        double bullionPurity = 96.0 * (1.0 - 0.78 * Math.pow(stress, 1.20));
+        // Fiduciary credit, billon, paper notes, and modern cupronickel fiat substitution
+        double fiduciaryShare = 0.88 * SmoothMath.sigmoid(phiExergy, 1.48, 0.22);
+        double effectivePurity = bullionPurity * (1.0 - fiduciaryShare) + 5.0 * fiduciaryShare;
+        return Math.clamp(mintingGate * effectivePurity, 0.0, 98.5);
     }
 
     /**
@@ -321,20 +373,23 @@ public final class CliodynamicFormulasRegistry {
     }
 
     public static double computeTopsoilErosionLoss(double phiExergy) {
-        double lossActivation = Math.tanh(Math.max(0.0, phiExergy - 0.88) * 2.5);
-        double erosion = 0.03 + 35.0 * lossActivation;
-        return Math.clamp(erosion, 0.03, 70.0);
+        // Montgomery (2007) Dirt: scratch/iron plow tillage loss + mechanized deep-tillage intensification
+        double agrarianPlowLoss = 23.5 * Math.tanh(Math.pow(Math.max(0.0, phiExergy - 0.93), 1.30) * 2.4);
+        double mechanizedLoss = 42.0 / (1.0 + Math.exp(-(phiExergy - 2.05) / 0.25));
+        return Math.clamp(agrarianPlowLoss + mechanizedLoss, 0.0, 75.0);
     }
 
     public static double computeAgriculturalEroei(double phiExergy) {
         double agActivation = Math.tanh(Math.max(0.0, phiExergy - 0.935) * 5.0);
-        double eroei = 4.5 + 6.0 / (1.0 + Math.exp(-(phiExergy - 1.50) / 0.20));
+        double eroei = 4.5 + 8.5 / (1.0 + Math.exp(-(phiExergy - 1.85) / 0.22));
         return Math.clamp(agActivation * eroei, 0.0, 25.0);
     }
 
     public static double computeForestCoverRemaining(double phiExergy) {
-        double clearingActivation = Math.tanh(Math.max(0.0, phiExergy - 0.935) * 1.8);
-        return Math.clamp(99.0 - 55.0 * clearingActivation, 30.0, 99.0);
+        // Williams (2003) Deforesting the Earth: Holocene agrarian clearing + industrial/tropical clearing
+        double agrarianClearing = 35.0 * Math.tanh(Math.max(0.0, phiExergy - 0.92) * 1.45);
+        double industrialClearing = 28.0 / (1.0 + Math.exp(-(phiExergy - 1.95) / 0.28));
+        return Math.clamp(100.0 - agrarianClearing - industrialClearing, 25.0, 100.0);
     }
 
     /**
@@ -344,28 +399,31 @@ public final class CliodynamicFormulasRegistry {
      * @return dispatch propagation velocity in kilometers per day (km/day)
      */
     public static double computeInformationTravelSpeed(double phiExergy) {
-        // Pre-industrial and early modern courier relay velocity (Scheidel 2014 ORBIS; Standage 1998)
-        double courierSpeed = 35.0 + 45.0 * Math.tanh(Math.max(0.0, phiExergy - 0.90) * 1.5);
-        // Electromagnetic telecommunication emergence requiring modern industrial power grid (phi >= 3.5)
-        double telecomSpeed = 1.0e7 / (1.0 + Math.exp(-(phiExergy - 3.80) / 0.12));
-        return Math.clamp(courierSpeed + telecomSpeed, 4.0, 3.0e8);
+        // Pre-industrial overland/maritime courier relay velocity (Scheidel 2014 ORBIS: ~30-120 km/day)
+        double courierSpeed = 28.0 + 92.0 * Math.tanh(Math.max(0.0, phiExergy - 0.92) * 1.8);
+        // Electrical telegraphy (Standage 1998: Phi ~ 1.72), wireless radio (Phi ~ 2.08), optical fiber (Phi ~ 2.42)
+        double telegraphSpeed = 28_000.0 / (1.0 + Math.exp(-(phiExergy - 1.72) / 0.06));
+        double radioSpeed = 550_000.0 / (1.0 + Math.exp(-(phiExergy - 2.08) / 0.05));
+        double opticalSpeed = 2.6e8 / (1.0 + Math.exp(-(phiExergy - 2.42) / 0.04));
+        return Math.clamp(courierSpeed + telegraphSpeed + radioSpeed + opticalSpeed, 4.0, 3.0e8);
     }
 
     public static double computeMetalSmeltingPerCapita(double phiExergy) {
         double smeltActivation = Math.tanh(Math.max(0.0, phiExergy - 0.90) * 4.0);
-        double industrialSmelting = 60.0 * Math.pow(SmoothMath.softplus(phiExergy - 1.35, 0.0, 5.0), 2.0);
-        return Math.clamp(smeltActivation * (1.5 + industrialSmelting), 0.0, 350.0);
+        double industrialSmelting = 85.0 * Math.pow(SmoothMath.softplus(phiExergy - 1.38, 0.0, 6.0), 1.85);
+        return Math.clamp(smeltActivation * (1.4 + industrialSmelting), 0.0, 350.0);
     }
 
     /**
-     * Fossil Fuel Share in Primary Energy (%) (Smil 2017; Ritchie 2020).
+     * Fossil Fuel Share in Primary Energy (%) (Smil 2017; Wrigley 2010; Ritchie 2020).
+     * Smooth $C^\infty$ Marchetti-Nakicenovic logistic substitution calibrated on $\Phi_{\text{exergy}} \in [0.85, 3.0]$.
+     *
+     * @param phiExergy Garrett-Lotka exergy-capital index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$
+     * @return fossil share of primary energy in $[0.0, 95.0]$ (%)
      */
     public static double computeFossilSharePrimaryEnergy(double phiExergy) {
-        // Fossil fuel share in primary energy (Smil 2017; Ritchie 2020; Wrigley 2010)
-        // Industrial substitution takes off gradually: ~6-14% at phi ~ 2.5-2.8 (1800-1820),
-        // reaching ~50% at phi ~ 4.2 (1900), and ~80% in high-power 20th century regimes.
-        if (phiExergy <= 1.20) return 0.0;
-        double share = 85.0 / (1.0 + Math.exp(-(phiExergy - 4.20) / 0.85));
+        double onsetGate = SmoothMath.sigmoid(phiExergy, 1.36, 0.025);
+        double share = onsetGate * (85.0 / (1.0 + Math.exp(-(phiExergy - 1.78) / 0.14)));
         return Math.clamp(share, 0.0, 95.0);
     }
 

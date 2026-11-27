@@ -124,8 +124,7 @@ public class TurchinGoldstoneSDTEngine extends AbstractSimulationEngine {
             float gini = (giniArr != null) ? giniArr[i] : 0.35f;
             float food = (foodArr != null) ? foodArr[i] : 500.0f;
 
-            double areaKm2 = 36.13;
-            double density = p / areaKm2;
+            double density = buffer.getPopulationDensityPerKm2(i);
             double foodPerCap = food / Math.max(1.0, p);
             double mmp = Math.max(0.2, (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0));
             double emp = Math.max(0.2, Math.pow(Math.max(0.0, gini - 0.25) / 0.20, 2.0));

@@ -244,9 +244,11 @@ public class EnvironmentalKernel {
                     : 0.0f;
             float naturalProd = baseProd * agroClimaticFactor * dtInYears;
 
-            float growth = naturalProd + agProd;
+            // Wild foraging granary replenishment only; cultivated biomassAgriculture is harvested once in DemographicKernel
+            // (preventing double-harvesting of agricultural grain on the same tick).
+            float wildForageAddition = naturalProd * 0.15f;
             float retainedFood = food[i] * foodRetentionFactor;
-            food[i] = Math.clamp(retainedFood + growth, 0.0f, 50000.0f * areaScale);
+            food[i] = Math.clamp(retainedFood + wildForageAddition, 0.0f, 50000.0f * areaScale);
 
             if (bioNatArr != null && i < bioNatArr.length) {
                 double forestAffinity = SmoothMath.sigmoid(effectiveMoisture, 450.0, 166.67)
@@ -266,7 +268,13 @@ public class EnvironmentalKernel {
                         ? Math.max(perCapitaAgTarget, (agProd / Math.max(0.0001f, dtInYears)) / 0.0105f * cultivationShare)
                         : perCapitaAgTarget;
                 annualAgFluxKg = Math.min(maxCellAgriKg, annualAgFluxKg);
-                bioAgriArr[i] = Math.min(maxCellAgriKg, Math.max(bioAgriArr[i] * foodRetentionFactor, annualAgFluxKg));
+                // Smooth C^1 agronomic relaxation toward carrying target so Tier 1/2 crop shocks (drought, salinization, blight) persist across ticks
+                float agRelaxation = Math.min(1.0f, 1.8f * dtInYears);
+                float currentAgri = bioAgriArr[i];
+                float updatedAgri = (currentAgri <= 0.0f && annualAgFluxKg > 0.0f && dtInYears >= 0.05f)
+                        ? annualAgFluxKg * agRelaxation
+                        : currentAgri + (annualAgFluxKg - currentAgri) * agRelaxation;
+                bioAgriArr[i] = Math.clamp(updatedAgri, 0.0f, maxCellAgriKg);
             }
         }
     }

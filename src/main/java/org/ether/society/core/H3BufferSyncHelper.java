@@ -133,6 +133,7 @@ final class H3BufferSyncHelper {
             byte[] biomes,
             Biome[] biomeValues) {
         if (cell == null) return;
+        int prevPop = cell.getPopulationOr(0);
         int p = Math.max(0, Math.round(pop[i]));
         cell.setPopulation(p);
         cell.setHumanPopulation((double) pop[i]);
@@ -141,6 +142,17 @@ final class H3BufferSyncHelper {
         cell.setWoodResource((double) wood[i]);
         cell.setGiniIndex((double) gini[i]);
         if (capital != null) cell.setResourceCapital((double) capital[i]);
+        if (worldBuffer.getElevation() != null) cell.setElevation((double) worldBuffer.getElevation()[i]);
+        if (worldBuffer.getTemperature() != null) cell.setTemperature((double) worldBuffer.getTemperature()[i]);
+        if (worldBuffer.getRainfall() != null) cell.setRainfall((double) worldBuffer.getRainfall()[i]);
+        if (worldBuffer.getLifespan() != null) cell.setLifespan((double) worldBuffer.getLifespan()[i]);
+        if (worldBuffer.getFertility() != null) cell.setFertility((double) worldBuffer.getFertility()[i]);
+        if (worldBuffer.getFluxPressure() != null) cell.setMovementFriction((double) worldBuffer.getFluxPressure()[i]);
+        if (worldBuffer.getEnergyFire() != null) cell.setEnergyFire((double) worldBuffer.getEnergyFire()[i]);
+        if (worldBuffer.getEnergyWind() != null) cell.setEnergyWind((double) worldBuffer.getEnergyWind()[i]);
+        if (worldBuffer.getEnergySolar() != null) cell.setEnergySolar((double) worldBuffer.getEnergySolar()[i]);
+        if (worldBuffer.getEnergySlaves() != null) cell.setEnergySlaves((double) worldBuffer.getEnergySlaves()[i]);
+        if (worldBuffer.getEnergyFoodConsumed() != null) cell.setEnergyFoodConsumed((double) worldBuffer.getEnergyFoodConsumed()[i]);
         if (worldBuffer.getMetalResource() != null) cell.setResourceMetal((double) worldBuffer.getMetalResource()[i]);
         if (worldBuffer.getClayResource() != null) cell.setResourceClay((double) worldBuffer.getClayResource()[i]);
         if (worldBuffer.getBiomassAgriculture() != null) cell.setBiomassAgriculture((double) worldBuffer.getBiomassAgriculture()[i]);
@@ -157,13 +169,14 @@ final class H3BufferSyncHelper {
         if (worldBuffer.getCommercialFluxVolume() != null) cell.setTradeNetwork((double) worldBuffer.getCommercialFluxVolume()[i]);
         if (worldBuffer.getPollutionLevel() != null) cell.setPollutionLevel((double) worldBuffer.getPollutionLevel()[i]);
 
-        if (cell.getBiome() != null) {
-            biomes[i] = (byte) cell.getBiome().ordinal();
-        } else {
+        if (biomes != null) {
             int bIdx = biomes[i] & 0xFF;
             if (bIdx < biomeValues.length) {
                 cell.setBiome(biomeValues[bIdx]);
             }
+        }
+        if (p != prevPop) {
+            org.ether.society.database.H3CellPhysicsAndStateHelper.updateAgePyramidFromObservables(cell);
         }
     }
 
@@ -227,6 +240,69 @@ final class H3BufferSyncHelper {
         if (agentBuffer != null && pop != null && popModified) {
             reconcileAgentBufferCohorts(worldBuffer, agentBuffer, pop, limit, cellPopModified);
         }
+    }
+
+    /**
+     * Propagates cellular demographic deltas applied to {@link WorldBuffer#getHumanPopulation()} during
+     * Tier 1 and Tier 2 engine passes back onto {@link AgentBuffer#getMass()} cohorts, ensuring that
+     * {@link org.ether.society.core.dod.DemographicKernel} never wipes out epidemic, heatwave, warfare,
+     * or cliodynamic mortality/births on the subsequent tick.
+     *
+     * @param worldBuffer      active world buffer
+     * @param agentBuffer      active agent cohort buffer
+     * @param popBeforeEngines snapshot of {@code humanPopulation} prior to Tier 1/2 engine execution
+     * @param limit            number of active cell slots
+     */
+    static void reconcileEngineDemographicDeltas(
+            WorldBuffer worldBuffer,
+            AgentBuffer agentBuffer,
+            float[] popBeforeEngines,
+            int limit) {
+        float[] popAfter = worldBuffer.getHumanPopulation();
+        int n = Math.min(limit, Math.min(popAfter.length, popBeforeEngines.length));
+        boolean anyChanged = false;
+        for (int i = 0; i < n; i++) {
+            if (Math.abs(popAfter[i] - popBeforeEngines[i]) > 0.01f) {
+                anyChanged = true;
+                break;
+            }
+        }
+        if (!anyChanged) {
+            return;
+        }
+        boolean[] modified = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            if (Math.abs(popAfter[i] - popBeforeEngines[i]) > 0.01f) {
+                modified[i] = true;
+            }
+        }
+        int agentCap = agentBuffer.getCapacity();
+        int[] hexIds = agentBuffer.getHexIds();
+        float[] mass = agentBuffer.getMass();
+        float[] deaths = agentBuffer.getDeaths();
+        float[] births = agentBuffer.getBirths();
+        for (int a = 0; a < agentCap; a++) {
+            int h = hexIds[a];
+            if (h >= 0 && h < n && modified[h] && mass[a] > 0.0f) {
+                float before = popBeforeEngines[h];
+                float after = popAfter[h];
+                if (after <= 0.001f) {
+                    deaths[a] += mass[a];
+                    mass[a] = 0.0f;
+                    hexIds[a] = -1;
+                } else if (before > 0.001f) {
+                    float oldM = mass[a];
+                    float newM = Math.max(0.0f, oldM * (after / before));
+                    mass[a] = newM;
+                    if (newM < oldM) {
+                        deaths[a] += (oldM - newM);
+                    } else if (newM > oldM) {
+                        births[a] += (newM - oldM);
+                    }
+                }
+            }
+        }
+        reconcileAgentBufferCohorts(worldBuffer, agentBuffer, popAfter, n, modified);
     }
 
     private static void reconcileAgentBufferCohorts(

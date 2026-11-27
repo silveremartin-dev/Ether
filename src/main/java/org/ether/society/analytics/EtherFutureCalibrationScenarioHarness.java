@@ -78,7 +78,7 @@ public final class EtherFutureCalibrationScenarioHarness {
         s.setEndDateYear(END_YEAR);
         s.setH3Resolution(H3_RESOLUTION);
         s.setTemporalResolutionDays(TIME_STEP_DAYS);
-        s.setTargetCohortSize(2000);
+        s.setTargetCohortSize(10000);
         s.setStrictDeterminism(true);
 
         // Initial 2025 empirical conditions (UN WPP 2024, World Bank, IEA 2024)

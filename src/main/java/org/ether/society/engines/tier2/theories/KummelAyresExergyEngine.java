@@ -71,8 +71,44 @@ public class KummelAyresExergyEngine extends AbstractSimulationEngine {
     }
 
     @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (buffer == null || dtYears <= 0.0 || buffer.getHumanPopulation() == null) return;
+        float p = buffer.getHumanPopulation()[i];
+        if (p <= 0.001f) return;
+        float capital = (buffer.getResourceCapital() != null) ? Math.max(1.0f, buffer.getResourceCapital()[i]) : 10.0f;
+        float labor = p * 0.5f;
+
+        double tColdK = (buffer.getTemperature() != null)
+                ? org.ether.society.model.PhysicalUnitsHelper.celsiusToKelvin(buffer.getTemperature()[i])
+                : 288.15;
+        double coal = (buffer.getResourceCoal() != null) ? buffer.getResourceCoal()[i] : 0.0;
+        double hydrocarbon = ((buffer.getResourceOil() != null ? buffer.getResourceOil()[i] : 0.0)
+                + (buffer.getResourceGas() != null ? buffer.getResourceGas()[i] : 0.0));
+
+        double deltaTFlame = 450.0
+                + 700.0 * SmoothMath.sigmoid(coal, 100.0, 30.0)
+                + 500.0 * SmoothMath.sigmoid(hydrocarbon, 100.0, 30.0);
+        double etaCarnot = 1.0 - (tColdK / (tColdK + deltaTFlame));
+        double kPerCap = capital / p;
+        double recoveryFactor = 0.08 + (0.58 - 0.08) * SmoothMath.sigmoid(kPerCap, 1200.0, 400.0);
+        double etaThermo = Math.clamp(etaCarnot * recoveryFactor, 0.05, 0.50);
+
+        double primaryWatts = p * Math.max(85.0, buffer.computeCellPowerWattsPerCapita(i));
+        double usefulExergy = SmoothMath.softplus(primaryWatts * etaThermo, 1.0, 5.0);
+        double economicOutput = Math.pow(capital, ALPHA_K) * Math.pow(labor, BETA_L) * Math.pow(usefulExergy, GAMMA_E);
+
+        double netDeltaK = (economicOutput * 0.05 - capital * 0.04) * dtYears;
+        acc.dResourceCapital += (float) netDeltaK;
+    }
+
+    @Override
     public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
-        processBuffer(buffer, dtYears);
+        super.tick(buffer, dtYears, dtMonthly);
     }
 
     @Override
@@ -182,7 +218,7 @@ public class KummelAyresExergyEngine extends AbstractSimulationEngine {
             double recoveryFactor = 0.08 + (0.58 - 0.08) * SmoothMath.sigmoid(kPerCap, 1200.0, 400.0);
             double etaThermo = Math.clamp(etaCarnot * recoveryFactor, 0.05, 0.50);
 
-            double primaryWatts = 100.0 * p + 50.0 * capital;
+            double primaryWatts = p * Math.max(85.0, buffer.computeCellPowerWattsPerCapita(i));
             double usefulExergy = SmoothMath.softplus(primaryWatts * etaThermo, 1.0, 5.0);
 
             double tfp = 1.0;

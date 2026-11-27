@@ -115,7 +115,7 @@ public class PublicSanitationWaterGridEngine extends AbstractSimulationEngine {
             float kPerCap = capital / p;
             float wAvail = (water != null) ? water[i] : 1.0f;
 
-            double densityPerKm2 = p / 36.13;
+            double densityPerKm2 = buffer.getPopulationDensityPerKm2(i);
             double crowdingPathogenPressure = Math.min(1.0, densityPerKm2 / 200.0);
             double sanitationCoverage = 0.0;
             if (kPerCap > 200.0) {

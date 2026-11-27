@@ -101,12 +101,13 @@ public class DraftAnimalFodderAllocationEngine extends AbstractSimulationEngine 
             double agriBiomass = buffer.getBiomassAgriculture() != null ? Math.max(0.0, buffer.getBiomassAgriculture()[i]) : 0.0;
             double livestock = buffer.getBiomassLivestock() != null ? Math.max(0.0, buffer.getBiomassLivestock()[i]) : 0.0;
             if (agriBiomass > 0.0 && livestock > 0.0) {
-                // Tractor substitution frees pasture/fodder previously consumed by draft livestock (Lavoisier conservation)
+                // Tractor substitution frees pasture/fodder previously consumed by draft livestock [t] -> grain [kg] (Lavoisier SI conservation)
                 double tractorSubstitution = 1.0 / (1.0 + Math.exp(-(kpc - 2800.0) / 700.0));
-                double desiredReclamation = Math.min(0.02 * agriBiomass, 0.015 * agriBiomass * tractorSubstitution * dtYears);
-                double retiredLivestock = Math.min(livestock * 0.10 * Math.min(1.0, dtYears), desiredReclamation);
-                acc.dBiomassLivestock -= (float) retiredLivestock;
-                acc.dBiomassAgriculture += (float) retiredLivestock;
+                double desiredReclamationTonnes = org.ether.society.model.PhysicalUnitsHelper.kgToMetricTonnes(
+                        Math.min(0.02 * agriBiomass, 0.015 * agriBiomass * tractorSubstitution * dtYears));
+                double retiredLivestockTonnes = Math.min(livestock * 0.10 * Math.min(1.0, dtYears), desiredReclamationTonnes);
+                acc.dBiomassLivestock -= (float) retiredLivestockTonnes;
+                acc.dBiomassAgriculture += (float) org.ether.society.model.PhysicalUnitsHelper.metricTonnesToKg(retiredLivestockTonnes);
             }
         }
     }

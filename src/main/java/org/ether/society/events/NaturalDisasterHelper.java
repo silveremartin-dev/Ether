@@ -254,6 +254,17 @@ public final class NaturalDisasterHelper {
      * - Deep Paleolithic (year < -10,000 BP) only permits small local nomadic camp zoonoses, never global plagues.
      */
     public void checkPlague(int year, int month, long totalPopulation, List<H3Cell> cells) {
+        checkPlague(year, month, totalPopulation, cells, null, null, null);
+    }
+
+    public void checkPlague(
+            int year,
+            int month,
+            long totalPopulation,
+            List<H3Cell> cells,
+            org.ether.society.core.dod.WorldBuffer worldBuffer,
+            org.ether.society.core.dod.AgentBuffer agentBuffer,
+            List<org.ether.society.database.Polity> nations) {
         if (year - lastPlagueYear < 50) return;
 
         boolean isPrehistoricPaleolithic = year < -10000;
@@ -291,7 +302,7 @@ public final class NaturalDisasterHelper {
             }
 
             eventSystem.recordSpatialEvent(new ActiveEvent("PLAGUE_" + year, msg, "PANDEMIC", lat, lng, year, month, 1, 20.0, mag, 730));
-            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "PANDEMIC", msg, mag, lat, lng, 0.0, 0.0, 730);
+            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "PANDEMIC", msg, mag, lat, lng, 0.0, 0.0, 730);
             lastPlagueYear = year;
         }
     }
@@ -300,6 +311,17 @@ public final class NaturalDisasterHelper {
      * Checks geophysical natural disasters deterministically.
      */
     public void checkNaturalDisasters(int year, int month, long totalPopulation, List<H3Cell> cells) {
+        checkNaturalDisasters(year, month, totalPopulation, cells, null, null, null);
+    }
+
+    public void checkNaturalDisasters(
+            int year,
+            int month,
+            long totalPopulation,
+            List<H3Cell> cells,
+            org.ether.society.core.dod.WorldBuffer worldBuffer,
+            org.ether.society.core.dod.AgentBuffer agentBuffer,
+            List<org.ether.society.database.Polity> nations) {
         long stream = (long) year * 100L + month;
 
         // Drought
@@ -320,7 +342,7 @@ public final class NaturalDisasterHelper {
             double dLat = (droughtTarget != null && droughtTarget.getLatitude() != null) ? droughtTarget.getLatitude() : 0.0;
             double dLng = (droughtTarget != null && droughtTarget.getLongitude() != null) ? droughtTarget.getLongitude() : 0.0;
             eventSystem.recordSpatialEvent(new ActiveEvent("DROUGHT_" + year, "☀️ SÉCHERESSE : Stress hydrique prolongé et assèchement des nappes.", "DROUGHT", dLat, dLng, year, month, 1, 20.0, 5.5, 180));
-            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "DROUGHT", "Drought", 5.5, dLat, dLng, 0.0, 0.0, 180);
+            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "DROUGHT", "Drought", 5.5, dLat, dLng, 0.0, 0.0, 180);
             lastDroughtYear = year;
         }
 
@@ -331,7 +353,7 @@ public final class NaturalDisasterHelper {
             double vLat = (vCell != null && vCell.getLatitude() != null) ? vCell.getLatitude() : 0.0;
             double vLng = (vCell != null && vCell.getLongitude() != null) ? vCell.getLongitude() : 0.0;
             eventSystem.recordSpatialEvent(new ActiveEvent("VOLCANO_" + year, "🌋 ÉRUPTION VOLCANIQUE : Éjection massive de cendres le long d'une faille tectonique!", "VOLCANO", vLat, vLng, year, month, 1, 25.0, 8.0, 365));
-            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "VOLCANO", "Volcano", 8.0, vLat, vLng, 10.0, 0.0, 365);
+            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "VOLCANO", "Volcano", 8.0, vLat, vLng, 10.0, 0.0, 365);
             lastVolcanoYear = year;
         }
 
@@ -342,7 +364,7 @@ public final class NaturalDisasterHelper {
             double eqLat = (eqTarget != null && eqTarget.getLatitude() != null) ? eqTarget.getLatitude() : 0.0;
             double eqLng = (eqTarget != null && eqTarget.getLongitude() != null) ? eqTarget.getLongitude() : 0.0;
             eventSystem.recordSpatialEvent(new ActiveEvent("EARTHQUAKE_" + year, "🌍 SÉISME / TREMBLEMENT DE TERRE : Secousse cataclysmique locale.", "EARTHQUAKE", eqLat, eqLng, year, month, 1, 20.0, 6.8, 3));
-            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "EARTHQUAKE", "Earthquake", 6.8, eqLat, eqLng, 10.0, 0.0, 3);
+            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "EARTHQUAKE", "Earthquake", 6.8, eqLat, eqLng, 10.0, 0.0, 3);
         }
 
         // Flood
@@ -368,7 +390,7 @@ public final class NaturalDisasterHelper {
             double fLat = (floodTarget != null && floodTarget.getLatitude() != null) ? floodTarget.getLatitude() : 0.0;
             double fLng = (floodTarget != null && floodTarget.getLongitude() != null) ? floodTarget.getLongitude() : 0.0;
             eventSystem.recordSpatialEvent(new ActiveEvent("FLOOD_" + year, "🌊 INONDATION / CRUE MAJEURE : Les cours d'eau débordent de leur lit.", "FLOOD", fLat, fLng, year, month, 1, 20.0, 5.2, 30));
-            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "FLOOD", "Flood", 5.2, fLat, fLng, 0.0, 0.0, 30);
+            org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "FLOOD", "Flood", 5.2, fLat, fLng, 0.0, 0.0, 30);
         }
 
         // Tsunami
@@ -382,7 +404,7 @@ public final class NaturalDisasterHelper {
                 H3Cell tCell = coastalOrOcean.get(tIdx);
                 if (tCell.getLatitude() != null && tCell.getLongitude() != null) {
                     eventSystem.recordSpatialEvent(new ActiveEvent("TSUNAMI_" + year, "🌊 TSUNAMI / SUBMERSION CÔTIÈRE : Onde océanique déferlante sur les rivages.", "TSUNAMI", tCell.getLatitude(), tCell.getLongitude(), year, month, 1, 25.0, 7.8, 1));
-                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "TSUNAMI", "Tsunami", 7.8, tCell.getLatitude(), tCell.getLongitude(), 0.0, 0.0, 1);
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "TSUNAMI", "Tsunami", 7.8, tCell.getLatitude(), tCell.getLongitude(), 0.0, 0.0, 1);
                 }
             }
         }
@@ -401,7 +423,7 @@ public final class NaturalDisasterHelper {
                 H3Cell lCell = aridWarmCrops.get(lIdx);
                 if (lCell.getLatitude() != null && lCell.getLongitude() != null) {
                     eventSystem.recordSpatialEvent(new ActiveEvent("LOCUST_" + year, "🦗 INVASION ACCRIDIENNE : Un essaim dévastateur de criquets pèlerins dévore cultures et pâturages.", "LOCUST_SWARM", lCell.getLatitude(), lCell.getLongitude(), year, month, 1, 20.0, 6.8, 60));
-                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "LOCUST_SWARM", "Locust Swarm", 6.8, lCell.getLatitude(), lCell.getLongitude(), 0.0, 0.0, 60);
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "LOCUST_SWARM", "Locust Swarm", 6.8, lCell.getLatitude(), lCell.getLongitude(), 0.0, 0.0, 60);
                 }
             }
         }
@@ -420,7 +442,7 @@ public final class NaturalDisasterHelper {
                 H3Cell bCell = cropLands.get(bIdx);
                 if (bCell.getLatitude() != null && bCell.getLongitude() != null) {
                     eventSystem.recordSpatialEvent(new ActiveEvent("BLIGHT_" + year, "🌾 NIELLE & POURRITURE : Épiphytie et moisissures détruisant les récoltes sur pied.", "CROP_BLIGHT", bCell.getLatitude(), bCell.getLongitude(), year, month, 1, 20.0, 6.5, 90));
-                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "CROP_BLIGHT", "Crop Blight", 6.5, bCell.getLatitude(), bCell.getLongitude(), 0.0, 0.0, 90);
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "CROP_BLIGHT", "Crop Blight", 6.5, bCell.getLatitude(), bCell.getLongitude(), 0.0, 0.0, 90);
                 }
             }
         }
@@ -437,7 +459,7 @@ public final class NaturalDisasterHelper {
                 H3Cell wCell = wildHabitats.get(wIdx);
                 if (wCell.getLatitude() != null && wCell.getLongitude() != null) {
                     eventSystem.recordSpatialEvent(new ActiveEvent("WILDLIFE_" + year, "🦌 ÉPIZOOTIE SAUVAGE : Vague de mortalité aiguë parmi le gibier et les troupeaux.", "WILDLIFE_DIE_OFF", wCell.getLatitude(), wCell.getLongitude(), year, month, 1, 25.0, 6.2, 180));
-                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "WILDLIFE_DIE_OFF", "Wildlife Die-Off", 6.2, wCell.getLatitude(), wCell.getLongitude(), 0.0, 0.0, 180);
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "WILDLIFE_DIE_OFF", "Wildlife Die-Off", 6.2, wCell.getLatitude(), wCell.getLongitude(), 0.0, 0.0, 180);
                 }
             }
         }
@@ -455,7 +477,7 @@ public final class NaturalDisasterHelper {
                 H3Cell mCell = marineCoast.get(mIdx);
                 if (mCell.getLatitude() != null && mCell.getLongitude() != null) {
                     eventSystem.recordSpatialEvent(new ActiveEvent("FISHERY_" + year, "🐟 ANOXIE MARINE : Effondrement abrupt des bancs de poissons et de la pêche.", "FISHERY_COLLAPSE", mCell.getLatitude(), mCell.getLongitude(), year, month, 1, 30.0, 6.5, 365));
-                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "FISHERY_COLLAPSE", "Fishery Collapse", 6.5, mCell.getLatitude(), mCell.getLongitude(), 0.0, 0.0, 365);
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "FISHERY_COLLAPSE", "Fishery Collapse", 6.5, mCell.getLatitude(), mCell.getLongitude(), 0.0, 0.0, 365);
                 }
             }
         }
@@ -474,7 +496,7 @@ public final class NaturalDisasterHelper {
                 H3Cell cycCell = tropicalWaters.get(cIdx);
                 if (cycCell.getLatitude() != null && cycCell.getLongitude() != null) {
                     eventSystem.recordSpatialEvent(new ActiveEvent("CYCLONE_" + year, "🌀 CYCLONE TROPICAL : Ouragan dévastateur frappant les côtes tropicales.", "TROPICAL_CYCLONE", cycCell.getLatitude(), cycCell.getLongitude(), year, month, 1, 25.0, 7.5, 7));
-                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "TROPICAL_CYCLONE", "Tropical Cyclone", 7.5, cycCell.getLatitude(), cycCell.getLongitude(), 0.0, 0.0, 7);
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "TROPICAL_CYCLONE", "Tropical Cyclone", 7.5, cycCell.getLatitude(), cycCell.getLongitude(), 0.0, 0.0, 7);
                 }
             }
         }
@@ -493,7 +515,7 @@ public final class NaturalDisasterHelper {
                 H3Cell wfCell = dryForests.get(wfIdx);
                 if (wfCell.getLatitude() != null && wfCell.getLongitude() != null) {
                     eventSystem.recordSpatialEvent(new ActiveEvent("WILDFIRE_" + year, "🔥 MÉGA-INCENDIE NATUREL : Feux de forêt consumant la biomasse sylvatique.", "WILDFIRE", wfCell.getLatitude(), wfCell.getLongitude(), year, month, 1, 20.0, 6.5, 30));
-                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, null, null, null, "WILDFIRE", "Wildfire", 6.5, wfCell.getLatitude(), wfCell.getLongitude(), 0.0, 0.0, 30);
+                    org.ether.society.core.EventPhysicalImpactExecutor.applyPhysicalForcingToGrid(cells, worldBuffer, agentBuffer, nations, "WILDFIRE", "Wildfire", 6.5, wfCell.getLatitude(), wfCell.getLongitude(), 0.0, 0.0, 30);
                 }
             }
         }

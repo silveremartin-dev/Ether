@@ -133,7 +133,14 @@ public class EcologicalStoichiometryEngine extends AbstractSimulationEngine {
         double kRatio = Math.clamp(soc / 35.0 + 0.20 * Math.tanh(metal / 200.0), 0.20, 1.50);
 
         double liebigFactor = calculateContinuousLiebigFactor(nRatio, pRatio, kRatio);
-        double effectiveNutritionalYield = agriBiomass * liebigFactor * proteinFactor;
-        acc.dFoodResource += (float) (effectiveNutritionalYield * 15.0 * dtYears);
+        // Mass-conserving stoichiometric conversion (Sterner & Elser 2002; Loladze 2002):
+        // Converts a bioavailable fraction of standing crop mass [kg] into stored caloric food [GJ] at exact SI
+        // grain energy density (0.015 GJ/kg), debiting the harvested crop mass and attenuating depleted-soil biomass.
+        double grainGjPerKg = org.ether.society.model.PhysicalUnitsHelper.megajoulesToGigajoules(
+                org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG);
+        double bioavailableHarvestKg = Math.min(agriBiomass * 0.50, agriBiomass * 0.12 * liebigFactor * proteinFactor * dtYears);
+        double stoichiometricYieldAdjustmentKg = agriBiomass * (liebigFactor * proteinFactor - 1.0) * 0.20 * dtYears;
+        acc.dFoodResource += (float) (bioavailableHarvestKg * grainGjPerKg);
+        acc.dBiomassAgriculture += (float) (stoichiometricYieldAdjustmentKg - bioavailableHarvestKg);
     }
 }

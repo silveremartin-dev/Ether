@@ -104,6 +104,11 @@ public class HeadlessRunner {
             Scenario scenario = HeadlessScenarioResolver.resolveAndConfigure(opts);
             SimulationPerformanceConfig effectivePerfConfig = scenario.toPerformanceConfig();
             effectivePerfConfig.setParallelThreadCount(opts.threadCount);
+            effectivePerfConfig.setExecutionEngineMode(switch (opts.engineMode) {
+                case RUST_NATIVE -> SimulationPerformanceConfig.ExecutionEngineMode.RUST_NATIVE;
+                case JAVA_VECTOR_SIMD -> SimulationPerformanceConfig.ExecutionEngineMode.JAVA_VECTOR_SIMD;
+                case CPU_JIT, SAFE_FALLBACK -> SimulationPerformanceConfig.ExecutionEngineMode.JAVA_STANDARD;
+            });
 
             int ticksToRun = opts.ticksExplicitlySet ? opts.ticksToRun : scenario.calculateScenarioTicks();
             if (!opts.ticksExplicitlySet) {
@@ -173,17 +178,9 @@ public class HeadlessRunner {
     }
 
     private static void configureRuntimePreferences(HeadlessCliOptions opts) {
+        // Configure JVM ForkJoinPool thread limit for this process only without mutating persistent OS user Preferences
         System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism",
                 opts.isSingleCore ? "1" : String.valueOf(opts.threadCount));
-        execPrefs.putBoolean("ether_gpu_enabled", false);
-        prefPrefs.putBoolean("ether_gpu_enabled", false);
-        String hwMode = switch (opts.engineMode) {
-            case RUST_NATIVE -> "NATIVE_RUST";
-            case JAVA_VECTOR_SIMD -> "JAVA_VECTOR_SIMD";
-            case CPU_JIT -> "CPU_JIT";
-            case SAFE_FALLBACK -> "GPU_OFF";
-        };
-        execPrefs.put("ether_hardware_mode", hwMode);
     }
 
     private static ClusterCoordinator startClusterIfEnabled(HeadlessCliOptions opts) throws Exception {

@@ -65,7 +65,11 @@ public class ResourceRecyclingEngine extends AbstractSimulationEngine {
         double work = buffer.getInstitutionalComplexity()[i] * 100.0;
         double efficiency = calculateContinuousRecyclingDiscount(capital, work) * industrialGate;
         if (efficiency > 0.05) {
-            acc.dResourceCapital += (float) (capital * efficiency * 0.025 * dtYears);
+            // Circular recovery offsets at most a fraction of the 4%/yr end-of-life capital wear and returns secondary metal
+            double recoveredDepreciationKg = capital * 0.04 * (0.50 * efficiency) * dtYears;
+            acc.dResourceCapital += (float) recoveredDepreciationKg;
+            double secondaryMetalTonnes = org.ether.society.model.PhysicalUnitsHelper.kgToMetricTonnes(recoveredDepreciationKg * 0.05);
+            acc.dMetalResource += (float) secondaryMetalTonnes;
         }
     }
 }

@@ -380,15 +380,19 @@ public class HistoricalScenarioCalibrationHarness {
 
     /**
      * CLI and Cloud execution entry point for full academic calibration and falsification pipeline.
+     * Supports {@code --epochs-only} to execute strictly the 9 continuous macro-historical epoch blocks.
      *
      * @param args command-line arguments
      */
     public static void main(String[] args) {
+        boolean epochsOnly = args != null && Arrays.stream(args).anyMatch("--epochs-only"::equalsIgnoreCase);
         logger.info("===============================================================================");
-        logger.info("🚀 STARTING ETHER CLIODYNAMIC ENGINE ACADEMIC CALIBRATION & FALSIFICATION SUITE");
+        logger.info("🚀 STARTING ETHER CLIODYNAMIC ENGINE ACADEMIC CALIBRATION & FALSIFICATION SUITE (epochsOnly={})", epochsOnly);
         logger.info("===============================================================================");
 
-        List<ScenarioCalibrationResult> combined = runFullScientificValidationSuite();
+        List<ScenarioCalibrationResult> combined = epochsOnly
+                ? runAllMasterNineEpochBlocks()
+                : runFullScientificValidationSuite();
         MultiScaleSensitivityMatrix sensitivity = runMultiScaleSensitivityMatrix(CALIBRATION_SCENARIOS.get(1));
         String report = generateMarkdownCalibrationReport(combined, sensitivity);
 
@@ -399,9 +403,19 @@ public class HistoricalScenarioCalibrationHarness {
                     java.nio.file.Path.of("docs/SCIENTIFIC_CALIBRATION_REPORT.md"),
                     report
             );
-            logger.info("📄 Academic Calibration Report successfully saved to docs/SCIENTIFIC_CALIBRATION_REPORT.md");
+            java.nio.file.Path calDir = java.nio.file.Path.of("logs/calibration");
+            java.nio.file.Files.createDirectories(calDir);
+            java.nio.file.Files.writeString(
+                    calDir.resolve("calibration_and_falsification_academic_report.md"),
+                    report
+            );
+            org.ether.society.persistence.EtherJsonHelper.writePrettyAtomic(
+                    calDir.resolve("master_calibration_and_falsification_results.json"),
+                    combined
+            );
+            logger.info("📄 Academic Calibration Report successfully saved to docs/SCIENTIFIC_CALIBRATION_REPORT.md and logs/calibration/");
         } catch (Exception ex) {
-            logger.warn("Could not write report to docs/: {}", ex.getMessage());
+            logger.warn("Could not write calibration report artifacts: {}", ex.getMessage());
         }
 
         logger.info("🏛 Academic Calibration & Epistemic Falsification Suite Completed Successfully.");

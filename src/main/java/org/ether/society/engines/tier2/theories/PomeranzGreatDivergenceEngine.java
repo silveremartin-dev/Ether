@@ -79,8 +79,40 @@ public class PomeranzGreatDivergenceEngine extends AbstractSimulationEngine {
     }
 
     @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (buffer == null || dtYears <= 0.0 || buffer.getHumanPopulation() == null) return;
+        float p = buffer.getHumanPopulation()[i];
+        if (p <= 0.5f) return;
+        float capital = (buffer.getResourceCapital() != null) ? buffer.getResourceCapital()[i] : 0.0f;
+        double kpc = capital / p;
+        if (kpc < 50.0) return;
+
+        double coal = (buffer.getResourceCoal() != null) ? buffer.getResourceCoal()[i] : 0.0;
+        double trade = (buffer.getCommercialFluxVolume() != null) ? buffer.getCommercialFluxVolume()[i] : 0.0;
+        double friction = (buffer.getFluxPressure() != null && buffer.getFluxPressure()[i] > 0.0f) ? buffer.getFluxPressure()[i] : 0.50;
+
+        double coalAvailability = SmoothMath.sigmoid(coal, COAL_BREAKOUT_STOCK_THRESHOLD, 100.0);
+        double transportAccessibility = 1.0 - SmoothMath.sigmoid(friction, 0.70, 0.15);
+        double coalProximityFactor = coalAvailability * transportAccessibility;
+        double ghostAcreageFactor = SmoothMath.sigmoid(trade, GHOST_ACREAGE_TRADE_THRESHOLD, 5.0)
+                * SmoothMath.sigmoid(kpc, 100.0, 30.0);
+        double divergencePotential = coalProximityFactor * (1.0 + 0.80 * ghostAcreageFactor);
+
+        if (divergencePotential > 0.15) {
+            acc.dResourceCapital += (float) (capital * 0.055 * divergencePotential * dtYears);
+        } else if (kpc >= 80.0 && p >= 10.0f) {
+            acc.dResourceCapital -= (float) Math.min(Math.max(0.0, capital - 10.0), capital * 0.006 * dtYears);
+        }
+    }
+
+    @Override
     public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
-        processBuffer(buffer, dtYears);
+        super.tick(buffer, dtYears, dtMonthly);
     }
 
     @Override
@@ -160,9 +192,6 @@ public class PomeranzGreatDivergenceEngine extends AbstractSimulationEngine {
                 double takeoffGrowth = 0.055 * divergencePotential * deltaYears;
                 if (capArr != null) {
                     capArr[i] = (float) (capital * (1.0 + takeoffGrowth));
-                }
-                if (natArr != null) {
-                    natArr[i] = (float) (natArr[i] + (p * 0.02 * divergencePotential * deltaYears));
                 }
             } else if (kpc >= 80.0 && p >= 10.0f) {
                 double involutionDrag = 0.015 * deltaYears;

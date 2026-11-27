@@ -185,15 +185,23 @@ public final class WorldBufferComponentAdapter {
         double kpc = Math.max(0.0, buffer.getResourceCapital()[index] / pop);
         // 1. Somatic basal + mechanical labor + domestic hearth/firewood thermal baseline (~348 W/cap in foraging bands, Smil 2017)
         double woodThermalW = 212.0 * Math.tanh((buffer.getBiomassNatural()[index] + buffer.getWoodResource()[index] + 50.0) / 50.0);
-        // 2. Agrarian draft traction & plows (activates smoothly above kpc ~ 150 kg/cap, up to +25 W/cap global average)
-        double draftW = 25.0 * Math.tanh(SmoothMath.softplus(kpc - 150.0, 0.05) / 250.0);
-        // 3. Waterwheels, windmills, sail & proto-industrial metallurgical furnaces (activates smoothly above kpc ~ 520 kg/cap, up to +220 W/cap)
-        double millAndCharcoalW = 220.0 * Math.tanh(SmoothMath.softplus(kpc - 520.0, 0.05) / 420.0);
+        // 2. Domesticated draft animal traction (oxen/horses/mules, Smil 2017: ~450 W peak, ~60 W continuous mean per animal) + plows
+        double livestockPerCapTonnes = buffer.getBiomassLivestock() != null ? Math.max(0.0, buffer.getBiomassLivestock()[index] / pop) : 0.0;
+        double draftAnimalW = 65.0 * Math.tanh(livestockPerCapTonnes / 0.25) * SmoothMath.sigmoid(kpc, 25.0, 12.0);
+        double draftToolW = 25.0 * Math.tanh(SmoothMath.softplus(kpc - 80.0, 0.05) / 180.0);
+        // 3. Waterwheels, windmills, sail & proto-industrial metallurgical furnaces (Smil 2017: Roman/Song/Edo hydraulic & charcoal regime)
+        double explicitWindSolarW = 0.0;
+        if (buffer.getEnergyWind() != null && buffer.getEnergySolar() != null) {
+            explicitWindSolarW = org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(
+                    Math.max(0.0, buffer.getEnergyWind()[index]) + Math.max(0.0, buffer.getEnergySolar()[index])) / pop;
+        }
+        double millAndCharcoalW = 220.0 * Math.tanh(SmoothMath.softplus(kpc - 320.0, 0.05) / 420.0)
+                + Math.min(180.0, explicitWindSolarW);
         // 4. Coal/steam & early internal combustion prime movers (activates smoothly above kpc ~ 1000 kg/cap, up to +600 W/cap)
         double steamCoalW = 600.0 * Math.tanh(SmoothMath.softplus(kpc - 1000.0, 0.02) / 1800.0);
         // 5. Modern electric/hydrocarbon/nuclear/solar grid (activates smoothly above kpc ~ 4000 kg/cap, up to +1350 W/cap)
         double modernGridW = 1350.0 * Math.tanh(SmoothMath.softplus(kpc - 4000.0, 0.01) / 10000.0);
-        return (float) (basalW + 39.0 + woodThermalW + draftW + millAndCharcoalW + steamCoalW + modernGridW);
+        return (float) (basalW + 39.0 + woodThermalW + draftAnimalW + draftToolW + millAndCharcoalW + steamCoalW + modernGridW);
     }
 
     /**

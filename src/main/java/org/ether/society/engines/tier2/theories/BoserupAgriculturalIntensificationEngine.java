@@ -41,7 +41,7 @@ public class BoserupAgriculturalIntensificationEngine extends AbstractSimulation
         if (buffer == null || buffer.getHumanPopulation() == null) return;
         float pop = buffer.getHumanPopulation()[i];
         if (pop > 0.001f) {
-            double density = pop / 100.0;
+            double density = buffer.getPopulationDensityPerKm2(i);
             double densityNorm = Math.pow(Math.max(0.0, density), 1.4);
             double xi = densityNorm / (Math.pow(20.0, 1.4) + densityNorm);
             double capitalDeepeningRate = pop * 2.0 * xi * dtYears;

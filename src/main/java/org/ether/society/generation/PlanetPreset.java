@@ -118,7 +118,7 @@ public record PlanetPreset(
             "Terre (Terran)", 4, 6371.0, 24.0, 23.5, 365.25, 1.0, 1.0, -11000.0, 8848.0, 15.0, 12345L, 1.0, 1.0, 0.478, 40.0, 21.0, 0.30, 1.0,
             false, 1.0, 0.0, 420.0, 2.5, 1.5, null, null, null, null, null, null,
             true, "earth",
-            true, "Terre (-1900 BP) — Âge du Bronze Moyen", 12445L,
+            true, "🌍 Terre — WorldClim v2.1 Bio1 & ERA5 (Composite)", 12445L,
             true, "🌍 Terre — WorldClim v2.1 & GPCP v2.3 (Composite)", 13345L,
             true, "🌍 Terre — WorldClim v2.1 Bio4 & ERA5 (Composite)", 14345L);
 

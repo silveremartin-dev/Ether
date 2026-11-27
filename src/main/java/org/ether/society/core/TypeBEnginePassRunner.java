@@ -187,8 +187,9 @@ public final class TypeBEnginePassRunner {
 
             /** Specific embodied energy of built physical capital (15 MJ/kg = 0.015 GJ/kg; Smil 2017, Krausmann et al. 2017). */
             final double embodiedEnergyGjPerKg = org.ether.society.model.PhysicalUnitsHelper.megajoulesToGigajoules(15.0);
-            final double maxExergyInvestmentShare = 0.25;
-            final boolean isTier2Multi = (tier == org.ether.society.core.engine.EngineTier.TIER_2_CLIODYNAMIC && engineCount > 1);
+            /** Marginal exergy investment ceiling for pluggable Tier 2 theories above Phase 1 UrbanKernel base turnover (~13% base + <=12% marginal <= 25% total). */
+            final double maxMarginalExergyInvestmentShare = 0.12;
+            final boolean isTier2 = (tier == org.ether.society.core.engine.EngineTier.TIER_2_CLIODYNAMIC);
 
             for (int i = 0; i < capacity; i++) {
                 acc.clear();
@@ -197,7 +198,7 @@ public final class TypeBEnginePassRunner {
                 for (int e = 0; e < engineCount; e++) {
                     float beforeCap = acc.dResourceCapital;
                     cellularEngines.get(e).accumulateCellularDerivatives(worldBuffer, i, dtYears, dtMonthly, acc);
-                    if (isTier2Multi) {
+                    if (isTier2) {
                         double contrib = acc.dResourceCapital - beforeCap;
                         if (contrib > maxPosCap) {
                             maxPosCap = contrib;
@@ -207,12 +208,11 @@ public final class TypeBEnginePassRunner {
                     }
                 }
                 // Lavoisier mass & Carnot exergy conservation closure (Smil 2017; Garrett 2011; Krausmann et al. 2017):
-                // 1) Overlapping Tier 2 macro-theories combine by upper/lower envelope (maxPosCap + minNegCap), preventing
-                //    both M-fold parallel double-counting and dilution by micro-engines; discrete historical shocks remain
-                //    unconstrained in EventPhysicalImpactExecutor.
-                // 2) Net positive capital formation dK+ [kg] is strictly bounded by available cell exergy surplus (Carnot)
-                //    and debits mobilized structural raw materials (metal, timber/biomass, clay in metric tonnes, Lavoisier).
-                if (isTier2Multi && (maxPosCap > 0.0 || minNegCap < 0.0)) {
+                // 1) Tier 2 theories act strictly as marginal cliodynamic modulations above Phase 1 UrbanKernel's Solow-Swan base
+                //    turnover, combined by upper/lower envelope (maxPosCap + minNegCap) even when a single Tier 2 engine runs.
+                // 2) Marginal positive capital formation dK+ [kg] is strictly bounded by remaining net exergy surplus (after
+                //    deducting somatic basal demand, Garrett maintenance, and Phase 1 base Solow replacement) and debits raw stocks.
+                if (isTier2 && (maxPosCap > 0.0 || minNegCap < 0.0)) {
                     double consensusPosK = maxPosCap;
                     double consensusNegK = minNegCap;
                     double pop = worldBuffer.getHumanPopulation()[i];
@@ -228,8 +228,10 @@ public final class TypeBEnginePassRunner {
                     double basalGjYr = pop * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
                     double maintGjYr = org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(
                             curCap * org.ether.society.database.H3CellPhysicsAndStateHelper.GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT);
-                    double netExergySurplusGj = Math.max(0.0, cellEnergyGjYr - basalGjYr - maintGjYr) * Math.max(0.0001, dtYears);
-                    double carnotMaxDeltaKg = (maxExergyInvestmentShare * netExergySurplusGj) / embodiedEnergyGjPerKg;
+                    double phase1ReplacementGjYr = (curCap * 0.04) * embodiedEnergyGjPerKg;
+                    double netExergySurplusGj = Math.max(0.0, cellEnergyGjYr - basalGjYr - maintGjYr - phase1ReplacementGjYr)
+                            * Math.max(0.0001, dtYears);
+                    double carnotMaxDeltaKg = (maxMarginalExergyInvestmentShare * netExergySurplusGj) / embodiedEnergyGjPerKg;
 
                     // Krausmann et al. (2017, PNAS 114:1880) physical capital material stoichiometry:
                     // Built capital mass comprises ~5% metals, ~7% timber, and ~88% mineral aggregates (stone, concrete,

@@ -58,7 +58,7 @@ public class AquiferDepletionEngine extends AbstractSimulationEngine {
         double aquifer = (rawAquifer <= 2.0) ? (400.0 + Math.max(0.0, rawAquifer) * 1000.0) : rawAquifer;
         double rain = buffer.getRainfall()[i];
         double pop = buffer.getHumanPopulation()[i];
-        double humanDensity = pop / 1770.49;
+        double humanDensity = buffer.getPopulationDensityPerKm2(i);
 
         double naturalRecharge = (rain * 0.15) * dtYears;
         double groundwaterFraction = 0.05 + 0.75 / (1.0 + Math.exp((rain - 550.0) / 120.0));

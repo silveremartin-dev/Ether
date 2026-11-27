@@ -102,15 +102,16 @@ public class PolanyiFictitiousCommoditiesEngine extends AbstractSimulationEngine
                 * SmoothMath.sigmoid(trade, TRADE_INTEGRATION_THRESHOLD, 5.0);
 
         if (marketCommodification > 0.02) {
-            // Land commodification & enclosure (Polanyi 1944): converts natural commons biomass into
-            // cultivated agricultural stock under strict Lavoisier mass conservation (zero ex-nihilo land).
-            double agri = buffer.getBiomassAgriculture() != null ? Math.max(0.0, buffer.getBiomassAgriculture()[i]) : 0.0;
-            double nat = buffer.getBiomassNatural() != null ? Math.max(0.0, buffer.getBiomassNatural()[i]) : 0.0;
-            double desiredConversion = agri * 0.08 * marketCommodification * dtYears;
-            double actualConversion = Math.min(desiredConversion, nat * 0.05 * Math.min(1.0, dtYears));
-            if (actualConversion > 0.0) {
-                acc.dBiomassAgriculture += (float) actualConversion;
-                acc.dBiomassNatural -= (float) actualConversion;
+            // Land commodification & enclosure (Polanyi 1944): converts natural commons biomass [t] into
+            // cultivated agricultural stock [kg] under strict Lavoisier SI mass conservation (1 t = 1,000 kg).
+            double agriKg = buffer.getBiomassAgriculture() != null ? Math.max(0.0, buffer.getBiomassAgriculture()[i]) : 0.0;
+            double natTonnes = buffer.getBiomassNatural() != null ? Math.max(0.0, buffer.getBiomassNatural()[i]) : 0.0;
+            double desiredConversionKg = agriKg * 0.08 * marketCommodification * dtYears;
+            double maxNatConversionKg = org.ether.society.model.PhysicalUnitsHelper.metricTonnesToKg(natTonnes * 0.05 * Math.min(1.0, dtYears));
+            double actualConversionKg = Math.min(desiredConversionKg, maxNatConversionKg);
+            if (actualConversionKg > 0.0) {
+                acc.dBiomassAgriculture += (float) actualConversionKg;
+                acc.dBiomassNatural -= (float) org.ether.society.model.PhysicalUnitsHelper.kgToMetricTonnes(actualConversionKg);
             }
 
             double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 0.0;
