@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Generates calibrated physical population density maps for Mars (2050) and Venus (2080).
  * Outputs both standardized grayscale density tensors [0..255] and full composite visual maps.
  */
-@Tag("manual")
+@Tag("generation")
 public class GenerateExoplanetDensityMapsTest {
 
     private static final String ARTIFACT_DIR = "C:/Users/silve/.gemini/antigravity/brain/5cc4325b-7d3b-4ad4-810d-c81e2978ec09";

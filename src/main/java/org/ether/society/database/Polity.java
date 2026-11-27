@@ -46,6 +46,12 @@ public class Polity {
     private H3Cell capital;
     @JsonIgnore
     private final Set<H3Cell> territory = new HashSet<>();
+    /** Contiguous {@link org.ether.society.core.dod.WorldBuffer} slot indices for Data-Oriented polity kernels. */
+    @JsonIgnore
+    private int[] territoryBufferIndices = new int[0];
+    /** {@link org.ether.society.core.dod.WorldBuffer} slot index of the polity capital (-1 if unset). */
+    @JsonIgnore
+    private int capitalBufferIndex = -1;
 
     // Cliodynamics & Institutional Indicators (Turchin Secular Cycles)
     private double asabiyyah = 0.8;             // Social cohesion & solidarity (0.0 to 1.0)
@@ -289,6 +295,102 @@ public class Polity {
         this.stateCapacity = Math.clamp((0.4 * asabiyyah) + (0.6 * (1.0 - normalizedElitePressure)) + fiscalMonetizationBonus - (monetaryInflation * 0.20), 0.1, 1.0);
 
         // 4. Political Instability Index (PSI) formulation: PSI = (1 - Asabiyyah) * (0.5 + EliteOverproduction) * (1 + Gini + 0.5*Inflation)
+        this.politicalInstability = Math.clamp((1.0 - asabiyyah) * (0.5 + eliteOverproduction) * (1.0 + avgGini + monetaryInflation * 0.5), 0.0, 1.0);
+    }
+
+    /**
+     * Returns the synchronized {@link org.ether.society.core.dod.WorldBuffer} slot indices belonging to this polity.
+     *
+     * @return array of buffer indices
+     */
+    @JsonIgnore
+    public int[] getTerritoryBufferIndices() {
+        return territoryBufferIndices;
+    }
+
+    /**
+     * Returns the {@link org.ether.society.core.dod.WorldBuffer} slot index of the polity capital.
+     *
+     * @return capital buffer slot index, or {@code -1} if unresolved
+     */
+    @JsonIgnore
+    public int getCapitalBufferIndex() {
+        return capitalBufferIndex;
+    }
+
+    /**
+     * Synchronizes {@code territoryBufferIndices} and {@code capitalBufferIndex} against a
+     * precomputed H3-index-to-slot map for Data-Oriented {@link org.ether.society.core.dod.WorldBuffer} passes.
+     *
+     * @param h3ToSlot map from 64-bit H3 index to contiguous {@code WorldBuffer} slot
+     */
+    public void syncBufferIndices(Map<Long, Integer> h3ToSlot) {
+        if (h3ToSlot == null || h3ToSlot.isEmpty() || territory.isEmpty()) {
+            this.territoryBufferIndices = new int[0];
+            this.capitalBufferIndex = -1;
+            return;
+        }
+        int[] buf = new int[territory.size()];
+        int count = 0;
+        for (H3Cell c : territory) {
+            if (c != null && c.getH3Index() != null) {
+                Integer slot = h3ToSlot.get(c.getH3Index());
+                if (slot != null) {
+                    buf[count++] = slot;
+                }
+            }
+        }
+        this.territoryBufferIndices = (count == buf.length) ? buf : Arrays.copyOf(buf, count);
+        this.capitalBufferIndex = (capital != null && capital.getH3Index() != null)
+                ? h3ToSlot.getOrDefault(capital.getH3Index(), -1)
+                : -1;
+    }
+
+    /**
+     * Executes one Data-Oriented Turchin-Fisher cliodynamic cycle reading directly from {@link org.ether.society.core.dod.WorldBuffer}.
+     *
+     * @param buffer  contiguous world state buffer
+     * @param dtYears simulation time step in Julian years
+     */
+    public void updateCliodynamicsCycle(org.ether.society.core.dod.WorldBuffer buffer, double dtYears) {
+        if (buffer == null || territoryBufferIndices.length == 0 || dtYears <= 0.0) return;
+        float[] popArr = buffer.getHumanPopulation();
+        float[] giniArr = buffer.getGiniIndex();
+        float[] capArr = buffer.getResourceCapital();
+        float[] foodArr = buffer.getFoodResource();
+        int cap = buffer.getCapacity();
+
+        double totalPop = 0.0;
+        double giniSum = 0.0;
+        double totalRealCapital = 0.0;
+        double totalFoodOutput = 0.0;
+        int valid = 0;
+        for (int slot : territoryBufferIndices) {
+            if (slot < 0 || slot >= cap) continue;
+            valid++;
+            if (popArr != null) totalPop += Math.max(0.0, popArr[slot]);
+            if (giniArr != null) giniSum += giniArr[slot] > 0.0f ? giniArr[slot] : 0.35;
+            if (capArr != null) totalRealCapital += Math.max(0.0, capArr[slot]);
+            if (foodArr != null) totalFoodOutput += Math.max(0.0, foodArr[slot]);
+        }
+        if (valid == 0) return;
+        double avgGini = giniSum / valid;
+
+        double bullionToRealOutputRatio = treasuryBullion / Math.max(10.0, totalRealCapital + totalFoodOutput * 0.5);
+        this.monetaryInflation = Math.clamp(Math.max(0.0, bullionToRealOutputRatio - 0.35) * 0.50, 0.0, 1.0);
+        double fiscalMonetizationBonus = Math.min(0.15, Math.log1p(treasuryBullion) * 0.02) * (1.0 - monetaryInflation);
+
+        double sizePenalty = Math.log10(Math.max(1, valid)) * 0.015;
+        double inequalityPenalty = avgGini * 0.03;
+        double netAsabiyyahDerivative = (0.008 - sizePenalty - inequalityPenalty);
+        this.asabiyyah = Math.clamp(this.asabiyyah + netAsabiyyahDerivative * dtYears, 0.05, 1.0);
+
+        double targetEliteOverproduction = Math.clamp(0.4 + avgGini * 2.5 + (totalPop > 1_000_000 ? 0.5 : 0.0) + monetaryInflation * 0.8, 0.2, 4.5);
+        this.eliteOverproduction = Math.clamp(this.eliteOverproduction + (targetEliteOverproduction - this.eliteOverproduction) * Math.min(1.0, 0.20 * dtYears), 0.2, 4.5);
+
+        double normalizedElitePressure = Math.clamp((eliteOverproduction - 0.2) / 4.3, 0.0, 1.0);
+        this.stateCapacity = Math.clamp((0.4 * asabiyyah) + (0.6 * (1.0 - normalizedElitePressure)) + fiscalMonetizationBonus - (monetaryInflation * 0.20), 0.1, 1.0);
+
         this.politicalInstability = Math.clamp((1.0 - asabiyyah) * (0.5 + eliteOverproduction) * (1.0 + avgGini + monetaryInflation * 0.5), 0.0, 1.0);
     }
 

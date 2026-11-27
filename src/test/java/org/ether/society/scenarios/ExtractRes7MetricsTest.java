@@ -19,7 +19,7 @@ import java.util.zip.GZIPInputStream;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@org.junit.jupiter.api.Tag("manual")
+@org.junit.jupiter.api.Tag("inspection")
 public class ExtractRes7MetricsTest {
 
     @Test

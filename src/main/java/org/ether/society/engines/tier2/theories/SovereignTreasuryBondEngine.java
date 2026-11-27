@@ -90,6 +90,64 @@ public class SovereignTreasuryBondEngine extends AbstractSimulationEngine {
     }
 
     /**
+     * Executes one Data-Oriented fiscal accounting cycle across all active sovereign polities
+     * reading directly from {@link WorldBuffer} primitive arrays.
+     *
+     * @param polities   active polities/nations
+     * @param buffer     contiguous world state buffer
+     * @param deltaYears time step fraction in Julian years
+     */
+    public static void processPolityFiscalCycles(List<Polity> polities, WorldBuffer buffer, double deltaYears) {
+        if (polities == null || polities.isEmpty() || buffer == null || deltaYears <= 0.0) return;
+        float[] popArr = buffer.getHumanPopulation();
+        float[] foodArr = buffer.getFoodResource();
+        float[] capArr = buffer.getResourceCapital();
+        int cap = buffer.getCapacity();
+
+        for (Polity polity : polities) {
+            if (polity == null) continue;
+            double totalPop = 0.0;
+            double totalFoodSurplus = 0.0;
+            double totalCapital = 0.0;
+
+            for (int slot : polity.getTerritoryBufferIndices()) {
+                if (slot < 0 || slot >= cap) continue;
+                double p = popArr != null ? Math.max(0.0, popArr[slot]) : 0.0;
+                double f = foodArr != null ? Math.max(0.0, foodArr[slot]) : 0.0;
+                double k = capArr != null ? Math.max(0.0, capArr[slot]) : 0.0;
+                totalPop += p;
+                totalFoodSurplus += Math.max(0.0, f - p * 0.8);
+                totalCapital += k;
+            }
+            if (totalPop <= 0.0) continue;
+
+            double stateCapacity = polity.getStateCapacity();
+            double taxRate = 0.05 + 0.15 * stateCapacity;
+            double annualRevenue = taxRate * (totalFoodSurplus * 1.5 + totalCapital * 0.02);
+
+            double instability = polity.getPoliticalInstability();
+            double militaryShare = 0.04 + 0.12 * instability;
+            double annualExpenditures = totalPop * militaryShare * 2.0;
+
+            double netFiscalBalance = annualRevenue - annualExpenditures;
+            if (netFiscalBalance >= 0.0) {
+                polity.setTreasuryBullion(polity.getTreasuryBullion() + netFiscalBalance * deltaYears * 0.05);
+            } else {
+                double deficit = -netFiscalBalance * deltaYears;
+                double currentBullion = polity.getTreasuryBullion();
+                if (currentBullion >= deficit) {
+                    polity.setTreasuryBullion(currentBullion - deficit);
+                } else {
+                    polity.setTreasuryBullion(0.0);
+                    double creditworthiness = Math.max(0.0, 1.0 - instability);
+                    double inflationStep = (creditworthiness > 0.6 ? 0.02 : 0.10) * deltaYears;
+                    polity.setMonetaryInflation(Math.min(1.0, polity.getMonetaryInflation() + inflationStep));
+                }
+            }
+        }
+    }
+
+    /**
      * Executes one fiscal accounting cycle across all active sovereign polities.
      *
      * @param polities   active polities/nations

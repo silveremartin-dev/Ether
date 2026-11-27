@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Regenerates all 25 cartographic rasters (2048x1024), cultural_registry.json,
  * provenance_and_sources.json, and README.md across all historical epochs (-100,000 to 2060).
  */
-@Tag("manual")
+@Tag("generation")
 public class BatchRegenerateAllScenarioMapsTest {
     private static final Logger logger = LoggerFactory.getLogger(BatchRegenerateAllScenarioMapsTest.class);
 

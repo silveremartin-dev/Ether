@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Tag("manual")
+@Tag("generation")
 public class GenerateAllScenarioMapsTest {
     private static final Logger logger = LoggerFactory.getLogger(GenerateAllScenarioMapsTest.class);
 

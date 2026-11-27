@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Ensures that 100% of standard scenario presets explicitly define all 86 Type-B engines,
  * with zero missing keys, zero ambiguous defaults, and preserving any preset-specific overrides.
  */
-@org.junit.jupiter.api.Tag("manual")
+@org.junit.jupiter.api.Tag("generation")
 public class StandardScenarioPresetsEnricherTest {
 
     @Test
@@ -38,8 +38,11 @@ public class StandardScenarioPresetsEnricherTest {
         DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
         printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
 
+        Path outputRoot = Paths.get(System.getProperty("ether.output.dir", "target/generated-test-data/presets"));
         for (Path dir : dirs) {
             if (!Files.exists(dir)) continue;
+            Path outDir = outputRoot.resolve(dir);
+            Files.createDirectories(outDir);
 
             try (Stream<Path> stream = Files.list(dir)) {
                 List<Path> jsonFiles = stream.filter(p -> p.toString().endsWith(".json")).toList();
@@ -90,7 +93,7 @@ public class StandardScenarioPresetsEnricherTest {
                     assertEquals(86, scenario.getTypeBEngineStates().size(),
                             "Scenario " + path.getFileName() + " must have exactly 86 Type-B engine definitions.");
 
-                    mapper.writer(printer).writeValue(file, scenario);
+                    mapper.writer(printer).writeValue(outDir.resolve(path.getFileName()).toFile(), scenario);
                 }
             }
         }

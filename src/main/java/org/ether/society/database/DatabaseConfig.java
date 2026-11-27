@@ -27,7 +27,10 @@ public class DatabaseConfig {
     private static volatile boolean offlineModeDetected = false;
 
     /**
-     * Get or create the EntityManagerFactory.
+     * Gets or lazily initializes the JPA {@link EntityManagerFactory}.
+     * Latches offline mode automatically on first unreachable PostgreSQL probe to prevent repeated pool timeouts.
+     *
+     * @return active {@link EntityManagerFactory}, or {@code null} when running in standalone offline mode
      */
     public static synchronized EntityManagerFactory getEntityManagerFactory() {
         if (offlineModeDetected) {
@@ -118,7 +121,9 @@ public class DatabaseConfig {
     }
 
     /**
-     * Check if database is available.
+     * Checks whether the PostgreSQL database backend is reachable and initialized.
+     *
+     * @return {@code true} if an active {@link EntityManagerFactory} is available, {@code false} in offline mode
      */
     public static boolean isDatabaseAvailable() {
         try {

@@ -1085,19 +1085,20 @@ The numerical solver architecture partitions differential systems based on their
 * **Academic Literature Reference**: Tainter, J. A. (1988). *The Collapse of Complex Societies*. Cambridge University Press.
 * **Governing Equations**:
   $$\text{MarginalReturn } MR = \frac{d B_{\text{benefit}}}{d C_{\text{org}}} = \frac{B_0}{1 + \exp(\alpha C_{\text{org}})} - \kappa_{\text{maintenance}} C_{\text{org}}^{1.15}$$
+  $$\text{SurplusFlow} = N \cdot \left(0.05 + 2.5 \ln\!\left(1 + \frac{k_{\text{pc}}}{200}\right)\right)\Delta t, \quad \text{MaintenanceCost} = \left(0.015 K + N \cdot C_{\text{org}}^{2.2} \cdot 0.08\right)\Delta t$$
 * **Parameters & Physical Units**:
-  * $C_{\text{org}}$: Administrative complexity, bureaucracy size, and institutional specialization [index units].
-  * $B_{\text{benefit}}$: Solved societal problems and coordinated public goods output.
-  * Systemic collapse trigger: When $MR \le 0$, escalating overhead taxes cause popular revolt or sudden systemic dissolution upon external shock.
-* **Computational Complexity**: $O(1)$ per polity.
+  * $C_{\text{org}} = \ln(1 + 0.02\,k_{\text{pc}})$: Administrative complexity, bureaucracy size, and institutional specialization [index units].
+  * $B_{\text{benefit}}$: Solved societal problems and coordinated public goods output (sub-linear logarithmic diminishing returns).
+  * Systemic collapse trigger: When $\text{MaintenanceCost} > \text{SurplusFlow}$ ($MR \le 0$), escalating overhead erodes physical capital $K$ and institutional complexity.
+* **Computational Complexity**: $O(1)$ per cell.
 
 #### 50. NASA HANDY Socio-Ecological Predator-Prey Collapse (`HandyNasaHybridEngine`, `HandyNasaPureEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
 * **Academic Literature Reference**: Motesharrei, S., Rivas, J., & Kalnay, E. (2014). *Human and nature dynamics (HANDY): Modeling inequality and use of resources in the collapse or sustainability of societies*. Ecological Economics, 101, 90-102.
 * **Governing Equations**:
-  $$\frac{dx_c}{dt} = \alpha_c x_c - \beta_c x_c, \quad \frac{dx_e}{dt} = \alpha_e x_e - \beta_e x_e, \quad \frac{dy}{dt} = \gamma y (K_y - y) - C(x_c, x_e, y)$$
+  $$\frac{dx_c}{dt} = \alpha_c x_c - \beta_c x_c, \quad \frac{dx_e}{dt} = \alpha_e x_e - \beta_e x_e, \quad \frac{dy}{dt} = \gamma y \left(1 - \frac{y}{K_y}\right) - \delta x \frac{y}{K_y}$$
 * **Parameters & Physical Units**:
-  * $x_c, x_e$: Commoner and elite population cohorts [persons].
+  * $x_c, x_e$: Commoner and elite population cohorts [persons]; $x = N / 100$ normalized cellular density in `HandyNasaHybridEngine` (unbounded bilinear depletion term $\delta = 0.005$, $\gamma = 0.02$, zero artificial density cap).
   * $y$: Regenerative natural ecological capital / resource stock [biomass units].
   * $\alpha, \beta$: Birth and famine-induced mortality rates.
 * **Computational Complexity**: $O(1)$ per regional macro-cell.

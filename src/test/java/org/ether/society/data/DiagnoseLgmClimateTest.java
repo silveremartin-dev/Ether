@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-@Tag("manual")
+@Tag("inspection")
 public class DiagnoseLgmClimateTest {
     @Test
     /*

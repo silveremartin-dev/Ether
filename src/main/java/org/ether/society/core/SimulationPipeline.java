@@ -182,16 +182,27 @@ public class SimulationPipeline {
         if (runTier2 && engine != null && engine.getWorldBuffer() != null) {
             typeBPassRunner.executeActiveTypeBEngines(engine.getWorldBuffer(), dtYears, dtMonthly, activeScenario, compiledKernel);
 
-            if (engine.getNations() != null && !engine.getNations().isEmpty() && cells != null && !cells.isEmpty()) {
+            if (engine.getNations() != null && !engine.getNations().isEmpty()) {
+                WorldBuffer wb = engine.getWorldBuffer();
+                long[] h3Idx = wb.getH3Indexes();
+                java.util.Map<Long, Integer> h3ToSlot = new java.util.HashMap<>(wb.getCapacity());
+                for (int s = 0; s < wb.getCapacity(); s++) {
+                    if (h3Idx[s] != 0L) h3ToSlot.put(h3Idx[s], s);
+                }
+                for (org.ether.society.database.Polity p : engine.getNations()) {
+                    if (p != null) p.syncBufferIndices(h3ToSlot);
+                }
                 java.util.Map<String, Boolean> states = activeScenario != null ? activeScenario.getTypeBEngineStates() : null;
                 if (states == null || Boolean.TRUE.equals(states.get("CliodynamicsEngine"))) {
-                    org.ether.society.engines.tier2.theories.CliodynamicsEngine.updateCliodynamics(engine.getNations(), cells, dtYears);
+                    org.ether.society.engines.tier2.theories.CliodynamicsEngine.updateCliodynamics(engine.getNations(), wb, dtYears);
                 }
                 if (states == null || Boolean.TRUE.equals(states.get("WarDiplomacyEngine"))) {
-                    org.ether.society.engines.tier2.theories.WarDiplomacyEngine.processGeopoliticalConflicts(engine.getNations(), cells, activeScenario);
+                    if (cells != null && !cells.isEmpty()) {
+                        org.ether.society.engines.tier2.theories.WarDiplomacyEngine.processGeopoliticalConflicts(engine.getNations(), cells, activeScenario);
+                    }
                 }
                 if (states == null || Boolean.TRUE.equals(states.get("SovereignTreasuryBondEngine"))) {
-                    org.ether.society.engines.tier2.theories.SovereignTreasuryBondEngine.processPolityFiscalCycles(engine.getNations(), dtYears);
+                    org.ether.society.engines.tier2.theories.SovereignTreasuryBondEngine.processPolityFiscalCycles(engine.getNations(), wb, dtYears);
                 }
             }
         }

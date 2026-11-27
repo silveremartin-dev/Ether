@@ -27,7 +27,7 @@ import java.util.Base64;
  * Generates comprehensive side-by-side comparison rasters and builds the interactive
  * Generative UI HTML dashboard 'climate_visual_comparison.html'.
  */
-@Tag("manual")
+@Tag("generation")
 public class GenerateVisualClimateComparisonArtifact {
 
     private static final String ARTIFACT_DIR = "C:/Users/silve/.gemini/antigravity/brain/32078e09-a5c4-4806-a0a7-96efa9ac3c26";

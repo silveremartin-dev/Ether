@@ -1,6 +1,6 @@
 ﻿# Package and Upload Simulation Saves / Snapshots
 param(
-    [string]$Version = "1.0.0-beta.4",
+    [string]$Version = "1.0.0-beta.5",
     [switch]$Upload = $false
 )
 

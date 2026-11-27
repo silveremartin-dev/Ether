@@ -299,6 +299,11 @@ public class GroundTruthAuditGenerator {
                 ? RegionalRasterBenchmarkExtractor.extractRegionalSeries(benchKey, windowBounds, sampleYears)
                 : Collections.emptyMap();
 
+        if (windowBounds != null && RegionalRasterBenchmarkExtractor.supportsRegionalRaster(benchKey) && regionalRasterSeries.isEmpty()) {
+            return new VariableDriftAnalysis(label, 0.0, "⚪ Regional (No 2D Ground-Truth Raster)", "—", "—", "—",
+                    getEngineModuleForVariable(label), 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "ns");
+        }
+
         for (int yr : sampleYears) {
             double obs = !regionalRasterSeries.isEmpty()
                     ? regionalRasterSeries.getOrDefault(yr, Double.NaN)

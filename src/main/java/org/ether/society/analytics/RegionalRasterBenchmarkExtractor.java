@@ -204,14 +204,42 @@ public final class RegionalRasterBenchmarkExtractor {
         Map<Integer, Double> anchorSeries = WINDOW_SERIES_CACHE.get(cacheKey);
         if (anchorSeries == null) {
             NavigableMap<Integer, Double> built = new TreeMap<>();
-            for (int epoch : HYDE_ANCHOR_EPOCHS) {
-                if ("worldPopulation".equals(benchKey) || "population".equals(benchKey)) {
-                    float[][] counts = Hyde34GridReader.readConservedPopulationCountsIfPresent(epoch);
-                    if (counts != null) {
-                        double headcount = sumConservedRegion(counts, minLat, maxLat, minLng, maxLng);
-                        built.put(epoch, "worldPopulation".equals(benchKey) ? (headcount / 1_000_000.0) : headcount);
+            if ("worldPopulation".equals(benchKey) || "population".equals(benchKey)) {
+                // Primary source: Ether precomputed epoch density rasters (data/maps/ether/earth/<year>/density_map.png)
+                // ensuring exact projection and luminance consistency with PreComputePhase regional initialization.
+                java.io.File earthRoot = new java.io.File("data/maps/ether/earth");
+                java.io.File[] epochDirs = earthRoot.exists() ? earthRoot.listFiles(java.io.File::isDirectory) : null;
+                if (epochDirs != null) {
+                    for (java.io.File epDir : epochDirs) {
+                        int epYear;
+                        try {
+                            epYear = Integer.parseInt(epDir.getName());
+                        } catch (NumberFormatException ignored) {
+                            continue;
+                        }
+                        java.io.File densFile = new java.io.File(epDir, "earth_" + epYear + "_density.png");
+                        if (!densFile.exists()) {
+                            densFile = new java.io.File(epDir, "density_map.png");
+                        }
+                        if (!densFile.exists()) continue;
+                        double regHeadcount = extractRegionalPopulationFromPrecomputedPng(densFile, epYear, minLat, maxLat, minLng, maxLng);
+                        if (regHeadcount > 0.0) {
+                            built.put(epYear, "worldPopulation".equals(benchKey) ? (regHeadcount / 1_000_000.0) : regHeadcount);
+                        }
                     }
-                } else if ("deforestationRate".equals(benchKey) || "forestCoverRemainingPct".equals(benchKey)) {
+                }
+                // Secondary fallback: raw conserved HYDE 3.4 grids when precomputed PNGs are unavailable
+                if (built.isEmpty()) {
+                    for (int epoch : HYDE_ANCHOR_EPOCHS) {
+                        float[][] counts = Hyde34GridReader.readConservedPopulationCountsIfPresent(epoch);
+                        if (counts != null) {
+                            double headcount = sumConservedRegion(counts, minLat, maxLat, minLng, maxLng);
+                            built.put(epoch, "worldPopulation".equals(benchKey) ? (headcount / 1_000_000.0) : headcount);
+                        }
+                    }
+                }
+            } else if ("deforestationRate".equals(benchKey) || "forestCoverRemainingPct".equals(benchKey)) {
+                for (int epoch : HYDE_ANCHOR_EPOCHS) {
                     Hyde34LandUseReader.LandUseFields lu = Hyde34LandUseReader.loadForYear(epoch);
                     if (lu != null) {
                         built.put(epoch, computeRegionalForestRetentionPct(lu, minLat, maxLat, minLng, maxLng));
@@ -246,5 +274,55 @@ public final class RegionalRasterBenchmarkExtractor {
             }
         }
         return interpolated;
+    }
+
+    /**
+     * Integrates regional population headcount inside {@code [minLat, maxLat, minLng, maxLng]} directly from
+     * an Ether precomputed equirectangular {@code density_map.png} raster, normalized to the epoch's canonical
+     * global population so that regional simulation and regional empirical ground truth share the exact same raster.
+     */
+    private static double extractRegionalPopulationFromPrecomputedPng(
+            java.io.File densityPng, int epochYear,
+            double minLat, double maxLat, double minLng, double maxLng) {
+        try {
+            java.awt.image.BufferedImage img = javax.imageio.ImageIO.read(densityPng);
+            if (img == null) return 0.0;
+            int w = img.getWidth();
+            int h = img.getHeight();
+            double wpMillions = HistoricalValidationKernel.getInterpolatedBenchmarkValue(
+                    "worldPopulation", (double) epochYear,
+                    HistoricalValidationKernel.InterpolationMethod.PCHIP_MONOTONE_CUBIC);
+            if (Double.isNaN(wpMillions) || wpMillions <= 0.0) return 0.0;
+
+            int yMin = Math.clamp((int) Math.floor(((90.0 - maxLat) / 180.0) * h), 0, h - 1);
+            int yMax = Math.clamp((int) Math.floor(((90.0 - minLat) / 180.0) * h), 0, h - 1);
+            int xMin = Math.clamp((int) Math.floor(((minLng + 180.0) / 360.0) * w), 0, w - 1);
+            int xMax = Math.clamp((int) Math.floor(((maxLng + 180.0) / 360.0) * w), 0, w - 1);
+
+            double globalWeight = 0.0;
+            double windowWeight = 0.0;
+            for (int y = 0; y < h; y++) {
+                double latDeg = 90.0 - ((y + 0.5) / h) * 180.0;
+                double cosLat = Math.max(0.01, Math.cos(Math.toRadians(latDeg)));
+                boolean inY = (y >= yMin && y <= yMax);
+                for (int x = 0; x < w; x++) {
+                    int rgb = img.getRGB(x, y);
+                    int r = (rgb >> 16) & 0xFF;
+                    int g = (rgb >> 8) & 0xFF;
+                    int b = rgb & 0xFF;
+                    double lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0;
+                    if (lum <= 0.004) continue;
+                    double weight = lum * cosLat;
+                    globalWeight += weight;
+                    if (inY && x >= xMin && x <= xMax) {
+                        windowWeight += weight;
+                    }
+                }
+            }
+            if (globalWeight <= 0.0) return 0.0;
+            return (wpMillions * 1_000_000.0) * (windowWeight / globalWeight);
+        } catch (java.io.IOException e) {
+            return 0.0;
+        }
     }
 }

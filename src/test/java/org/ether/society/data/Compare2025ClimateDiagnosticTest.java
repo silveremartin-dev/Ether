@@ -8,7 +8,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-@Tag("manual")
+@Tag("inspection")
 public class Compare2025ClimateDiagnosticTest {
 
     @Test

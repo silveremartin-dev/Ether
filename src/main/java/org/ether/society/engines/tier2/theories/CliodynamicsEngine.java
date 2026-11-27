@@ -118,6 +118,37 @@ public class CliodynamicsEngine extends AbstractSimulationEngine {
     }
 
     /**
+     * Executes one Data-Oriented tick of Cliodynamics directly over {@link org.ether.society.core.dod.WorldBuffer}
+     * using each polity's synchronized buffer slot indices (zero {@code List<H3Cell>} traversal).
+     *
+     * @param nations list of active polities
+     * @param buffer  contiguous world state buffer
+     * @param dtYears time step in Julian years
+     */
+    public static void updateCliodynamics(List<Polity> nations, org.ether.society.core.dod.WorldBuffer buffer, double dtYears) {
+        if (nations == null || nations.isEmpty() || buffer == null || dtYears <= 0.0) return;
+        float[] popArr = buffer.getHumanPopulation();
+        int cap = buffer.getCapacity();
+
+        for (Polity nation : nations) {
+            if (nation == null) continue;
+            nation.updateCliodynamicsCycle(buffer, dtYears);
+
+            double psi = nation.getPoliticalInstability();
+            if (psi > 0.05 && popArr != null) {
+                double strifeMortalityFraction = STRIFE_MORTALITY_COEFF_PER_YEAR * (psi * psi) * dtYears;
+                for (int slot : nation.getTerritoryBufferIndices()) {
+                    if (slot < 0 || slot >= cap) continue;
+                    float curPop = popArr[slot];
+                    if (curPop > 0.0f) {
+                        popArr[slot] = (float) Math.max(0.0, curPop * (1.0 - Math.min(0.5, strifeMortalityFraction)));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Legacy compatibility wrapper defaulting to 1 month time step.
      */
     public static void updateCliodynamics(List<Polity> nations, List<H3Cell> cells) {

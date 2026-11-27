@@ -5,7 +5,7 @@
 
     <groupId>org.ether</groupId>
     <artifactId>society-simulation</artifactId>
-    <version>1.0.0-beta.4</version>
+    <version>1.0.0-beta.5</version>
     <packaging>jar</packaging>
 
     <name>Human Society Simulation - Ether</name>
@@ -413,7 +413,7 @@
         <profile>
             <id>fast</id>
             <properties>
-                <surefire.excludedGroups>manual,benchmark,scientific,academic,academic-paper,data-audit</surefire.excludedGroups>
+                <surefire.excludedGroups>manual,generation,inspection,benchmark,scientific,academic,academic-paper,data-audit</surefire.excludedGroups>
             </properties>
         </profile>
         <profile>
@@ -429,7 +429,7 @@
                             <reuseForks>true</reuseForks>
                             <argLine>-Xms2g -Xmx8g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</argLine>
                             <groups>benchmark</groups>
-                            <excludedGroups>manual</excludedGroups>
+                            <excludedGroups>manual,generation,inspection</excludedGroups>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -448,7 +448,7 @@
                             <reuseForks>true</reuseForks>
                             <argLine>-Xms2g -Xmx8g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</argLine>
                             <groups>data-audit</groups>
-                            <excludedGroups>manual</excludedGroups>
+                            <excludedGroups>manual,generation,inspection</excludedGroups>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -467,7 +467,7 @@
                             <reuseForks>true</reuseForks>
                             <argLine>-Xms2g -Xmx8g --add-modules=jdk.incubator.vector --enable-native-access=ALL-UNNAMED</argLine>
                             <groups>scientific,academic,academic-paper</groups>
-                            <excludedGroups>manual</excludedGroups>
+                            <excludedGroups>manual,generation,inspection</excludedGroups>
                         </configuration>
                     </plugin>
                 </plugins>

@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
  */
-@Tag("manual")
+@Tag("inspection")
 public class PlanetaryRasterSampler {
     private static final Logger logger = LoggerFactory.getLogger(PlanetaryRasterSampler.class);
 

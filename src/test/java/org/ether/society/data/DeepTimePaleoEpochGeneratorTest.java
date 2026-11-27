@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Verification test for {@link DeepTimePaleoEpochGenerator}.
  */
-@Tag("manual")
+@Tag("generation")
 public class DeepTimePaleoEpochGeneratorTest {
 
     @Test

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * tradenetwork, institutional, ecological, pathogen) while preserving physical layers,
  * and updates cultural_registry.json, provenance_and_sources.json, and README.md for every epoch.
  */
-@Tag("manual")
+@Tag("generation")
 public class GenerateEpochMapsTest {
     public static final List<EpochMeta> EPOCHS = HistoricalEpochTestCatalog.EPOCHS;
     public static final Set<Long> CANONICAL_36_YEARS = HistoricalEpochTestCatalog.CANONICAL_36_YEARS;

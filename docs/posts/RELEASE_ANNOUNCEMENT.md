@@ -1,33 +1,32 @@
-﻿# Ether 1.0.0-beta.4 — Official Release Announcement & Changelog
+﻿# Ether 1.0.0-beta.5 — Official Release Announcement & Changelog
 
-> **Release Version**: 1.0.0-beta.4  
+> **Release Version**: 1.0.0-beta.5  
 > **Release Date**: November 2026  
 > **Repository**: [https://github.com/silveremartin-dev/Ether](https://github.com/silveremartin-dev/Ether)  
 > **License**: MIT License  
 
 ---
 
-## 🌟 Major Highlights of Ether 1.0.0-beta.4
+## 🌟 Major Highlights of Ether 1.0.0-beta.5
 
-### 1. Grand Master 49-Scenario Empirical Falsification Benchmark (100% Coverage)
-* **Complete Multi-Millennial Coverage**: 32 historical epochs executed from $-100\,000\text{ BP}$ (Out of Africa) to $2025\text{ CE}$ (Anthropocene) on global H3 hexagonal meshes (Resolution 4: 288,122 cells; Resolution 3: 41,162 cells for deep Pleistocene).
-* **Empirical Ground-Truth Correlation**: Mean spatial Pearson correlation $\bar{r}_{\text{spatial}} \ge +0.965$ and ecumene overlap (IoU) $> 97\%$ against NOAA ETOPO, WorldClim, HYDE 3.4, and Maddison 2020.
-* **17 Prospective Pathways & Off-Earth Horizons**: Full simulation of future Earth scenarios (Business As Usual, SSP5-8.5, Nuclear Winter, Singularity 2045, Phosphate Cliff, Supervolcano) and 10 space colonies (Moon Shackleton, Mars Jezero, Venus Aerostats, Titan, Mercury, Boreas, Oceania, Gaia Prime, Tidally Locked World).
-* **Multi-Century Free-Run Stability**: 250-year post-plague run (1347–1600) and 500-year Bronze-to-Iron transition (-1200 to -700) verifying absence of numerical overflow or trajectory divergence.
-* **31 Cliodynamic Debate Falsification Battery**: Systematic econometric confrontation of competing sociological paradigms (Boserup vs. Malthus, Turchin vs. Pinker, Smil vs. Nordhaus, Ostrom vs. Hardin, Acemoglu vs. Geography, Scott Grain States, Henrich Cultural Drift).
+### 1. Centralized SI Dimensional Consistency & Unified Simulation Clock
+* **Authoritative SI Unit Conversion (`PhysicalUnitsHelper`)**: Centralized all physical, thermodynamic, and temporal unit conversions (`J`, `GJ`, `W`, `kg`, `t`, `K`, Julian days/years) across simulation engines, DOD kernels, telemetry aggregators, and data loaders, eliminating inline conversion literals.
+* **Canonical Human Population Nomenclature (`humanPopulation`)**: Refactored cellular population buffers from `biomassHuman` to `humanPopulation` across Java, native Rust (`ether-core-native`), wire codecs, and technical documentation, accompanied by grounded Hatton (2015), Ayres-Warr, and IPCC stoichiometric formulations.
+* **Deterministic 32D Culture & Mitosis Kernels**: Synchronized 32-dimensional cultural trait vectors in the native Rust engine, enforced strict SplitMix64 PRNG determinism in `DemographicKernel` mitosis, and unified single-clock temporal progression.
 
-### 2. Autonomous White Paper & Academic Manuscript Synchronization
-* **Automated White Paper Recompilation**: `WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md` generated dynamically from 50 real simulation saves across all 51 canonical presets, complete with multi-variate gap matrices and per-scenario remediation audits.
-* **Academic Monograph Enrichment**: International manuscript `ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md` enriched with Table 7.4.A1 (Historical Validation Matrix) and Table 7.4.A3 (Prospective & Exoplanetary Matrix), synchronized across all 4 OS distribution trees.
+### 2. Unified `SimulationTemporalEvent` Architecture & Geophysical Forcings
+* **Immutable `SimulationDate` & `SimulationTemporalEvent` Contract**: Introduced linear step-independent temporal progression, enum-dispatched physical shock execution, and continuous intensity envelopes (bell curve, two-phase radioecological decay, sigmoidal plateau).
+* **Coupled Stratospheric Aerosol & Radioecological Physics**: Connected volcanic stratospheric aerosol optical depth directly to `AlbedoClimateEngine`, integrated two-phase radioecological decay (`Cs-137` / `Sr-90`) and exclusion zones into `ThermodynamicMigrationEngine`, and added historical shock falsification reports (1347 Black Death, 1914 World Wars, 165 Antonine Plague at H3 Res 6).
+* **Regional Charney Albedo Scoping & Category A Formula Fixes**: Scoped Charney (1975) vegetation-albedo fold dynamics to Saharo-Sahelian arid/semi-arid belts, and corrected Category A cellular derivative formulations in `TainterComplexityCollapseEngine` (Tainter 1988 diminishing marginal returns) and `HandyNasaHybridEngine` (Motesharrei et al. 2014 bilinear depletion).
 
-### 3. Complete Javadoc API Documentation Refresh
-* **Exhaustive Javadoc Tree**: Fully rebuilt and published in `javadoc/` across all 600+ production classes, records, engines, and UI controllers.
-* **Rich Scientific Commentary**: Complete $\LaTeX$ mathematical formulas, physical dimensions, SI units, and academic citations for all simulation variables and algorithms.
+### 3. White Paper Streaming Telemetry, Offline Resilience & Full Javadoc Refresh
+* **Streamed Snapshot Telemetry & UTF-8 Integrity**: Recompiled the multi-scenario benchmark white paper with 100% streamed intermediate snapshots, dynamic H3 resolution reporting (`Res >= 4` enforced on modern and prospective scenarios), embedded Mermaid diagrams, off-Earth run classification, and zero UTF-8 mojibake across all 82 scenario preset files.
+* **Zero-Latency Offline Mode Latching**: `DatabaseConfig` now latches standalone offline mode on first unreachable PostgreSQL check, eliminating repeated HikariCP connection timeouts during snapshot persistence.
+* **Complete Javadoc API Documentation Refresh**: Rebuilt and published `javadoc/` across all 669 main production classes, records, engines, kernels, and UI components under Java 25.
 
 ### 4. 1-Click Autonomous Standalone Deployment & Multi-Platform Packages
-* **Zero-Database Requirement**: Run Ether immediately on Windows, Linux, and macOS with Java 21+ using portable distribution packages.
+* **Zero-Database Requirement**: Run Ether out of the box on Windows, Linux, and macOS with Java 25 using portable standalone distribution packages.
 * **Full 5-Language Localization (i18n)**: 3,020 keys in 100% parity across English (`EN`), French (`FR`), German (`DE`), Spanish (`ES`), and Simplified Chinese (`ZH`) with 0 missing keys and 0 hardcoded UI strings.
-* **Dual High-Contrast Theme System**: Optimized Dark and Light themes meeting accessibility standards across all panels.
 
 ---
 
@@ -41,8 +40,10 @@ cd Ether
 ./install.sh    # Linux/macOS
 ```
 
-Portable standalone release packages are available under `dist/`:
-* `Ether-v1.0.0-beta.4-windows-x64.zip`
-* `Ether-v1.0.0-beta.4-linux-x64.tar.gz`
-* `Ether-v1.0.0-beta.4-macos-universal.tar.gz`
-* `Ether-v1.0.0-beta.4-standalone.zip`
+Portable standalone release packages:
+* `Ether-v1.0.0-beta.5-windows-x64.zip`
+* `Ether-v1.0.0-beta.5-linux-x64.tar.gz`
+* `Ether-v1.0.0-beta.5-macos-universal.tar.gz`
+* `Ether-v1.0.0-beta.5-standalone.zip`
+* `Ether-v1.0.0-beta.5-standalone.tar.gz`
+* `Ether-v1.0.0-beta.5-executable.jar`

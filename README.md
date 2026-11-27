@@ -16,7 +16,7 @@
 
 Ether runs out of the box **without requiring any external database configuration or internet connection**:
 * **100% Offline Operational**: All core baseline historical scenarios, planet archetypes, ecology models, and cliodynamic equations are embedded directly inside the JAR. You can run, experiment, modify parameters, and save completely offline.
-* **Ultra-Lightweight Distribution (~44 MB)**: Portable standalone distribution package (`dist/Ether-v1.0.0-beta.4-standalone.zip`).
+* **Ultra-Lightweight Distribution (~44 MB)**: Portable standalone distribution package (`dist/Ether-v1.0.0-beta.5-standalone.zip`).
 * **Non-Blocking Background Sync (Optional)**: When connected to the internet, official extra scenarios, maps (`data/ether/**`), chronicles (`data/ether/earth/events/`), and snapshots (`saves/**`) sync automatically in the background without stalling the interface.
 * **Branch & Customization Protection**: Local user edits (changed H3 resolution, cohort size, time steps, custom scenarios, user saves) are protected via SHA-256 and are **never overwritten**. Reference scenarios always remain accessible alongside user custom presets.
 
@@ -417,7 +417,7 @@ Ether includes an empirical validation engine computing **Root Mean Square Error
 - 🔒 [Security & System Integrity Audit](docs/SECURITY.md)
 - 📢 [Reddit Launch Post](docs/posts/REDDIT_POST.md)
 - 💼 [LinkedIn Announcement Post](docs/posts/LINKEDIN_POST.md)
-- 📦 [Version 1.0.0-beta.4 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
+- 📦 [Version 1.0.0-beta.5 Release Notes](docs/posts/RELEASE_ANNOUNCEMENT.md)
 
 ---
 

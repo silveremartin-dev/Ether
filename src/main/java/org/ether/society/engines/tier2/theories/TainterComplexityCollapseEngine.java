@@ -20,16 +20,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Institutional Complexity &amp; Declining Marginal Returns Engine (Joseph Tainter, 1988).
  *
- * <p>Models the diminishing marginal returns to bureaucratic and technological complexity,
- * and the vulnerability of over-complex societies to catastrophic fiscal/energetic collapse:</p>
- * <pre>
- *   C_i = ln(1 + 0.1 · K_i)
- *   Σ_maint = C_i^1.15 · E_base
- *   dK_i/dt = Production_i · s - Σ_maint
- * </pre>
+ * <p>Models the diminishing marginal returns to socio-political and technological complexity,
+ * contrasting sub-linear logarithmic per-capita surplus generation against super-linear
+ * institutional maintenance costs:</p>
+ * <ul>
+ *   <li>Per-capita capital: $k_i = K_i / N_i$</li>
+ *   <li>Logarithmic surplus flow: $S_i = N_i \cdot (0.05 + 2.5 \ln(1 + k_i / 200)) \cdot \Delta t_{\text{yr}}$</li>
+ *   <li>Complexity index: $C_i = \ln(1 + 0.02 \cdot k_i)$</li>
+ *   <li>Super-linear maintenance burden: $\Sigma_{\text{maint}, i} = (0.015 K_i + \max(1, N_i) \cdot 0.08 \cdot C_i^{2.2}) \cdot \Delta t_{\text{yr}}$</li>
+ * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.3
+ * @version 1.0.0-beta.5
  */
 public class TainterComplexityCollapseEngine extends AbstractSimulationEngine {
     public TainterComplexityCollapseEngine() {
@@ -86,16 +88,24 @@ public class TainterComplexityCollapseEngine extends AbstractSimulationEngine {
     }
 
     /**
-     * Process.
+     * Indicates that this engine operates directly on Data-Oriented Design (DOD) cellular derivatives.
      *
-     * @param cells the cells parameter (List&lt;H3Cell&gt;)
-     * @param deltaYears the delta years parameter (double)
+     * @return {@code true} since cellular derivatives are supported
      */
     @Override
     public boolean supportsCellularDerivatives() {
         return true;
     }
 
+    /**
+     * Accumulates Tainter institutional complexity maintenance and capital erosion derivatives for cell {@code i}.
+     *
+     * @param buffer    contiguous DOD world state buffer
+     * @param i         target H3 cell index
+     * @param dtYears   integration time step in Julian years [$\text{yr}$]
+     * @param dtMonthly integration time step in calendar months [$\text{mo}$]
+     * @param acc       cellular derivative accumulator
+     */
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;

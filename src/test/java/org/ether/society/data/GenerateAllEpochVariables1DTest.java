@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   <li>{@code data/ether/<planet>/<year>/state_1d.json}</li>
  * </ul>
  */
-@org.junit.jupiter.api.Tag("manual")
+@org.junit.jupiter.api.Tag("generation")
 public class GenerateAllEpochVariables1DTest {
 
     private static final ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
@@ -59,12 +59,13 @@ public class GenerateAllEpochVariables1DTest {
         int totalGenerated = 0;
         Set<String> benchmarkKeys = HistoricalValidationKernel.getAllBenchmarkKeys();
 
+        File outputRoot = new File(System.getProperty("ether.output.dir", "target/generated-test-data/epoch-variables"));
         for (File planetDir : planets) {
             String planetName = planetDir.getName().toLowerCase(Locale.ROOT);
             File[] epochDirs = planetDir.listFiles(File::isDirectory);
             if (epochDirs == null) continue;
 
-            File varPlanetDir = new File("data/variables/ether/" + planetName);
+            File varPlanetDir = new File(outputRoot, "variables/ether/" + planetName);
             if (!varPlanetDir.exists()) varPlanetDir.mkdirs();
 
             for (File epochDir : epochDirs) {
@@ -78,12 +79,14 @@ public class GenerateAllEpochVariables1DTest {
 
                 Map<String, Object> state1D = buildEpochState1D(planetName, year, benchmarkKeys);
 
-                // 1. Write to data/variables/ether/<planet>/<year>.json
+                // 1. Write to <outputRoot>/variables/ether/<planet>/<year>.json
                 File varFile = new File(varPlanetDir, epochStr + ".json");
                 mapper.writeValue(varFile, state1D);
 
-                // 2. Write to data/ether/<planet>/<year>/state_1d.json
-                File mapStateFile = new File(epochDir, "state_1d.json");
+                // 2. Write to <outputRoot>/maps/ether/<planet>/<year>/state_1d.json
+                File mapOutDir = new File(outputRoot, "maps/ether/" + planetName + "/" + epochStr);
+                if (!mapOutDir.exists()) mapOutDir.mkdirs();
+                File mapStateFile = new File(mapOutDir, "state_1d.json");
                 mapper.writeValue(mapStateFile, state1D);
 
                 totalGenerated++;

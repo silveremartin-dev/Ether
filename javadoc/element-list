@@ -12,6 +12,7 @@ org.ether.society.core.math
 org.ether.society.core.metrics
 org.ether.society.core.profiling
 org.ether.society.core.telemetry
+org.ether.society.core.time
 org.ether.society.core.vector
 org.ether.society.data
 org.ether.society.data.sync

@@ -100,7 +100,7 @@ public record SimulationDate(int year, int month, int day) implements Comparable
      * Checks if this date reaches or passes the other date.
      *
      * @param other target date
-     * @return {@code true} if this >= other
+     * @return {@code true} if {@code this >= other}
      */
     public boolean isAtOrAfter(SimulationDate other) {
         if (other == null) return false;
@@ -111,7 +111,7 @@ public record SimulationDate(int year, int month, int day) implements Comparable
      * Checks if this date is prior to or reaches the other date.
      *
      * @param other target date
-     * @return {@code true} if this <= other
+     * @return {@code true} if {@code this <= other}
      */
     public boolean isAtOrBefore(SimulationDate other) {
         if (other == null) return false;
