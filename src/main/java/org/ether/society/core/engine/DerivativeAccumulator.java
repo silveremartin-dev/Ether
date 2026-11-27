@@ -66,10 +66,16 @@ public final class DerivativeAccumulator {
     /** Derivative increment for marine/coastal fishery biomass (\(\Delta B_{\text{fish}}\)). */
     public float dBiomassFish;
 
-    /** Derivative increment for mineral coal reserve (\(\Delta C_{\text{coal}}\)). */
+    /** Derivative increment for mineral coal reserve (\(\Delta C_{\text{coal}}\), metric tonnes). */
     public float dResourceCoal;
 
-    /** Derivative increment for harvestable timber/wood reserve (\(\Delta W_{\text{wood}}\)). */
+    /** Derivative increment for crude oil reserve (\(\Delta C_{\text{oil}}\), metric tonnes). */
+    public float dResourceOil;
+
+    /** Derivative increment for domesticated livestock biomass (\(\Delta B_{\text{livestock}}\)). */
+    public float dBiomassLivestock;
+
+    /** Derivative increment for harvestable timber/wood reserve (\(\Delta W_{\text{wood}}\), metric tonnes). */
     public float dWoodResource;
 
     /** Derivative increment for accessible groundwater aquifer storage (\(\Delta A_{\text{gw}}\)). */
@@ -100,6 +106,8 @@ public final class DerivativeAccumulator {
         dFertility = 0.0f;
         dBiomassFish = 0.0f;
         dResourceCoal = 0.0f;
+        dResourceOil = 0.0f;
+        dBiomassLivestock = 0.0f;
         dWoodResource = 0.0f;
         dFreshwaterAquifer = 0.0f;
         dSoilOrganicCarbon = 0.0f;
@@ -129,6 +137,8 @@ public final class DerivativeAccumulator {
                 || dFertility != 0.0f
                 || dBiomassFish != 0.0f
                 || dResourceCoal != 0.0f
+                || dResourceOil != 0.0f
+                || dBiomassLivestock != 0.0f
                 || dWoodResource != 0.0f
                 || dFreshwaterAquifer != 0.0f
                 || dSoilOrganicCarbon != 0.0f;

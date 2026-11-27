@@ -167,6 +167,14 @@ public abstract class AbstractSimulationEngine implements SimulationEngineModule
             float[] coal = buffer.getResourceCoal();
             coal[i] = (float) Math.max(0.0, coal[i] + acc.dResourceCoal);
         }
+        if (acc.dResourceOil != 0.0f && buffer.getResourceOil() != null) {
+            float[] oil = buffer.getResourceOil();
+            oil[i] = (float) Math.max(0.0, oil[i] + acc.dResourceOil);
+        }
+        if (acc.dBiomassLivestock != 0.0f && buffer.getBiomassLivestock() != null) {
+            float[] live = buffer.getBiomassLivestock();
+            live[i] = (float) Math.max(0.0, live[i] + acc.dBiomassLivestock);
+        }
         if (acc.dWoodResource != 0.0f) {
             float[] wood = buffer.getWoodResource();
             wood[i] = (float) Math.max(0.0, wood[i] + acc.dWoodResource);

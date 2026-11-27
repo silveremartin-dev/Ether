@@ -93,11 +93,24 @@ public class WienerCyberneticHomeostasisEngine extends AbstractSimulationEngine 
         double foodPerCapita = food / pop;
         double error = (foodPerCapita - TARGET_FOOD_PER_CAPITA) / TARGET_FOOD_PER_CAPITA;
 
-        // Negative feedback damping: when food deficit occurs, mobilize emergency subsistence effort;
-        // when surplus is high, stabilize institutional/work pressure
+        // Negative feedback damping: when food deficit occurs, mobilize emergency harvest from
+        // existing agricultural/natural biomass (strict Lavoisier conservation: zero ex-nihilo food);
+        // when surplus is high, stabilize institutional/work pressure.
         double dampingAdjustment = -DAMPING_FEEDBACK_GAIN * error * dtYears;
         if (error < 0.0) {
-            acc.dFoodResource += Math.min(pop * 0.1, -error * pop * 0.02 * dtYears);
+            double desiredEmergencyFood = Math.min(pop * 0.1, -error * pop * 0.02 * dtYears);
+            double agri = buffer.getBiomassAgriculture() != null ? Math.max(0.0, buffer.getBiomassAgriculture()[i]) : 0.0;
+            double nat = buffer.getBiomassNatural() != null ? Math.max(0.0, buffer.getBiomassNatural()[i]) : 0.0;
+            double harvestableAgri = agri * 0.15 * Math.min(1.0, dtYears);
+            double harvestableNat = nat * 0.05 * Math.min(1.0, dtYears);
+            double fromAgri = Math.min(desiredEmergencyFood, harvestableAgri);
+            double fromNat = Math.min(desiredEmergencyFood - fromAgri, harvestableNat);
+            double actualHarvest = fromAgri + fromNat;
+            if (actualHarvest > 0.0) {
+                acc.dFoodResource += (float) actualHarvest;
+                acc.dBiomassAgriculture -= (float) fromAgri;
+                acc.dBiomassNatural -= (float) fromNat;
+            }
         }
         acc.dFluxPressure += Math.clamp(dampingAdjustment, -0.05, 0.05);
     }

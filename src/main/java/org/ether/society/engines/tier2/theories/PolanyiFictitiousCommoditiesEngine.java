@@ -102,8 +102,16 @@ public class PolanyiFictitiousCommoditiesEngine extends AbstractSimulationEngine
                 * SmoothMath.sigmoid(trade, TRADE_INTEGRATION_THRESHOLD, 5.0);
 
         if (marketCommodification > 0.02) {
-            double agri = buffer.getBiomassAgriculture() != null ? buffer.getBiomassAgriculture()[i] : 0.0;
-            acc.dBiomassAgriculture += (float) (agri * 0.08 * marketCommodification * dtYears);
+            // Land commodification & enclosure (Polanyi 1944): converts natural commons biomass into
+            // cultivated agricultural stock under strict Lavoisier mass conservation (zero ex-nihilo land).
+            double agri = buffer.getBiomassAgriculture() != null ? Math.max(0.0, buffer.getBiomassAgriculture()[i]) : 0.0;
+            double nat = buffer.getBiomassNatural() != null ? Math.max(0.0, buffer.getBiomassNatural()[i]) : 0.0;
+            double desiredConversion = agri * 0.08 * marketCommodification * dtYears;
+            double actualConversion = Math.min(desiredConversion, nat * 0.05 * Math.min(1.0, dtYears));
+            if (actualConversion > 0.0) {
+                acc.dBiomassAgriculture += (float) actualConversion;
+                acc.dBiomassNatural -= (float) actualConversion;
+            }
 
             double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 0.0;
             double subsistenceStress = Math.max(0.0, 1.0 - ((food / pop) / 1.20));

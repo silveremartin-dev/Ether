@@ -122,7 +122,8 @@ public class KondratievSchumpeterLongWaveEngine extends AbstractSimulationEngine
         if (effectiveModulator < -0.50) {
             double scrapRate = 0.015 * Math.abs(effectiveModulator) * dtYears;
             deltaK -= (capital + deltaK) * scrapRate;
-            acc.dMetalResource += (float) ((capital * scrapRate) * 0.15);
+            // Convert scrapped physical capital mass from kg to metric tonnes (15% recoverable scrap metal)
+            acc.dMetalResource += (float) org.ether.society.model.PhysicalUnitsHelper.kgToMetricTonnes((capital * scrapRate) * 0.15);
         }
         acc.dResourceCapital += (float) deltaK;
     }

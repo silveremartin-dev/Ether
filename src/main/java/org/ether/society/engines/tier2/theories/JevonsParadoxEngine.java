@@ -59,8 +59,28 @@ public class JevonsParadoxEngine extends AbstractSimulationEngine {
             if (transducerEfficiencyFactor > 0.05) {
                 double machineryIntensity = Math.log1p(kPerCapita / 50.0);
                 double reboundDemand = machineryIntensity * reboundCoefficient * transducerEfficiencyFactor * 0.005 * dtYears;
-                acc.dEnergyFoodConsumed += (float) reboundDemand;
-                acc.dEnergyFire += (float) (reboundDemand * 100.0);
+                double reboundFireGJ = reboundDemand * 100.0;
+                // Lavoisier fuel conservation (Jevons 1865): combustion rebound is strictly bounded by real coal (24 GJ/t)
+                // or timber (15 GJ/t) stocks — zero ex-nihilo thermal energy when no combustible fuel exists.
+                float coalStock = buffer.getResourceCoal() != null ? Math.max(0.0f, buffer.getResourceCoal()[i]) : 0.0f;
+                float woodStock = buffer.getWoodResource() != null ? Math.max(0.0f, buffer.getWoodResource()[i]) : 0.0f;
+                if (coalStock > 0.0f) {
+                    double coalTonnesNeeded = reboundFireGJ / 24.0;
+                    double actualCoalTonnes = Math.min(coalStock * 0.05 * dtYears, coalTonnesNeeded);
+                    acc.dResourceCoal -= (float) actualCoalTonnes;
+                    acc.dEnergyFire += (float) (actualCoalTonnes * 24.0);
+                } else if (woodStock > 0.0f) {
+                    double woodTonnesNeeded = reboundFireGJ / 15.0;
+                    double actualWoodTonnes = Math.min(woodStock * 0.02 * dtYears, woodTonnesNeeded);
+                    acc.dWoodResource -= (float) actualWoodTonnes;
+                    acc.dEnergyFire += (float) (actualWoodTonnes * 15.0);
+                }
+                float foodStock = buffer.getFoodResource() != null ? Math.max(0.0f, buffer.getFoodResource()[i]) : 0.0f;
+                if (foodStock > 0.0f) {
+                    double actualFoodRebound = Math.min(foodStock * 0.02 * dtYears, reboundDemand);
+                    acc.dFoodResource -= (float) actualFoodRebound;
+                    acc.dEnergyFoodConsumed += (float) actualFoodRebound;
+                }
             }
         }
     }

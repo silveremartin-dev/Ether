@@ -185,21 +185,96 @@ public final class TypeBEnginePassRunner {
             DerivativeAccumulator acc = new DerivativeAccumulator();
             int engineCount = cellularEngines.size();
 
+            /** Specific embodied energy of built physical capital (15 MJ/kg = 0.015 GJ/kg; Smil 2017, Krausmann et al. 2017). */
+            final double embodiedEnergyGjPerKg = org.ether.society.model.PhysicalUnitsHelper.megajoulesToGigajoules(15.0);
+            final double maxExergyInvestmentShare = 0.25;
+            final boolean isTier2Multi = (tier == org.ether.society.core.engine.EngineTier.TIER_2_CLIODYNAMIC && engineCount > 1);
+
             for (int i = 0; i < capacity; i++) {
                 acc.clear();
+                double maxPosCap = 0.0;
+                double minNegCap = 0.0;
                 for (int e = 0; e < engineCount; e++) {
+                    float beforeCap = acc.dResourceCapital;
                     cellularEngines.get(e).accumulateCellularDerivatives(worldBuffer, i, dtYears, dtMonthly, acc);
-                }
-                // Thermodynamic conservation bound (Garrett 2011; Smil 2017):
-                // When multiple Tier 2 socio-economic theories are enabled simultaneously, their additive
-                // positive capital derivatives represent overlapping macro-theories of the same physical surplus
-                // and must not compound beyond the physical exergy-supported capital accumulation ceiling.
-                if (tier == org.ether.society.core.engine.EngineTier.TIER_2_CLIODYNAMIC && engineCount > 1 && acc.dResourceCapital > 0.0f) {
-                    float curCap = worldBuffer.getResourceCapital()[i];
-                    float maxPhysicalDeltaK = (float) (Math.max(10.0, curCap) * 0.035 * Math.max(0.0001, dtYears));
-                    if (acc.dResourceCapital > maxPhysicalDeltaK) {
-                        acc.dResourceCapital = maxPhysicalDeltaK;
+                    if (isTier2Multi) {
+                        double contrib = acc.dResourceCapital - beforeCap;
+                        if (contrib > maxPosCap) {
+                            maxPosCap = contrib;
+                        } else if (contrib < minNegCap) {
+                            minNegCap = contrib;
+                        }
                     }
+                }
+                // Lavoisier mass & Carnot exergy conservation closure (Smil 2017; Garrett 2011; Krausmann et al. 2017):
+                // 1) Overlapping Tier 2 macro-theories combine by upper/lower envelope (maxPosCap + minNegCap), preventing
+                //    both M-fold parallel double-counting and dilution by micro-engines; discrete historical shocks remain
+                //    unconstrained in EventPhysicalImpactExecutor.
+                // 2) Net positive capital formation dK+ [kg] is strictly bounded by available cell exergy surplus (Carnot)
+                //    and debits mobilized structural raw materials (metal, timber/biomass, clay in metric tonnes, Lavoisier).
+                if (isTier2Multi && (maxPosCap > 0.0 || minNegCap < 0.0)) {
+                    double consensusPosK = maxPosCap;
+                    double consensusNegK = minNegCap;
+                    double pop = worldBuffer.getHumanPopulation()[i];
+                    double curCap = worldBuffer.getResourceCapital()[i];
+
+                    // Available annual energy flux in GJ/yr: max of explicit energy buffers and Smil (2017) prime-mover cell power
+                    double cellEnergyGjYr = worldBuffer.getEnergyFire()[i] + worldBuffer.getEnergyWind()[i]
+                            + worldBuffer.getEnergySolar()[i] + worldBuffer.getEnergyFoodConsumed()[i];
+                    if (pop > 0.0) {
+                        double cellWatts = org.ether.society.core.dod.WorldBufferComponentAdapter.computeCellPowerWattsPerCapita(worldBuffer, i) * pop;
+                        cellEnergyGjYr = Math.max(cellEnergyGjYr, org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(cellWatts));
+                    }
+                    double basalGjYr = pop * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
+                    double maintGjYr = org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(
+                            curCap * org.ether.society.database.H3CellPhysicsAndStateHelper.GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT);
+                    double netExergySurplusGj = Math.max(0.0, cellEnergyGjYr - basalGjYr - maintGjYr) * Math.max(0.0001, dtYears);
+                    double carnotMaxDeltaKg = (maxExergyInvestmentShare * netExergySurplusGj) / embodiedEnergyGjPerKg;
+
+                    // Krausmann et al. (2017, PNAS 114:1880) physical capital material stoichiometry:
+                    // Built capital mass comprises ~5% metals, ~7% timber, and ~88% mineral aggregates (stone, concrete,
+                    // brick, sand, gravel, clay). Continental land cells (elevation >= 0) supply local crustal aggregates
+                    // (stone/sand/limestone) not stored in a separate buffer, while wood/biomass, metal, and clay stocks
+                    // are explicitly debited proportionally to their mobilized shares under Lavoisier mass conservation.
+                    double woodT = Math.max(0.0, worldBuffer.getWoodResource()[i]);
+                    double bioNatT = worldBuffer.getBiomassNatural() != null ? Math.max(0.0, worldBuffer.getBiomassNatural()[i]) : 0.0;
+                    double metalT = Math.max(0.0, worldBuffer.getMetalResource()[i]);
+                    double clayT = worldBuffer.getClayResource() != null ? Math.max(0.0, worldBuffer.getClayResource()[i]) : 0.0;
+                    boolean isLand = worldBuffer.getElevation() != null && worldBuffer.getElevation()[i] >= 0.0f;
+
+                    double actualPosK = Math.min(consensusPosK, carnotMaxDeltaKg);
+                    if (!isLand) {
+                        // Open ocean cells have no crustal stone/aggregates: strictly bounded by explicit stocks
+                        double explicitRawTonnes = woodT + metalT + clayT;
+                        double lavoisierOceanMaxKg = org.ether.society.model.PhysicalUnitsHelper.metricTonnesToKg(
+                                explicitRawTonnes * 0.05 * Math.max(0.0001, dtYears));
+                        actualPosK = Math.min(actualPosK, lavoisierOceanMaxKg);
+                    }
+                    double consumedTonnes = org.ether.society.model.PhysicalUnitsHelper.kgToMetricTonnes(actualPosK);
+                    if (consumedTonnes > 0.0) {
+                        double dtClamped = Math.min(1.0, Math.max(0.0001, dtYears));
+                        // 1) Metal share (~5% of built capital mass) debited from metalResource
+                        double metalDebit = Math.min(metalT * 0.05 * dtClamped, consumedTonnes * 0.05);
+                        if (metalDebit > 0.0) {
+                            acc.dMetalResource -= (float) metalDebit;
+                        }
+                        // 2) Timber share (~7% of built capital mass) debited from woodResource, then standing forest biomass
+                        double timberNeed = consumedTonnes * 0.07;
+                        double woodDebit = Math.min(woodT * 0.05 * dtClamped, timberNeed);
+                        if (woodDebit > 0.0) {
+                            acc.dWoodResource -= (float) woodDebit;
+                        }
+                        double forestDebit = Math.min(bioNatT * 0.02 * dtClamped, Math.max(0.0, timberNeed - woodDebit));
+                        if (forestDebit > 0.0) {
+                            acc.dBiomassNatural -= (float) forestDebit;
+                        }
+                        // 3) Clay/brick share (~10% of built capital mass) debited from clayResource (remaining ~78% is crustal stone/sand/concrete on land)
+                        double clayDebit = Math.min(clayT * 0.05 * dtClamped, consumedTonnes * 0.10);
+                        if (clayDebit > 0.0 && worldBuffer.getClayResource() != null) {
+                            worldBuffer.getClayResource()[i] = (float) Math.max(0.0, worldBuffer.getClayResource()[i] - clayDebit);
+                        }
+                    }
+                    acc.dResourceCapital = (float) (actualPosK + consensusNegK);
                 }
                 if (acc.hasNonZeroDerivatives()) {
                     org.ether.society.core.engine.AbstractSimulationEngine.applyAccumulatorToCell(worldBuffer, i, acc);

@@ -86,7 +86,8 @@ public class AiryIsostasyCrustalRootEngine extends AbstractSimulationEngine {
             double currentMetal = buffer.getMetalResource()[i];
             double orogenicOreCap = Math.min(1000.0, 100.0 + (elevation / 1000.0) * 150.0);
             if (orogenicOreCap > currentMetal) {
-                acc.dMetalResource += (float) ((orogenicOreCap - currentMetal) * Math.min(1.0, dtYears * 0.01));
+                // Orogenic metallogenic uplift operates on geological timescales (~1 Myr, 1e-6 / yr), never 1%/yr
+                acc.dMetalResource += (float) ((orogenicOreCap - currentMetal) * Math.min(1.0, dtYears * 1.0e-6));
             }
         }
     }

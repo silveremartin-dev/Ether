@@ -85,9 +85,9 @@ public class VonThunenAgriculturalRingsEngine extends AbstractSimulationEngine {
 
         if (pop > maxSustainableAgglomeration) {
             double excessRatio = (pop - maxSustainableAgglomeration) / maxSustainableAgglomeration;
-            double currentFood = buffer.getFoodResource()[i];
-            double newFood = Math.max(0.1, currentFood * (1.0 - Math.min(0.5, excessRatio * 0.2)));
-            acc.dFoodResource += (newFood - currentFood);
+            double currentFood = Math.max(0.0, buffer.getFoodResource()[i]);
+            double newFood = currentFood * (1.0 - Math.min(0.5, excessRatio * 0.2));
+            acc.dFoodResource += (float) (newFood - currentFood);
         }
     }
 }

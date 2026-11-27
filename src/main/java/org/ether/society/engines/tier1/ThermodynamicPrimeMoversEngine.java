@@ -93,11 +93,32 @@ public class ThermodynamicPrimeMoversEngine extends AbstractSimulationEngine {
         }
 
         double thermalEnginePower = 0.0;
-        if (capitalPerCapita > 200.0 && metalStock > 0.5) {
+        double coalShare = 0.0;
+        double oilShare = 0.0;
+        if (capitalPerCapita > 200.0 && metalStock > 0.5 && (coalStock > 0.0 || oilStock > 0.0)) {
             double precisionMetallurgy = Math.min(1.0, (capitalPerCapita - 200.0) / 3000.0);
             double carnotEfficiency = 0.01 + 0.34 * precisionMetallurgy;
-            double availableFuelEnthalpy = Math.tanh(coalStock / 10.0) + Math.tanh(oilStock / 5.0);
-            thermalEnginePower = 2500.0 * carnotEfficiency * availableFuelEnthalpy;
+            double coalEnthalpyFactor = Math.tanh(coalStock / 10.0);
+            double oilEnthalpyFactor = Math.tanh(oilStock / 5.0);
+            double availableFuelEnthalpy = coalEnthalpyFactor + oilEnthalpyFactor;
+            if (availableFuelEnthalpy > 1.0e-9) {
+                coalShare = coalEnthalpyFactor / availableFuelEnthalpy;
+                oilShare = oilEnthalpyFactor / availableFuelEnthalpy;
+                thermalEnginePower = 2500.0 * carnotEfficiency * availableFuelEnthalpy;
+            }
+        }
+
+        // First Law fuel conservation: debit fossil coal (24 GJ/t) and oil (42 GJ/t) for thermal prime movers
+        double thermalFuelGJ = org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(pop * thermalEnginePower) * dtYears;
+        if (thermalFuelGJ > 0.0) {
+            double desiredCoalT = (thermalFuelGJ * coalShare) / 24.0;
+            double desiredOilT = (thermalFuelGJ * oilShare) / 42.0;
+            double actualCoalT = Math.min(Math.max(0.0, coalStock), desiredCoalT);
+            double actualOilT = Math.min(Math.max(0.0, oilStock), desiredOilT);
+            acc.dResourceCoal -= (float) actualCoalT;
+            acc.dResourceOil -= (float) actualOilT;
+            double actualThermalGJ = actualCoalT * 24.0 + actualOilT * 42.0;
+            thermalEnginePower = org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(actualThermalGJ / Math.max(1.0e-6, dtYears)) / pop;
         }
 
         // Extensive cellular exosomatic flux target in GJ/yr (somatic food resides in energyFoodConsumed)
