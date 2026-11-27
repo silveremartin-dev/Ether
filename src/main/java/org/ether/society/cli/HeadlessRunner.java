@@ -300,7 +300,7 @@ public class HeadlessRunner {
 
             System.out.println(fullReport.toString());
 
-            java.nio.file.Path reportsDir = java.nio.file.Paths.get("docs/reports");
+            java.nio.file.Path reportsDir = java.nio.file.Paths.get("target/reports");
             java.nio.file.Files.createDirectories(reportsDir);
             String safeFile = saveTarget.replaceAll("[^a-zA-Z0-9._-]", "_");
             java.nio.file.Path outFile = reportsDir.resolve("headless_report_" + safeFile + ".md");

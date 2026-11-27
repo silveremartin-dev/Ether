@@ -189,14 +189,13 @@ public class CohortGranularityConvergenceFalsificationTest {
         sb.append("This confirms that adjusting `targetCohortSize` provides genuine computational scalability ");
         sb.append("without introducing systematic macroscopic demographic bias.\n");
 
-        File outDir = new File("docs");
-        if (outDir.exists()) {
-            File outFile = new File(outDir, "DEMOGRAPHIC_COHORT_GRANULARITY_CONVERGENCE_REPORT.md");
-            try (FileWriter fw = new FileWriter(outFile, StandardCharsets.UTF_8)) {
-                fw.write(sb.toString());
-            } catch (IOException e) {
-                System.err.println("Could not write cohort convergence report: " + e.getMessage());
-            }
+        File outDir = new File("target/reports");
+        outDir.mkdirs();
+        File outFile = new File(outDir, "DEMOGRAPHIC_COHORT_GRANULARITY_CONVERGENCE_REPORT.md");
+        try (FileWriter fw = new FileWriter(outFile, StandardCharsets.UTF_8)) {
+            fw.write(sb.toString());
+        } catch (IOException e) {
+            System.err.println("Could not write cohort convergence report: " + e.getMessage());
         }
     }
 }

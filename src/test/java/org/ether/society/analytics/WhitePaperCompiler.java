@@ -90,8 +90,7 @@ public class WhitePaperCompiler {
         System.out.println("Loaded " + loadedRuns.size() + " simulation runs into repo in " + (System.currentTimeMillis() - startTime) + " ms.");
         File chartsDir = new File("docs/images/charts");
         BenchmarkSynthesisChartGenerator.generateAllSynthesisCharts(chartsDir);
-        AcademicPaperEmpiricalUpdater.syncAcademicPaperChartAliases(chartsDir);
-        File outFile = new File("docs/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md");
+        File outFile = new File("target/reports/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md");
         if (outFile.getParentFile() != null) outFile.getParentFile().mkdirs();
 
         try (PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outFile), StandardCharsets.UTF_8))) {

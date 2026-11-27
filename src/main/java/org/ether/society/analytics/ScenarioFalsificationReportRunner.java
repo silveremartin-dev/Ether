@@ -128,8 +128,8 @@ public class ScenarioFalsificationReportRunner {
             // Print report directly to stdout
             System.out.println(audit.reportMarkdown());
 
-            // Also persist to docs/reports and scratch
-            File reportsDir = new File("docs/reports");
+            // Persist transient report to target/reports
+            File reportsDir = new File("target/reports");
             reportsDir.mkdirs();
             File outReport = new File(reportsDir, "scenario_falsification_report.md");
             try (PrintWriter pw = new PrintWriter(outReport)) {
@@ -140,11 +140,6 @@ public class ScenarioFalsificationReportRunner {
                 try (PrintWriter pw = new PrintWriter(specificReport)) {
                     pw.println(audit.reportMarkdown());
                 }
-            }
-            File scratchReport = new File("scratch/scenario_falsification_report.md");
-            scratchReport.getParentFile().mkdirs();
-            try (PrintWriter pw = new PrintWriter(scratchReport)) {
-                pw.println(audit.reportMarkdown());
             }
 
         } catch (Exception e) {

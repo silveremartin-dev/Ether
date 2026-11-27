@@ -8,9 +8,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 cd "${ROOT_DIR}"
 
-OUTPUT_DIR="${1:-docs}"
+OUTPUT_DIR="${1:-target/reports}"
 TARGET_FILE="${OUTPUT_DIR}/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md"
-ACADEMIC_FILE="${OUTPUT_DIR}/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md"
+ACADEMIC_FILE="docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md"
 
 echo "================================================================================"
 echo " [ETHER] MASTER WHITE PAPER & ACADEMIC MANUSCRIPT COMPILER"

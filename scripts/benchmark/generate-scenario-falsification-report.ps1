@@ -5,7 +5,7 @@
 
 param (
     [string]$Runs = "RUN-LA-PESTE-NOIRE---INVERSION--CONOMIQUE-POST-F-ODALE--1347--2282 RUN-GUERRES-MONDIALES--RUPTURE-TOTALITAIRE----RE-NUCL-AIRE--1914--5889 RUN-RAMS-S-II--PAX-AEGYPTIACA---B-TISSEURS-MONUMENTAUX---1279--3618",
-    [string]$OutputDir = "scratch"
+    [string]$OutputDir = "target/reports"
 )
 
 $ErrorActionPreference = "Stop"

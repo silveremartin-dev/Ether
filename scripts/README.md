@@ -2,13 +2,14 @@
 
 This directory contains cross-platform operational, build, benchmarking, containerization, and cluster deployment scripts for the **Ether Cliodynamic & Planetary Simulation Engine**.
 
-All scripts are categorized into modular subdirectories:
-- **`build/`**: Compilation, Javadoc generation, and multi-OS standalone release packagers.
+All scripts are categorized into modular subdirectories (`AGENTS.md` §17.2):
+- **`build/`**: Compilation, native Rust builds, Javadoc generation, multi-OS release packagers, and workspace hygiene (`clean-workspace`).
 - **`run/`**: Desktop GUI launchers, Docker lifecycles, headless engine runners, and cluster orchestrators.
-- **`test/`**: Epistemic falsification test runners, bifurcation benchmarks, and calibration suites.
+- **`test/`**: Architecture/quality compliance audits, epistemic falsification suites, and bifurcation benchmarks.
+- **`benchmark/`**: 5-axis performance benchmarks, 51-preset catalog runners, and falsification report compilers.
+- **`i18n/`**: Localization key-parity and zero-hardcoded-string audits across all 6 bundles.
 - **`gcp/`**: Google Cloud Platform Batch, Spot VMs, and distributed hyperscale runners.
-- **`i18n/`**: Localization validation, missing key detection, and translation hygiene tools.
-- **`ingest/`**: External empirical and predictive dataset ingestion pipelines (e.g. IIASA SSPs).
+- **`gis/` & `ingest/`**: External geospatial and empirical dataset ingestion pipelines (e.g. IIASA SSPs).
 
 ---
 
@@ -25,22 +26,26 @@ All scripts are categorized into modular subdirectories:
 | **`run/`** | `start-worker.bat` / `.sh` | Compute Worker | Headless \| Offloaded \| No | **Cluster Worker Node**: Connects to Master node and computes spatial domains. |
 | **`run/`** | `docker-deploy.bat` / `.sh` | Docker Stack | Headless / Cluster \| Full | **Container Deployer**: Orchestrates dev DBs, standalone headless, or scaled clusters. |
 | **`run/`** | `regenerate-all-maps.bat` / `.sh` | Host Machine | N/A \| File IO \| No | **Cartographic Generator**: Recomputes all 25 raster layers (-100k to 2060 CE). |
-| **`build/`** | `package-release.ps1` | Windows / CI | N/A \| Native PS1 \| No | **PowerShell Packager**: Builds fat JAR, packages multi-OS releases, computes SHA256. |
+| **`build/`** | `package-release.ps1` / `.sh` | All Platforms | N/A \| Release Packager \| No | **Standalone Packager**: Builds fat JAR, packages multi-OS releases, computes SHA256. |
 | **`build/`** | `deploy-release-windows.bat` | Windows Host | N/A \| ZIP + SHA256 \| No | **Windows Release**: Packages `Ether-v<ver>-windows-x64.zip` with `run.bat`. |
 | **`build/`** | `deploy-release-linux.sh` | Linux Host | N/A \| Tar.gz + SHA256 \| No | **Linux Release**: Packages `Ether-v<ver>-linux-x64.tar.gz` with `run.sh`. |
 | **`build/`** | `deploy-release-macos.sh` | macOS Host | N/A \| Tar.gz + SHA256 \| No | **macOS Release**: Packages `Ether-v<ver>-macos-universal.zip` with `run.command`. |
 | **`build/`** | `deploy-release-all.bat` / `.sh` | All Platforms | N/A \| Full Suite \| No | **Universal Release**: Packages all OS distributions in `dist/` with checksums. |
 | **`build/`** | `generate-javadoc.bat` / `.sh` | Host Machine | N/A \| HTML Docs \| No | **API Documentation**: Compiles full HTML Javadoc to `target/site/apidocs`. |
 | **`build/`** | `build-native-all.bat` / `.sh` | Cargo / Rust | N/A \| Native DLL/SO \| No | **Native Core Compiler**: Builds Rust SIMD core library (`ether-core-native`). |
+| **`build/`** | `clean-workspace.bat` / `.ps1` / `.sh` | Local Host / CI | N/A \| Maintenance \| No | **Workspace Cleaner**: Purges saves, logs, scratch, exports, and transient reports. |
 | **`test/`** | `test-all-in-one.bat` / `.sh` | CI / Dev Host | N/A \| Test Harness \| No | **All-in-One Test Suite**: Unit tests, bifurcation benchmarks, and leader tests. |
 | **`test/`** | `run-scientific-falsification.bat` / `.sh` | CI / Dev Host | N/A \| Falsification \| No | **Epistemic Falsification**: Runs all 24 scientific debate benchmarks (HYDE, EPICA, Seshat). |
 | **`test/`** | `run_historical_bifurcation_benchmarks.bat` / `.sh` | CI / Dev Host | N/A \| Falsification \| No | **Bifurcation Suite**: Runs Turchin SDT, Malthus, Boserup, and Scott state tests. |
 | **`test/`** | `run_cloud_calibration_campaign.bat` / `.sh` | Cloud / HPC | N/A \| HPC Harness \| No | **Calibration Campaign**: Executes parameter sweeps against empirical datasets. |
-| **`test/`** | `audit-architecture-compliance.ps1` / `.sh` | CI / Dev Host | N/A \| Code Audit \| No | **Architecture Compliance**: Enforces <= 500 lines ceiling, zero empty catch, stateless Helper contracts. |
+| **`test/`** | `audit-architecture-compliance.ps1` / `.sh` | CI / Dev Host | N/A \| Code Audit \| No | **Architecture Compliance**: Enforces zero empty catch, stateless Helper & module contracts. |
 | **`test/`** | `audit-full-quality-and-naming.ps1` / `.sh` | CI / Dev Host | N/A \| Quality Audit \| No | **Code Quality & Naming**: Audits naming archetypes, Javadoc coverage, English comments, and PRNG determinism. |
 | **`i18n/`** | `audit-i18n-and-hardcoded-strings.ps1` / `.sh` | CI / Dev Host | N/A \| i18n Audit \| No | **Localization & UI Audit**: Verifies 100% key parity across 6 bundles and zero hardcoded UI strings. |
 | **`benchmark/`** | `run-all-benchmarks.bat` / `.sh` | Dev Host / Cloud | N/A \| Benchmark Harness \| No | **5-Axis Master Benchmark**: Evaluates spatial, temporal, SIMD, coupling, and epoch scaling. |
-| **`root`** | `clean_workspace.bat` / `.ps1` / `.sh` | Local Host / CI | N/A \| Maintenance \| No | **Workspace Cleaner**: Safely purges orphan UUID test saves, old logs, and build churn. |
+| **`benchmark/`** | `run_full_catalog_refresh.ps1` / `.sh` | Dev Host / Cloud | N/A \| Catalog Suite \| No | **51-Preset Catalog Runner**: Executes all 51 presets in native H3 & temporal resolutions. |
+| **`benchmark/`** | `run_epochs_and_future_calibration.ps1` / `.sh` | Dev Host / Cloud | N/A \| Calibration \| No | **9-Epoch & Future Runner**: Runs continuous macro-epochs and 2025-2200 projections. |
+| **`benchmark/`** | `generate-scenario-falsification-report.ps1` / `.sh` | Dev Host | N/A \| Report Compiler \| No | **Falsification Report**: Compiles transient scenario audit reports to `target/reports/`. |
+| **`benchmark/`** | `generate-white-paper.ps1` / `.sh` | Dev Host | N/A \| Manuscript Sync \| No | **Manuscript Compiler**: Compiles synthesis charts and updates academic manuscript. |
 
 ---
 
@@ -142,8 +147,8 @@ Runs the complete verification pipeline:
 ## ☁️ 6. Cloud & Google Cloud Platform (`scripts/gcp/`)
 
 For hyperscale simulation campaigns on Google Cloud Platform:
-- **`scripts/gcp/run-batch-spot.sh`**: Orchestrates high-throughput parameter sweep jobs using GCP Cloud Batch with Spot VMs.
-- **`scripts/gcp/deploy-and-run.sh`**: Provisions Compute Engine instances, deploys JARs, and executes cluster runs.
-- **`scripts/gcp/run-calibration-campaign.sh`**: Runs automated parameter calibration sweeps against empirical datasets.
-- **`scripts/gcp/fetch-results.sh`**: Synchronizes simulation snapshots and save files from GCS buckets.
-- **`scripts/gcp/start-vms.sh` / `stop-vms.sh`**: Manages remote cloud instance lifecycles.
+- **`scripts/gcp/batch/`**: Cloud Batch Spot VM provisioning, container build/push, job submission, monitoring, and result fetching.
+- **`scripts/gcp/setup-gcp-infra.sh` / `teardown-gcp.sh`**: Provisions and tears down Compute Engine VPC, firewall rules, and Master/Worker instances.
+- **`scripts/gcp/deploy-and-run.sh` / `launch-overnight-suite.ps1`**: Deploys shaded JARs and executes detached overnight simulation campaigns.
+- **`scripts/gcp/fetch-results.ps1` / `fetch-results.sh`**: Synchronizes simulation snapshots and save files from remote instances.
+- **`scripts/gcp/start-vms.bat` / `.sh`, `stop-vms.bat` / `.sh`, `status-vms.bat` / `.sh`**: Cross-platform lifecycle controls for remote cloud instances.

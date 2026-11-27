@@ -13,8 +13,7 @@ param(
     [string]$Stages = "1,2,3,4",
     [bool]$UsePresetResolution = $true,
     [switch]$DeduplicateOnly = $false,
-    [switch]$RecompilePaper = $true,
-    [switch]$Upload = $false
+    [switch]$RecompilePaper = $true
 )
 
 $ErrorActionPreference = "Continue"
@@ -72,12 +71,6 @@ if (Test-Path "saves") {
 if ($RecompilePaper) {
     Write-Host "`n>>> Recompiling All-Scenario White Paper & Academic Manuscript Synthesis..." -ForegroundColor Yellow
     mvn test "-Dtest=WhitePaperCompiler#compileMasterWhitePaper" "-Djacoco.skip=true" -DfailIfNoTests=false -B
-}
-
-# Optional Package and Upload to GitHub Release
-if ($Upload) {
-    Write-Host "`n>>> Packaging updated saves and uploading to GitHub Release..." -ForegroundColor Yellow
-    powershell -ExecutionPolicy Bypass -File scripts/release/package-and-upload-saves.ps1 -Upload
 }
 
 Write-Host "`n================================================================================" -ForegroundColor Cyan

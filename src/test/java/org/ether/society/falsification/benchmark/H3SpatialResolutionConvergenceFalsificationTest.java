@@ -160,7 +160,7 @@ public class H3SpatialResolutionConvergenceFalsificationTest {
         sb.append("completely eliminates the 2D pixel gap ('gruyère') artifacts inherent to intermediate equirectangular rasterization, ");
         sb.append("yielding authentic Pearson cross-correlation and ecumene overlap indices across all discrete grid levels.\n\n");
 
-        File outDir = new File("docs/reports");
+        File outDir = new File("target/reports");
         outDir.mkdirs();
         File outFile = new File(outDir, "report_spatial_resolution_convergence.md");
         try (FileWriter fw = new FileWriter(outFile, StandardCharsets.UTF_8)) {

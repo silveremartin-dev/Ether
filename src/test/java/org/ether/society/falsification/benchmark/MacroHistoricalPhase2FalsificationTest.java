@@ -119,7 +119,7 @@ public class MacroHistoricalPhase2FalsificationTest {
         Map<String, EnginePerformanceMetrics> performanceResults = new LinkedHashMap<>();
         Map<String, ScenarioRunConfig> configMap = new LinkedHashMap<>();
 
-        File reportsDir = new File("docs/reports");
+        File reportsDir = new File("target/reports");
         reportsDir.mkdirs();
 
         for (ScenarioRunConfig rawCfg : TARGET_CONFIGS) {

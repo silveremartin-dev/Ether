@@ -5,7 +5,7 @@
 # ==============================================================================
 
 param (
-    [string]$OutputDir = "docs",
+    [string]$OutputDir = "target/reports",
     [switch]$WithCalibrationAndFreeRuns = $false
 )
 
@@ -17,7 +17,7 @@ Write-Host "====================================================================
 Write-Host " [ETHER] MASTER WHITE PAPER & ACADEMIC MANUSCRIPT COMPILER                      " -ForegroundColor Cyan
 Write-Host "================================================================================" -ForegroundColor Cyan
 Write-Host "  White Paper Output : $OutputDir/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md"
-Write-Host "  Academic Paper     : $OutputDir/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md"
+Write-Host "  Academic Paper     : docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md"
 Write-Host "--------------------------------------------------------------------------------"
 
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
@@ -38,7 +38,7 @@ $sw.Stop()
 $elapsedSeconds = [math]::Round($sw.Elapsed.TotalSeconds, 2)
 
 $targetPath = Join-Path $OutputDir "WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md"
-$academicPath = Join-Path $OutputDir "paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md"
+$academicPath = "docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md"
 if ((Test-Path $targetPath) -and (Test-Path $academicPath)) {
     $kbWp = [math]::Round((Get-Item $targetPath).Length / 1024, 1)
     $kbAp = [math]::Round((Get-Item $academicPath).Length / 1024, 1)

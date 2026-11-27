@@ -325,14 +325,10 @@ Ether systematically generates and updates publication-grade visual synthesis ch
 ### 6. Multi-Resolution H3 Throughput Scaling (`Res 2` to `Res 7`) & Computational ROI Pareto Frontier
 ![6. Multi-Resolution H3 Throughput Scaling & Computational ROI Pareto Frontier](docs/images/charts/chart6_engine_scaling_and_roi_pareto.png)
 
-**Full Academic Paper & 8-Pillar Benchmark Monograph**:
+**Full Academic Paper & Epistemological Falsification Reference**:
 * **[`docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md`](docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md)** (10-Chapter Classical Scientific Structure & 8 Bottom-Up Epistemological Pillars)
-* **[`docs/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md`](docs/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md)** (Complete All-Scenario Synthesis & Partitioning Audit — 51 Canonical Scenarios)
-* **Detailed Empirical Synthesis Reports by Horizon**:
-  * [Phase 1 Historical Synthesis (10 Canonical Eras, -20k BP to 1914 CE)](docs/reports/scenario_phase1_falsification_synthesis.md)
-  * [Phase 2 Expansion Synthesis (8 Imperial & Global Eras, -100k BP to 1950 CE)](docs/reports/scenario_phase2_falsification_synthesis.md)
-  * [Phase 3 Deep-Time & Protohistory Synthesis (14 Deep-Time Corridors, -74k BP to 2000 CE)](docs/reports/scenario_phase3_falsification_synthesis.md)
-  * [Phase 4 Prospective & Exoplanetary Synthesis (17 Future Trajectories & Off-Earth Colonies, 2025 to 2240 CE)](docs/reports/scenario_phase4_future_and_exo_synthesis.md)
+* **[`docs/SCIENTIFIC_MODEL_EVALUATION_AND_FALSIFICATION.md`](docs/SCIENTIFIC_MODEL_EVALUATION_AND_FALSIFICATION.md)** (Automated Sensitivity, Hypothesis Evaluation & Historical Falsification Specification)
+* **[`docs/PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md`](docs/PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md)** (Auditable Parametric Deviation & Calibration Registry)
 
 ---
 

@@ -257,6 +257,50 @@ public class LocalTriScenarioAuditTest {
     }
 
     @Test
+    @DisplayName("Execute Dual High-Resolution Audit (Tokugawa Windowed Res 6 [21 yrs, monthly] & World Wars Global Res 4 [26 yrs, monthly])")
+    public void testExecuteDualHighResolutionAudit() throws IOException {
+        System.out.println("================================================================================");
+        System.out.println("🚀 DUAL HIGH-RESOLUTION AUDIT (WINDOWED RES >= 6 & GLOBAL RES >= 4, >= 20 YRS, DT <= 30D)");
+        System.out.println("================================================================================");
+
+        List<ScenarioAuditResult> results = new ArrayList<>();
+
+        // 1. Windowed Regional Scenario: Tokugawa Edo Sakoku (1639 -> 1660 CE, 21 years >= 20 yrs, H3 Res 6 >= 6, dt = 30d monthly)
+        results.add(executeHighResScenarioRun(
+                "tokugawa_japan",
+                1639, 1660,
+                1500,
+                6,
+                30.0,
+                "data/maps/ether/earth/1660/earth_1660_density.png"
+        ));
+
+        // 2. Global Planetary Scenario: World Wars & Industrial Acceleration (1914 -> 1940 CE, 26 years >= 20 yrs, H3 Res 4 >= 4, dt = 30d monthly)
+        results.add(executeHighResScenarioRun(
+                "world_wars_totalitarian_1914",
+                1914, 1940,
+                15000,
+                4,
+                30.0,
+                "data/maps/ether/earth/1940/earth_1940_density.png"
+        ));
+
+        assertEquals(2, results.size());
+        for (ScenarioAuditResult r : results) {
+            assertNotNull(r);
+            assertTrue(r.endYear() - r.startYear() >= 20, "Horizon must be >= 20 years for " + r.key());
+            assertTrue(r.snapshotsCount() > 0, "Scenario " + r.key() + " must produce telemetry snapshots");
+            assertTrue(r.endPopulation() > 0, "Scenario " + r.key() + " population must remain positive");
+            assertFalse(Double.isNaN(r.endPopulation()), "Population must not be NaN");
+            assertFalse(Double.isInfinite(r.endPopulation()), "Population must not be Infinite");
+            assertTrue(r.categoryAAnomalies().isEmpty(), "No Category A code bugs or crashes allowed in " + r.key());
+        }
+
+        generateTriScenarioAuditReport(results, "LOCAL_DUAL_HIGH_RES_AUDIT_REPORT.md",
+                "2 High-Resolution Multi-Decadal Scenarios (Tokugawa Japan 1639->1660 CE [Windowed H3 Res 6, Monthly] & World Wars 1914->1940 CE [Global H3 Res 4, Monthly])");
+    }
+
+    @Test
     @DisplayName("Execute Tri-Scenario Local Physical Audit Group 2 (Fertile Crescent, Late Antique Ice Age, Industrial Revolution)")
     public void testExecuteTriScenarioAuditGroup2() throws IOException {
         System.out.println("================================================================================");
@@ -316,8 +360,14 @@ public class LocalTriScenarioAuditTest {
 
     private ScenarioAuditResult executeScenarioRun(String presetKey, long startYear, long endYear,
                                                    int targetCohortSize, int h3Resolution, String targetRasterPath) {
+        return executeHighResScenarioRun(presetKey, startYear, endYear, targetCohortSize, h3Resolution, -1.0, targetRasterPath);
+    }
+
+    private ScenarioAuditResult executeHighResScenarioRun(String presetKey, long startYear, long endYear,
+                                                          int targetCohortSize, int h3Resolution, double maxDtDays,
+                                                          String targetRasterPath) {
         System.out.println("\n--------------------------------------------------------------------------------");
-        System.out.printf(Locale.US, "▶ Executing Scenario: %s (Years %d -> %d)%n", presetKey, startYear, endYear);
+        System.out.printf(Locale.US, "▶ Executing Scenario: %s (Years %d -> %d | H3 Res %d)%n", presetKey, startYear, endYear, h3Resolution);
         System.out.println("--------------------------------------------------------------------------------");
 
         Scenario scenario = findScenario(presetKey);
@@ -327,6 +377,9 @@ public class LocalTriScenarioAuditTest {
         scenario.setEndDateYear(endYear);
         scenario.setTargetCohortSize(targetCohortSize);
         scenario.setH3Resolution(h3Resolution);
+        if (maxDtDays > 0.0 && (scenario.getTemporalResolutionDays() <= 0 || scenario.getTemporalResolutionDays() > maxDtDays)) {
+            scenario.setTemporalResolutionDays((int) Math.round(maxDtDays));
+        }
 
         // Pre-run Cultural Matrix Snapshot
         scenario.getPairwiseAffinity("Rome", "Parthia"); // trigger lazy initialization if needed
@@ -727,14 +780,13 @@ public class LocalTriScenarioAuditTest {
         sb.append("2. **Category B (Model Couplings)**: Highlights the exact socio-technical levers (e.g. proto-industrial coal vs wood EROEI under Song, post-plague wage spike and human capital diffusion) requiring ongoing scientific calibration against Seshat & Maddison.\n");
         sb.append("3. **Cultural Matrices & 2D Fidelity**: Polities maintain historical territorial cohesion; dynamic adjustments occur on real border contact friction.\n");
 
-        File outDir = new File("docs");
-        if (outDir.exists()) {
-            File outFile = new File(outDir, fileName);
-            try (FileWriter fw = new FileWriter(outFile, StandardCharsets.UTF_8)) {
-                fw.write(sb.toString());
-            } catch (IOException e) {
-                System.err.println("Could not write report: " + e.getMessage());
-            }
+        File outDir = new File("target/reports");
+        outDir.mkdirs();
+        File outFile = new File(outDir, fileName);
+        try (FileWriter fw = new FileWriter(outFile, StandardCharsets.UTF_8)) {
+            fw.write(sb.toString());
+        } catch (IOException e) {
+            System.err.println("Could not write report: " + e.getMessage());
         }
     }
 }

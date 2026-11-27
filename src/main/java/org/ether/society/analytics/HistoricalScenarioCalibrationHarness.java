@@ -399,8 +399,10 @@ public class HistoricalScenarioCalibrationHarness {
         logger.info("\n{}", report);
 
         try {
+            java.nio.file.Path reportsDir = java.nio.file.Path.of("target/reports");
+            java.nio.file.Files.createDirectories(reportsDir);
             java.nio.file.Files.writeString(
-                    java.nio.file.Path.of("docs/SCIENTIFIC_CALIBRATION_REPORT.md"),
+                    reportsDir.resolve("SCIENTIFIC_CALIBRATION_REPORT.md"),
                     report
             );
             java.nio.file.Path calDir = java.nio.file.Path.of("logs/calibration");
@@ -413,7 +415,7 @@ public class HistoricalScenarioCalibrationHarness {
                     calDir.resolve("master_calibration_and_falsification_results.json"),
                     combined
             );
-            logger.info("📄 Academic Calibration Report successfully saved to docs/SCIENTIFIC_CALIBRATION_REPORT.md and logs/calibration/");
+            logger.info("Academic Calibration Report saved to target/reports/SCIENTIFIC_CALIBRATION_REPORT.md and logs/calibration/");
         } catch (Exception ex) {
             logger.warn("Could not write calibration report artifacts: {}", ex.getMessage());
         }

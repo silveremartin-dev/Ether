@@ -112,7 +112,7 @@ public class CounterfactualInverseFalsificationTest {
         report.append("> the Tier 1 biophysical conservation laws (Liebig agro-nutrients, Smil exergy limits, Bairoch agricultural surplus)\n");
         report.append("> **strictly forbid and refute** premature industrial takeoff, yielding severe structural divergence (> 85% MAPE).\n");
 
-        File outFile = new File("docs/reports/report_counterfactual_inverse_falsifier.md");
+        File outFile = new File("target/reports/report_counterfactual_inverse_falsifier.md");
         outFile.getParentFile().mkdirs();
         try (PrintWriter pw = new PrintWriter(new FileWriter(outFile, StandardCharsets.UTF_8))) {
             pw.println(report.toString());

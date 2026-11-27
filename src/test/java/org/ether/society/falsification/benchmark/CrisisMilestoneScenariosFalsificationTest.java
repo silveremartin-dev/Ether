@@ -71,7 +71,7 @@ public class CrisisMilestoneScenariosFalsificationTest {
         Map<String, MapComparisonResult> spatialResults = new LinkedHashMap<>();
         Map<String, ScenarioRunConfig> configMap = new LinkedHashMap<>();
 
-        File reportsDir = new File("docs/reports");
+        File reportsDir = new File("target/reports");
         reportsDir.mkdirs();
 
         for (ScenarioRunConfig cfg : TARGET_CONFIGS) {

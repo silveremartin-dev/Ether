@@ -182,10 +182,8 @@ public class ScenarioFalsificationReportTest {
 
         System.out.println("\n" + audit.reportMarkdown());
 
-        File reportsDir = new File("docs/reports");
+        File reportsDir = new File("target/reports");
         reportsDir.mkdirs();
-        File scratchDir = new File("scratch");
-        scratchDir.mkdirs();
 
         // Construct 2D Spatial Cartographic Synthesis Section in English
         StringBuilder spatialSynthesis = new StringBuilder();
@@ -209,11 +207,6 @@ public class ScenarioFalsificationReportTest {
 
         File outReport = new File(reportsDir, "scenario_falsification_report.md");
         try (PrintWriter pw = new PrintWriter(outReport, StandardCharsets.UTF_8)) {
-            pw.println(audit.reportMarkdown());
-            pw.println(spatialSynthesis.toString());
-        }
-        // Mirror to scratch
-        try (PrintWriter pw = new PrintWriter(new File(scratchDir, "scenario_falsification_report.md"), StandardCharsets.UTF_8)) {
             pw.println(audit.reportMarkdown());
             pw.println(spatialSynthesis.toString());
         }
@@ -253,10 +246,6 @@ public class ScenarioFalsificationReportTest {
 
             File singleReportFile = new File(reportsDir, "report_" + safeName + ".md");
             try (PrintWriter pw = new PrintWriter(singleReportFile, StandardCharsets.UTF_8)) {
-                pw.print(singleFullReport.toString());
-            }
-            // Mirror to scratch
-            try (PrintWriter pw = new PrintWriter(new File(scratchDir, "report_" + safeName + ".md"), StandardCharsets.UTF_8)) {
                 pw.print(singleFullReport.toString());
             }
             System.out.println("[SUCCESS] Individual scenario report written to: " + singleReportFile.getAbsolutePath());

@@ -14,7 +14,6 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -32,7 +31,7 @@ import java.util.Map;
  *   <li>The 9 gapless continuous macro-epochs ({@link HistoricalCalibrationScenarioRegistry#MASTER_NINE_EPOCH_BLOCKS})</li>
  *   <li>Multi-century open-loop free-runs &amp; 2025-2200 future calibration ({@code ether_calibrated_projection_1d.json})</li>
  * </ol>
- * into both {@code docs/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md} and the camera-ready
+ * into both {@code target/reports/WHITE_PAPER_ALL_SCENARIOS_HISTORICAL_BENCHMARK.md} and the camera-ready
  * manuscript {@code docs/paper/ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md}.
  * </p>
  *
@@ -46,34 +45,6 @@ public final class AcademicPaperEmpiricalUpdater {
 
     private AcademicPaperEmpiricalUpdater() {
         // Static utility helper
-    }
-
-    /**
-     * Ensures chart filenames referenced by {@code ACADEMIC_PAPER_PLANETARY_CLIODYNAMICS_FALSIFICATION.md}
-     * are synchronized with the freshly rendered PNG figures in {@code docs/images/charts/}.
-     *
-     * @param chartsDir chart output directory
-     */
-    public static void syncAcademicPaperChartAliases(File chartsDir) {
-        if (chartsDir == null || !chartsDir.exists()) {
-            return;
-        }
-        String[][] aliases = {
-                {"chart2_27_variables_quality_profile.png", "chart2_variable_domain_quality.png"},
-                {"chart3_cartographic_2d_quality_curves.png", "chart3_spatial_cartography_quality.png"},
-                {"chart1_45_scenarios_fidelity_curve.png", "chart4_multi_millennial_confidence_envelope.png"},
-                {"chart6_engine_scaling_and_roi_pareto.png", "chart6_homepage_master_dashboard.png"}
-        };
-        for (String[] pair : aliases) {
-            Path src = chartsDir.toPath().resolve(pair[0]);
-            Path dst = chartsDir.toPath().resolve(pair[1]);
-            if (Files.exists(src) && !Files.exists(dst)) {
-                try {
-                    Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);
-                } catch (Exception ignored) {
-                }
-            }
-        }
     }
 
     /**

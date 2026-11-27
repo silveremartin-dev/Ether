@@ -493,25 +493,25 @@ To prevent overfitting and data leakage (`AGENTS.md §11`), the **45 canonical s
 3. **Temporal Continuum & Long-Horizon Open-Loop Free-Runs ($13\text{ Scenarios}$)**: Evaluates multi-century unguided execution across global Paleolithic, Antiquity, Medieval, Early Modern, and 20th-century eras without mid-course resetting (`earth_tithonian_150ma` to `cold_war_1947`, including the 500-year `pax_romana` and 250-year `post_napoleonic_1815` free-runs).
 4. **Prospective Counterfactuals & Exoplanetary Thermodynamic Controls ($16\text{ Scenarios}$)**: Evaluates post-2025 IPCC trajectories (`SSP1`–`SSP5`, resource depletion shocks) and off-Earth biophysical boundary tests (`mars_colony`, `titan_outpost`, `proxima_b`). These are strictly excluded from historical accuracy averages.
 
-Figures 1 through 6 present the multi-dimensional synthesis generated automatically by [`ScenarioSynthesisChartGenerator.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/main/java/org/ether/society/analytics/ScenarioSynthesisChartGenerator.java):
+Figures 1 through 6 present the multi-dimensional synthesis generated automatically by `BenchmarkSynthesisChartGenerator`:
 
-![Figure 1: Complete 45-Scenario Fidelity Overview](../../docs/images/charts/chart1_all_45_scenarios_overview.png)
+![Figure 1: Complete 45-Scenario Fidelity Overview](../images/charts/chart1_45_scenarios_fidelity_curve.png)
 *Figure 1: Global composite fidelity overview across all 45 scenarios (29 historical empirical benchmarks and 16 prospective/exoplanetary regimes), sorted chronologically from $-150\text{ Ma}$ to $+2300\text{ CE}$ and plotted against the continuous epistemic confidence envelope $100\% - \tau(t)$.*
 
-![Figure 2: Multi-Variable Domain Quality Radar & Matrix](../../docs/images/charts/chart2_variable_domain_quality.png)
+![Figure 2: Quality Profile of All 27 Canonical State Variables](../images/charts/chart2_27_variables_quality_profile.png)
 *Figure 2: Multi-variable telemetry quality across the 6 ontological macro-domains (27 canonical variables: Demographics, Macroeconomics & Capital, Energy & Exergy, Climate & Pedology, Biosphere & Epidemics, and Sociopolitical Institutions).*
 
-![Figure 3: 2D Spatial Cartography & 9D Geocultural Tensor Quality](../../docs/images/charts/chart3_spatial_cartography_quality.png)
+![Figure 3: 2D Spatial Cartography & 9D Geocultural Tensor Quality](../images/charts/chart3_cartographic_2d_quality_curves.png)
 *Figure 3: Spatial cartographic fidelity across the 25 2D raster layers and 9D geocultural tensors (Spatial Pearson $r$, Structural Similarity SSIM, Jaccard Ecumene IoU, Sorensen-Dice, and Wasserstein-regularized $\sigma = 75\text{ km}$ proximity for sporadic networks).*
 
-![Figure 4: Multi-Millennial Continuous Confidence Envelope](../../docs/images/charts/chart4_multi_millennial_confidence_envelope.png)
-*Figure 4: Continuous temporal error tolerance envelope $\tau(t)$ contracting smoothly from $50\%$ in the Paleolithic to $5\%$ in 1950–2025 CE alongside simulated demographic and macroeconomic trajectories.*
+![Figure 4: Multi-Scenario x 27-Variable Empirical MAPE Discrepancy Heatmap Matrix](../images/charts/chart4_multi_scenario_heatmap_matrix.png)
+*Figure 4: Multi-scenario $\times$ 27-variable empirical MAPE discrepancy heatmap matrix across historical and prospective regimes.*
 
-![Figure 5: Pillars 6 & 7 Validation Summary](../../docs/images/charts/chart5_pillars_6_and_7_validation_summary.png)
+![Figure 5: Pillars 6 & 7 Validation Summary](../images/charts/chart5_pillars_6_and_7_validation_summary.png)
 *Figure 5: Epistemic synthesis across the 9 In-Sample Calibration scenarios, the 7 Out-of-Sample Non-Eurasian Spatial Hold-Outs, and the 8 Canonical Historiographical Debates.*
 
-![Figure 6: Global Dashboard Synthesis](../../docs/images/charts/chart6_homepage_master_dashboard.png)
-*Figure 6: Four-quadrant master dashboard synthesizing global 45-scenario fidelity, 27-variable domain accuracy, 2D cartographic SSIM/IoU, and out-of-sample hold-out performance.*
+![Figure 6: Multi-Resolution H3 Throughput Scaling & Computational ROI Pareto Frontier](../images/charts/chart6_engine_scaling_and_roi_pareto.png)
+*Figure 6: Multi-resolution H3 spatial grid scaling (`Res 2` to `Res 7`) and Computational ROI Pareto frontier.*
 
 ---
 
@@ -598,7 +598,7 @@ In [`EmpiricalResidualBifurcationTest.java`](file:///c:/Silvere/Encours/Developp
 ### 7.4. Pillar 6: Multi-Millennial Empirical Historical Benchmarks (`ScientificModelFalsificationAndValidationSuite`)
 
 #### A. The 32 Master Historical Epochs ($-100\,000\text{ BP}$ to $2020\text{ CE}$, Global `Res 4 / Res 3` Audit)
-Across the 32 master historical epochs executed over 20-year horizons ($240\text{ monthly ticks}$, $N=21$ annual samples) in [`MacroHistoricalEpochsFalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/benchmark/MacroHistoricalEpochsFalsificationTest.java), [`MacroHistoricalPhase2FalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/benchmark/MacroHistoricalPhase2FalsificationTest.java), and [`MacroHistoricalPhase3FalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/benchmark/MacroHistoricalPhase3FalsificationTest.java) at **`Res 4` (`288\,122\text{ cells}` globally) and `Res 3` (`41\,162\text{ cells}` for deep Pleistocene)**, we present the empirical outcome of the campaign without post-hoc smoothing (`docs/reports/scenario_phase1_falsification_synthesis.md`, `scenario_phase2_falsification_synthesis.md`, `scenario_phase3_falsification_synthesis.md`).
+Across the 32 master historical epochs executed over 20-year horizons ($240\text{ monthly ticks}$, $N=21$ annual samples) in [`MacroHistoricalEpochsFalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/benchmark/MacroHistoricalEpochsFalsificationTest.java), [`MacroHistoricalPhase2FalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/benchmark/MacroHistoricalPhase2FalsificationTest.java), and [`MacroHistoricalPhase3FalsificationTest.java`](file:///c:/Silvere/Encours/Developpement/Ether/src/test/java/org/ether/society/falsification/benchmark/MacroHistoricalPhase3FalsificationTest.java) at **`Res 4` (`288\,122\text{ cells}` globally) and `Res 3` (`41\,162\text{ cells}` for deep Pleistocene)**, we present the empirical outcome of the campaign without post-hoc smoothing.
 
 ##### Table 7.4.A1: Master 32-Epoch Biophysical Level Fidelity, Cartographic Alignment & Trajectory Statistics
 | # | Master Historical Epoch | Calendar Window (20 yr) | Spatial Resolution | Spatial Pearson $r_{\text{spatial}}$ | Structural SSIM | Ecumene Overlap (IoU) | Global Falsification Status |
