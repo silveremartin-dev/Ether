@@ -181,7 +181,7 @@ The numerical solver architecture partitions differential systems based on their
   * $S_0 = 1361.0\text{ W/m}^2$: Solar irradiance constant at 1 AU [$\text{W/m}^2$].
   * $e(t) \in [0.005, 0.058]$: Orbital eccentricity [dimensionless] (100,000-year cycle).
   * $\varepsilon(t) \in [22.1^\circ, 24.5^\circ]$: Planetary obliquity/axial tilt [degrees] (41,000-year cycle).
-  * $\varpi(t)$: Longitude of perihelion [degrees]; climatic precession index $e \sin\varpi$ (23,000-year cycle).
+  * $\varpi(t)$: Geocentric solar ecliptic longitude of perihelion [degrees] ($\varpi_0 = 282.93^\circ$ at J2000.0); climatic precession index $e \sin\varpi$ (23,000-year cycle).
   * $\phi$: Geographic latitude [radians].
   * $\nu$: True anomaly along Keplerian orbit [radians].
 * **Computational Complexity**: $O(1)$ per cell; evaluated on Monthly Step ($\Delta t = 30\text{ days}$).

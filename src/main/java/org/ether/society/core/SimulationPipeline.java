@@ -120,6 +120,8 @@ public class SimulationPipeline {
         }
         worldBuffer.setSimulationTick(engine != null ? engine.getTickCounter() : 0L);
         worldBuffer.setDemographicKernelManaged(agentBuffer != null);
+        worldBuffer.setHostileEnvironment(activeScenario != null
+                && org.ether.society.engines.tier1.PressurizedHabitatEngine.isHostileEnvironment(activeScenario.getPlanetPreset()));
 
         SimulationTimeStep timeStep = SimulationTimeStep.ofSeconds(dtSlow);
         double dtYears = timeStep.dtYears();
@@ -194,11 +196,11 @@ public class SimulationPipeline {
         profiler.beginPhase("4_ProceduralEngines");
 
         boolean runTier2 = perfConfig == null || perfConfig.isEnableTier2Cliodynamics();
-        if (runTier2 && engine != null && engine.getWorldBuffer() != null) {
-            WorldBuffer wb = engine.getWorldBuffer();
+        if (runTier2) {
+            WorldBuffer wb = (engine != null && engine.getWorldBuffer() != null) ? engine.getWorldBuffer() : worldBuffer;
             typeBPassRunner.executeActiveTypeBEngines(wb, dtYears, dtMonthly, activeScenario, compiledKernel);
 
-            if (engine.getNations() != null && !engine.getNations().isEmpty()) {
+            if (engine != null && engine.getNations() != null && !engine.getNations().isEmpty()) {
                 long[] h3Idx = wb.getH3Indexes();
                 long firstH3 = (h3Idx != null && h3Idx.length > 0) ? h3Idx[0] : 0L;
                 if (cachedH3ToSlot == null || cachedH3SlotCapacity != wb.getCapacity() || cachedH3FirstIndex != firstH3) {

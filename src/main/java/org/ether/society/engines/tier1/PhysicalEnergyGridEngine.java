@@ -154,18 +154,19 @@ public class PhysicalEnergyGridEngine extends AbstractSimulationEngine {
     }
 
     /**
-     * Executes physical energy grid tick, smoothly consuming finite fossil and fissile fuels
-     * according to Marchetti-Nakicenovic (1979) logistic carrier shares and accumulating physical capital.
+     * Executes physical energy grid tick, smoothly consuming finite gas and fissile uranium grid fuels
+     * according to Marchetti-Nakicenovic (1979) logistic carrier shares via {@link org.ether.society.model.PhysicalUnitsHelper}.
+     * <p>
+     * Note: Coal and crude oil prime-mover combustion is debited in {@link ThermodynamicPrimeMoversEngine},
+     * and baseline Solow-Swan physical capital equilibrium is owned exclusively by {@code UrbanKernel}
+     * ({@code AGENTS.md} §3 Contract 4 — Zero duplicate Solow-Swan capital overwrites).
+     * </p>
      */
     public static void processPhysicalEnergyGrid(WorldBuffer buffer, double dtYears) {
         if (buffer == null || buffer.getCapacity() == 0) return;
         double dtSafe = Math.max(0.0001, dtYears);
 
         float[] bioHuman = buffer.getHumanPopulation();
-        float[] bioAgri = buffer.getBiomassAgriculture();
-        float[] capArr = buffer.getResourceCapital();
-        float[] coalArr = buffer.getResourceCoal();
-        float[] oilArr = buffer.getResourceOil();
         float[] gasArr = buffer.getResourceGas();
         float[] uraniumArr = buffer.getResourceUranium();
         int n = buffer.getCapacity();
@@ -175,52 +176,24 @@ public class PhysicalEnergyGridEngine extends AbstractSimulationEngine {
             if (pop <= 0.0) continue;
 
             double powerPerCapitaW = calculatePerCapitaMechanicalPowerWatts(buffer, i);
-            double curCap = capArr[i];
-            double capPerCapita = curCap / pop;
-
-            double coalStock = coalArr[i];
-            double oilStock = oilArr[i];
             double gasStock = gasArr[i];
             double uraniumStock = uraniumArr[i];
 
-            double coalShare = Math.tanh(coalStock / 2.0)
-                    * 0.80 * SmoothMath.sigmoid(powerPerCapitaW, 400.0, 100.0)
-                    * (1.0 - SmoothMath.sigmoid(powerPerCapitaW, 6000.0, 333.3));
-            double oilShare = Math.tanh(oilStock / 2.0) * 0.50 * SmoothMath.sigmoid(powerPerCapitaW, 600.0, 200.0);
             double gasShare = Math.tanh(gasStock / 2.0) * 0.40 * SmoothMath.sigmoid(powerPerCapitaW, 800.0, 200.0);
             double nuclearShare = Math.tanh(uraniumStock / 0.5) * 0.25 * SmoothMath.sigmoid(powerPerCapitaW, 1500.0, 250.0);
 
-            if (coalShare > 1e-4) {
-                double coalBurnTons = (pop * (powerPerCapitaW * coalShare) * 0.0013 * dtSafe) / 1000.0;
-                coalArr[i] = (float) Math.max(0.0, coalStock - coalBurnTons);
-            }
-            if (oilShare > 1e-4) {
-                double oilBurnTons = (pop * (powerPerCapitaW * oilShare) * 0.0008 * dtSafe) / 1000.0;
-                oilArr[i] = (float) Math.max(0.0, oilStock - oilBurnTons);
-            }
             if (gasShare > 1e-4) {
-                double gasBurnTons = (pop * (powerPerCapitaW * gasShare) * 0.0006 * dtSafe) / 1000.0;
+                // Natural gas LHV ~ 50 GJ/t, combined-cycle thermal efficiency ~ 45%
+                double gasThermalGJ = (org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(pop * powerPerCapitaW * gasShare) / 0.45) * dtSafe;
+                double gasBurnTons = gasThermalGJ / 50.0;
                 gasArr[i] = (float) Math.max(0.0, gasStock - gasBurnTons);
             }
             if (nuclearShare > 1e-4) {
-                double uBurnTons = (pop * (powerPerCapitaW * nuclearShare) * 1e-8 * dtSafe) / 1000.0;
+                // Natural uranium LWR burnup ~ 420,000 GJ_th/t U (~33% Rankine efficiency -> ~140,000 GJ_e/t U)
+                double nuclearElecGJ = org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(pop * powerPerCapitaW * nuclearShare) * dtSafe;
+                double uBurnTons = nuclearElecGJ / 140_000.0;
                 uraniumArr[i] = (float) Math.max(0.0, uraniumStock - uBurnTons);
             }
-
-            double kStar = 5.0
-                    + 580.0 * Math.tanh(SmoothMath.softplus(powerPerCapitaW - 348.0, 0.2) / 38.0)
-                    + 62.0 * Math.pow(SmoothMath.softplus(powerPerCapitaW - 400.0, 0.1) / 100.0, 1.95);
-            double bandConstraint = SmoothMath.sigmoid(pop, 50.0, 15.0);
-            kStar = 5.0 * (1.0 - bandConstraint) + kStar * bandConstraint;
-            double cellAgri = (bioAgri != null && i < bioAgri.length) ? bioAgri[i] : 0.0;
-            double agriActivation = SmoothMath.sigmoid(cellAgri, 150.0, 25.0);
-            double industrialActivation = SmoothMath.sigmoid(powerPerCapitaW, 520.0, 25.0);
-            double sedentaryCapability = Math.max(agriActivation, industrialActivation);
-            kStar = 5.0 + (kStar - 5.0) * sedentaryCapability;
-            double deltaAnnual = 0.04;
-            double dCapitalPerCapita = deltaAnnual * (kStar - capPerCapita) * dtSafe;
-            double newCapPerCapita = Math.max(0.0, capPerCapita + dCapitalPerCapita);
-            capArr[i] = (float) (pop * newCapPerCapita);
         }
     }
 }

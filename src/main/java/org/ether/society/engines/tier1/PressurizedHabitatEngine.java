@@ -46,7 +46,9 @@ public class PressurizedHabitatEngine extends AbstractSimulationEngine {
 
     @Override
     public void tick(WorldBuffer buf, double dtYears, double dtMonthly) {
-        processPressurizedHabitats(buf, null, dtYears);
+        if (buf != null && buf.isHostileEnvironment()) {
+            processPressurizedHabitatsOnHostileBuffer(buf, dtYears);
+        }
     }
 
     /**
@@ -54,10 +56,11 @@ public class PressurizedHabitatEngine extends AbstractSimulationEngine {
      */
     public static void processPressurizedHabitats(WorldBuffer buffer, PlanetPreset preset, double deltaYears) {
         if (buffer == null || buffer.getCapacity() == 0) return;
+        if (!isHostileEnvironment(preset)) return;
+        processPressurizedHabitatsOnHostileBuffer(buffer, deltaYears);
+    }
 
-        boolean hostile = isHostileEnvironment(preset);
-        if (!hostile) return;
-
+    private static void processPressurizedHabitatsOnHostileBuffer(WorldBuffer buffer, double deltaYears) {
         double dt = Math.max(0.001, Math.min(1.0, deltaYears));
         float[] bioHuman = buffer.getHumanPopulation();
         float[] capArr = buffer.getResourceCapital();
@@ -68,21 +71,23 @@ public class PressurizedHabitatEngine extends AbstractSimulationEngine {
             double pop = bioHuman[i];
             if (pop <= 0.0) continue;
 
-            double requiredCapital = pop * 5.0 * dt;
-            double requiredMetal = pop * 1.0 * dt;
-            double availableCapital = capArr[i];
-            double availableMetal = metalArr[i];
+            // Life-support ECLSS structural wear: 5.0 kg/cap/yr built capital + 1.0 kg/cap/yr structural metal seals (converted to metric tonnes)
+            double requiredCapitalKg = pop * 5.0 * dt;
+            double requiredMetalTonnes = org.ether.society.model.PhysicalUnitsHelper.kgToMetricTonnes(pop * 1.0 * dt);
+            double availableCapitalKg = capArr[i];
+            double availableMetalTonnes = metalArr[i];
 
-            double capCoverage = (requiredCapital > 0.0) ? Math.min(1.0, availableCapital / requiredCapital) : 1.0;
-            double metalCoverage = (requiredMetal > 0.0) ? Math.min(1.0, availableMetal / requiredMetal) : 1.0;
-            double maintFactor = (capCoverage + metalCoverage) / 2.0;
+            double capCoverage = (requiredCapitalKg > 0.0) ? Math.min(1.0, availableCapitalKg / requiredCapitalKg) : 1.0;
+            double metalCoverage = (requiredMetalTonnes > 0.0) ? Math.min(1.0, availableMetalTonnes / requiredMetalTonnes) : 1.0;
+            // Liebig co-limitation: pressurized seal integrity requires both active ECLSS machinery and replacement metal seals
+            double maintFactor = Math.min(capCoverage, metalCoverage);
 
             if (maintFactor < 0.30) {
                 double exposureMortalityRate = 0.95 * dt * (1.0 - maintFactor / 0.30);
                 bioHuman[i] = (float) Math.max(0.0, bioHuman[i] * (1.0 - exposureMortalityRate));
             } else {
-                capArr[i] = (float) Math.max(0.0, availableCapital - requiredCapital * maintFactor);
-                metalArr[i] = (float) Math.max(0.0, availableMetal - requiredMetal * maintFactor);
+                capArr[i] = (float) Math.max(0.0, availableCapitalKg - requiredCapitalKg * maintFactor);
+                metalArr[i] = (float) Math.max(0.0, availableMetalTonnes - requiredMetalTonnes * maintFactor);
             }
         }
     }

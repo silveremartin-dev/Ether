@@ -87,7 +87,7 @@ public class TurchinGoldstoneSDTEngine extends AbstractSimulationEngine {
                • Elite Overproduction:    EMP = (N_elites / Office_capacity) · Gini_index
                • State Fiscal Distress:   SF  = SovereignDebt / AnnualTaxRevenue
                • Secular Breakdown Trap:  If PSI > 10.0 -> State Fragmentation & Civil Conflict
-               Units: PSI [indice sans dimension [0, +inf]], MMP, EMP, SF [multiplicateurs adimensionnels]
+               Units: PSI [dimensionless index [0, +inf]], MMP, EMP, SF [dimensionless multipliers]
                Ref: P. Turchin (2016) "Ages of Discord", J. A. Goldstone (1991) "Revolution and Rebellion"
                """;
     }
@@ -95,6 +95,46 @@ public class TurchinGoldstoneSDTEngine extends AbstractSimulationEngine {
     @Override
     public String getCategory() {
         return "Tier 2: Structural Cliodynamics";
+    }
+
+    @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(
+            WorldBuffer buffer,
+            int i,
+            double dtYears,
+            double dtMonthly,
+            org.ether.society.core.engine.DerivativeAccumulator acc) {
+        if (buffer == null || dtYears <= 0.0 || i < 0 || i >= buffer.getCapacity()) return;
+        float p = buffer.getHumanPopulation()[i];
+        if (p < 5.0f) return;
+        float capital = (buffer.getResourceCapital() != null) ? buffer.getResourceCapital()[i] : 10.0f;
+        float gini = (buffer.getGiniIndex() != null) ? buffer.getGiniIndex()[i] : 0.35f;
+        float food = (buffer.getFoodResource() != null) ? buffer.getFoodResource()[i] : 500.0f;
+
+        double density = buffer.getPopulationDensityPerKm2(i);
+        double foodPerCap = food / Math.max(1.0, p);
+        double mmp = Math.max(0.2, (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0));
+        double emp = Math.max(0.2, Math.pow(Math.max(0.0, gini - 0.25) / 0.20, 2.0));
+        double kPerCap = capital / Math.max(1.0, p);
+        double sf = Math.max(0.2, 0.4 * (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(kPerCap / 800.0));
+        double psi = mmp * emp * sf;
+
+        double psiStress = (psi * psi) / (25.0 + psi * psi);
+        double unrestDamage = Math.min(Math.max(0.0, capital - 5.0), capital * 0.08 * psiStress * dtYears);
+        acc.dResourceCapital -= (float) unrestDamage;
+        if (gini > 0.25f) {
+            double purgeIntensity = Math.pow(psi, 3.0) / (200.0 + Math.pow(psi, 3.0));
+            acc.dGiniIndex -= (float) Math.min(gini - 0.25, 0.04 * purgeIntensity * (gini - 0.25) * dtYears);
+        }
+        if (buffer.getInstitutionalComplexity() != null) {
+            float comp = buffer.getInstitutionalComplexity()[i];
+            acc.dInstitutionalComplexity -= (float) (comp * 0.05 * psiStress * dtYears);
+        }
     }
 
     @Override

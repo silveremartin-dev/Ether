@@ -114,6 +114,8 @@ public class WorldBuffer {
     private long simulationTick = 0L;
     /** Flag set when {@link DemographicKernel} governs human food consumption and demographic flux in the full pipeline. */
     private boolean demographicKernelManaged = false;
+    /** Flag set when ambient planetary atmosphere/temperature is lethal without pressurized life-support habitats. */
+    private boolean hostileEnvironment = false;
 
     /**
      * Allocates a contiguous Structure-of-Arrays (SoA) world buffer for {@code capacity} hexagonal cells.
@@ -479,4 +481,8 @@ public class WorldBuffer {
     public boolean isDemographicKernelManaged() { return demographicKernelManaged; }
     /** @param managed flag indicating DemographicKernel manages human consumption */
     public void setDemographicKernelManaged(boolean managed) { this.demographicKernelManaged = managed; }
+    /** @return true if planetary surface conditions require pressurized life-support habitats */
+    public boolean isHostileEnvironment() { return hostileEnvironment; }
+    /** @param hostileEnvironment flag indicating hostile extraterrestrial surface conditions */
+    public void setHostileEnvironment(boolean hostileEnvironment) { this.hostileEnvironment = hostileEnvironment; }
 }

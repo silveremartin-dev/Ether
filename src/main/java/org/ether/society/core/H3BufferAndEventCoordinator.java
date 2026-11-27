@@ -80,7 +80,7 @@ public final class H3BufferAndEventCoordinator {
             double rain = cell.getRainfallOr(500.0);
             if (temp < -20.0 || rain < 25.0) continue;
 
-            double areaKm2 = cell.getEffectiveSurfaceAreaKm2() > 0 ? cell.getEffectiveSurfaceAreaKm2() : 1770.49;
+            double areaKm2 = org.ether.society.model.SpatialSurfaceHelper.resolveEffectiveCellAreaKm2(cell, 0.0);
             double npp = PreComputePhase.calculateMiamiNPP(temp, rain);
             double densityHg = 0.0012 * Math.pow(Math.max(10.0, npp), 0.75);
             int pop = (int) Math.round(densityHg * areaKm2);
@@ -147,11 +147,42 @@ public final class H3BufferAndEventCoordinator {
                     nations.add(polity);
                 }
             }
+            seedHistoricalCoalitionAffinities(nations, currentScenario);
             logger.info("Initialized {} authentic historical polities for epoch '{}' (Year {} CE).",
                     nations.size(), epoch.label(), year);
         } catch (Exception e) {
             logger.warn("HistoricalStateRegistry query skipped for year {}: {}", year, e.getMessage());
         }
+    }
+
+    /**
+     * Seeds initial bilateral diplomatic affinities between historical coalition members and rival blocs
+     * (e.g., Entente/Allies vs. Central Powers/Axis) when not already specified in the scenario matrix.
+     */
+    private static void seedHistoricalCoalitionAffinities(List<Polity> nations, Scenario scenario) {
+        if (nations == null || scenario == null || nations.size() < 2) return;
+        for (int i = 0; i < nations.size() - 1; i++) {
+            String nA = nations.get(i).getName();
+            int blocA = resolveCoalitionBloc(nA);
+            if (blocA == 0) continue;
+            for (int j = i + 1; j < nations.size(); j++) {
+                String nB = nations.get(j).getName();
+                int blocB = resolveCoalitionBloc(nB);
+                if (blocB == 0) continue;
+                if (scenario.getPairwiseAffinity(nA, nB) == 50.0) {
+                    double target = (blocA == blocB) ? 90.0 : 15.0;
+                    scenario.adjustPairwiseAffinity(nA, nB, target - 50.0);
+                }
+            }
+        }
+    }
+
+    private static int resolveCoalitionBloc(String polityName) {
+        if (polityName == null) return 0;
+        String lower = polityName.toLowerCase(java.util.Locale.ROOT);
+        if (lower.contains("(entente)") || lower.contains("(allies)")) return 1;
+        if (lower.contains("(central powers)") || lower.contains("(axis)")) return 2;
+        return 0;
     }
 
     /**

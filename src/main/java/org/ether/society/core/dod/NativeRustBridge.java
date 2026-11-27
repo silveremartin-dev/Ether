@@ -52,7 +52,6 @@ public class NativeRustBridge {
     static MethodHandle demogTickFullHandle = null;
     static MethodHandle cultureTickHandle = null;
     static MethodHandle cultureTickFullHandle = null;
-    static MethodHandle tier2TickHandle = null;
 
     static {
         try {
@@ -133,15 +132,9 @@ public class NativeRustBridge {
                     cultureTickFullHandle = linker.downcallHandle(addr, FunctionDescriptor.ofVoid(
                             ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_FLOAT,
                             ValueLayout.JAVA_FLOAT, ValueLayout.JAVA_LONG, ValueLayout.JAVA_LONG));
-                    logger.info("DEBUG: ether_culture_tick_full BOUND successfully!");
+                    logger.debug("ether_culture_tick_full bound successfully.");
                 }, () -> {
-                    logger.warn("DEBUG: ether_culture_tick_full NOT FOUND in loaded library!");
-                });
-
-                // 6. ether_tier2_tick(world_ptr: *mut WorldBufferRaw, dt_years: c_float)
-                lookup.find("ether_tier2_tick").ifPresent(addr -> {
-                    tier2TickHandle = linker.downcallHandle(addr, FunctionDescriptor.ofVoid(ValueLayout.ADDRESS, ValueLayout.JAVA_FLOAT));
-                    logger.info("DEBUG: ether_tier2_tick BOUND successfully!");
+                    logger.warn("ether_culture_tick_full not found in loaded library.");
                 });
 
                 nativeAvailable = (envTickHandle != null && urbanTickHandle != null && fluxTickHandle != null

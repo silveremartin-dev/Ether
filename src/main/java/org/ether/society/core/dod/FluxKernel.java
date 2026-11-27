@@ -88,8 +88,11 @@ public class FluxKernel {
         }
 
         float dtSafeDays = Math.max(0.0001f, dtDays);
+        if (commFlux != null) {
+            java.util.Arrays.fill(commFlux, 0, Math.min(capacity, commFlux.length), 0.0f);
+        }
 
-        // 2. Symmetric edge flux across 6 H3 neighbors (guarantees exact numerical conservation)
+        // 2. Symmetric edge flux across 6 H3 neighbors (guarantees exact numerical conservation: 6 * 0.15 = 0.90 <= 1.0)
         for (int i = 0; i < capacity; i++) {
             float pA = prices[i];
             float hA = (elev != null && i < elev.length) ? elev[i] : 0.0f;
@@ -113,18 +116,18 @@ public class FluxKernel {
 
                 float rawFlux = gradient * conductivity * dtSafeDays;
 
-                float maxTransferA = foodA > 0.0f ? foodA * 0.5f : 0.0f;
-                float maxTransferB = foodB > 0.0f ? foodB * 0.5f : 0.0f;
+                float maxTransferA = foodA > 0.0f ? foodA * 0.15f : 0.0f;
+                float maxTransferB = foodB > 0.0f ? foodB * 0.15f : 0.0f;
 
                 float flux = Math.clamp(rawFlux, -maxTransferB, maxTransferA);
 
                 cachedDeltaFood[i] -= flux;
                 cachedDeltaFood[nIdx] += flux;
 
-                if (commFlux != null) {
-                    float absFlux = Math.abs(flux);
-                    commFlux[i] += absFlux;
-                    commFlux[nIdx] += absFlux;
+                if (commFlux != null && i < commFlux.length && nIdx < commFlux.length) {
+                    float dailyFluxRate = Math.abs(flux) / dtSafeDays;
+                    commFlux[i] += dailyFluxRate;
+                    commFlux[nIdx] += dailyFluxRate;
                 }
             }
         }

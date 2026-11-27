@@ -57,7 +57,8 @@ public class HydrologicalEngineeringEngine extends AbstractSimulationEngine {
         byte lakeOrd = (byte) Biome.LAKE.ordinal();
         byte plainsOrd = (byte) Biome.PLAINS.ordinal();
         byte desertOrd = (byte) Biome.DESERT.ordinal();
-        double timeStepDays = dtYears * 365.25;
+        double dtSafeYears = Math.max(0.0001, dtYears);
+        double dtSafeMonths = Math.max(0.001, dtMonthly);
 
         for (int i = 0; i < n; i++) {
             float capital = capArr[i];
@@ -67,22 +68,23 @@ public class HydrologicalEngineeringEngine extends AbstractSimulationEngine {
             float pop = popArr[i];
             byte biome = biomes[i];
 
-            if (biome == lakeOrd && pop >= 1500.0f && capital >= DEFAULT_TENOCHTITLAN_CAPITAL_THRESHOLD) {
+            if (biome == lakeOrd && pop >= 1500.0f && capital >= DEFAULT_TENOCHTITLAN_CAPITAL_THRESHOLD && waterArr[i] >= 50.0f) {
                 biomes[i] = plainsOrd;
-                foodArr[i] = Math.min(1000.0f, foodArr[i] + 50.0f);
-                socArr[i] = Math.max(100.0f, socArr[i] + 15.0f);
+                waterArr[i] = Math.max(10.0f, waterArr[i] - 50.0f);
+                foodArr[i] = Math.min(1000.0f, foodArr[i] + (float) (50.0 * dtSafeYears));
+                socArr[i] = Math.max(100.0f, socArr[i] + (float) (15.0 * dtSafeYears));
             }
 
             if (biome == lakeOrd && rainfall < DEFAULT_ARAL_SEA_RAINFALL_THRESHOLD_MM && tempC >= 10.0f && capital >= 100.0f) {
-                waterArr[i] = (float) Math.max(10.0, waterArr[i] - 20.0 * (timeStepDays / 30.0));
+                waterArr[i] = (float) Math.max(10.0, waterArr[i] - 20.0 * dtSafeMonths);
                 if (waterArr[i] <= 50.0f) {
                     biomes[i] = desertOrd;
                 }
             }
 
-            if (elevation >= DEFAULT_DAM_MIN_ELEVATION_METERS && capital >= DEFAULT_DAM_CAPITAL_THRESHOLD && biome != lakeOrd) {
-                waterArr[i] = Math.max(1000.0f, waterArr[i]);
-                solarArr[i] += 100.0f * (float) dtYears;
+            if (elevation >= DEFAULT_DAM_MIN_ELEVATION_METERS && rainfall >= 200.0f && capital >= DEFAULT_DAM_CAPITAL_THRESHOLD && biome != lakeOrd) {
+                waterArr[i] = Math.min(2500.0f, waterArr[i] + (float) (rainfall * 0.25 * dtSafeYears));
+                solarArr[i] = Math.min(2000.0f, solarArr[i] + (float) (100.0 * dtSafeYears));
             }
         }
     }

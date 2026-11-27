@@ -23,9 +23,14 @@ pub unsafe fn process_flux(world: &mut WorldBufferRaw, dt_seconds: f32) {
 
     let mut delta_food = vec![0.0_f32; capacity];
     let base_conductivity: f32 = 0.05;
-    let dt_days = dt_seconds / 86400.0;
+    let dt_days = (if dt_seconds > 1000.0 { dt_seconds / 86400.0 } else { dt_seconds }).max(0.0001);
+    if let Some(ref mut cf) = comm_flux {
+        for v in cf.iter_mut() {
+            *v = 0.0;
+        }
+    }
 
-    // 2. Symmetric edge flux with direction bitset caching
+    // 2. Symmetric edge flux with direction bitset caching (6 * 0.15 = 0.90 <= 1.0 guarantees exact mass conservation)
     for i in 0..capacity {
         let p_a = prices[i];
         let h_a = elev[i];
@@ -47,8 +52,8 @@ pub unsafe fn process_flux(world: &mut WorldBufferRaw, dt_seconds: f32) {
 
             let raw_flux = gradient * conductivity * dt_days;
 
-            let max_transfer_a = if food_a > 0.0 { food_a * 0.5 } else { 0.0 };
-            let max_transfer_b = if food_b > 0.0 { food_b * 0.5 } else { 0.0 };
+            let max_transfer_a = if food_a > 0.0 { food_a * 0.15 } else { 0.0 };
+            let max_transfer_b = if food_b > 0.0 { food_b * 0.15 } else { 0.0 };
 
             let flux = raw_flux.clamp(-max_transfer_b, max_transfer_a);
 
@@ -62,8 +67,9 @@ pub unsafe fn process_flux(world: &mut WorldBufferRaw, dt_seconds: f32) {
             delta_food[n] += flux;
 
             if let Some(ref mut cf) = comm_flux {
-                cf[i] += flux.abs();
-                cf[n] += flux.abs();
+                let daily_flux_rate = flux.abs() / dt_days;
+                cf[i] += daily_flux_rate;
+                cf[n] += daily_flux_rate;
             }
         }
     }

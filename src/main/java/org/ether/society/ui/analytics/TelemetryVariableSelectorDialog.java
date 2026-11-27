@@ -8,15 +8,17 @@ package org.ether.society.ui.analytics;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import org.ether.society.i18n.I18n;
+import org.ether.society.ui.Theme;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -27,123 +29,147 @@ import java.util.Set;
 /**
  * <h1>Telemetry Variable Selector Dialog</h1>
  * <p>
- * Autonomous GUI dialog that couples to the main simulation telemetry pipeline.<br>
- * Allows users to choose exactly which macroscopic and cliodynamic variables are
- * actively computed and rendered in real-time, skipping calculation of unselected
- * variables to maximize simulation frame rate and CPU efficiency.
+ * Modal configuration dialog coupled to the real-time simulation telemetry DAG.
+ * Enables users to select which biophysical, macroeconomic, and cliodynamic observables
+ * are evaluated and plotted at each tick, skipping unselected branches to maximize throughput.
+ * Fully localized across all 5 supported languages with technical tooltips and high-contrast theming.
  * </p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.3
+ * @version 1.0.0-beta.5
  */
 public class TelemetryVariableSelectorDialog extends Dialog<Set<String>> {
 
-    public record TelemetryVariableMeta(String id, String label, String category, String description) {}
+    /**
+     * Metadata descriptor for a selectable telemetry variable using localization keys.
+     *
+     * @param id             canonical variable identifier
+     * @param labelKey       i18n key for variable display label
+     * @param categoryKey    i18n key for macro-domain category header
+     * @param descriptionKey i18n key for technical tooltip and description
+     */
+    public record TelemetryVariableMeta(String id, String labelKey, String categoryKey, String descriptionKey) {}
 
     private static final Map<String, TelemetryVariableMeta> AVAILABLE_VARIABLES = new LinkedHashMap<>();
 
     static {
-        // 👥 Démographie & Société
-        register("population", "Population Humaine", "👥 Démographie", "Taille absolue du stock démographique mondial");
-        register("fertilityRate", "Taux de Fécondité", "👥 Démographie", "Nombre moyen d'enfants par femme");
-        register("lifeExpectancy", "Espérance de Vie", "👥 Démographie", "Espérance de vie moyenne à la naissance (années)");
-        register("urbanizationRate", "Taux d'Urbanisation", "👥 Démographie", "Part de la population résidant dans des pôles urbains (%)");
-        register("literacyRate", "Taux d'Alphabétisation", "👥 Démographie", "Proportion de la population sachant lire et écrire (%)");
+        // Demography & Society
+        register("population", "telemetry.dialog.var.population", "telemetry.dialog.cat.demography", "telemetry.dialog.desc.population");
+        register("fertilityRate", "telemetry.dialog.var.fertilityRate", "telemetry.dialog.cat.demography", "telemetry.dialog.desc.fertilityRate");
+        register("lifeExpectancy", "telemetry.dialog.var.lifeExpectancy", "telemetry.dialog.cat.demography", "telemetry.dialog.desc.lifeExpectancy");
+        register("urbanizationRate", "telemetry.dialog.var.urbanizationRate", "telemetry.dialog.cat.demography", "telemetry.dialog.desc.urbanizationRate");
+        register("literacyRate", "telemetry.dialog.var.literacyRate", "telemetry.dialog.cat.demography", "telemetry.dialog.desc.literacyRate");
 
-        //  Économie & Macro-Production
-        register("gdpTotal", "PIB Mondial (GWP)", " Économie", "Produit intérieur brut mondial agrégé (Int$ 1990)");
-        register("giniIndex", "Coefficient de Gini", " Économie", "Indice d'inégalité de distribution de la richesse");
-        register("realUnskilledWage", "Salaire Réel Non Qualifié", " Économie", "Indice du pouvoir d'achat du travailleur de subsistance");
-        register("globalTradeVolume", "Volume du Commerce Global", " Économie", "Intensité des échanges marchands inter-régionaux");
-        register("shippingFreightCostIndex", "Co-t du Fret Maritime", " Économie", "Indice de co-t de transport maritime au mille marin");
+        // Economy & Macro-Production
+        register("gdpTotal", "telemetry.dialog.var.gdpTotal", "telemetry.dialog.cat.economy", "telemetry.dialog.desc.gdpTotal");
+        register("giniIndex", "telemetry.dialog.var.giniIndex", "telemetry.dialog.cat.economy", "telemetry.dialog.desc.giniIndex");
+        register("realUnskilledWage", "telemetry.dialog.var.realUnskilledWage", "telemetry.dialog.cat.economy", "telemetry.dialog.desc.realUnskilledWage");
+        register("globalTradeVolume", "telemetry.dialog.var.globalTradeVolume", "telemetry.dialog.cat.economy", "telemetry.dialog.desc.globalTradeVolume");
+        register("shippingFreightCostIndex", "telemetry.dialog.var.shippingFreightCostIndex", "telemetry.dialog.cat.economy", "telemetry.dialog.desc.shippingFreightCostIndex");
 
-        // aš¡ Énergie, Métabolisme & Matière
-        register("energyCaptured", "Énergie Primaire Capturée", "âš¡ Énergie", "Flux d'exergie brute soutiré à la biosphère (MW)");
-        register("energyPerCapita", "Énergie par Habitant", "âš¡ Énergie", "Consommation primaire par individu (MJ/hab/an)");
-        register("fossilSharePrimaryEnergy", "Part des Énergies Fossiles", "âš¡ Énergie", "Proportion d'énergie issue du charbon et pétrole (%)");
-        register("eroiAlim", "EROEI Alimentaire", "âš¡ Énergie", "Rendement énergétique net de la production agricole (E_out / E_in)");
-        register("metalSmeltingPerCapita", "Métallurgie par Habitant", "âš¡ Énergie", "Production d'acier, fer et métaux raffinés (kg/hab)");
+        // Energy, Metabolism & Matter
+        register("energyCaptured", "telemetry.dialog.var.energyCaptured", "telemetry.dialog.cat.energy", "telemetry.dialog.desc.energyCaptured");
+        register("energyPerCapita", "telemetry.dialog.var.energyPerCapita", "telemetry.dialog.cat.energy", "telemetry.dialog.desc.energyPerCapita");
+        register("fossilSharePrimaryEnergy", "telemetry.dialog.var.fossilSharePrimaryEnergy", "telemetry.dialog.cat.energy", "telemetry.dialog.desc.fossilSharePrimaryEnergy");
+        register("eroiAlim", "telemetry.dialog.var.eroiAlim", "telemetry.dialog.cat.energy", "telemetry.dialog.desc.eroiAlim");
+        register("metalSmeltingPerCapita", "telemetry.dialog.var.metalSmeltingPerCapita", "telemetry.dialog.cat.energy", "telemetry.dialog.desc.metalSmeltingPerCapita");
 
-        // ¸ Institutions & Théorie Structurelle-Démographique (SDT)
-        register("politicalStressIndex", "Indice de Stress Politique (PSI)", "¸ Institutions", "Pression de crise institutionnelle selon Turchin");
-        register("eliteOverproduction", "Surproduction des Élites", "¸ Institutions", "Compétition intra-élite pour les postes de pouvoir");
-        register("currencyDebasement", "Dépréciation Monétaire", "¸ Institutions", "Perte de titre métallique et dévaluation de la monnaie");
-        register("asabiyyah", "Cohésion Sociale (Asabiyyah)", "¸ Institutions", "Capacité d'action collective selon Ibn Khaldun");
-        register("sovereignDebtBurden", "Dette Souveraine", "¸ Institutions", "Poids de l'endettement public par rapport au produit fiscal");
+        // Institutions & Structural-Demographic Theory (SDT)
+        register("politicalStressIndex", "telemetry.dialog.var.politicalStressIndex", "telemetry.dialog.cat.institutions", "telemetry.dialog.desc.politicalStressIndex");
+        register("eliteOverproduction", "telemetry.dialog.var.eliteOverproduction", "telemetry.dialog.cat.institutions", "telemetry.dialog.desc.eliteOverproduction");
+        register("currencyDebasement", "telemetry.dialog.var.currencyDebasement", "telemetry.dialog.cat.institutions", "telemetry.dialog.desc.currencyDebasement");
+        register("asabiyyah", "telemetry.dialog.var.asabiyyah", "telemetry.dialog.cat.institutions", "telemetry.dialog.desc.asabiyyah");
+        register("sovereignDebtBurden", "telemetry.dialog.var.sovereignDebtBurden", "telemetry.dialog.cat.institutions", "telemetry.dialog.desc.sovereignDebtBurden");
 
-        // 🌿 Environnement & Cycles Planétaires
-        register("carbonFootprint", "Concentration CO2 Atmosphérique", "🌿 Environnement", "Teneur en dioxyde de carbone atmosphérique (ppm)");
-        register("temperatureAnomaly", "Anomalie Thermique", "🌿 Environnement", "Écart de température par rapport à la moyenne préindustrielle (Â°C)");
-        register("soilNPK", "Érosion & Qualité des Sols", "🌿 Environnement", "Teneur en macronutriments N-P-K et érosion du sol superficiel");
-        register("forestCoverRemaining", "Couverture Forestière Restante", "🌿 Environnement", "Pourcentage de rétention forestière post-glaciaire (%)");
-        register("megafaunaIndex", "Biomasse Mégafaune", "🌿 Environnement", "Survie des grands herbivores et prédateurs (>44 kg)");
+        // Environment & Planetary Cycles
+        register("carbonFootprint", "telemetry.dialog.var.carbonFootprint", "telemetry.dialog.cat.environment", "telemetry.dialog.desc.carbonFootprint");
+        register("temperatureAnomaly", "telemetry.dialog.var.temperatureAnomaly", "telemetry.dialog.cat.environment", "telemetry.dialog.desc.temperatureAnomaly");
+        register("soilNPK", "telemetry.dialog.var.soilNPK", "telemetry.dialog.cat.environment", "telemetry.dialog.desc.soilNPK");
+        register("forestCoverRemaining", "telemetry.dialog.var.forestCoverRemaining", "telemetry.dialog.cat.environment", "telemetry.dialog.desc.forestCoverRemaining");
+        register("megafaunaIndex", "telemetry.dialog.var.megafaunaIndex", "telemetry.dialog.cat.environment", "telemetry.dialog.desc.megafaunaIndex");
 
-        // aš¡ Réseaux & Information
-        register("informationSpeed", "Vitesse de l'Information", "âš¡ Réseaux", "Vitesse de propagation des dépêches et savoirs (km/jour)");
-        register("systemInterdependence", "Interdépendance Systémique", "âš¡ Réseaux", "Connectivité et vulnérabilité aux cascades de rupture");
+        // Networks & Information
+        register("informationSpeed", "telemetry.dialog.var.informationSpeed", "telemetry.dialog.cat.networks", "telemetry.dialog.desc.informationSpeed");
+        register("systemInterdependence", "telemetry.dialog.var.systemInterdependence", "telemetry.dialog.cat.networks", "telemetry.dialog.desc.systemInterdependence");
 
-        // ¸ Cartographie Spatiale 2D & Matrices Culturelles
-        register("spatialMap2D", "Rasters Spatiaux 2D (Champs Physiques)", "¸ Cartographie & Matrices", "Extraction et rendu 2D des champs de densité, capital et biomasse");
-        register("culturalMatrix", "Matrice Culturelle (N Ã— N Affinités)", "¸ Cartographie & Matrices", "Calcul des affinités ethnolinguistiques, dérive culturelle et polarisation");
+        // 2D Spatial Cartography & Cultural Matrices
+        register("spatialMap2D", "telemetry.dialog.var.spatialMap2D", "telemetry.dialog.cat.cartography", "telemetry.dialog.desc.spatialMap2D");
+        register("culturalMatrix", "telemetry.dialog.var.culturalMatrix", "telemetry.dialog.cat.cartography", "telemetry.dialog.desc.culturalMatrix");
     }
 
-    private static void register(String id, String label, String category, String description) {
-        AVAILABLE_VARIABLES.put(id, new TelemetryVariableMeta(id, label, category, description));
+    private static void register(String id, String labelKey, String categoryKey, String descriptionKey) {
+        AVAILABLE_VARIABLES.put(id, new TelemetryVariableMeta(id, labelKey, categoryKey, descriptionKey));
     }
 
     private final Map<String, CheckBox> checkBoxes = new LinkedHashMap<>();
-    private final Set<String> selectedVariableIds = new LinkedHashSet<>();
 
+    /**
+     * Constructs a localized telemetry variable selector dialog.
+     *
+     * @param currentlyActiveIds set of currently active telemetry variable identifiers
+     */
     public TelemetryVariableSelectorDialog(Set<String> currentlyActiveIds) {
         initModality(Modality.APPLICATION_MODAL);
-        setTitle(I18n.getOrDefault("telemetry.dialog.title", "âš™ï¸ Configuration de la Télémétrie en Temps Réel"));
-        setHeaderText(I18n.getOrDefault("telemetry.dialog.header", "Sélectionnez les variables à calculer et afficher en direct pendant la simulation"));
+        setTitle(I18n.get("telemetry.dialog.title"));
+        setHeaderText(I18n.get("telemetry.dialog.header"));
+
+        boolean isLight = Theme.getCurrentTheme() == Theme.LIGHT;
+        String bgMain = isLight ? "#f8fafc" : "#0f172a";
+        String textMain = isLight ? "#0f172a" : "#e2e8f0";
+        String cardBg = isLight ? "#ffffff" : "rgba(30, 41, 59, 0.85)";
+        String cardBorder = isLight ? "#cbd5e1" : "rgba(71, 85, 105, 0.65)";
+        String catColor = isLight ? "#0369a1" : "#38bdf8";
 
         VBox contentBox = new VBox(14);
         contentBox.setPadding(new Insets(16));
-        contentBox.setStyle("-fx-background-color: #0f172a; -fx-text-fill: white;");
+        contentBox.setStyle("-fx-background-color: " + bgMain + ";");
 
-        // Toolbar: Profile selection buttons
         HBox toolbar = new HBox(8);
         toolbar.setAlignment(Pos.CENTER_LEFT);
 
-        Button btnSelectAll = new Button(I18n.getOrDefault("telemetry.dialog.btn_select_all", "Tout Sélectionner"));
-        btnSelectAll.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px;");
+        Button btnSelectAll = new Button(I18n.get("telemetry.dialog.btn_select_all"));
+        btnSelectAll.setTooltip(new Tooltip(I18n.get("telemetry.dialog.btn_select_all.tooltip")));
+        btnSelectAll.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11px;");
         btnSelectAll.setOnAction(e -> setAllSelection(true));
 
-        Button btnDeselectAll = new Button(I18n.getOrDefault("telemetry.dialog.btn_deselect_all", "Tout Désélectionner"));
-        btnDeselectAll.setStyle("-fx-background-color: #64748b; -fx-text-fill: white; -fx-font-size: 11px;");
+        Button btnDeselectAll = new Button(I18n.get("telemetry.dialog.btn_deselect_all"));
+        btnDeselectAll.setTooltip(new Tooltip(I18n.get("telemetry.dialog.btn_deselect_all.tooltip")));
+        btnDeselectAll.setStyle("-fx-background-color: #475569; -fx-text-fill: white; -fx-font-size: 11px;");
         btnDeselectAll.setOnAction(e -> setAllSelection(false));
 
-        Button btnProfileFast = new Button(I18n.getOrDefault("telemetry.dialog.btn_profile_fast", "Profil Rapide (5 variables)"));
-        btnProfileFast.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-size: 11px;");
+        Button btnProfileFast = new Button(I18n.get("telemetry.dialog.btn_profile_fast"));
+        btnProfileFast.setTooltip(new Tooltip(I18n.get("telemetry.dialog.btn_profile_fast.tooltip")));
+        btnProfileFast.setStyle("-fx-background-color: #059669; -fx-text-fill: white; -fx-font-size: 11px;");
         btnProfileFast.setOnAction(e -> applyProfileFast());
 
-        Button btnProfileCliodynamic = new Button(I18n.getOrDefault("telemetry.dialog.btn_profile_cliodynamic", "Profil Cliodynamique Turchin"));
-        btnProfileCliodynamic.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-size: 11px;");
+        Button btnProfileCliodynamic = new Button(I18n.get("telemetry.dialog.btn_profile_cliodynamic"));
+        btnProfileCliodynamic.setTooltip(new Tooltip(I18n.get("telemetry.dialog.btn_profile_cliodynamic.tooltip")));
+        btnProfileCliodynamic.setStyle("-fx-background-color: #7c3aed; -fx-text-fill: white; -fx-font-size: 11px;");
         btnProfileCliodynamic.setOnAction(e -> applyProfileCliodynamic());
 
         toolbar.getChildren().addAll(btnSelectAll, btnDeselectAll, btnProfileFast, btnProfileCliodynamic);
 
-        // Group variables by category
         Map<String, VBox> categorySections = new LinkedHashMap<>();
         for (TelemetryVariableMeta meta : AVAILABLE_VARIABLES.values()) {
-            categorySections.computeIfAbsent(meta.category(), cat -> {
+            categorySections.computeIfAbsent(meta.categoryKey(), catKey -> {
                 VBox box = new VBox(6);
                 box.setPadding(new Insets(8));
-                box.setStyle("-fx-background-color: rgba(30, 41, 59, 0.7); -fx-background-radius: 6; -fx-border-color: rgba(71, 85, 105, 0.5); -fx-border-radius: 6;");
-                Label catLabel = new Label(cat);
-                catLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #38bdf8;");
+                box.setStyle("-fx-background-color: " + cardBg + "; -fx-background-radius: 6; -fx-border-color: " + cardBorder + "; -fx-border-radius: 6;");
+                Label catLabel = new Label(I18n.get(catKey));
+                catLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: " + catColor + ";");
                 box.getChildren().add(catLabel);
                 return box;
             });
 
-            CheckBox cb = new CheckBox(meta.label() + " (" + meta.description() + ")");
-            cb.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px;");
+            String localizedLabel = I18n.get(meta.labelKey());
+            String localizedDesc = I18n.get(meta.descriptionKey());
+            CheckBox cb = new CheckBox(localizedLabel + " — " + localizedDesc);
+            cb.setTooltip(new Tooltip(localizedDesc));
+            cb.setStyle("-fx-text-fill: " + textMain + "; -fx-font-size: 11px;");
             boolean isActive = currentlyActiveIds == null || currentlyActiveIds.isEmpty() || currentlyActiveIds.contains(meta.id());
             cb.setSelected(isActive);
             checkBoxes.put(meta.id(), cb);
-            categorySections.get(meta.category()).getChildren().add(cb);
+            categorySections.get(meta.categoryKey()).getChildren().add(cb);
         }
 
         VBox categoriesContainer = new VBox(10);
@@ -152,14 +178,14 @@ public class TelemetryVariableSelectorDialog extends Dialog<Set<String>> {
         ScrollPane scrollPane = new ScrollPane(categoriesContainer);
         scrollPane.setFitToWidth(true);
         scrollPane.setPrefViewportHeight(450);
-        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setStyle("-fx-background: " + bgMain + "; -fx-background-color: transparent;");
 
         contentBox.getChildren().addAll(toolbar, scrollPane);
         getDialogPane().setContent(contentBox);
-        getDialogPane().getButtonTypes().addAll(javafx.scene.control.ButtonType.OK, javafx.scene.control.ButtonType.CANCEL);
+        getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         setResultConverter(btnType -> {
-            if (btnType == javafx.scene.control.ButtonType.OK) {
+            if (btnType == ButtonType.OK) {
                 Set<String> selected = new LinkedHashSet<>();
                 for (var entry : checkBoxes.entrySet()) {
                     if (entry.getValue().isSelected()) {
@@ -204,6 +230,11 @@ public class TelemetryVariableSelectorDialog extends Dialog<Set<String>> {
         if (cb != null) cb.setSelected(true);
     }
 
+    /**
+     * Returns the immutable set of all default active telemetry variable identifiers.
+     *
+     * @return unmodifiable set of telemetry variable IDs
+     */
     public static Set<String> getDefaultActiveVariableIds() {
         return Collections.unmodifiableSet(AVAILABLE_VARIABLES.keySet());
     }

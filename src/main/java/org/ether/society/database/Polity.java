@@ -69,7 +69,9 @@ public class Polity {
      * @param capital Capital hexagonal cell
      */
     public Polity(String name, Color color, H3Cell capital) {
-        this.id = UUID.randomUUID().toString();
+        long capIdx = (capital != null && capital.getH3Index() != null) ? capital.getH3Index() : 0L;
+        this.id = UUID.nameUUIDFromBytes(((name != null ? name : "Polity") + "|" + capIdx)
+                .getBytes(java.nio.charset.StandardCharsets.UTF_8)).toString();
         this.name = name;
         this.color = color;
         if (color != null) {
@@ -94,7 +96,9 @@ public class Polity {
      * @param capital Capital hexagonal cell
      */
     public Polity(String name, int argbColor, H3Cell capital) {
-        this.id = UUID.randomUUID().toString();
+        long capIdx = (capital != null && capital.getH3Index() != null) ? capital.getH3Index() : 0L;
+        this.id = UUID.nameUUIDFromBytes(((name != null ? name : "Polity") + "|" + capIdx)
+                .getBytes(java.nio.charset.StandardCharsets.UTF_8)).toString();
         this.name = name;
         this.argbColor = argbColor;
         this.capital = capital;

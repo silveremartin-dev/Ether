@@ -59,22 +59,28 @@ public class MilankovitchOrbitalEngine extends AbstractSimulationEngine {
     public record MilankovitchParameters(double eccentricity, double obliquityDeg, double precessionAngleRad) {}
 
     /**
-     * Computes Milankovitch orbital parameters for a given year before present (or relative to year 0 CE).
+     * Computes Milankovitch orbital parameters for a given calendar year (negative for BCE/BP)
+     * anchored to J2000.0 astronomical ephemerides (Berger 1978, <i>J. Atmos. Sci.</i> 35:2362; Laskar et al. 2004):
+     * <ul>
+     *   <li>Eccentricity $e(2000) \approx 0.0167$, slowly decreasing from Late Pleistocene values.</li>
+     *   <li>Obliquity $\varepsilon(2000) \approx 23.439^\circ$, decreasing from Early Holocene maximum ($\sim -8\,700\,\text{BP}$, $24.23^\circ$).</li>
+     *   <li>Geocentric solar ecliptic longitude of perihelion $\varpi(2000) = 282.93^\circ$ (January 3 perihelion; July 4 aphelion).</li>
+     * </ul>
      *
      * @param year Current simulation year (negative for BCE/years before present)
      * @return MilankovitchParameters instance
      */
     public static MilankovitchParameters computeOrbitalParameters(double year) {
         double t = year;
-        // Eccentricity e(t)
-        double e = MEAN_ECCENTRICITY + ECCENTRICITY_AMPLITUDE * Math.sin(2.0 * Math.PI * t / ECCENTRICITY_PERIOD_YEARS);
+        // Eccentricity e(t) anchored to J2000 (e_2000 = 0.0167, Laskar et al. 2004)
+        double e = 0.0267 - 0.0100 * Math.cos(2.0 * Math.PI * (t - 2000.0) / ECCENTRICITY_PERIOD_YEARS);
         e = Math.clamp(e, 0.005, 0.060);
 
-        // Obliquity Iµ(t) in degrees
-        double eps = MEAN_OBLIQUITY_DEG + OBLIQUITY_AMPLITUDE_DEG * Math.sin(2.0 * Math.PI * t / OBLIQUITY_PERIOD_YEARS);
+        // Obliquity eps(t) in degrees anchored to Early Holocene maximum (-8700 BP: ~24.23 deg -> J2000: ~23.44 deg)
+        double eps = 23.32 + 0.91 * Math.cos(2.0 * Math.PI * (t - (-8700.0)) / OBLIQUITY_PERIOD_YEARS);
 
-        // Precession longitude of perihelion: anchored to J2000 epoch (\varpi_0 = 102.93 deg = 1.7965 rad)
-        double varpi = Math.toRadians(102.93) + (2.0 * Math.PI * (t - 2000.0) / PRECESSION_PERIOD_YEARS);
+        // Geocentric solar ecliptic longitude of perihelion anchored to J2000 (\varpi_0 = 282.93 deg = 102.93 + 180 deg)
+        double varpi = Math.toRadians(282.93) + (2.0 * Math.PI * (t - 2000.0) / PRECESSION_PERIOD_YEARS);
         varpi = varpi % (2.0 * Math.PI);
         if (varpi < 0.0) varpi += 2.0 * Math.PI;
 

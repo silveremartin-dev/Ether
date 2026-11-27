@@ -155,14 +155,17 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
                     double imperialProjection = Math.max(0.0, aggressor.getStateCapacity() - 0.5) * 0.4;
                     double baseWarDesire = (aggressor.getAsabiyyah() * 0.6) + imperialProjection + (defender.getPoliticalInstability() * 0.4) - (defender.getStateCapacity() * 0.3);
 
-                    // Cliodynamic Cultural Affinity Matrix Modulation (by Name and by ID):
+                    // Cliodynamic Cultural Affinity Matrix Modulation:
                     double affinityMultiplier = 1.0;
+                    double diplomaticRestraint = 0.0;
                     if (scenario != null) {
                         double affinity = scenario.getPairwiseAffinity(aggressor.getName(), defender.getName());
                         if (affinity == 50.0) {
                             affinity = scenario.getPairwiseAffinity(aggressor.getId(), defender.getId());
                         }
                         affinityMultiplier = Math.clamp(1.5 - (affinity / 100.0) * 1.3, 0.1, 2.0);
+                        // Formal allies and high-affinity partners (affinity > 55) exert bilateral diplomatic restraint
+                        diplomaticRestraint = Math.max(0.0, (affinity - 55.0) / 45.0) * 0.55;
                     }
 
                     // Topographic friction dampens opportunistic border skirmishes; high state capacity & bullion logistics overcome friction (Pax Romana engineering)
@@ -170,23 +173,21 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
                     double frictionDamping = 1.0 + (0.25 * Math.max(0.0, avgBorderFriction - 1.0)) / logisticalEngineeringFactor;
                     double warExhaustion = Math.max(0.0, aggressor.getPoliticalInstability() - 0.40) * 1.2
                             + (aggressor.getTreasuryBullion() <= 1.0 ? 0.25 : 0.0);
-                    double warDesire = ((baseWarDesire * affinityMultiplier) / frictionDamping) - warExhaustion;
+                    double warDesire = ((baseWarDesire * affinityMultiplier) / frictionDamping) - warExhaustion - diplomaticRestraint;
 
-                    // Continuous escalation threshold (Bueno de Mesquita 1981): border skirmishes escalate when net war desire is positive
-                    double escalationProbability = org.ether.society.core.math.SmoothMath.sigmoid(warDesire, 0.0, 0.12);
-                    if (escalationProbability > 0.50) {
+                    // Continuous escalation threshold (Bueno de Mesquita 1981): border skirmishes escalate only above positive casus belli margin
+                    double escalationProbability = org.ether.society.core.math.SmoothMath.sigmoid(warDesire, 0.06, 0.12);
+                    if (escalationProbability > 0.55) {
                         resolveBorderBattle(aggressor, defender, contact, wb, h3ToSlot);
                         if (scenario != null) {
-                            // Border clash degrades bilateral diplomatic affinity dynamically
+                            // Border clash degrades canonical bilateral diplomatic affinity dynamically
                             double affinityDrop = 2.0 + 10.0 * escalationProbability;
                             scenario.adjustPairwiseAffinity(aggressor.getName(), defender.getName(), -affinityDrop);
-                            scenario.adjustPairwiseAffinity(aggressor.getId(), defender.getId(), -affinityDrop);
                         }
                     } else if (scenario != null && warDesire < -0.05) {
                         // Peacetime bilateral diplomatic reconciliation
                         double affinityGain = 0.5 * Math.min(2.0, -warDesire);
                         scenario.adjustPairwiseAffinity(aggressor.getName(), defender.getName(), affinityGain);
-                        scenario.adjustPairwiseAffinity(aggressor.getId(), defender.getId(), affinityGain);
                     }
                 }
             }

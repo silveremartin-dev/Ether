@@ -387,7 +387,7 @@
         },
         "temperatureAnomaly": {
             "name": "Global Surface Temperature Anomaly",
-            "unit": "Degrees Celsius (Ã‚Â°C) relative to 1850-1900 pre-industrial baseline",
+            "unit": "Degrees Celsius (°C) relative to 1850-1900 pre-industrial baseline",
             "description": "Global mean surface temperature deviation.",
             "data": {
                 "-10000": -0.8,
@@ -496,9 +496,9 @@
             }
         },
         "milankovitchInsolation": {
-            "name": "Milankovitch Summer Insolation 65Ã‚Â°N",
-            "unit": "Watts per Square Meter (W/mÃ‚Â²)",
-            "description": "Mid-June solar radiative forcing at 65Ã‚Â°N driving Quaternary glacial-interglacial cycles.",
+            "name": "Milankovitch Summer Insolation 65°N",
+            "unit": "Watts per Square Meter (W/m²)",
+            "description": "Mid-June solar radiative forcing at 65°N driving Quaternary glacial-interglacial cycles.",
             "data": {
                 "-10000": 525,
                 "-8000": 515,

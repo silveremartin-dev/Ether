@@ -267,8 +267,8 @@ final class PreComputeClimateAndResourceHelper {
                     cell.setBiomassNatural(cell.getFoodResource());
                 }
                 if (cell.getBiomassLivestock() == null || cell.getBiomassLivestock() <= 0.0) {
-                    double areaKm2 = cell.getEffectiveSurfaceAreaKm2() > 0 ? cell.getEffectiveSurfaceAreaKm2() : 1770.49;
-                    double areaScale = Math.max(0.05, areaKm2 / 1770.49);
+                    double areaKm2 = org.ether.society.model.SpatialSurfaceHelper.resolveEffectiveCellAreaKm2(cell, 0.0);
+                    double areaScale = Math.max(0.05, areaKm2 / org.ether.society.model.SpatialSurfaceHelper.CANONICAL_EARTH_RES4_AREA_KM2);
                     double wildPasture = calculateHerbaceousPastureCarryingCapacity(
                             cell.getTemperatureOr(15.0), cell.getRainfallOr(500.0), cell.getElevationOr(0.0), areaScale);
                     int p = cell.getPopulation() != null ? cell.getPopulation() : 0;
@@ -286,6 +286,7 @@ final class PreComputeClimateAndResourceHelper {
                     cell.setBiomassAgriculture((p > 0 && kPerCapita >= 6.0) ? (p * 420.0 * neolithicShare * agrYieldBonus) : 0.0);
                 }
             }
+            applyGeologicalRastersFromScenario(scenario, cells);
             return;
         }
 
@@ -297,8 +298,8 @@ final class PreComputeClimateAndResourceHelper {
             double elev = cell.getElevationOr(0.0);
             double temp = cell.getTemperatureOr(15.0);
             double rain = cell.getRainfallOr(150.0);
-            double areaKm2 = cell.getEffectiveSurfaceAreaKm2() > 0 ? cell.getEffectiveSurfaceAreaKm2() : 1770.49;
-            double areaScale = Math.max(0.05, areaKm2 / 1770.49);
+            double areaKm2 = org.ether.society.model.SpatialSurfaceHelper.resolveEffectiveCellAreaKm2(cell, 0.0);
+            double areaScale = Math.max(0.05, areaKm2 / org.ether.society.model.SpatialSurfaceHelper.CANONICAL_EARTH_RES4_AREA_KM2);
 
             double npp = calculateMiamiNPP(temp, rain);
 
@@ -348,6 +349,92 @@ final class PreComputeClimateAndResourceHelper {
             }
             cell.setWaterResource(water);
         }
+        applyGeologicalRastersFromScenario(scenario, cells);
+    }
+
+    /**
+     * Applies empirical 16-bit geological deposit rasters ({@code coal}, {@code oil}, {@code gas},
+     * {@code uranium}, {@code iron_copper}, {@code precious_metals}, {@code rare_earths},
+     * {@code geothermal}, {@code aquifers}) stored on the {@link Scenario} onto {@link H3Cell} stocks,
+     * scaled by exact geodesic cell surface area $\text{km}^2$ (USGS WCOAL, MRDS, IAEA UDEPO, WHYMAP).
+     *
+     * @param scenario active scenario holding Base64-encoded geological rasters
+     * @param cells    target H3 cell list
+     */
+    private static void applyGeologicalRastersFromScenario(Scenario scenario, List<H3Cell> cells) {
+        if (scenario == null || cells == null || cells.isEmpty()) return;
+        java.awt.image.BufferedImage[] geoImgs = new java.awt.image.BufferedImage[10];
+        boolean anyLoaded = false;
+        for (int g = 0; g < 10; g++) {
+            String b64 = scenario.getCustomGeologyTensorMapBase64(g);
+            if (b64 != null && !b64.isBlank()) {
+                try {
+                    String payload = b64.contains(",") ? b64.substring(b64.indexOf(',') + 1) : b64;
+                    geoImgs[g] = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(java.util.Base64.getDecoder().decode(payload)));
+                    if (geoImgs[g] != null) anyLoaded = true;
+                } catch (Exception ex) {
+                    logger.debug("Could not decode geology tensor {}: {}", g, ex.getMessage());
+                }
+            }
+        }
+        if (!anyLoaded) return;
+
+        for (H3Cell cell : cells) {
+            if (cell == null) continue;
+            double lat = cell.getLatitudeOr(0.0);
+            double lon = cell.getLongitudeOr(0.0);
+            double areaKm2 = org.ether.society.model.SpatialSurfaceHelper.resolveEffectiveCellAreaKm2(cell, 0.0);
+
+            // 0: Coal [t] (~120,000 t/km^2 peak recoverable basin density, USGS WCOAL)
+            if (geoImgs[0] != null && cell.getResourceCoalOr(0.0) <= 0.0) {
+                double d = org.ether.society.data.ResourceDepositMapReader.sampleDensityFromImageTensor(geoImgs[0], lat, lon);
+                if (d > 0.001) cell.setResourceCoal(d * 120_000.0 * areaKm2);
+            }
+            // 1: Crude Oil [t] (~60,000 t/km^2 peak basin density)
+            if (geoImgs[1] != null && cell.getResourceOilOr(0.0) <= 0.0) {
+                double d = org.ether.society.data.ResourceDepositMapReader.sampleDensityFromImageTensor(geoImgs[1], lat, lon);
+                if (d > 0.001) cell.setResourceOil(d * 60_000.0 * areaKm2);
+            }
+            // 2: Natural Gas [t oil-eq] (~45,000 t/km^2 peak basin density)
+            if (geoImgs[2] != null && cell.getResourceGasOr(0.0) <= 0.0) {
+                double d = org.ether.society.data.ResourceDepositMapReader.sampleDensityFromImageTensor(geoImgs[2], lat, lon);
+                if (d > 0.001) cell.setResourceGas(d * 45_000.0 * areaKm2);
+            }
+            // 3: Uranium [t] (~25 t/km^2 peak IAEA UDEPO ore province density)
+            if (geoImgs[3] != null && cell.getResourceUraniumOr(0.0) <= 0.0) {
+                double d = org.ether.society.data.ResourceDepositMapReader.sampleDensityFromImageTensor(geoImgs[3], lat, lon);
+                if (d > 0.001) cell.setResourceUranium(d * 25.0 * areaKm2);
+            }
+            // 5: Iron & Copper structural ores [t] (~50,000 t/km^2 USGS MRDS metallogenic density)
+            if (geoImgs[5] != null) {
+                double d = org.ether.society.data.ResourceDepositMapReader.sampleDensityFromImageTensor(geoImgs[5], lat, lon);
+                if (d > 0.001) cell.setResourceMetal(cell.getResourceMetalOr(0.0) + d * 50_000.0 * areaKm2);
+            }
+            // 6: Precious Metals [t]
+            if (geoImgs[6] != null && cell.getResourcePreciousMetalOr(0.0) <= 0.0) {
+                double d = org.ether.society.data.ResourceDepositMapReader.sampleDensityFromImageTensor(geoImgs[6], lat, lon);
+                if (d > 0.001) cell.setResourcePreciousMetal(d * 5.0 * areaKm2);
+            }
+            // 7: Rare Earths [t]
+            if (geoImgs[7] != null && (cell.getResourceRareEarths() == null || cell.getResourceRareEarths() <= 0.0)) {
+                double d = org.ether.society.data.ResourceDepositMapReader.sampleDensityFromImageTensor(geoImgs[7], lat, lon);
+                if (d > 0.001) cell.setResourceRareEarths(d * 15.0 * areaKm2);
+            }
+            // 8: Mantle Heat Flow [mW/m^2]
+            if (geoImgs[8] != null) {
+                double d = org.ether.society.data.ResourceDepositMapReader.sampleDensityFromImageTensor(geoImgs[8], lat, lon);
+                cell.setMantleHeatFlow(65.0 + d * 85.0);
+            }
+            // 9: Aquifers (WHYMAP)
+            if (geoImgs[9] != null && cell.getFreshwaterAquiferOr(0.0) <= 0.0) {
+                double d = org.ether.society.data.ResourceDepositMapReader.sampleDensityFromImageTensor(geoImgs[9], lat, lon);
+                if (d > 0.001) {
+                    cell.setFreshwaterAquifer(d * 500.0 * (areaKm2 / org.ether.society.model.SpatialSurfaceHelper.CANONICAL_EARTH_RES4_AREA_KM2));
+                    cell.setAccessibleAquifer(d * 250.0 * (areaKm2 / org.ether.society.model.SpatialSurfaceHelper.CANONICAL_EARTH_RES4_AREA_KM2));
+                }
+            }
+        }
+        logger.info("Ingested empirical geological rasters (coal, oil, gas, uranium, ores, aquifers) onto {} cells.", cells.size());
     }
 
     /**
@@ -371,17 +458,17 @@ final class PreComputeClimateAndResourceHelper {
             scenario.setClimateEvents(events);
         }
 
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Éruption Minoenne de Théra (Santorin)", -1610, 5, 15, 36.40, 25.40, 10.0, 9.5, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Éruption du Vésuve (Pompéi & Herculanum)", 79, 10, 24, 40.82, 14.43, 8.0, 8.5, 180));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Peste Antonine (Variole dans l'Empire Romain)", 165, 4, 15, 41.90, 12.50, 0.0, 8.5, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Année sans été (Éruption mystère de 536)", 536, 3, 1, 64.00, -18.00, 10.0, 9.0, 540));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Peste de Justinien (Yersinia Pestis)", 541, 7, 15, 31.05, 32.55, 0.0, 9.0, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Éruption du Samalas (Lombok, Indonésie)", 1257, 6, 1, -8.41, 116.47, 12.0, 9.8, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Peste Noire (Yersinia Pestis)", 1347, 10, 1, 38.19, 15.55, 0.0, 9.8, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Éruption du Laki (Islande)", 1783, 6, 8, 64.06, -18.23, 8.0, 8.8, 240));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Éruption du Tambora (Année sans été)", 1815, 4, 10, -8.25, 118.00, 10.0, 9.5, 730));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Explosion du Krakatoa (Détroit de la Sonde)", 1883, 8, 27, -6.10, 105.42, 10.0, 9.0, 365));
-        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Grippe Espagnole (H1N1)", 1918, 3, 4, 39.10, -96.77, 0.0, 7.5, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Minoan Eruption of Thera (Santorini)", -1610, 5, 15, 36.40, 25.40, 10.0, 9.5, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Eruption of Mount Vesuvius (Pompeii & Herculaneum)", 79, 10, 24, 40.82, 14.43, 8.0, 8.5, 180));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Antonine Plague (Smallpox in the Roman Empire)", 165, 4, 15, 41.90, 12.50, 0.0, 8.5, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Late Antique Little Ice Age Volcanic Veil (536 CE)", 536, 3, 1, 64.00, -18.00, 10.0, 9.0, 540));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Plague of Justinian (Yersinia pestis)", 541, 7, 15, 31.05, 32.55, 0.0, 9.0, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Samalas Super-Eruption (Lombok, Indonesia)", 1257, 6, 1, -8.41, 116.47, 12.0, 9.8, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "Black Death Pandemic (Yersinia pestis)", 1347, 10, 1, 38.19, 15.55, 0.0, 9.8, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Laki Fissure Eruption (Iceland)", 1783, 6, 8, 64.06, -18.23, 8.0, 8.8, 240));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Mount Tambora Eruption (Year Without a Summer)", 1815, 4, 10, -8.25, 118.00, 10.0, 9.5, 730));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "VOLCANO", "Krakatoa Caldera Explosion (Sunda Strait)", 1883, 8, 27, -6.10, 105.42, 10.0, 9.0, 365));
+        addEventIfInRange(events, startYear, endYear, new ClimateEvent(org.ether.society.model.EventCategory.NATURAL, "PANDEMIC", "1918 Influenza Pandemic (H1N1)", 1918, 3, 4, 39.10, -96.77, 0.0, 7.5, 730));
     }
 
     private static void addEventIfInRange(List<ClimateEvent> events, long startYear, long endYear, ClimateEvent ev) {

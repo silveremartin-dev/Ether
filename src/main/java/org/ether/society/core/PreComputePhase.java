@@ -75,6 +75,12 @@ public class PreComputePhase {
         long startTime = System.currentTimeMillis();
 
         ensureCanonicalHistoricalEvents(scenario);
+        boolean isEarth = scenario.getPlanetPreset() == null
+                || "earth".equalsIgnoreCase(scenario.getPlanetPreset().getCanonicalPlanet())
+                || "earth".equalsIgnoreCase(scenario.getPlanetPreset().elevationMapSource());
+        if (isEarth && (scenario.getCustomDensityBase64() == null || scenario.getCustomGeologyTensorMapBase64(0) == null)) {
+            org.ether.society.data.HistoricalMapRasterRepository.loadFromYearDirectory(scenario);
+        }
         PreComputeClimateAndResourceHelper.computeClimate(scenario, cells);
 
         try {
@@ -369,6 +375,11 @@ public class PreComputePhase {
                 }
                 double grainKgPerPerson = 620.0 * neolithicShare * (1.0 + 0.05 * org.ether.society.core.math.SmoothMath.softplus(effectiveKPerCapita - 500.0, 200.0));
                 c.setBiomassAgriculture(pop > 0 ? (pop * grainKgPerPerson) : 0.0);
+            }
+            if (pop > 0 && (c.getEnergyFire() == null || c.getEnergyFire() <= 0.0)) {
+                double totalWattsPerCap = org.ether.society.engines.tier1.PhysicalEnergyGridEngine.calculatePerCapitaMechanicalPowerWatts(c);
+                double exosomaticWattsPerCap = Math.max(0.0, totalWattsPerCap - 135.0);
+                c.setEnergyFire(org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(pop * exosomaticWattsPerCap));
             }
 
             c.calculateMovementFriction();
