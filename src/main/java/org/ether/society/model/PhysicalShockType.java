@@ -101,6 +101,9 @@ public enum PhysicalShockType {
         if (clean.equals("CYCLONE") || clean.equals("HURRICANE") || clean.equals("TYPHOON")) {
             return TROPICAL_CYCLONE;
         }
+        if (clean.equals("EPIDEMIC") || clean.equals("PLAGUE") || clean.equals("OUTBREAK")) {
+            return PANDEMIC;
+        }
         if (clean.equals("FOREST_FIRE") || clean.equals("BUSHFIRE")) {
             return WILDFIRE;
         }

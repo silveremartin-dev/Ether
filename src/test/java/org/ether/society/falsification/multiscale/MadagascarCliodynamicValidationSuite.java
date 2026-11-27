@@ -68,7 +68,9 @@ public class MadagascarCliodynamicValidationSuite extends IslandValidationBase {
                 "Pre-agricultural forager growth must be near-stationary (< 0.8%/year): " + res.compoundAnnualGrowth());
         assertTrue((res.initialWood() - res.finalWood()) / res.initialWood() < 0.10,
                 "Prehistoric hunter-gatherers must not deforest virgin forests (> 90% retained)");
-        assertTrue(res.finalAgri() < 1000.0, "Agriculture must not spontaneously emerge at industrial scale in 500 CE");
+        // biomassAgriculture is stored in kg dry grain (1,000 t = 1,000,000 kg)
+        assertTrue(org.ether.society.model.PhysicalUnitsHelper.kgToMetricTonnes(res.finalAgri()) < 1000.0,
+                "Agriculture must not spontaneously emerge at industrial scale in 500 CE (< 1,000 t)");
     }
 
     @Test

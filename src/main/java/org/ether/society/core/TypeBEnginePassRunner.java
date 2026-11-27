@@ -190,6 +190,17 @@ public final class TypeBEnginePassRunner {
                 for (int e = 0; e < engineCount; e++) {
                     cellularEngines.get(e).accumulateCellularDerivatives(worldBuffer, i, dtYears, dtMonthly, acc);
                 }
+                // Thermodynamic conservation bound (Garrett 2011; Smil 2017):
+                // When multiple Tier 2 socio-economic theories are enabled simultaneously, their additive
+                // positive capital derivatives represent overlapping macro-theories of the same physical surplus
+                // and must not compound beyond the physical exergy-supported capital accumulation ceiling.
+                if (tier == org.ether.society.core.engine.EngineTier.TIER_2_CLIODYNAMIC && engineCount > 1 && acc.dResourceCapital > 0.0f) {
+                    float curCap = worldBuffer.getResourceCapital()[i];
+                    float maxPhysicalDeltaK = (float) (Math.max(10.0, curCap) * 0.035 * Math.max(0.0001, dtYears));
+                    if (acc.dResourceCapital > maxPhysicalDeltaK) {
+                        acc.dResourceCapital = maxPhysicalDeltaK;
+                    }
+                }
                 if (acc.hasNonZeroDerivatives()) {
                     org.ether.society.core.engine.AbstractSimulationEngine.applyAccumulatorToCell(worldBuffer, i, acc);
                 }
