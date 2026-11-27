@@ -85,7 +85,7 @@ public class DraftAnimalFodderAllocationEngine extends AbstractSimulationEngine 
         double wind = buffer.getEnergyWind() != null ? buffer.getEnergyWind()[i] : 0.0;
         double solar = buffer.getEnergySolar() != null ? buffer.getEnergySolar()[i] : 0.0;
         double foodE = buffer.getEnergyFoodConsumed() != null ? buffer.getEnergyFoodConsumed()[i] : 0.0;
-        double powerW = Math.max(85.0, ((fire + wind + solar + foodE) * 31.688) / pop);
+        double powerW = Math.max(85.0, org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(fire + wind + solar + foodE) / pop);
         double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 1000.0;
 
         double draftPresence = (1.0 / (1.0 + Math.exp(-(kpc - 40.0) / 15.0)))

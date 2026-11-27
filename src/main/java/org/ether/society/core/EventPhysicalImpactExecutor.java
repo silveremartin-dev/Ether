@@ -267,6 +267,21 @@ public final class EventPhysicalImpactExecutor {
                     continue;
                 }
                 double attenuation = Math.max(0.0, 1.0 - (distance3dKm / effectiveRadiusKm));
+                // Sync live DOD WorldBuffer state into cell prior to shock so shocks never operate on stale t0 H3Cell values
+                if (worldBuffer != null && i < worldBuffer.getCapacity()) {
+                    cell.setPopulation(Math.max(0, Math.round(worldBuffer.getHumanPopulation()[i])));
+                    cell.setHumanPopulation((double) worldBuffer.getHumanPopulation()[i]);
+                    cell.setTemperature((double) worldBuffer.getTemperature()[i]);
+                    cell.setResourceCapital((double) worldBuffer.getResourceCapital()[i]);
+                    cell.setFoodResource((double) worldBuffer.getFoodResource()[i]);
+                    cell.setBiomassAgriculture((double) worldBuffer.getBiomassAgriculture()[i]);
+                    cell.setBiomassNatural((double) worldBuffer.getBiomassNatural()[i]);
+                    cell.setBiomassFish((double) worldBuffer.getBiomassFish()[i]);
+                    cell.setBiomassLivestock((double) worldBuffer.getBiomassLivestock()[i]);
+                    if (worldBuffer.getPollutionLevel() != null) {
+                        cell.setPollutionLevel((double) worldBuffer.getPollutionLevel()[i]);
+                    }
+                }
                 int prevPop = cell.getPopulationOr(0);
 
                 int lostPop = applyCellularShock(cell, upperType, lowerName, mag, attenuation, prevPop);

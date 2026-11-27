@@ -86,8 +86,9 @@ public class WestBettencourtAllometryEngine extends AbstractSimulationEngine {
         double superlinearFactor = Math.pow(normalizedPop, SUPERLINEAR_EXPONENT - 1.0);
         double currentCapital = buffer.getResourceCapital()[i];
         double kPerCapita = currentCapital / pop;
-        double powerWatts = Math.max(85.0, ((buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i]
-                + buffer.getEnergySolar()[i] + buffer.getEnergyFoodConsumed()[i]) * 31.688) / pop);
+        double powerWatts = Math.max(85.0, org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(
+                buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i]
+                + buffer.getEnergySolar()[i] + buffer.getEnergyFoodConsumed()[i]) / pop);
         double kEnergized = Math.max(120.0, powerWatts / org.ether.society.database.H3CellPhysicsAndStateHelper.GARRETT_CAPITAL_MAINTENANCE_WATTS_PER_UNIT);
         double thermodynamicHeadroom = Math.max(0.0, 1.0 - (kPerCapita / kEnergized));
         acc.dResourceCapital += currentCapital * 0.02 * superlinearFactor * thermodynamicHeadroom * dtYears;

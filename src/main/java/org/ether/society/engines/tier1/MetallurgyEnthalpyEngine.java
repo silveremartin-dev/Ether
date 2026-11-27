@@ -56,8 +56,9 @@ public class MetallurgyEnthalpyEngine extends AbstractSimulationEngine {
         double coalReserve = buffer.getResourceCoal()[i];
         double curCap = buffer.getResourceCapital()[i];
         double capPerCapita = curCap / Math.max(1.0, pop);
-        double powerW = Math.max(85.0, ((buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i]
-                + buffer.getEnergySolar()[i] + buffer.getEnergyFoodConsumed()[i]) * 31.688) / pop);
+        double powerW = Math.max(85.0, org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(
+                buffer.getEnergyFire()[i] + buffer.getEnergyWind()[i]
+                + buffer.getEnergySolar()[i] + buffer.getEnergyFoodConsumed()[i]) / pop);
 
         double fuelAvailability = Math.tanh(woodBiomass / 25.0)
                 + Math.tanh(coalReserve / 5.0) * SmoothMath.sigmoid(capPerCapita, 80.0, 25.0);

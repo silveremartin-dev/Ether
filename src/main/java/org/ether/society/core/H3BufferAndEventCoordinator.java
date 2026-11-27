@@ -217,8 +217,9 @@ public final class H3BufferAndEventCoordinator {
                             evt.getDurationDays()
                     );
                     eventSystem.recordSpatialEvent(ae);
-                    logger.info("🌋 [Tick {}] Scenario event triggered: {} (Category: {}, Date {}-{:02d}-{:02d}, Duration: {} d)",
-                            tickCounter, evt.getName(), cat, currentYear, evt.getMonth(), evt.getDay(), evt.getDurationDays());
+                    logger.info("🌋 [Tick {}] Scenario event triggered: {} (Category: {}, Date {}-{}-{}, Duration: {} d)",
+                            tickCounter, evt.getName(), cat, currentYear,
+                            String.format("%02d", evt.getMonth()), String.format("%02d", evt.getDay()), evt.getDurationDays());
 
                     // Chronicle milestones are strictly informative: zero physical shock on grid (AGENTS.md §10)
                     if (cat != org.ether.society.model.EventCategory.CHRONICLE_MILESTONE) {

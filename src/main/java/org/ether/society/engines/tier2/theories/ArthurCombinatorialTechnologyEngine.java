@@ -96,7 +96,7 @@ public class ArthurCombinatorialTechnologyEngine extends AbstractSimulationEngin
         double wind = buffer.getEnergyWind() != null ? buffer.getEnergyWind()[i] : 0.0;
         double solar = buffer.getEnergySolar() != null ? buffer.getEnergySolar()[i] : 0.0;
         double foodE = buffer.getEnergyFoodConsumed() != null ? buffer.getEnergyFoodConsumed()[i] : 0.0;
-        double powerWatts = Math.max(85.0, ((fire + wind + solar + foodE) * 31.688) / pop);
+        double powerWatts = Math.max(85.0, org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(fire + wind + solar + foodE) / pop);
 
         double kEnergized = Math.min(THERMODYNAMIC_CAPITAL_SATURATION_KG_PC,
                 Math.max(REFERENCE_TOOLSET_MASS_KG_PC, powerWatts / 12.0));
