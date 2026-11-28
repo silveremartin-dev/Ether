@@ -90,10 +90,10 @@ public class StructuralDemographicBifurcationEngine extends AbstractSimulationEn
             activeCount++;
 
             float capital = capArr != null ? capArr[i] : 100.0f;
-            float food = foodArr != null ? foodArr[i] : 1000.0f;
+            double availFoodGJ = org.ether.society.core.dod.WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ(buffer, i);
 
             double density = buffer.getPopulationDensityPerKm2(i);
-            double foodPerCap = food / Math.max(1.0, pop);
+            double foodPerCap = availFoodGJ / Math.max(1.0, pop);
             double mmp = Math.clamp((1.5 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0), 0.2, 5.0);
 
             double gini = (giniArr != null && giniArr[i] > 0.0f) ? giniArr[i] : 0.35;

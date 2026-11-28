@@ -68,13 +68,16 @@ public class HarrisCulturalMaterialismEngine extends AbstractSimulationEngine {
 
     @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
-        if (buffer == null || buffer.getHumanPopulation() == null || dtYears <= 0.0) return;
+        if (buffer == null || buffer.getHumanPopulation() == null || dtYears <= 0.0) {
+            return;
+        }
         double pop = buffer.getHumanPopulation()[i];
-        if (pop <= 1.0) return;
+        if (pop <= 1.0) {
+            return;
+        }
 
-        double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 0.0;
-        double foodPerCap = food / pop;
-        double deficitPressure = 1.0 / (1.0 + Math.exp(40.0 * (foodPerCap - 0.05)));
+        double totalCaloricGJPerCap = org.ether.society.core.dod.WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ(buffer, i) / pop;
+        double deficitPressure = 1.0 / (1.0 + Math.exp(40.0 * (totalCaloricGJPerCap - 0.05)));
         if (deficitPressure > 0.02) {
             double cap = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 0.0;
             acc.dResourceCapital -= (float) (cap * 0.10 * deficitPressure * dtYears);

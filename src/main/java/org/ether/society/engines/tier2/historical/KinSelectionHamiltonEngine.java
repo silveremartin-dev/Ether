@@ -42,8 +42,7 @@ public class KinSelectionHamiltonEngine extends AbstractSimulationEngine {
         double pop = buffer.getHumanPopulation()[i];
         if (pop <= 0.0) return;
 
-        double food = buffer.getFoodResource()[i];
-        double foodPerCapita = food / pop;
+        double foodPerCapita = org.ether.society.core.dod.WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ(buffer, i) / pop;
         double scarcityStress = 1.0 / (1.0 + Math.exp(20.0 * (foodPerCapita - 0.05)));
         if (scarcityStress > 0.01) {
             double capital = buffer.getResourceCapital()[i];

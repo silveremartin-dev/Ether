@@ -35,6 +35,72 @@ public class Hyde34GridReader {
     /** Internal state: ether height (int). */
     public static final int ETHER_HEIGHT = 1024;
 
+    /** Canonical logarithmic density pivot \(d_0 = 0.1\,\text{inh/km}^2\) for bijective 16-bit raster encoding. */
+    public static final double DENSITY_LOG_SCALE_D0_KM2 = 0.1;
+    /** Canonical planetary reference ceiling \(D_{\text{ref}} = 25\,000.0\,\text{inh/km}^2\) for 16-bit raster encoding. */
+    public static final double DENSITY_MAX_REF_KM2 = 25_000.0;
+    /** Minimum nonzero physical density threshold (\(10^{-4}\,\text{inh/km}^2\)) below which pixels encode as {@code 0}. */
+    public static final double DENSITY_MIN_NONZERO_KM2 = 1.0e-4;
+    /** Exact natural-log denominator \(\ln(1 + D_{\text{ref}} / d_0)\) for universal 16-bit density encoding/decoding. */
+    public static final double DENSITY_LOG_DENOM = Math.log1p(DENSITY_MAX_REF_KM2 / DENSITY_LOG_SCALE_D0_KM2);
+
+    /**
+     * Encodes a physical demographic density \(d\) (\(\text{inhabitants/km}^2\)) into an unsigned 16-bit integer
+     * \(u_{16} \in [0, 65\,535]\) using the universal zero-pedestal bijective logarithmic law:
+     * \[
+     * u_{16}(d) = \operatorname{round}\!\left(65\,535 \cdot \frac{\ln(1 + d / d_0)}{\ln(1 + D_{\text{ref}} / d_0)}\right)
+     * \]
+     *
+     * @param densityKm2 physical areal density in \(\text{inhabitants/km}^2\)
+     * @return unsigned 16-bit sample in \([0, 65\,535]\)
+     */
+    public static int encodeDensityKm2ToU16(double densityKm2) {
+        if (!Double.isFinite(densityKm2) || densityKm2 <= DENSITY_MIN_NONZERO_KM2) {
+            return 0;
+        }
+        double logNorm = Math.clamp(Math.log1p(densityKm2 / DENSITY_LOG_SCALE_D0_KM2) / DENSITY_LOG_DENOM, 0.0, 1.0);
+        return (int) Math.clamp(Math.round(logNorm * 65535.0), 1L, 65535L);
+    }
+
+    /**
+     * Decodes an unsigned 16-bit grayscale raster sample \(u_{16} \in [0, 65\,535]\) back into exact physical
+     * demographic density \(d\) (\(\text{inhabitants/km}^2\)):
+     * \[
+     * d(u_{16}) = d_0 \left[\exp\!\left(\frac{u_{16}}{65\,535} \ln(1 + D_{\text{ref}} / d_0)\right) - 1\right]
+     * \]
+     *
+     * @param u16 unsigned 16-bit pixel sample in \([0, 65\,535]\)
+     * @return physical areal density in \(\text{inhabitants/km}^2\)
+     */
+    public static double decodeU16ToDensityKm2(int u16) {
+        if (u16 <= 0) {
+            return 0.0;
+        }
+        double norm = Math.clamp((u16 & 0xFFFF) / 65535.0, 0.0, 1.0);
+        return DENSITY_LOG_SCALE_D0_KM2 * Math.expm1(norm * DENSITY_LOG_DENOM);
+    }
+
+    /**
+     * Samples physical demographic density (\(\text{inhabitants/km}^2\)) at pixel {@code (x, y)} from a density
+     * {@link BufferedImage}, inverting the canonical 16-bit logarithmic law for {@code TYPE_USHORT_GRAY} rasters.
+     *
+     * @param img density raster image
+     * @param x   column index
+     * @param y   row index
+     * @return decoded density in \(\text{inhabitants/km}^2\) (or linear normalized value for synthetic 8-bit images)
+     */
+    public static double samplePixelDensityKm2(BufferedImage img, int x, int y) {
+        if (img == null) {
+            return 0.0;
+        }
+        if (img.getType() == BufferedImage.TYPE_USHORT_GRAY
+                || (img.getRaster().getNumBands() == 1 && img.getSampleModel().getSampleSize(0) == 16)) {
+            int u16 = img.getRaster().getSample(x, y, 0) & 0xFFFF;
+            return decodeU16ToDensityKm2(u16);
+        }
+        return H3RasterBinningCoordinator.sampleBufferedGrayNormalized(img, x, y);
+    }
+
     private static final java.util.Map<Long, BufferedImage> GRID_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Map<Long, float[][]> COUNT_CACHE = java.util.Collections.synchronizedMap(
             new java.util.LinkedHashMap<>(8, 0.75f, true) {
@@ -231,24 +297,17 @@ public class Hyde34GridReader {
             }
         }
 
-        // 3. Render 16-bit Logarithmic Grayscale (TYPE_USHORT_GRAY, [0..65535]) preserving spatial dynamic range
+        // 3. Render 16-bit Bijective Physical Logarithmic Grayscale (TYPE_USHORT_GRAY, [0..65535])
+        //    with zero pedestal and universal fixed scale (d0 = 0.1 inh/km^2, D_ref = 25,000 inh/km^2)
         BufferedImage img = new BufferedImage(ETHER_WIDTH, ETHER_HEIGHT, BufferedImage.TYPE_USHORT_GRAY);
         short[] data = ((java.awt.image.DataBufferUShort) img.getRaster().getDataBuffer()).getData();
-        double effMax = Math.max(0.1, maxDensity * 0.90);
-        double logDenom = Math.log1p(effMax * 4.0);
 
         int idx = 0;
         for (int y = 0; y < ETHER_HEIGHT; y++) {
             double[] densRow = densityKm2[y];
             for (int x = 0; x < ETHER_WIDTH; x++) {
-                double val = densRow[x];
-                if (val <= 1e-4) {
-                    data[idx++] = 0;
-                } else {
-                    double logNorm = Math.clamp(Math.log1p(val * 4.0) / logDenom, 0.0, 1.0);
-                    int u16 = (int) Math.clamp(Math.round((logNorm * (238.0 / 255.0) + (17.0 / 255.0)) * 65535.0), 4369L, 65535L);
-                    data[idx++] = (short) (u16 & 0xFFFF);
-                }
+                int u16 = encodeDensityKm2ToU16(densRow[x]);
+                data[idx++] = (short) (u16 & 0xFFFF);
             }
         }
 

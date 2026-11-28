@@ -159,7 +159,7 @@ public final class H3RasterBinningCoordinator {
                     if (cellPos == null) continue;
 
                     int pos = cellPos;
-                    double rho = argbToGrayNorm(pxArr[srcRowOff + (sx / sub)]);
+                    double rho = argbToDensityKm2(pxArr[srcRowOff + (sx / sub)]);
                     localW[pos] += rho * areaSub;
                     localA[pos] += areaSub;
                 }
@@ -323,6 +323,23 @@ public final class H3RasterBinningCoordinator {
     public static double argbToGrayNorm(int argb) {
         if ((argb & SENTINEL_MASK) == USHORT_GRAY_SENTINEL) {
             return (argb & 0xFFFF) / 65535.0;
+        }
+        int r = (argb >> 16) & 0xFF, g = (argb >> 8) & 0xFF, b = argb & 0xFF;
+        return ((r + g + b) / 3.0) / 255.0;
+    }
+
+    /**
+     * Decodes a packed raster pixel into physical demographic density (\(\text{inhabitants/km}^2\))
+     * by inverting {@link Hyde34GridReader#decodeU16ToDensityKm2(int)} when the source raster is a
+     * canonical 16-bit {@code TYPE_USHORT_GRAY} density tensor, or returning linear normalized brightness
+     * for synthetic 8-bit RGB test grids.
+     *
+     * @param argb packed pixel sample from {@link H3RasterAggregator.RasterArgbBuffer}
+     * @return decoded physical density in \(\text{inhabitants/km}^2\) (or linear weight in \([0, 1]\) for 8-bit RGB)
+     */
+    public static double argbToDensityKm2(int argb) {
+        if ((argb & SENTINEL_MASK) == USHORT_GRAY_SENTINEL) {
+            return Hyde34GridReader.decodeU16ToDensityKm2(argb & 0xFFFF);
         }
         int r = (argb >> 16) & 0xFF, g = (argb >> 8) & 0xFF, b = argb & 0xFF;
         return ((r + g + b) / 3.0) / 255.0;

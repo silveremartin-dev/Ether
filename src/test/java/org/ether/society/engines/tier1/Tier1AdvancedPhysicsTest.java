@@ -87,7 +87,31 @@ public class Tier1AdvancedPhysicsTest {
 
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         new AtmosphericCirculationHadleyEngine().tick(buf, 1.0, 12.0);
-        assertTrue(buf.getEnergyWind()[0] > 0.0f, "Atmospheric wind must generate kinetic power density");
+        assertEquals(0.0f, buf.getEnergyWind()[0], 1e-6f,
+                "Uninhabited or zero-capital cell must capture 0.0 GJ/yr of anthropogenic wind energy (Contract 2)");
+
+        buf.getHumanPopulation()[0] = 1_000.0f;
+        buf.getResourceCapital()[0] = 600_000.0f; // 600 kg/cap windmill/maritime capital
+        new AtmosphericCirculationHadleyEngine().tick(buf, 1.0, 12.0);
+        assertTrue(buf.getEnergyWind()[0] > 0.0f,
+                "Populated cell with windmill/maritime capital must capture positive aeolian energy in GJ/yr");
+
+        // Pre-industrial cell (250 kg/cap) must not trigger coal/oil prime movers or solar PV capture
+        org.ether.society.core.dod.WorldBuffer maliBuf = new org.ether.society.core.dod.WorldBuffer(1);
+        maliBuf.getHumanPopulation()[0] = 1_000.0f;
+        maliBuf.getResourceCapital()[0] = 250_000.0f;
+        maliBuf.getMetalResource()[0] = 50.0f;
+        maliBuf.getResourceCoal()[0] = 100.0f;
+        maliBuf.getResourceOil()[0] = 100.0f;
+        RenewableEnergyPhysicsEngine.processRenewableEnergyPhysics(maliBuf);
+        assertEquals(0.0f, maliBuf.getEnergySolar()[0], 1e-3f,
+                "Pre-industrial cell (250 kg/cap) must capture ~0 GJ/yr of semiconductor solar PV energy");
+        org.ether.society.core.engine.DerivativeAccumulator acc = new org.ether.society.core.engine.DerivativeAccumulator();
+        new ThermodynamicPrimeMoversEngine().accumulateCellularDerivatives(maliBuf, 0, 1.0, 12.0, acc);
+        assertEquals(0.0f, acc.dResourceCoal, 1e-4f,
+                "Medieval capital (250 kg/cap) must not burn coal in steam prime movers");
+        assertEquals(0.0f, acc.dResourceOil, 1e-4f,
+                "Medieval capital (250 kg/cap) must not burn crude oil in internal combustion prime movers");
     }
 
     @Test

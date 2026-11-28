@@ -52,19 +52,6 @@ public final class CellularMapComparisonMetrics {
             return new MapComparisonMetrics.MapComparisonResult(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "Empty inputs");
         }
 
-        double maxSimLog = 1.0;
-        for (H3Cell c : cells) {
-            if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
-            double lat = c.getLatitude();
-            double lng = c.getLongitude();
-            if (windowed && (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng)) continue;
-            long pop = c.getPopulationOr(0);
-            double area = Math.max(1.0, c.getCellAreaKm2());
-            double density = (double) pop / area;
-            double logD = Math.log10(1.0 + density);
-            if (logD > maxSimLog) maxSimLog = logD;
-        }
-
         int n = cells.size();
         double[] gridA = new double[n];
         double[] gridB = new double[n];
@@ -76,7 +63,13 @@ public final class CellularMapComparisonMetrics {
         int matchCount = 0;
         int unionCount = 0;
 
+        boolean isPhysical16Bit = groundTruthRaster.getType() == BufferedImage.TYPE_USHORT_GRAY
+                || (groundTruthRaster.getRaster().getNumBands() == 1
+                && groundTruthRaster.getSampleModel().getSampleSize(0) == 16);
+
         double[] obsMeans = org.ether.society.data.H3RasterAggregator.aggregateDensityMeans(groundTruthRaster, cells);
+        double maxSimLog = 0.1;
+        double maxObsLog = 0.1;
         double maxObsVal = 0.0;
         for (int idx = 0; idx < n; idx++) {
             H3Cell c = cells.get(idx);
@@ -84,13 +77,22 @@ public final class CellularMapComparisonMetrics {
             double lat = c.getLatitude();
             double lng = c.getLongitude();
             if (windowed && (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng)) continue;
+            long pop = c.getPopulationOr(0);
+            double area = Math.max(1.0, c.getCellAreaKm2());
+            double simLog = Math.log10(1.0 + ((double) pop / area));
+            if (simLog > maxSimLog) maxSimLog = simLog;
             if (obsMeans[idx] > maxObsVal) {
                 maxObsVal = obsMeans[idx];
+            }
+            if (isPhysical16Bit) {
+                double obsLog = Math.log10(1.0 + Math.max(0.0, obsMeans[idx]));
+                if (obsLog > maxObsLog) maxObsLog = obsLog;
             }
         }
         if (maxObsVal <= 1.0e-9) {
             maxObsVal = 1.0;
         }
+        double sharedMaxLog = Math.max(maxSimLog, maxObsLog);
 
         for (int idx = 0; idx < n; idx++) {
             H3Cell c = cells.get(idx);
@@ -102,13 +104,24 @@ public final class CellularMapComparisonMetrics {
             long pop = c.getPopulationOr(0);
             double area = Math.max(1.0, c.getCellAreaKm2());
             double simDensity = (double) pop / area;
-            double simNorm = Math.clamp(Math.log10(1.0 + simDensity) / maxSimLog * 255.0, 0.0, 255.0);
+            double obsVal = Math.max(0.0, obsMeans[idx]);
 
-            double obsVal = obsMeans[idx];
-            double obsNorm = Math.clamp((obsVal / maxObsVal) * 255.0, 0.0, 255.0);
+            double simNorm;
+            double obsNorm;
+            boolean obsActive;
+            if (isPhysical16Bit) {
+                // Both simulated and decoded ground-truth densities are in identical SI units (inh/km^2):
+                // project through the exact same shared logarithmic transfer onto [0, 255] (zero pedestal bias).
+                simNorm = Math.clamp(Math.log10(1.0 + simDensity) / sharedMaxLog * 255.0, 0.0, 255.0);
+                obsNorm = Math.clamp(Math.log10(1.0 + obsVal) / sharedMaxLog * 255.0, 0.0, 255.0);
+                obsActive = (obsVal >= 0.01);
+            } else {
+                simNorm = Math.clamp(Math.log10(1.0 + simDensity) / maxSimLog * 255.0, 0.0, 255.0);
+                obsNorm = Math.clamp((obsVal / maxObsVal) * 255.0, 0.0, 255.0);
+                obsActive = (obsVal > 0.005);
+            }
 
-            boolean simActive = (pop > 0);
-            boolean obsActive = (obsVal > 0.005);
+            boolean simActive = (pop > 0 && simDensity >= 0.01);
 
             if (simActive || obsActive) {
                 unionCount++;

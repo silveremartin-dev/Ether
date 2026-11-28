@@ -106,10 +106,10 @@ public class GranovetterThresholdCascadeEngine extends AbstractSimulationEngine 
         if (pop <= 1.0) return;
 
         double gini = buffer.getGiniIndex() != null ? buffer.getGiniIndex()[i] : 0.35;
-        double food = buffer.getFoodResource() != null ? buffer.getFoodResource()[i] : 500.0;
+        double foodPerCapGJ = org.ether.society.core.dod.WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ(buffer, i) / pop;
 
         double giniGrievance = 1.0 / (1.0 + Math.exp(-12.0 * (gini - 0.45)));
-        double caloricGrievance = 1.0 / (1.0 + Math.exp(0.015 * (food - 350.0)));
+        double caloricGrievance = 1.0 / (1.0 + Math.exp(3.5 * (foodPerCapGJ - 1.20)));
         double grievance = 0.5 * (giniGrievance + caloricGrievance);
         double mobilizationFraction = 1.0 / (1.0 + Math.exp(-8.0 * (grievance - 0.40)));
 

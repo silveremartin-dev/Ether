@@ -30,7 +30,7 @@
     "AxialAgeMoralizingGodsEngine" : true,
     "BagehotFractionalReserveEngine" : true,
     "BarfieldNomadicSteppeEmpireEngine" : false,
-    "BifurcationChaosEngine" : true,
+    "BifurcationChaosEngine" : false,
     "BoserupAgriculturalIntensificationEngine" : true,
     "CliodynamicAdvisor" : false,
     "CliodynamicsEngine" : true,

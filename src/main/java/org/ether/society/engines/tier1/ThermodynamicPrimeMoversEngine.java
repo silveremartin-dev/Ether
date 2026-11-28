@@ -70,59 +70,75 @@ public class ThermodynamicPrimeMoversEngine extends AbstractSimulationEngine {
 
     @Override
     public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
-        if (dtYears <= 0.0) return;
+        if (dtYears <= 0.0) {
+            return;
+        }
 
         double pop = buffer.getHumanPopulation()[i];
-        if (pop <= 0.0) return;
+        if (pop <= 0.0) {
+            return;
+        }
 
         double capital = buffer.getResourceCapital()[i];
-        double capitalPerCapita = capital / pop;
-        double metalStock = buffer.getMetalResource()[i];
-        double coalStock = buffer.getResourceCoal()[i];
-        double oilStock = buffer.getResourceOil()[i];
+        double capitalPerCapita = Math.max(0.0, capital / pop);
+        double metalStock = Math.max(0.0, buffer.getMetalResource()[i]);
+        double coalStock = Math.max(0.0, buffer.getResourceCoal()[i]);
+        double oilStock = Math.max(0.0, buffer.getResourceOil()[i]);
 
-        double somaticPower = 120.0;
-        double livestockPerCapita = buffer.getBiomassLivestock()[i] / pop;
-        double animalPower = Math.min(150.0, livestockPerCapita * 0.45);
+        // 1. Renewable domestic firewood/biomass hearth thermal baseline (~212 W/cap, Smil 2017)
+        double woodBiomassKg = org.ether.society.model.PhysicalUnitsHelper.metricTonnesToKg(
+                Math.max(0.0, buffer.getBiomassNatural()[i]) + Math.max(0.0, buffer.getWoodResource()[i]));
+        double woodThermalPowerW = woodBiomassKg > 0.0 ? 212.0 * Math.tanh((woodBiomassKg + 50.0) / 50.0) : 0.0;
 
+        // 2. Domesticated draft animal traction (oxen/horses/mules)
+        double livestockPerCapita = Math.max(0.0, buffer.getBiomassLivestock()[i] / pop);
+        double animalPowerW = 65.0 * Math.tanh(livestockPerCapita / 0.25)
+                * org.ether.society.core.math.SmoothMath.sigmoid(capitalPerCapita, 25.0, 12.0);
+
+        // 3. Smooth C^infty hydraulic waterwheels & mechanical mills (activates above k_pc ~ 120 kg/cap)
         double riverFlow = Math.max(0.0, buffer.getFreshwaterAquifer()[i] * 0.1);
-        double millPower = 0.0;
-        if (capitalPerCapita > 30.0) {
-            double millCapitalRatio = Math.min(1.0, (capitalPerCapita - 30.0) / 200.0);
-            millPower = 80.0 * millCapitalRatio * (1.0 + Math.tanh(riverFlow / 50.0));
-        }
+        double millCapitalActivation = Math.tanh(
+                org.ether.society.core.math.SmoothMath.softplus(capitalPerCapita - 120.0, 0.04) / 300.0);
+        double millPowerW = 80.0 * millCapitalActivation * (1.0 + Math.tanh(riverFlow / 50.0));
 
-        double thermalEnginePower = 0.0;
-        double coalShare = 0.0;
-        double oilShare = 0.0;
-        if (capitalPerCapita > 200.0 && metalStock > 0.5 && (coalStock > 0.0 || oilStock > 0.0)) {
-            double precisionMetallurgy = Math.min(1.0, (capitalPerCapita - 200.0) / 3000.0);
-            double carnotEfficiency = 0.01 + 0.34 * precisionMetallurgy;
-            double coalEnthalpyFactor = Math.tanh(coalStock / 10.0);
-            double oilEnthalpyFactor = Math.tanh(oilStock / 5.0);
-            double availableFuelEnthalpy = coalEnthalpyFactor + oilEnthalpyFactor;
-            if (availableFuelEnthalpy > 1.0e-9) {
-                coalShare = coalEnthalpyFactor / availableFuelEnthalpy;
-                oilShare = oilEnthalpyFactor / availableFuelEnthalpy;
-                thermalEnginePower = 2500.0 * carnotEfficiency * availableFuelEnthalpy;
-            }
-        }
+        // 4. Smooth C^infty industrial heat engines (Smil 2017; Ayres & Warr 2009):
+        //    - Coal steam boilers & pistons require precision iron metallurgy (k_pc >= 950 kg/cap)
+        //    - Petroleum internal combustion & turbines require industrial refining & machining (k_pc >= 2,800 kg/cap)
+        double metallurgyGate = Math.tanh(metalStock / 2.0);
+        double coalSteamActivation = metallurgyGate * Math.tanh(
+                org.ether.society.core.math.SmoothMath.softplus(capitalPerCapita - 950.0, 0.025) / 1800.0);
+        double oilIceActivation = metallurgyGate * Math.tanh(
+                org.ether.society.core.math.SmoothMath.softplus(capitalPerCapita - 2800.0, 0.015) / 3500.0);
 
-        // First Law fuel conservation: debit fossil coal (24 GJ/t) and oil (42 GJ/t) for thermal prime movers
-        double thermalFuelGJ = org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(pop * thermalEnginePower) * dtYears;
-        if (thermalFuelGJ > 0.0) {
-            double desiredCoalT = (thermalFuelGJ * coalShare) / 24.0;
-            double desiredOilT = (thermalFuelGJ * oilShare) / 42.0;
-            double actualCoalT = Math.min(Math.max(0.0, coalStock), desiredCoalT);
-            double actualOilT = Math.min(Math.max(0.0, oilStock), desiredOilT);
+        double coalAvail = Math.tanh(coalStock / 10.0);
+        double oilAvail = Math.tanh(oilStock / 5.0);
+
+        // Carnot-bounded thermal efficiency eta_th in [0.03, 0.38] rising smoothly with precision capital
+        double carnotEfficiency = 0.03 + 0.35 * Math.tanh(
+                org.ether.society.core.math.SmoothMath.softplus(capitalPerCapita - 950.0, 0.02) / 3500.0);
+
+        // Desired useful shaft work W_shaft [W/cap], converted via First/Second Law Q_in = W_shaft / eta_th
+        double desiredCoalShaftW = 220.0 * coalSteamActivation * coalAvail;
+        double desiredOilShaftW = 520.0 * oilIceActivation * oilAvail;
+
+        double desiredCoalThermalGJ = org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(
+                pop * (desiredCoalShaftW / carnotEfficiency)) * dtYears;
+        double desiredOilThermalGJ = org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(
+                pop * (desiredOilShaftW / carnotEfficiency)) * dtYears;
+
+        double actualFossilThermalWattsPerCap = 0.0;
+        if (desiredCoalThermalGJ > 1.0e-9 || desiredOilThermalGJ > 1.0e-9) {
+            double actualCoalT = Math.min(coalStock, desiredCoalThermalGJ / 24.0);
+            double actualOilT = Math.min(oilStock, desiredOilThermalGJ / 42.0);
             acc.dResourceCoal -= (float) actualCoalT;
             acc.dResourceOil -= (float) actualOilT;
-            double actualThermalGJ = actualCoalT * 24.0 + actualOilT * 42.0;
-            thermalEnginePower = org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(actualThermalGJ / Math.max(1.0e-6, dtYears)) / pop;
+            double actualFossilThermalGJ = actualCoalT * 24.0 + actualOilT * 42.0;
+            actualFossilThermalWattsPerCap = org.ether.society.model.PhysicalUnitsHelper.gjPerYearToWatts(
+                    actualFossilThermalGJ / Math.max(1.0e-6, dtYears)) / pop;
         }
 
-        // Extensive cellular exosomatic flux target in GJ/yr (somatic food resides in energyFoodConsumed)
-        double exosomaticWattsPerCapita = animalPower + millPower + thermalEnginePower;
+        // Extensive cellular exosomatic combustion & prime-mover flux target in GJ/yr (WorldBuffer.energyFire)
+        double exosomaticWattsPerCapita = woodThermalPowerW + animalPowerW + millPowerW + actualFossilThermalWattsPerCap;
         double targetExosomaticGJPerYr = org.ether.society.model.PhysicalUnitsHelper.wattsToGjPerYear(pop * exosomaticWattsPerCapita);
         double curFireGJPerYr = buffer.getEnergyFire()[i];
         acc.dEnergyFire += (float) ((targetExosomaticGJPerYr - curFireGJPerYr) * Math.min(1.0, dtYears));

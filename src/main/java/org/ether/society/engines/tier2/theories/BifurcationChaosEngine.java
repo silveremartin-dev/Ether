@@ -70,8 +70,8 @@ public class BifurcationChaosEngine extends AbstractSimulationEngine {
             if (pop > 0.0f) {
                 double diff = pop - meanPop;
                 varianceSum += diff * diff;
-                double food = foodArr[i];
-                double stressRatio = food > 0.0 ? (pop / (food + 1.0)) : 10.0;
+                double availFoodGJ = org.ether.society.core.dod.WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ(buf, i);
+                double stressRatio = availFoodGJ > 0.0 ? (pop * 1.5 / (availFoodGJ + 1.0)) : 10.0;
                 divergenceRate += Math.log(Math.max(0.001, Math.abs(stressRatio - 1.0)));
             }
         }

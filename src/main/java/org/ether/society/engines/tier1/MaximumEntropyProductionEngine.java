@@ -124,26 +124,40 @@ public class MaximumEntropyProductionEngine extends AbstractSimulationEngine {
         double latentHeatWM2 = ptFraction * netRadWM2;
 
         // Convert J/(s m2) to kg/(m2 yr) = mm/yr of water: 1 W/m2 = 1 J/(s m2)
-        // (1 W/m2 / 2.45e6 J/kg) * 31,557,600 s/yr * 1 mm/(kg/m2) = 12.88 mm/(yr * (W/m2))
-        return (latentHeatWM2 / LATENT_HEAT_VAPORIZATION_J_KG) * 3.15576e7;
+        return (latentHeatWM2 / LATENT_HEAT_VAPORIZATION_J_KG)
+                * org.ether.society.model.PhysicalUnitsHelper.SECONDS_PER_JULIAN_YEAR;
     }
 
     @Override
     public void tick(org.ether.society.core.dod.WorldBuffer buffer, double dtYears, double dtMonthly) {
-        if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0) return;
+        if (buffer == null || buffer.getCapacity() == 0 || dtYears <= 0.0) {
+            return;
+        }
         float[] tempArr = buffer.getTemperature();
-        float[] solarArr = buffer.getEnergySolar();
         float[] rainArr = buffer.getRainfall();
+        long[] h3Arr = buffer.getH3Indexes();
         int n = buffer.getCapacity();
+        org.ether.society.h3.H3Service h3Service = org.ether.society.h3.H3Service.getInstance();
+        double relaxAlpha = Math.min(1.0, 0.05 * dtYears);
+
         for (int i = 0; i < n; i++) {
-            double tempC = tempArr[i];
-            double insolation = solarArr[i] > 0.0f ? solarArr[i] : 250.0;
-            double mepRainMm = calculateEquilibriumPrecipitationMmYr(tempC, insolation * 0.60);
             double currentRain = rainArr[i];
-            if (currentRain > 0.0) {
-                double relaxedRain = currentRain * (1.0 - 0.05 * dtYears) + mepRainMm * (0.05 * dtYears);
-                rainArr[i] = (float) Math.max(10.0, relaxedRain);
+            if (currentRain <= 0.0) {
+                continue;
             }
+            double tempC = tempArr[i];
+            double incidentSurfaceSolarWM2 = MEAN_NET_SOLAR_FLUX_W_M2;
+            if (h3Arr != null && h3Arr[i] != 0L) {
+                try {
+                    double latDeg = h3Service.cellToLatLng(h3Arr[i]).lat;
+                    incidentSurfaceSolarWM2 = RenewableEnergyPhysicsEngine.calculateSurfaceSolarIrradianceWattsPerM2(latDeg);
+                } catch (Exception ignored) {
+                    incidentSurfaceSolarWM2 = MEAN_NET_SOLAR_FLUX_W_M2;
+                }
+            }
+            double mepRainMm = calculateEquilibriumPrecipitationMmYr(tempC, incidentSurfaceSolarWM2 * 0.55);
+            double relaxedRain = currentRain * (1.0 - relaxAlpha) + mepRainMm * relaxAlpha;
+            rainArr[i] = (float) Math.max(10.0, relaxedRain);
         }
     }
 }

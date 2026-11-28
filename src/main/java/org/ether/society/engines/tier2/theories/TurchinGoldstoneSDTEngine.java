@@ -114,10 +114,10 @@ public class TurchinGoldstoneSDTEngine extends AbstractSimulationEngine {
         if (p < 5.0f) return;
         float capital = (buffer.getResourceCapital() != null) ? buffer.getResourceCapital()[i] : 10.0f;
         float gini = (buffer.getGiniIndex() != null) ? buffer.getGiniIndex()[i] : 0.35f;
-        float food = (buffer.getFoodResource() != null) ? buffer.getFoodResource()[i] : 500.0f;
+        double availFoodGJ = org.ether.society.core.dod.WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ(buffer, i);
 
         double density = buffer.getPopulationDensityPerKm2(i);
-        double foodPerCap = food / Math.max(1.0, p);
+        double foodPerCap = availFoodGJ / Math.max(1.0, p);
         double mmp = Math.max(0.2, (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0));
         double emp = Math.max(0.2, Math.pow(Math.max(0.0, gini - 0.25) / 0.20, 2.0));
         double kPerCap = capital / Math.max(1.0, p);
@@ -162,10 +162,10 @@ public class TurchinGoldstoneSDTEngine extends AbstractSimulationEngine {
             if (p < 5.0f) continue;
             float capital = (capArr != null) ? capArr[i] : 10.0f;
             float gini = (giniArr != null) ? giniArr[i] : 0.35f;
-            float food = (foodArr != null) ? foodArr[i] : 500.0f;
+            double availFoodGJ = org.ether.society.core.dod.WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ(buffer, i);
 
             double density = buffer.getPopulationDensityPerKm2(i);
-            double foodPerCap = food / Math.max(1.0, p);
+            double foodPerCap = availFoodGJ / Math.max(1.0, p);
             double mmp = Math.max(0.2, (1.9 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0));
             double emp = Math.max(0.2, Math.pow(Math.max(0.0, gini - 0.25) / 0.20, 2.0));
             double kPerCap = capital / Math.max(1.0, p);

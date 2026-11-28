@@ -207,6 +207,37 @@ public final class WorldBufferComponentAdapter {
     }
 
     /**
+     * Computes total available edible caloric infrastructure (\(\text{GJ}\)) in cell {@code index},
+     * combining stored granary reserves ({@code foodResource}) with standing harvestable crop grain
+     * ({@code biomassAgriculture}), livestock, fisheries, and wild edible flora ({@code AGENTS.md} Contract 2 &amp; 4).
+     *
+     * @param buffer source world buffer
+     * @param index  cell slot index
+     * @return total available edible caloric energy in Gigajoules (\(\text{GJ}\))
+     */
+    public static double computeAvailableEdibleCaloricGJ(WorldBuffer buffer, int index) {
+        if (buffer == null || index < 0 || index >= buffer.getCapacity()) {
+            return 0.0;
+        }
+        double storedFoodGJ = buffer.getFoodResource() != null ? Math.max(0.0, buffer.getFoodResource()[index]) : 0.0;
+        double bioAgriKg = buffer.getBiomassAgriculture() != null ? Math.max(0.0, buffer.getBiomassAgriculture()[index]) : 0.0;
+        double bioLivestockTons = buffer.getBiomassLivestock() != null ? Math.max(0.0, buffer.getBiomassLivestock()[index]) : 0.0;
+        double bioFishTons = buffer.getBiomassFish() != null ? Math.max(0.0, buffer.getBiomassFish()[index]) : 0.0;
+        double bioNatTons = buffer.getBiomassNatural() != null ? Math.max(0.0, buffer.getBiomassNatural()[index]) : 0.0;
+
+        double edibleAgriGJ = org.ether.society.model.PhysicalUnitsHelper.biomassKgToEnergyGJ(
+                bioAgriKg * 0.70, org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_GRAIN_DRY_MJ_PER_KG);
+        double edibleLivestockGJ = org.ether.society.model.PhysicalUnitsHelper.biomassTonnesToEnergyGJ(
+                bioLivestockTons * 0.15, org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FAUNA_MJ_PER_KG);
+        double edibleFishGJ = org.ether.society.model.PhysicalUnitsHelper.biomassTonnesToEnergyGJ(
+                bioFishTons * 0.25, org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_MARINE_MJ_PER_KG);
+        double edibleWildGJ = org.ether.society.model.PhysicalUnitsHelper.biomassTonnesToEnergyGJ(
+                bioNatTons * 0.005, org.ether.society.model.PhysicalConstants.BIOMASS_ENERGY_DENSITY_FLORA_WILD_MJ_PER_KG);
+
+        return storedFoodGJ + edibleAgriGJ + edibleLivestockGJ + edibleFishGJ + edibleWildGJ;
+    }
+
+    /**
      * Computes the strictly <i>a posteriori</i> Garrett-Lotka emergent exergy-capital diagnostic index
      * for a cell buffer index.
      *

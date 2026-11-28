@@ -56,10 +56,10 @@ public class BioMolecularEpidemiologyEngine extends AbstractSimulationEngine {
         double humanPopulation = buffer.getHumanPopulation()[i];
         double pop = humanPopulation;
         if (pop <= 0.0) return;
-        double dtMonthlyRatio = Math.max(0.001, dtYears / (1.0 / 12.0));
-        double foodRequired = pop * 1.0 * dtMonthlyRatio;
-        double totalFoodAvailable = buffer.getFoodResource()[i] + buffer.getBiomassAgriculture()[i] * 0.70 * dtYears + buffer.getBiomassNatural()[i] * 0.05 * dtYears;
-        double immunoglobulinSynthesisRate = Math.clamp(totalFoodAvailable / Math.max(0.1, foodRequired), 0.05, 1.0);
+        double dtMonthlyRatio = Math.max(0.001, org.ether.society.model.PhysicalUnitsHelper.yearsToMonths(dtYears));
+        double annualMetabolicRequiredGJ = pop * org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ;
+        double totalFoodAvailableGJ = org.ether.society.core.dod.WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ(buffer, i);
+        double immunoglobulinSynthesisRate = Math.clamp(totalFoodAvailableGJ / Math.max(0.1, annualMetabolicRequiredGJ), 0.05, 1.0);
         double curLife = buffer.getLifespan()[i] > 0.0f ? buffer.getLifespan()[i] : 40.0;
         double capPerCapita = buffer.getResourceCapital()[i] / Math.max(1.0, pop);
         double waterSecurity = Math.clamp((buffer.getFreshwaterAquifer()[i] + buffer.getWaterResource()[i]) / Math.max(10.0, pop * 0.05), 0.1, 2.0);

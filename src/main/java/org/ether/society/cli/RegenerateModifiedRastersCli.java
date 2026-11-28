@@ -53,6 +53,14 @@ public final class RegenerateModifiedRastersCli {
 
     public static void main(String[] args) throws Exception {
         long t0 = System.currentTimeMillis();
+        boolean densityOnly = false;
+        if (args != null) {
+            for (String arg : args) {
+                if ("--density-only".equalsIgnoreCase(arg)) {
+                    densityOnly = true;
+                }
+            }
+        }
         Path candidateDir = EtherPaths.getEarthDir();
         if (!Files.isDirectory(candidateDir)) {
             candidateDir = Path.of("data/maps/ether/earth");
@@ -72,7 +80,56 @@ public final class RegenerateModifiedRastersCli {
             });
         }
         Collections.sort(epochYears);
-        logger.info("Found {} epoch directories in '{}'.", epochYears.size(), earthDir);
+        logger.info("Found {} epoch directories in '{}' (densityOnly={}).", epochYears.size(), earthDir, densityOnly);
+
+        if (densityOnly) {
+            HistoricalMapGenerator.loadElevationMask();
+            Hyde34GridReader.clearCache();
+            Map<Long, byte[]> holoceneDensityPngCache = new ConcurrentHashMap<>();
+            List<Long> distinctHydeEpochs = epochYears.stream()
+                    .filter(y -> y >= -10000L)
+                    .map(Hyde34GridReader::findNearestHydeYear)
+                    .distinct()
+                    .sorted(Comparator.naturalOrder())
+                    .toList();
+            logger.info("Regenerating 16-bit bijective physical HYDE 3.4 density rasters for {} distinct epochs...", distinctHydeEpochs.size());
+            distinctHydeEpochs.parallelStream().forEach(hydeYr -> {
+                BufferedImage dens = HistoricalMapGenerator.applyAltimetryCoastlineMask(Hyde34GridReader.loadForYear(hydeYr));
+                holoceneDensityPngCache.put(hydeYr, encodePngUnchecked(dens));
+            });
+
+            BufferedImage base10k = Hyde34GridReader.loadForYear(-10000L);
+            java.util.concurrent.atomic.AtomicInteger done = new java.util.concurrent.atomic.AtomicInteger(0);
+            epochYears.parallelStream().forEach(year -> {
+                try {
+                    Path dir = earthDir.resolve(String.valueOf(year));
+                    if (year >= -10000L) {
+                        long effHyde = Hyde34GridReader.findNearestHydeYear(year);
+                        Files.write(dir.resolve("earth_" + year + "_density.png"), holoceneDensityPngCache.get(effHyde));
+                    } else {
+                        BufferedImage paleoDens;
+                        if (year <= -70000L) {
+                            paleoDens = HistoricalMapGenerator.applyAltimetryCoastlineMask(
+                                    PaleolithicDensityGenerator.generatePrehistoricSyntheticDensityMap(year, "OUT_OF_AFRICA_100K"));
+                        } else {
+                            paleoDens = HistoricalMapGenerator.applyAltimetryCoastlineMask(
+                                    PaleolithicDensityGenerator.applyPrehistoricGeographicMask("LGM_REFUGIA", year, base10k));
+                        }
+                        Files.write(dir.resolve("earth_" + year + "_density.png"), encodePngUnchecked(paleoDens));
+                    }
+                    HistoricalEpochMetadataGenerator.generateOrUpdateEpochMetadataFiles(dir, year);
+                    int c = done.incrementAndGet();
+                    if (c % 32 == 0 || c == epochYears.size()) {
+                        logger.info("Updated bijective density raster + provenance for {}/{} epochs...", c, epochYears.size());
+                    }
+                } catch (Exception e) {
+                    logger.error("Failed regenerating density raster for epoch {}: {}", year, e.getMessage(), e);
+                }
+            });
+            long elapsedSec = Math.max(1L, (System.currentTimeMillis() - t0) / 1000L);
+            logger.info("Completed bijective 16-bit density raster regeneration across {} epochs in {}s.", done.get(), elapsedSec);
+            return;
+        }
 
         // 2. Regenerate ETOPO 2022 conservative elevation baseline once
         float[][] etopo = EtopoGeoTiffReader.loadEtopoGrid(HistoricalMapGenerator.WIDTH, HistoricalMapGenerator.HEIGHT);

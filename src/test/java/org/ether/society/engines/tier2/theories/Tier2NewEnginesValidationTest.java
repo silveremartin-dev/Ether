@@ -372,6 +372,18 @@ public class Tier2NewEnginesValidationTest {
 
         assertTrue(cell.getResourceCapital() < 100000.0,
                 "Caloric infrastructural deficit must trigger structural capital decay under Harris's law.");
+
+        // Regression test (Contract 4): an agrarian society whose foodResource was consumed just-in-time
+        // by DemographicKernel (foodResource = 0) but with abundant standing rice/grain (biomassAgriculture)
+        // must NOT suffer a false famine collapse.
+        H3Cell edoCell = new H3Cell(0x852834710000021L, 35.68, 139.69);
+        edoCell.setPopulation(1000);
+        edoCell.setResourceCapital(450000.0); // 450 kg/cap (Tokugawa Japan)
+        edoCell.setFoodResource(0.0);
+        edoCell.setBiomassAgriculture(450000.0); // 450 kg dry grain/cap (~4.7 GJ/cap edible)
+        runDoD(engine, List.of(edoCell), 1.0);
+        assertEquals(450000.0, edoCell.getResourceCapital(), 1e-3,
+                "Abundant standing agricultural grain must prevent false Harris famine decay when foodResource == 0.");
     }
 
     @Test

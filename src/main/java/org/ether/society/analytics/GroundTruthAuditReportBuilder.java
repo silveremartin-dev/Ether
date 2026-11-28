@@ -423,7 +423,8 @@ final class GroundTruthAuditReportBuilder {
                                                      Map<Integer, SimulationRunRecord.MetricSnapshot> timeSeries,
                                                      HistoricalValidationKernel.InterpolationMethod method) {
         if (run != null && run.getParameterMatrix() != null) {
-            String planet = run.getParameterMatrix().get("Préréglage Planétaire");
+            String planet = run.getParameterMatrix().get("Planet Preset");
+            if (planet == null) planet = run.getParameterMatrix().get("Préréglage Planétaire");
             if (planet == null) planet = run.getParameterMatrix().get("Planet");
             if (planet != null) {
                 String pLower = planet.toLowerCase(Locale.ROOT);

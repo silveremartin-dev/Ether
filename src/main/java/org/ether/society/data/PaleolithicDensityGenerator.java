@@ -41,8 +41,8 @@ public final class PaleolithicDensityGenerator {
                 double lon = -180.0 + (x + 0.5) * 360.0 / w;
                 double weight = HistoricalMapGenerator.getHomininOccupancyWeight(lon, lat, year);
                 if (weight > 0.001 && HistoricalMapGenerator.isLand(lon, lat)) {
-                    double norm = H3RasterBinningCoordinator.sampleBufferedGrayNormalized(src, x, y);
-                    int u16 = (int) Math.clamp(Math.round(norm * weight * 65535.0), 0L, 65535L);
+                    double baseDensKm2 = Hyde34GridReader.samplePixelDensityKm2(src, x, y);
+                    int u16 = Hyde34GridReader.encodeDensityKm2ToU16(baseDensKm2 * weight);
                     data[idx++] = (short) (u16 & 0xFFFF);
                 } else {
                     data[idx++] = 0; // Pure black for uninhabited regions & oceans
@@ -77,13 +77,8 @@ public final class PaleolithicDensityGenerator {
 
                 double dens = PaleolithicEpochDensityHelper.computeDensity(lng, lat, year);
                 dens *= weight;
-                if (dens > 0.0005) {
-                    double logNorm = Math.clamp(Math.log1p(2.5 * dens) / Math.log1p(2.5 * 35.0), 0.0, 1.0); // reference 35.0 hab/km2
-                    int u16 = (int) Math.clamp(Math.round(((12.0 + logNorm * 243.0) / 255.0) * 65535.0), 3084L, 65535L);
-                    data[idx++] = (short) (u16 & 0xFFFF);
-                } else {
-                    data[idx++] = 0;
-                }
+                int u16 = Hyde34GridReader.encodeDensityKm2ToU16(dens);
+                data[idx++] = (short) (u16 & 0xFFFF);
             }
         }
         return img;

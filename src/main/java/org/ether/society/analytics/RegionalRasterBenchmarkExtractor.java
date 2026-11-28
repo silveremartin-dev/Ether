@@ -213,36 +213,38 @@ public final class RegionalRasterBenchmarkExtractor {
         if (anchorSeries == null) {
             NavigableMap<Integer, Double> built = new TreeMap<>();
             if ("worldPopulation".equals(benchKey) || "population".equals(benchKey)) {
-                // Primary source: Ether precomputed epoch density rasters (data/maps/ether/earth/<year>/density_map.png)
-                // ensuring exact projection and luminance consistency with PreComputePhase regional initialization.
-                java.io.File earthRoot = new java.io.File("data/maps/ether/earth");
-                java.io.File[] epochDirs = earthRoot.exists() ? earthRoot.listFiles(java.io.File::isDirectory) : null;
-                if (epochDirs != null) {
-                    for (java.io.File epDir : epochDirs) {
-                        int epYear;
-                        try {
-                            epYear = Integer.parseInt(epDir.getName());
-                        } catch (NumberFormatException ignored) {
-                            continue;
-                        }
-                        java.io.File densFile = new java.io.File(epDir, "earth_" + epYear + "_density.png");
-                        if (!densFile.exists()) {
-                            densFile = new java.io.File(epDir, "density_map.png");
-                        }
-                        if (!densFile.exists()) continue;
-                        double regHeadcount = extractRegionalPopulationFromPrecomputedPng(densFile, epYear, minLat, maxLat, minLng, maxLng);
-                        if (regHeadcount > 0.0) {
-                            built.put(epYear, "worldPopulation".equals(benchKey) ? (regHeadcount / 1_000_000.0) : regHeadcount);
+                // Primary source: authentic conserved HYDE 3.4 headcount grids (popc_*.asc in data/sources/hyde34),
+                // avoiding any visual/logarithmic transfer curve applied to PNG map previews.
+                for (int epoch : HYDE_ANCHOR_EPOCHS) {
+                    float[][] counts = Hyde34GridReader.readConservedPopulationCountsIfPresent(epoch);
+                    if (counts != null) {
+                        double headcount = sumConservedRegion(counts, minLat, maxLat, minLng, maxLng);
+                        if (Double.isFinite(headcount) && headcount >= 0.0) {
+                            built.put(epoch, "worldPopulation".equals(benchKey) ? (headcount / 1_000_000.0) : headcount);
                         }
                     }
                 }
-                // Secondary fallback: raw conserved HYDE 3.4 grids when precomputed PNGs are unavailable
+                // Secondary fallback: Ether precomputed epoch density rasters when raw HYDE 3.4 archives are absent
                 if (built.isEmpty()) {
-                    for (int epoch : HYDE_ANCHOR_EPOCHS) {
-                        float[][] counts = Hyde34GridReader.readConservedPopulationCountsIfPresent(epoch);
-                        if (counts != null) {
-                            double headcount = sumConservedRegion(counts, minLat, maxLat, minLng, maxLng);
-                            built.put(epoch, "worldPopulation".equals(benchKey) ? (headcount / 1_000_000.0) : headcount);
+                    java.io.File earthRoot = new java.io.File("data/maps/ether/earth");
+                    java.io.File[] epochDirs = earthRoot.exists() ? earthRoot.listFiles(java.io.File::isDirectory) : null;
+                    if (epochDirs != null) {
+                        for (java.io.File epDir : epochDirs) {
+                            int epYear;
+                            try {
+                                epYear = Integer.parseInt(epDir.getName());
+                            } catch (NumberFormatException ignored) {
+                                continue;
+                            }
+                            java.io.File densFile = new java.io.File(epDir, "earth_" + epYear + "_density.png");
+                            if (!densFile.exists()) {
+                                densFile = new java.io.File(epDir, "density_map.png");
+                            }
+                            if (!densFile.exists()) continue;
+                            double regHeadcount = extractRegionalPopulationFromPrecomputedPng(densFile, epYear, minLat, maxLat, minLng, maxLng);
+                            if (regHeadcount > 0.0) {
+                                built.put(epYear, "worldPopulation".equals(benchKey) ? (regHeadcount / 1_000_000.0) : regHeadcount);
+                            }
                         }
                     }
                 }
@@ -313,7 +315,7 @@ public final class RegionalRasterBenchmarkExtractor {
                 double pxAreaKm2 = ConservativeRasterResampler.sphericalPixelAreaKm2(y, w, h);
                 boolean inY = (y >= yMin && y <= yMax);
                 for (int x = 0; x < w; x++) {
-                    double rho = org.ether.society.data.H3RasterBinningCoordinator.sampleBufferedGrayNormalized(img, x, y);
+                    double rho = Hyde34GridReader.samplePixelDensityKm2(img, x, y);
                     if (rho <= 0.0) continue;
                     double weight = rho * pxAreaKm2;
                     globalWeight += weight;

@@ -199,11 +199,13 @@ public final class H3RasterAggregator {
                     out[i] = returnMean ? (sumW[i] / sumArea[i]) : sumW[i];
                 } else if (c != null && c.getLatitude() != null && c.getLongitude() != null) {
                     double meanRho = evaluateScalarCubature(buf, c.getLatitude(), c.getLongitude(), topo.h3Res(),
-                            H3RasterAggregator::argbToGrayNorm);
+                            H3RasterBinningCoordinator::argbToDensityKm2);
                     if (returnMean) {
                         out[i] = meanRho;
                     } else {
-                        double areaKm2 = c.getEffectiveSurfaceAreaKm2() > 0 ? c.getEffectiveSurfaceAreaKm2() : 1770.49;
+                        double areaKm2 = c.getCellAreaKm2() > 0.0
+                                ? c.getCellAreaKm2()
+                                : org.ether.society.model.SpatialSurfaceHelper.CANONICAL_EARTH_RES4_AREA_KM2;
                         out[i] = meanRho * areaKm2;
                     }
                 }
@@ -211,17 +213,19 @@ public final class H3RasterAggregator {
             return out;
         }
 
-        // Fine resolution / synthetic grid fallback: 7-point bilinear cubature
+        // Fine resolution / synthetic grid fallback: 7-point bilinear cubature over 2D planar spherical footprint
         int res = Math.max(0, Math.min(10, topo.h3Res() >= 0 ? topo.h3Res() : 4));
         for (int i = 0; i < cells.size(); i++) {
             H3Cell c = cells.get(i);
             if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
             double meanRho = evaluateScalarCubature(buf, c.getLatitude(), c.getLongitude(), res,
-                    H3RasterAggregator::argbToGrayNorm);
+                    H3RasterBinningCoordinator::argbToDensityKm2);
             if (returnMean) {
                 out[i] = meanRho;
             } else {
-                double areaKm2 = c.getEffectiveSurfaceAreaKm2() > 0 ? c.getEffectiveSurfaceAreaKm2() : 1770.49;
+                double areaKm2 = c.getCellAreaKm2() > 0.0
+                        ? c.getCellAreaKm2()
+                        : org.ether.society.model.SpatialSurfaceHelper.CANONICAL_EARTH_RES4_AREA_KM2;
                 out[i] = meanRho * areaKm2;
             }
         }
@@ -251,7 +255,7 @@ public final class H3RasterAggregator {
             int rowOff = y * w;
             double rowSum = 0.0;
             for (int x = 0; x < w; x++) {
-                rowSum += argbToGrayNorm(px[rowOff + x]);
+                rowSum += H3RasterBinningCoordinator.argbToDensityKm2(px[rowOff + x]);
             }
             total += rowSum * pxArea;
         }

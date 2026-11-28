@@ -6,6 +6,7 @@
   "projection": "Equirectangular (Plate Carrée, EPSG:4326)",
   "encoding_standard": {
     "scalar_layers": "16-bit Grayscale PNG (TYPE_USHORT_GRAY, 65536 levels [0..65535])",
+    "density_bijective_law": "u16 = round(65535 * ln(1 + d / 0.1) / ln(1 + 25000.0 / 0.1)), d in inh/km^2 (zero pedestal)",
     "categorical_layers": "24-bit RGB Color PNG (TYPE_INT_RGB)"
   },
   "overview": {
@@ -46,8 +47,11 @@
     "density": {
       "filename": "earth_-45000_density.png",
       "category": "demography",
+      "unit": "inhabitants/km^2",
+      "d0_scale_km2": 0.1,
+      "d_ref_max_km2": 25000.0,
       "data_sources": ["HYDE 3.4 History Database of the Global Environment", "Seshat Global History Databank"],
-      "reconstitution_rationale": "Empirical demographic density field."
+      "reconstitution_rationale": "Empirical demographic density field encoded with universal bijective 16-bit log1p physical scale (zero pedestal)."
     },
     "sovereignty": {
       "filename": "earth_-45000_sovereignty.png",
