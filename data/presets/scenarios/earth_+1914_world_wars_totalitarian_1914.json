@@ -70,7 +70,7 @@
     "NavalHydrodynamicsFreightEngine" : true,
     "NordhausDiceHybridEngine" : false,
     "NordhausDicePureEngine" : false,
-    "NuclearSafetyRadiotoxicityEngine" : true,
+    "NuclearSafetyRadiotoxicityEngine" : false,
     "NuclearWarfareClimateEngine" : false,
     "OstromCommonsPureEngine" : false,
     "PhysicalLeontiefInputOutputEngine" : true,

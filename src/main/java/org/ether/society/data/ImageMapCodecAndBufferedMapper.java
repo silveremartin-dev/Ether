@@ -234,29 +234,29 @@ final class ImageMapCodecAndBufferedMapper {
      */
     static ImageMapLoader.ImageValidationResult validateMapImage(Image image) {
         if (image == null) {
-            return new ImageMapLoader.ImageValidationResult(false, "Image non fournie (null)", 0, 0, 0.0);
+            return new ImageMapLoader.ImageValidationResult(false, "Image not provided (null)", 0, 0, 0.0);
         }
         if (image.isError()) {
-            String err = image.getException() != null ? image.getException().getMessage() : "Format ou fichier illisible";
-            return new ImageMapLoader.ImageValidationResult(false, "Fichier corrompu ou illisible: " + err, 0, 0, 0.0);
+            String err = image.getException() != null ? image.getException().getMessage() : "Unreadable format or file";
+            return new ImageMapLoader.ImageValidationResult(false, "Corrupted or unreadable file: " + err, 0, 0, 0.0);
         }
         int w = (int) image.getWidth();
         int h = (int) image.getHeight();
         if (w <= 0 || h <= 0) {
-            return new ImageMapLoader.ImageValidationResult(false, "Dimensions d'image invalides (0x0)", w, h, 0.0);
+            return new ImageMapLoader.ImageValidationResult(false, "Invalid image dimensions (0x0)", w, h, 0.0);
         }
         PixelReader reader = image.getPixelReader();
         if (reader == null) {
-            return new ImageMapLoader.ImageValidationResult(false, "Impossible de lire la matrice de pixels (PixelReader null)", w, h, 0.0);
+            return new ImageMapLoader.ImageValidationResult(false, "Unable to read pixel matrix (null PixelReader)", w, h, 0.0);
         }
         try {
             reader.getColor(0, 0);
             reader.getColor(w / 2, h / 2);
             reader.getColor(w - 1, h - 1);
         } catch (Exception ex) {
-            return new ImageMapLoader.ImageValidationResult(false, "Échec de lecture des pixels raster: " + ex.getMessage(), w, h, 0.0);
+            return new ImageMapLoader.ImageValidationResult(false, "Failed to read raster pixels: " + ex.getMessage(), w, h, 0.0);
         }
         double ratio = (double) w / (double) h;
-        return new ImageMapLoader.ImageValidationResult(true, String.format("Valide (%dx%d, ratio %.2f)", w, h, ratio), w, h, ratio);
+        return new ImageMapLoader.ImageValidationResult(true, String.format("Valid (%dx%d, ratio %.2f)", w, h, ratio), w, h, ratio);
     }
 }

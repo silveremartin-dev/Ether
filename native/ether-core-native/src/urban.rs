@@ -82,7 +82,8 @@ pub unsafe fn process_urban(world: &mut WorldBufferRaw, dt_years: f32) {
         let live_per_cap_t = if !livestock.is_empty() { (livestock[i] as f64 / p_f64).max(0.0) } else { 0.0 };
         let kpc_pos = capital_per_capita.max(0.0);
 
-        let wood_thermal_w = 212.0 * ((nat_val + wood_val + 50.0) / 50.0).tanh();
+        let wood_biomass_kg = (nat_val.max(0.0) + wood_val.max(0.0)) * 1000.0;
+        let wood_thermal_w = 212.0 * ((wood_biomass_kg + 50.0) / 50.0).tanh();
         let draft_animal_w = 65.0 * (live_per_cap_t / 0.25).tanh() * sigmoid(kpc_pos, 25.0, 12.0);
         let draft_tool_w = 25.0 * (softplus(kpc_pos - 80.0, 0.05) / 180.0).tanh();
         let explicit_wind_solar_w = if !e_wind.is_empty() && !e_solar.is_empty() {

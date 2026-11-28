@@ -353,9 +353,9 @@ public final class CliodynamicFormulasRegistry {
     public static double computeGlobalTradeVolume(double phiExergy) {
         double tradeActivation = Math.tanh(Math.max(0.0, phiExergy - 0.94) * 4.0);
         double freightCost = Math.max(15.0, computeShippingFreightCostIndex(phiExergy));
-        // Single gravity-conductance power law inversely proportional to real maritime freight cost (1400 -> 100 in 1913)
-        double conductanceRatio = 1400.0 / freightCost;
-        double volume = 1.8 * Math.pow(conductanceRatio, 1.52) * Math.pow(Math.max(1.0, phiExergy), 1.4);
+        // Single gravity-conductance power law inversely proportional to real maritime freight cost (1418 -> ~75 in 1913 => Index = 100)
+        double conductanceRatio = 1418.0 / freightCost;
+        double volume = 1.25 * Math.pow(conductanceRatio, 1.15) * Math.pow(Math.max(1.0, phiExergy), 1.35);
         return Math.clamp(tradeActivation * volume, 0.0, 3500.0);
     }
 
@@ -401,9 +401,9 @@ public final class CliodynamicFormulasRegistry {
     public static double computeInformationTravelSpeed(double phiExergy) {
         // Pre-industrial overland/maritime courier relay velocity (Scheidel 2014 ORBIS: ~30-120 km/day)
         double courierSpeed = 28.0 + 92.0 * Math.tanh(Math.max(0.0, phiExergy - 0.92) * 1.8);
-        // Electrical telegraphy (Standage 1998: Phi ~ 1.72), wireless radio (Phi ~ 2.08), optical fiber (Phi ~ 2.42)
+        // Electrical telegraphy (Standage 1998: Phi ~ 1.72), wireless telegraphy/radio (Marconi 1901: Phi ~ 1.92), optical fiber (Phi ~ 2.42)
         double telegraphSpeed = 28_000.0 / (1.0 + Math.exp(-(phiExergy - 1.72) / 0.06));
-        double radioSpeed = 550_000.0 / (1.0 + Math.exp(-(phiExergy - 2.08) / 0.05));
+        double radioSpeed = 550_000.0 / (1.0 + Math.exp(-(phiExergy - 1.92) / 0.07));
         double opticalSpeed = 2.6e8 / (1.0 + Math.exp(-(phiExergy - 2.42) / 0.04));
         return Math.clamp(courierSpeed + telegraphSpeed + radioSpeed + opticalSpeed, 4.0, 3.0e8);
     }
@@ -435,9 +435,9 @@ public final class CliodynamicFormulasRegistry {
      * @return real freight cost index
      */
     public static double computeShippingFreightCostIndex(double phiExergy) {
-        double pNorm = Math.max(0.0, phiExergy - 1.02) / 0.22;
-        double cost = 20.0 + 1400.0 / (1.0 + Math.pow(pNorm, 3.0));
-        return Math.clamp(cost, 15.0, 1415.0);
+        double pNorm = Math.max(0.0, phiExergy - 1.02) / 0.30;
+        double cost = 18.0 + 1400.0 / (1.0 + Math.pow(pNorm, 3.0));
+        return Math.clamp(cost, 15.0, 1418.0);
     }
 
     public static double computeLifeExpectancy(double phiExergy, double food) {

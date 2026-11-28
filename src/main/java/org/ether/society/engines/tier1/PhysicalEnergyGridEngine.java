@@ -60,7 +60,8 @@ public class PhysicalEnergyGridEngine extends AbstractSimulationEngine {
         double somaticWatts = 135.0;
 
         // 2. Smooth domestic hearth & wood/biomass thermal flux (~212 W/cap in foraging & agrarian regimes, Smil 2017)
-        double woodBiomassKg = Math.max(cell.getBiomassNaturalOr(0.0), cell.getWoodResourceOr(0.0));
+        double woodBiomassKg = org.ether.society.model.PhysicalUnitsHelper.metricTonnesToKg(
+                Math.max(cell.getBiomassNaturalOr(0.0), cell.getWoodResourceOr(0.0)));
         double woodThermalWatts = 212.0 * Math.tanh((woodBiomassKg + 50.0) / 50.0);
 
         // 3. Smooth draft animal traction & plows (activates smoothly above kpc ~ 150 kg/cap, up to +25 W/cap)
@@ -115,7 +116,8 @@ public class PhysicalEnergyGridEngine extends AbstractSimulationEngine {
         double maxHarnessableWatts = 350.0 + 100000.0 * (1.0 - Math.exp(-capitalPerCapita / 5.0));
         double somaticWatts = 135.0;
 
-        double woodBiomassKg = Math.max(buffer.getBiomassNatural()[i], buffer.getWoodResource()[i]);
+        double woodBiomassKg = org.ether.society.model.PhysicalUnitsHelper.metricTonnesToKg(
+                Math.max(buffer.getBiomassNatural()[i], buffer.getWoodResource()[i]));
         double woodThermalWatts = 212.0 * Math.tanh((woodBiomassKg + 50.0) / 50.0);
 
         double animalTractionWatts = 25.0 * Math.tanh(SmoothMath.softplus(capitalPerCapita - 150.0, 0.05) / 250.0);

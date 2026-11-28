@@ -239,22 +239,54 @@ public class SimulationHistoryCoordinator {
         double avgLifespan = m.getOrDefault("lifeExpectancy", m.getOrDefault("lifeExpectancyAtBirth", (double) result.getLifeExpectancy()));
         double globalGini = m.getOrDefault("gini", m.getOrDefault("giniIndex", (double) result.getGini()));
         double avgTech = m.getOrDefault("avgTechLevel", m.getOrDefault("technology", result.getAvgTech()));
-        double energyCaptured = m.getOrDefault("energyCaptured", m.getOrDefault("primaryEnergy", result.getEnergyCapturedMw()));
-        double kardashevScale = m.getOrDefault("kardashevScale", 0.0);
-        double happinessIndex = m.getOrDefault("happiness", 0.0);
-        double conflictLevel = m.getOrDefault("conflict", m.getOrDefault("sociopoliticalInstability", 0.0));
-        double gdpTotal = m.getOrDefault("gdp", m.getOrDefault("grossWorldProduct", (double) result.getGdp()));
-        double divisionLabor = m.getOrDefault("divisionLabor", 0.0);
-        double systemComplexity = m.getOrDefault("systemComplexity", 0.0);
-        double collectiveMemory = m.getOrDefault("collectiveMemory", 0.0);
-        double carbonFootprint = m.getOrDefault("carbonFootprint", m.getOrDefault("co2Concentration", 0.0));
-        double collapseVulnerability = m.getOrDefault("collapseRisk", m.getOrDefault("collapseVulnerability", 0.0));
-        double tps = engine.getCurrentTPS();
-        double resourceDepletion = m.getOrDefault("resourceDepletion", 0.0);
-        double naturalBiomass = m.getOrDefault("biomassNatural", result.getNaturalBiomass());
+        // Strictly store captured power in MW (never mix EJ/yr primaryEnergy into energyCaptured)
+        double energyCaptured = m.getOrDefault("energyCaptured", result.getEnergyCapturedMw());
+        double safePop = Math.max(1.0, (double) totalPop);
+        double powerWattsPerCapita = Math.max(80.0, (energyCaptured * 1.0e6) / safePop);
+        double kardashevScale = m.containsKey("kardashevScale")
+                ? m.get("kardashevScale")
+                : CliodynamicFormulasRegistry.computeKardashevScale(powerWattsPerCapita, totalPop);
         double potableWater = m.getOrDefault("potableWater", result.getPotableWater());
+        double foodPerCapita = m.getOrDefault("foodPerCapita", totalFood / safePop);
+        double happinessIndex = m.containsKey("happiness")
+                ? m.get("happiness")
+                : Math.clamp(Math.min(60.0, foodPerCapita * 30.0) + Math.min(40.0, (potableWater / safePop) * 2.0), 10.0, 100.0);
+        double conflictLevel = m.getOrDefault("conflict", m.getOrDefault("sociopoliticalInstability", 0.0));
+        // Strictly store total GDP in International Dollars (scaling GWP billions by 1e9 when needed)
+        double gdpTotal = m.containsKey("gdp")
+                ? m.get("gdp")
+                : (m.containsKey("grossWorldProduct")
+                        ? m.get("grossWorldProduct") * 1.0e9
+                        : (result.getGdp() > 0.0f
+                                ? (double) result.getGdp()
+                                : CliodynamicFormulasRegistry.computeGrossWorldProduct(totalPop, avgTech) * 1.0e9));
+        double divisionLabor = m.containsKey("divisionLabor")
+                ? m.get("divisionLabor")
+                : Math.clamp(10.0 + 85.0 * org.ether.society.core.math.SmoothMath.sigmoid(avgTech, 1.35, 0.35), 0.0, 100.0);
+        double systemComplexity = m.containsKey("systemComplexity")
+                ? m.get("systemComplexity")
+                : Math.clamp(avgTech * 18.0, 0.0, 100.0);
+        double collectiveMemory = m.containsKey("collectiveMemory")
+                ? m.get("collectiveMemory")
+                : Math.max(0.0, totalPop * Math.max(0.0, avgTech - 0.90) * 0.01);
+        double fossilSharePct = m.getOrDefault("fossilSharePrimaryEnergy",
+                CliodynamicFormulasRegistry.computeFossilSharePrimaryEnergy(avgTech));
+        // Strictly store anthropogenic fossil carbon flux index (never overwrite with co2Concentration ppm)
+        double carbonFootprint = m.containsKey("carbonFootprint")
+                ? m.get("carbonFootprint")
+                : (energyCaptured * fossilSharePct) / 1000.0;
+        double psi = m.getOrDefault("politicalStressIndex", conflictLevel);
+        double asab = m.containsKey("asabiyyah")
+                ? m.get("asabiyyah")
+                : m.getOrDefault("asabiyyahSocialCohesion", 0.70) * 100.0;
+        double collapseVulnerability = m.containsKey("collapseRisk")
+                ? m.get("collapseRisk")
+                : m.getOrDefault("collapseVulnerability", Math.clamp(psi * 0.65 + (100.0 - asab) * 0.35, 0.0, 100.0));
+        double tps = engine.getCurrentTPS();
+        double resourceDepletion = m.getOrDefault("resourceDepletion", engine.getResourceDepletionRate());
+        double naturalBiomass = m.getOrDefault("biomassNatural", result.getNaturalBiomass());
         double fertilityRate = m.getOrDefault("fertilityRate", (double) result.getFertility());
-        int cityStates = m.containsKey("cityStates") ? (int) Math.round(m.get("cityStates")) : 0;
+        int cityStates = m.containsKey("cityStates") ? (int) Math.round(m.get("cityStates")) : engine.getCityStatesCount();
         double eliteOverproduction = m.getOrDefault("eliteOverproduction", m.getOrDefault("eliteOverproductionIndex", 0.0));
 
         history.addSnapshot(new HistorySnapshot(

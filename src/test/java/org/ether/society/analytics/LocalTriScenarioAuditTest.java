@@ -301,6 +301,60 @@ public class LocalTriScenarioAuditTest {
     }
 
     @Test
+    @DisplayName("Execute Cycle 3 High-Resolution Audit (Tokugawa Res 6, Mali Empire Res 6 Hold-Out, Industrial 1800 Global Res 4)")
+    public void testExecuteCycle3HighResolutionAudit() throws IOException {
+        System.out.println("================================================================================");
+        System.out.println("🚀 CYCLE 3 HIGH-RESOLUTION AUDIT (WINDOWED RES >= 6 & GLOBAL RES >= 4, >= 20 YRS, DT <= 30D)");
+        System.out.println("================================================================================");
+
+        List<ScenarioAuditResult> results = new ArrayList<>();
+
+        // 1. Windowed Regional Verification: Tokugawa Edo Sakoku (1639 -> 1660 CE, 21 years, H3 Res 6, dt = 30d monthly)
+        results.add(executeHighResScenarioRun(
+                "tokugawa_japan",
+                1639, 1660,
+                1500,
+                6,
+                30.0,
+                "data/maps/ether/earth/1660/earth_1660_density.png"
+        ));
+
+        // 2. New Windowed Out-of-Sample Hold-Out: Sub-Saharan Mali Empire (1324 -> 1345 CE, 21 years, H3 Res 6, dt = 30d monthly)
+        results.add(executeHighResScenarioRun(
+                "mali_empire",
+                1324, 1345,
+                1500,
+                6,
+                30.0,
+                "data/maps/ether/earth/1340/earth_1340_density.png"
+        ));
+
+        // 3. New Global Planetary Scenario: First Industrial Revolution (1800 -> 1820 CE, 20 years, H3 Res 4, dt = 30d monthly)
+        results.add(executeHighResScenarioRun(
+                "industrial_1800",
+                1800, 1820,
+                10000,
+                4,
+                30.0,
+                "data/maps/ether/earth/1820/earth_1820_density.png"
+        ));
+
+        assertEquals(3, results.size());
+        for (ScenarioAuditResult r : results) {
+            assertNotNull(r);
+            assertTrue(r.endYear() - r.startYear() >= 20, "Horizon must be >= 20 years for " + r.key());
+            assertTrue(r.snapshotsCount() > 0, "Scenario " + r.key() + " must produce telemetry snapshots");
+            assertTrue(r.endPopulation() > 0, "Scenario " + r.key() + " population must remain positive");
+            assertFalse(Double.isNaN(r.endPopulation()), "Population must not be NaN");
+            assertFalse(Double.isInfinite(r.endPopulation()), "Population must not be Infinite");
+            assertTrue(r.categoryAAnomalies().isEmpty(), "No Category A code bugs or crashes allowed in " + r.key());
+        }
+
+        generateTriScenarioAuditReport(results, "LOCAL_CYCLE3_HIGH_RES_AUDIT_REPORT.md",
+                "3 High-Resolution Multi-Decadal Scenarios (Tokugawa Japan 1639->1660 [Res 6], Mali Empire 1324->1345 [Res 6], Industrial Revolution 1800->1820 [Global Res 4])");
+    }
+
+    @Test
     @DisplayName("Execute Tri-Scenario Local Physical Audit Group 2 (Fertile Crescent, Late Antique Ice Age, Industrial Revolution)")
     public void testExecuteTriScenarioAuditGroup2() throws IOException {
         System.out.println("================================================================================");

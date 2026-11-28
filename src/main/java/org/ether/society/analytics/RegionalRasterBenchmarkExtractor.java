@@ -310,17 +310,12 @@ public final class RegionalRasterBenchmarkExtractor {
             double globalWeight = 0.0;
             double windowWeight = 0.0;
             for (int y = 0; y < h; y++) {
-                double latDeg = 90.0 - ((y + 0.5) / h) * 180.0;
-                double cosLat = Math.max(0.01, Math.cos(Math.toRadians(latDeg)));
+                double pxAreaKm2 = ConservativeRasterResampler.sphericalPixelAreaKm2(y, w, h);
                 boolean inY = (y >= yMin && y <= yMax);
                 for (int x = 0; x < w; x++) {
-                    int rgb = img.getRGB(x, y);
-                    int r = (rgb >> 16) & 0xFF;
-                    int g = (rgb >> 8) & 0xFF;
-                    int b = rgb & 0xFF;
-                    double lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0;
-                    if (lum <= 0.004) continue;
-                    double weight = lum * cosLat;
+                    double rho = org.ether.society.data.H3RasterBinningCoordinator.sampleBufferedGrayNormalized(img, x, y);
+                    if (rho <= 0.0) continue;
+                    double weight = rho * pxAreaKm2;
                     globalWeight += weight;
                     if (inY && x >= xMin && x <= xMax) {
                         windowWeight += weight;

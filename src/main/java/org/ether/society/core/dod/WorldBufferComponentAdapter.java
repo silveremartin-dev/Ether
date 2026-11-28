@@ -184,7 +184,9 @@ public final class WorldBufferComponentAdapter {
         double basalW = organismProfile.basalMetabolicPowerWatts();
         double kpc = Math.max(0.0, buffer.getResourceCapital()[index] / pop);
         // 1. Somatic basal + mechanical labor + domestic hearth/firewood thermal baseline (~348 W/cap in foraging bands, Smil 2017)
-        double woodThermalW = 212.0 * Math.tanh((buffer.getBiomassNatural()[index] + buffer.getWoodResource()[index] + 50.0) / 50.0);
+        double woodBiomassKg = org.ether.society.model.PhysicalUnitsHelper.metricTonnesToKg(
+                Math.max(0.0, buffer.getBiomassNatural()[index]) + Math.max(0.0, buffer.getWoodResource()[index]));
+        double woodThermalW = 212.0 * Math.tanh((woodBiomassKg + 50.0) / 50.0);
         // 2. Domesticated draft animal traction (oxen/horses/mules, Smil 2017: ~450 W peak, ~60 W continuous mean per animal) + plows
         double livestockPerCapTonnes = buffer.getBiomassLivestock() != null ? Math.max(0.0, buffer.getBiomassLivestock()[index] / pop) : 0.0;
         double draftAnimalW = 65.0 * Math.tanh(livestockPerCapTonnes / 0.25) * SmoothMath.sigmoid(kpc, 25.0, 12.0);

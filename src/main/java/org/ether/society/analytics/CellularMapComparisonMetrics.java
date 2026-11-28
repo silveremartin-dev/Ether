@@ -77,6 +77,20 @@ public final class CellularMapComparisonMetrics {
         int unionCount = 0;
 
         double[] obsMeans = org.ether.society.data.H3RasterAggregator.aggregateDensityMeans(groundTruthRaster, cells);
+        double maxObsVal = 0.0;
+        for (int idx = 0; idx < n; idx++) {
+            H3Cell c = cells.get(idx);
+            if (c == null || c.getLatitude() == null || c.getLongitude() == null) continue;
+            double lat = c.getLatitude();
+            double lng = c.getLongitude();
+            if (windowed && (lat < minLat || lat > maxLat || lng < minLng || lng > maxLng)) continue;
+            if (obsMeans[idx] > maxObsVal) {
+                maxObsVal = obsMeans[idx];
+            }
+        }
+        if (maxObsVal <= 1.0e-9) {
+            maxObsVal = 1.0;
+        }
 
         for (int idx = 0; idx < n; idx++) {
             H3Cell c = cells.get(idx);
@@ -91,7 +105,7 @@ public final class CellularMapComparisonMetrics {
             double simNorm = Math.clamp(Math.log10(1.0 + simDensity) / maxSimLog * 255.0, 0.0, 255.0);
 
             double obsVal = obsMeans[idx];
-            double obsNorm = Math.clamp(obsVal * 255.0, 0.0, 255.0);
+            double obsNorm = Math.clamp((obsVal / maxObsVal) * 255.0, 0.0, 255.0);
 
             boolean simActive = (pop > 0);
             boolean obsActive = (obsVal > 0.005);

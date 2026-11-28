@@ -50,13 +50,45 @@ public class EdoJapanIsolationEngine extends AbstractSimulationEngine {
     }
 
     @Override
+    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
+        if (!sakokuIsolationActive) return;
+        super.tick(buffer, dtYears, dtMonthly);
+    }
+
+    @Override
     public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
-        if (!sakokuIsolationActive || buffer == null) return;
+        if (buffer == null || dtYears <= 0.0) return;
         float pop = buffer.getHumanPopulation() != null ? buffer.getHumanPopulation()[i] : 0.0f;
-        if (pop > 0.001f && buffer.getPollutionLevel() != null) {
+        if (pop <= 0.001f) return;
+
+        // 1. Closed-loop urban & agrarian organic recycling (Shimoda / Edo night-soil economy)
+        if (buffer.getPollutionLevel() != null) {
             float pol = buffer.getPollutionLevel()[i];
             if (pol > 0.0f) {
                 acc.dPollutionLevel -= (float) Math.min(pol, 1.0 * dtYears);
+            }
+        }
+        if (buffer.getSoilOrganicCarbon() != null) {
+            double densityPerKm2 = buffer.getPopulationDensityPerKm2(i);
+            float soc = buffer.getSoilOrganicCarbon()[i];
+            if (soc < SOC_SATURATION) {
+                double dSoc = NIGHT_SOIL_SOC_COEFF * densityPerKm2 * (1.0 - soc / SOC_SATURATION) * dtYears;
+                acc.dSoilOrganicCarbon += (float) Math.max(0.0, dSoc);
+            }
+        }
+
+        // 2. Managed sugi/hinoki forestry regeneration bounded by primary standing biomass (Totman 1989)
+        if (buffer.getWoodResource() != null && buffer.getBiomassNatural() != null) {
+            float wood = buffer.getWoodResource()[i];
+            float natBio = buffer.getBiomassNatural()[i];
+            double woodCap = Math.max(wood, natBio * 0.35);
+            if (wood > 0.0f && wood < woodCap && natBio > 1.0f) {
+                double regrowth = PLANTATION_REGROWTH_RATE * wood * (1.0 - wood / woodCap) * dtYears;
+                double boundedTransfer = Math.min(natBio * 0.05 * dtYears, regrowth);
+                if (boundedTransfer > 0.0) {
+                    acc.dWoodResource += (float) boundedTransfer;
+                    acc.dBiomassNatural -= (float) boundedTransfer;
+                }
             }
         }
     }

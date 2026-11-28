@@ -5,7 +5,7 @@
 # Executes:
 #   1. All 9 Continuous Gapless Macro-Historical Epochs (EPOCH_1 .. EPOCH_9)
 #      in their predefined H3 Res 4 configuration -> saves/RUN-EPOCH_* &
-#      docs/SCIENTIFIC_CALIBRATION_REPORT.md
+#      target/reports/SCIENTIFIC_CALIBRATION_REPORT.md
 #   2. Flagship Future Earth Calibration (ETHER_CALIBRATION_2025_2200,
 #      2025 -> 2200 CE, H3 Res 4, dt = 30.0 days) -> saves/RUN-ETHER-* &
 #      data/variables/projections/ether_calibrated_projection_1d.json
@@ -55,6 +55,6 @@ if (-not $SkipFutureCalibration) {
 Write-Host "`n================================================================================" -ForegroundColor Green
 Write-Host "✅ 9 CONTINUOUS EPOCHS & FUTURE CALIBRATION COMPLETED SUCCESSFULLY" -ForegroundColor Green
 Write-Host "   - Epoch Saves       : saves/RUN-EPOCH_1_PALEOLITHIC_DISPERSAL .. RUN-EPOCH_9_INDUSTRIAL_ANTHROPOCENE" -ForegroundColor Green
-Write-Host "   - Calibration Report: docs/SCIENTIFIC_CALIBRATION_REPORT.md" -ForegroundColor Green
+Write-Host "   - Calibration Report: target/reports/SCIENTIFIC_CALIBRATION_REPORT.md" -ForegroundColor Green
 Write-Host "   - 1D Future Baseline: data/variables/projections/ether_calibrated_projection_1d.json" -ForegroundColor Green
 Write-Host "================================================================================" -ForegroundColor Green
