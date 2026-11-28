@@ -130,8 +130,19 @@ final class H3SimulationTelemetryCoordinator {
         engine.currentGini = engine.statisticsKernel.calculateGini(engine.worldBuffer.getResourceCapital());
         engine.currentGDP = engine.statisticsKernel.calculateGDP(
                 engine.worldBuffer.getResourceCapital(), engine.worldBuffer.getHumanPopulation());
-        float foodPerCapVal = (float) engine.getFoodPerCapita();
-        float foodSatVal = Math.min(1.0f, foodPerCapVal > 0 ? foodPerCapVal / 2.0f : 1.0f);
+        double popTotal = Math.max(0.0, (double) engine.getTotalPopulation());
+        double edibleCaloricTotal = 0.0;
+        float[] popArr = engine.worldBuffer.getHumanPopulation();
+        for (int i = 0; i < engine.worldBuffer.getCapacity(); i++) {
+            if (popArr != null && popArr[i] > 0.0f) {
+                edibleCaloricTotal += org.ether.society.core.dod.WorldBufferComponentAdapter
+                        .computeAvailableEdibleCaloricGJ(engine.worldBuffer, i);
+            }
+        }
+        double ediblePerCap = popTotal > 0.0 ? Math.max(engine.getFoodPerCapita(), edibleCaloricTotal / popTotal) : 0.0;
+        float foodSatVal = (float) Math.min(1.0, ediblePerCap > 0.0
+                ? ediblePerCap / org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ
+                : 1.0);
         engine.currentLifeExpectancy = engine.statisticsKernel.calculateLifeExpectancy(engine.worldBuffer, foodSatVal);
         if (engine.agentBuffer != null) {
             engine.currentFertility = engine.statisticsKernel.calculateFertilityRate(

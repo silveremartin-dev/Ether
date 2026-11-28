@@ -7,89 +7,62 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.core.engine.DerivativeAccumulator;
-
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
  * Krugman Core-Periphery &amp; New Economic Geography Engine (Paul Krugman, Nobel 1991).
  *
- * <p>Models endogenous spatial agglomeration, trade costs, and forward-backward linkages:</p>
- * <pre>
- *   Ω_i = Σ_j [ Y_j · exp(-τ · d_ij) ]
- *   dK_i/dt = Centripetal_Force(Ω_i) - Centrifugal_Congestion(K_i / Area_i)
- * </pre>
- * where:
+ * <p>Models endogenous spatial agglomeration, trade costs, and forward-backward linkages
+ * in strictly H3-resolution-invariant spatial density coordinates (\(\text{kg/km}^2\) and
+ * \(\text{hab/km}^2\), {@code AGENTS.md} Contract 3):</p>
  * <ul>
  *   <li><b>Centripetal Forces</b>: Increasing returns in manufacturing, labor market pooling, low transport costs.</li>
  *   <li><b>Centrifugal Forces</b>: Agricultural dispersion, land rents, transport congestion.</li>
- *   <li><b>Bifurcation Point</b>: Below critical transport friction $\tau &lt; \tau^*$, symmetrical distribution collapses into core-periphery clustering.</li>
  * </ul>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
  */
 public class KrugmanCorePeripheryEngine extends AbstractSimulationEngine {
+
+    private transient double meanCapitalDensityPerKm2 = 10.0;
+
+    /**
+     * Constructs the Krugman Core-Periphery NEG engine.
+     */
     public KrugmanCorePeripheryEngine() {
         super("KrugmanCorePeripheryEngine", "KrugmanCorePeripheryEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
-    private static final Logger logger = LoggerFactory.getLogger(KrugmanCorePeripheryEngine.class);
 
-    /**
-     * Get name.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getName() {
         return "Krugman Core-Periphery Spatial Agglomeration (NEG)";
     }
 
-    /**
-     * Get description.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getDescription() {
         return "Models endogenous industrial clustering, forward/backward linkages, and bifurcation from dispersed to core-periphery geography.";
     }
 
-    /**
-     * Get equations tooltip.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getEquationsTooltip() {
         return """
                [Krugman New Economic Geography (JPE 1991)]
                • Market Potential:      Ω_i = Σ_j [ Income_j · exp(-τ · dist_ij) ]
-               • Agglomeration Factor:  A_i = σ(2.0 · (K_i / K_mean - 1)) · (Access_i / (1 + Access_i))
+               • Agglomeration Factor:  A_i = σ(2.0 · (k_area,i / k_area,mean - 1)) · (Access_i / (1 + Access_i))
                • Friction Reduction:    Δμ = -2% · A_i · Δt
                • Bifurcation Threshold: Symmetrical distribution destabilizes when τ falls below critical value.
-               Units: Ω [potentiel de marché sans dimension], τ [coefficient de friction transport km^-1]
+               Units: k_area [kg/km^2], Access [dimensionless], τ [km^-1]
                Ref: P. Krugman (1991) "Increasing Returns and Economic Geography", Journal of Political Economy
                """;
     }
 
-    /**
-     * Get category.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getCategory() {
         return "Tier 2: Spatial Economics";
     }
-
-    private transient double meanCapital = 10.0;
 
     @Override
     public boolean supportsCellularDerivatives() {
@@ -98,13 +71,20 @@ public class KrugmanCorePeripheryEngine extends AbstractSimulationEngine {
 
     @Override
     public void prepareTick(WorldBuffer buffer, double dtYears) {
-        meanCapital = 10.0;
-        if (buffer == null || buffer.getResourceCapital() == null) return;
+        meanCapitalDensityPerKm2 = 10.0;
+        if (buffer == null || buffer.getResourceCapital() == null || buffer.getHumanPopulation() == null) return;
         float[] capArr = buffer.getResourceCapital();
-        double sum = 0.0;
+        float[] popArr = buffer.getHumanPopulation();
+        double capSum = 0.0;
+        double areaSumKm2 = 0.0;
         int n = buffer.getCapacity();
-        for (int i = 0; i < n; i++) sum += capArr[i];
-        meanCapital = n > 0 ? Math.max(1.0, sum / n) : 10.0;
+        for (int i = 0; i < n; i++) {
+            if (popArr[i] > 1.0f && capArr[i] > 0.0f) {
+                capSum += capArr[i];
+                areaSumKm2 += Math.max(0.01, buffer.getCellAreaKm2(i));
+            }
+        }
+        meanCapitalDensityPerKm2 = areaSumKm2 > 0.0 ? Math.max(1.0, capSum / areaSumKm2) : 10.0;
     }
 
     @Override
@@ -114,17 +94,21 @@ public class KrugmanCorePeripheryEngine extends AbstractSimulationEngine {
         if (pop <= 1.0) return;
 
         double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0;
+        double areaKm2 = Math.max(0.01, buffer.getCellAreaKm2(i));
+        double popDensityKm2 = pop / areaKm2;
+        double capDensityKm2 = capital / areaKm2;
         double friction = buffer.getFluxPressure() != null ? Math.max(0.2, 1.0 + buffer.getFluxPressure()[i]) : 1.0;
 
-        double accessibilityIndex = (pop * 0.001) / friction;
-        double relCapital = capital / meanCapital;
+        // Resolution-invariant accessibility index (equivalent to pop * 0.001 at Res 4 ~ 1,770 km^2)
+        double accessibilityIndex = (popDensityKm2 * 1.77) / friction;
+        double relCapital = capDensityKm2 / meanCapitalDensityPerKm2;
         double capitalAdvantage = 1.0 / (1.0 + Math.exp(-2.0 * (relCapital - 1.0)));
         double accessAdvantage = accessibilityIndex / (1.0 + accessibilityIndex);
         double centripetalFactor = 2.0 * capitalAdvantage * accessAdvantage;
 
         acc.dFluxPressure -= (float) (0.02 * centripetalFactor * dtYears);
         double centrifugalCongestion = 0.01 * (relCapital / Math.max(1.0, accessibilityIndex));
-        double netAgglomerationRate = Math.clamp((0.015 * centripetalFactor - centrifugalCongestion) * dtYears, -0.05, 0.08);
+        double netAgglomerationRate = Math.clamp((0.015 * centripetalFactor - centrifugalCongestion) * dtYears, -0.05 * dtYears, 0.08 * dtYears);
         acc.dResourceCapital += (float) (capital * netAgglomerationRate);
     }
 }

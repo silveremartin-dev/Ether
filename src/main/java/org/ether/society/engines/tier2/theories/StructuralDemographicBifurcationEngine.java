@@ -7,37 +7,54 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.dod.WorldBufferComponentAdapter;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.model.Scenario;
 import org.ether.society.util.DeterministicPRNG;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Structural-Demographic Bifurcation &amp; Poisson Catastrophe Jump Engine.
  *
  * <p>Formalizes Peter Turchin's Secular Cycles and Jack Goldstone's Structural-Demographic Theory (SDT)
- * without resorting to ad-hoc individual agent minds. Continuously evaluates structural tension tensors
- * and triggers discrete Poisson jump transitions when structural stress crosses critical thresholds:</p>
- *
- * <ul>
- *   <li><b>Elite Overproduction Tensor</b>: $\text{EMP} = (N_{\text{elites}} / S_{\text{offices}}) \cdot \text{Gini}^2 \cdot \text{Factionalism}$</li>
- *   <li><b>Mass Mobilization Pressure</b>: $\text{MMP} = (w_0 / w_{\text{real}}) \cdot (P / K_{\text{food}})$</li>
- *   <li><b>State Fiscal Distress</b>: $\text{SF} = \text{Debt} / \text{FiscalCapacity}$</li>
- *   <li><b>Political Stress Index</b>: $\text{PSI} = \text{MMP} \cdot \text{EMP} \cdot \text{SF}$</li>
- *   <li><b>Poisson Catastrophe Jump Intensity</b>: $\lambda_{\text{crisis}} = \lambda_0 \cdot \exp(\kappa \cdot \max(0, \text{PSI} - \text{PSI}_{\text{crit}}))$</li>
- * </ul>
- *
- * <p>Upon crisis jump occurrence, the system executes structural dissipative resets:
- * wealth inequality collapse ($\Delta \text{Gini} &lt; 0$, Scheidel's Great Leveler),
- * capital destruction ($\Delta K &lt; 0$), and fiscal debt repudiation.</p>
+ * via cellular Poisson jump transitions when Political Stress Index (\(\text{PSI}\)) crosses critical
+ * thresholds, participating in {@code TypeBEnginePassRunner}'s non-diluting capital envelope
+ * ({@code AGENTS.md} §4.2).</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
  */
 public class StructuralDemographicBifurcationEngine extends AbstractSimulationEngine {
-    private static final Logger logger = LoggerFactory.getLogger(StructuralDemographicBifurcationEngine.class);
+
+    private final double psiThreshold;
+    private final double baseJumpIntensity;
+    private long baseSeed = 42L;
+    private long totalCrisesTriggered = 0;
+    private double meanPlanetaryPSI = 0.0;
+    private transient double tickPsiAccumulator = 0.0;
+    private transient int tickActiveCells = 0;
+
+    /**
+     * Constructs the SDT bifurcation engine with default threshold and jump hazard parameters.
+     */
+    public StructuralDemographicBifurcationEngine() {
+        this(5.0, 0.02, 42L);
+    }
+
+    /**
+     * Constructs the SDT bifurcation engine with custom parameters.
+     *
+     * @param psiThreshold      critical PSI threshold above which Poisson crisis hazard activates
+     * @param baseJumpIntensity baseline annual Poisson crisis rate (\(\text{yr}^{-1}\))
+     * @param baseSeed          deterministic scenario PRNG seed
+     */
+    public StructuralDemographicBifurcationEngine(double psiThreshold, double baseJumpIntensity, long baseSeed) {
+        super("StructuralDemographicBifurcationEngine", "StructuralDemographicBifurcationEngine", EngineTier.TIER_2_CLIODYNAMIC);
+        this.psiThreshold = Math.max(1.0, psiThreshold);
+        this.baseJumpIntensity = Math.max(1e-4, baseJumpIntensity);
+        this.baseSeed = baseSeed;
+    }
 
     @Override
     public String id() {
@@ -61,6 +78,61 @@ public class StructuralDemographicBifurcationEngine extends AbstractSimulationEn
     }
 
     @Override
+    public boolean supportsCellularDerivatives() {
+        return true;
+    }
+
+    @Override
+    public void prepareTick(WorldBuffer buffer, double dtYears) {
+        tickPsiAccumulator = 0.0;
+        tickActiveCells = 0;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || dtYears <= 0.0 || i < 0 || i >= buffer.getCapacity()) return;
+        float pop = buffer.getHumanPopulation()[i];
+        if (pop < 50.0f) return;
+
+        float capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 100.0f;
+        double availFoodGJ = WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ(buffer, i);
+        double density = buffer.getPopulationDensityPerKm2(i);
+        double foodPerCap = availFoodGJ / Math.max(1.0, pop);
+        double mmp = Math.clamp((1.5 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0), 0.2, 5.0);
+
+        float[] giniArr = buffer.getGiniIndex();
+        double gini = (giniArr != null && giniArr[i] > 0.0f) ? giniArr[i] : 0.35;
+        double emp = Math.clamp(Math.pow(Math.max(0.0, gini - 0.20) / 0.25, 2.0), 0.2, 5.0);
+
+        double kPerCap = capital / Math.max(1.0, pop);
+        double sf = Math.clamp(1.0 + 1.5 / (1.0 + Math.exp(-0.01 * (kPerCap - 500.0))), 0.5, 3.0);
+
+        double psi = mmp * emp * sf;
+        tickPsiAccumulator += psi;
+        tickActiveCells++;
+        meanPlanetaryPSI = tickPsiAccumulator / tickActiveCells;
+
+        if (psi > psiThreshold) {
+            double excessPsi = Math.min(10.0, psi - psiThreshold);
+            double hazardRate = baseJumpIntensity * Math.exp(0.4 * excessPsi);
+            double jumpProbability = 1.0 - Math.exp(-hazardRate * dtYears);
+
+            double prng = DeterministicPRNG.nextDouble(baseSeed, buffer.getSimulationTick(), i, 105L);
+            if (prng < jumpProbability) {
+                totalCrisesTriggered++;
+                double targetCap = Math.max(10.0, capital * 0.75);
+                acc.dResourceCapital += (float) (targetCap - capital);
+                if (giniArr != null) {
+                    double targetGini = Math.max(0.20, gini * 0.70);
+                    acc.dGiniIndex += (float) (targetGini - gini);
+                }
+                double targetPop = Math.max(20.0, pop * 0.85);
+                acc.dHumanPopulation += (float) (targetPop - pop);
+            }
+        }
+    }
+
+    @Override
     public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
         processBuffer(buffer, dtYears);
     }
@@ -69,166 +141,83 @@ public class StructuralDemographicBifurcationEngine extends AbstractSimulationEn
     public void reset() {
         totalCrisesTriggered = 0;
         meanPlanetaryPSI = 0.0;
+        tickPsiAccumulator = 0.0;
+        tickActiveCells = 0;
     }
 
+    /**
+     * Executes standalone buffer evaluation for unit verification suites.
+     *
+     * @param buffer     target world buffer
+     * @param deltaYears time step in Julian years
+     */
     public void processBuffer(WorldBuffer buffer, double deltaYears) {
-        if (buffer == null || deltaYears <= 0) return;
-        final long currentTickId = buffer.getSimulationTick();
-        float[] popArr = buffer.getHumanPopulation();
-        float[] capArr = buffer.getResourceCapital();
-        float[] foodArr = buffer.getFoodResource();
-        float[] giniArr = buffer.getGiniIndex();
-        if (popArr == null) return;
-
-        double sumPSI = 0.0;
-        int activeCount = 0;
+        if (buffer == null || deltaYears <= 0.0) return;
+        prepareTick(buffer, deltaYears);
+        DerivativeAccumulator acc = new DerivativeAccumulator();
         int count = buffer.getCapacity();
-
         for (int i = 0; i < count; i++) {
-            float pop = popArr[i];
-            if (pop < 50.0f) continue;
-            activeCount++;
-
-            float capital = capArr != null ? capArr[i] : 100.0f;
-            double availFoodGJ = org.ether.society.core.dod.WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ(buffer, i);
-
-            double density = buffer.getPopulationDensityPerKm2(i);
-            double foodPerCap = availFoodGJ / Math.max(1.0, pop);
-            double mmp = Math.clamp((1.5 / Math.max(0.2, foodPerCap)) * Math.tanh(density / 150.0), 0.2, 5.0);
-
-            double gini = (giniArr != null && giniArr[i] > 0.0f) ? giniArr[i] : 0.35;
-            double emp = Math.clamp(Math.pow(Math.max(0.0, gini - 0.20) / 0.25, 2.0), 0.2, 5.0);
-
-            double kPerCap = capital / Math.max(1.0, pop);
-            double sf = Math.clamp(1.0 + 1.5 / (1.0 + Math.exp(-0.05 * (kPerCap - 30.0))), 0.5, 3.0);
-
-            double psi = mmp * emp * sf;
-            sumPSI += psi;
-
-            if (psi > psiThreshold) {
-                double excessPsi = Math.min(10.0, psi - psiThreshold);
-                double hazardRate = baseJumpIntensity * Math.exp(0.4 * excessPsi);
-                double jumpProbability = 1.0 - Math.exp(-hazardRate * deltaYears);
-
-                double prng = DeterministicPRNG.nextDouble(baseSeed, currentTickId, i, 105L);
-                if (prng < jumpProbability) {
-                    totalCrisesTriggered++;
-                    if (capArr != null) {
-                        capArr[i] = (float) Math.max(10.0, capital * 0.75);
-                    }
-                    if (giniArr != null) {
-                        giniArr[i] = (float) Math.max(0.20, gini * 0.70);
-                    }
-                    popArr[i] = (float) Math.max(20.0, pop * 0.85);
-                }
+            acc.clear();
+            accumulateCellularDerivatives(buffer, i, deltaYears, deltaYears * 12.0, acc);
+            if (acc.hasNonZeroDerivatives()) {
+                AbstractSimulationEngine.applyAccumulatorToCell(buffer, i, acc);
             }
         }
-        meanPlanetaryPSI = activeCount > 0 ? sumPSI / activeCount : 0.0;
-    }
-
-    /** Internal state: psi threshold (double). */
-    private final double psiThreshold;
-    /** Internal state: base jump intensity (double). */
-    private final double baseJumpIntensity;
-    /** Internal state: scenario seed for deterministic PRNG. */
-    private long baseSeed = 42L;
-
-    /** Internal state: total crises triggered (long). */
-    private long totalCrisesTriggered = 0;
-    /** Internal state: mean planetary psi (double). */
-    private double meanPlanetaryPSI = 0.0;
-
-    /**
-     * Structural demographic bifurcation engine.
-     *
-     */
-    public StructuralDemographicBifurcationEngine() {
-        this(5.0, 0.02, 42L);
     }
 
     /**
-     * Structural demographic bifurcation engine.
+     * Sets the deterministic base PRNG seed.
      *
-     * @param psiThreshold the psi threshold parameter (double)
-     * @param baseJumpIntensity the base jump intensity parameter (double)
-     * @param baseSeed the scenario base seed parameter (long)
+     * @param seed scenario base seed
      */
-    public StructuralDemographicBifurcationEngine(double psiThreshold, double baseJumpIntensity, long baseSeed) {
-        super("StructuralDemographicBifurcationEngine", "StructuralDemographicBifurcationEngine", EngineTier.TIER_2_CLIODYNAMIC);
-        this.psiThreshold = Math.max(1.0, psiThreshold);
-        this.baseJumpIntensity = Math.max(1e-4, baseJumpIntensity);
-        this.baseSeed = baseSeed;
-    }
-
     public void setSeed(long seed) {
         this.baseSeed = seed;
     }
 
-    /**
-     * Get name.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getName() {
         return "Structural-Demographic Bifurcation & Crisis Jumps (SDT)";
     }
 
-    /**
-     * Get description.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getDescription() {
         return "Simulates structural secular instability cycles, elite overproduction tension, and discrete Poisson state collapse jumps.";
     }
 
-    /**
-     * Get equations tooltip.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getEquationsTooltip() {
         return """
                [Turchin-Goldstone Structural Demographic Bifurcation Model]
-               • Political Stress Index:  PSI = MMP Â· EMP Â· SF
-               • Mass Immiseration:       MMP = (Food_req / Food_avail) Â· (P / CarryingCapacity)
-               • Elite Overproduction:    EMP = (Capital / BaseCapital) Â· GiniÂ²
-               • State Fiscal Distress:   SF  = 1.0 + 1.5 / (1.0 + exp(-0.01 Â· (Capital - 500)))
-               • Poisson Jump Hazard:     Î»_crisis = Î»â‚€ Â· exp(Îº Â· max(0, PSI - PSI_crit))
-               • Crisis Dissipation:      Î”Gini = -30%, Î”Capital = -25%, Î”Mortality = +15%
+               • Political Stress Index:  PSI = MMP · EMP · SF
+               • Mass Immiseration:       MMP = (Food_req / Food_avail) · tanh(Density / 150)
+               • Elite Overproduction:    EMP = ((Gini - 0.20) / 0.25)^2
+               • State Fiscal Distress:   SF  = 1.0 + 1.5 / (1.0 + exp(-0.01 · (k_pc - 500)))
+               • Poisson Jump Hazard:     λ_crisis = λ_0 · exp(κ · max(0, PSI - PSI_crit))
+               • Crisis Dissipation:      ΔGini = -30%, ΔCapital = -25%, ΔMortality = +15%
                Ref: P. Turchin (2016) "Ages of Discord", W. Scheidel (2017) "The Great Leveler"
                """;
     }
 
-    /**
-     * Get category.
-     *
-     * @return the resulting computation or state reference
-     */
     @Override
     public String getCategory() {
         return "Tier 2: Structural Cliodynamics";
     }
 
     /**
-     * Get total crises triggered.
+     * Gets total crisis jumps triggered since last reset.
      *
-     * @return the resulting computation or state reference
+     * @return crisis count
      */
-    public long getTotalCrisesTriggered() { return totalCrisesTriggered; }
+    public long getTotalCrisesTriggered() {
+        return totalCrisesTriggered;
+    }
+
     /**
-     * Get mean planetary psi.
+     * Gets mean planetary Political Stress Index across active populated cells.
      *
-     * @return the resulting computation or state reference
+     * @return mean PSI
      */
-    public double getMeanPlanetaryPSI() { return meanPlanetaryPSI; }
-    /**
-     * Get psi threshold.
-     *
-     * @return the resulting computation or state reference
-     */
-    public double getPsiThreshold() { return psiThreshold; }
+    public double getMeanPlanetaryPSI() {
+        return meanPlanetaryPSI;
+    }
 }

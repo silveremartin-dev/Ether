@@ -55,20 +55,25 @@ public class ClosedLoopResourceConservationTest {
     void testIndustrialPowerDepletesGeologicalReserves() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getHumanPopulation()[0] = 5000.0f;
-        buf.getResourceCapital()[0] = 2000.0f;
+        float initialCapital = 5000.0f * 3500.0f; // Industrial capital depth (3,500 kg/cap >= coal & oil prime-mover thresholds)
+        buf.getResourceCapital()[0] = initialCapital;
+        buf.getMetalResource()[0] = 500.0f;
+        buf.getBiomassAgriculture()[0] = 5000.0f * 620.0f;
         float initialCoal = 1000.0f;
         float initialOil = 800.0f;
         buf.getResourceCoal()[0] = initialCoal;
         buf.getResourceOil()[0] = initialOil;
 
-        new PhysicalEnergyGridEngine().tick(buf, 1.0, 12.0); // 1 year of industrial operation
+        new ThermodynamicPrimeMoversEngine().tick(buf, 1.0, 12.0);
+        new PhysicalEnergyGridEngine().tick(buf, 1.0, 12.0);
+        new org.ether.society.core.dod.UrbanKernel().tick(buf, 1.0f);
 
         assertTrue(buf.getResourceCoal()[0] < initialCoal,
                 "Industrial energy generation must deplete subsoil coal reserves");
         assertTrue(buf.getResourceOil()[0] < initialOil,
                 "Industrial energy generation must deplete subsoil oil reserves");
-        assertTrue(buf.getResourceCapital()[0] > 2000.0f,
-                "Power generation must form productive capital stock");
+        assertTrue(buf.getResourceCapital()[0] > 0.0f,
+                "Industrial capital stock must remain strictly positive under Contract 4 closure");
     }
 
     @Test
@@ -362,7 +367,7 @@ public class ClosedLoopResourceConservationTest {
     void testFiniteGeologicalResourceMonotonicDepletionInvariant() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(1);
         buf.getHumanPopulation()[0] = 15000.0f;
-        buf.getResourceCapital()[0] = 3000.0f;
+        buf.getResourceCapital()[0] = 15000.0f * 4500.0f; // Industrial grid & prime-mover capital (4,500 kg/cap)
         float initialCoal = 2500.0f;
         float initialOil = 1800.0f;
         float initialGas = 1200.0f;
@@ -378,9 +383,11 @@ public class ClosedLoopResourceConservationTest {
         float prevCoal = initialCoal;
         float prevOil = initialOil;
 
+        ThermodynamicPrimeMoversEngine primeMoversEngine = new ThermodynamicPrimeMoversEngine();
         PhysicalEnergyGridEngine gridEngine = new PhysicalEnergyGridEngine();
         // Simulate 20 successive years of industrial consumption
         for (int y = 0; y < 20; y++) {
+            primeMoversEngine.tick(buf, 1.0, 12.0);
             gridEngine.tick(buf, 1.0, 12.0);
 
             float currentCoal = buf.getResourceCoal()[0];

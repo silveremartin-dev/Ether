@@ -223,7 +223,7 @@ public class SimulationPipeline {
                 if (states == null || Boolean.TRUE.equals(states.get("WarDiplomacyEngine"))) {
                     if (cells != null && !cells.isEmpty()) {
                         org.ether.society.engines.tier2.theories.WarDiplomacyEngine.processGeopoliticalConflicts(
-                                engine.getNations(), cells, wb, cachedH3ToSlot, activeScenario);
+                                engine.getNations(), cells, wb, cachedH3ToSlot, activeScenario, dtYears);
                     }
                 }
                 if (states == null || Boolean.TRUE.equals(states.get("SovereignTreasuryBondEngine"))) {

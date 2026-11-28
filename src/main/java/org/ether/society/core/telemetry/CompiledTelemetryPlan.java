@@ -183,6 +183,7 @@ public final class CompiledTelemetryPlan {
 
         double popSum = 0.0;
         double foodSum = 0.0;
+        double edibleCaloricSum = 0.0;
         double waterSum = 0.0;
         double bioNatSum = 0.0;
         double bioAgrSum = 0.0;
@@ -202,6 +203,7 @@ public final class CompiledTelemetryPlan {
         double cellAreaKm2 = org.ether.society.model.SpatialSurfaceHelper.resolveMeanCellAreaKm2(world);
 
         if (n > 0 && (needPopFoodWater || fertArr != null || lifeArr != null)) {
+            boolean needEdibleCaloric = needPopFoodWater || (inputMask & MASK_STAT_LIFE_EXP) != 0;
             for (int i = 0; i < n; i++) {
                 float p = (humanPopulation != null) ? humanPopulation[i] : 0.0f;
                 if (Float.isNaN(p) || p < 0.0f) p = 0.0f;
@@ -209,6 +211,10 @@ public final class CompiledTelemetryPlan {
                 if (p > 0.0f) {
                     popSum += p;
                     populatedCount++;
+                    if (needEdibleCaloric) {
+                        edibleCaloricSum += org.ether.society.core.dod.WorldBufferComponentAdapter
+                                .computeAvailableEdibleCaloricGJ(world, i);
+                    }
                     if (needEnergyCap) {
                         totalWatts += (double) p * world.computeCellPowerWattsPerCapita(i);
                     }
@@ -269,8 +275,11 @@ public final class CompiledTelemetryPlan {
         StatisticsKernel sk = statsKernel != null ? statsKernel : new StatisticsKernel();
         long totalPopLong = Math.round(popSum);
         double energyCapturedMw = totalWatts / 1.0e6;
-        double foodPerCapita = totalPopLong > 0 ? foodSum / popSum : 0.0;
-        double foodSat = (float) Math.min(1.0, foodPerCapita > 0 ? foodPerCapita / 2.0 : 1.0);
+        double effectiveFoodSum = Math.max(foodSum, edibleCaloricSum);
+        double foodPerCapita = totalPopLong > 0 ? effectiveFoodSum / popSum : 0.0;
+        double foodSat = (float) Math.min(1.0, foodPerCapita > 0.0
+                ? foodPerCapita / org.ether.society.model.PhysicalConstants.HUMAN_ANNUAL_METABOLIC_ENERGY_GJ
+                : 1.0);
 
         float gini = 0.0f;
         if ((inputMask & MASK_STAT_GINI) != 0 && capArr != null && humanPopulation != null) {

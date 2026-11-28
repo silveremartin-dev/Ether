@@ -180,7 +180,9 @@ public class EnvironmentalKernel {
             int res = (int) ((h3Indexes[0] >>> 52) & 0x0FL);
             if (res >= 0 && res <= 15) {
                 double cellAreaKm2 = org.ether.society.database.H3Cell.getAvgHexagonAreaKm2(res);
-                areaScale = (float) Math.clamp(cellAreaKm2 / 1770.49, 0.01, 20.0);
+                areaScale = (float) Math.clamp(
+                        cellAreaKm2 / org.ether.society.database.H3CellPhysicsAndStateHelper.DEFAULT_AREA_RES4_KM2,
+                        1.0e-5, 20.0);
             }
         }
 
@@ -234,7 +236,8 @@ public class EnvironmentalKernel {
                     fvcbFactor * moistureAridityRatio * fodderFactor * industrialBoost, 0.40, 2.0, 6.0);
 
             float arableLandCap = 0.08f + 0.92f * (float) Math.tanh(capPerCap / 80.0f);
-            float baseAgPotential = Math.clamp(npp * 85.0f * slopeRetention * frostFactor, 500.0f, 180000.0f);
+            // Biophysical crop calorie ceiling per Res-4 reference area (177,049 ha; Lieth 1975 Miami NPP & Smil 2008 harvest index)
+            float baseAgPotential = Math.clamp(npp * 1800.0f * slopeRetention * frostFactor, 500.0f, 3_600_000.0f);
             float maxAgPotential = baseAgPotential * areaScale * agroClimaticFactor * arableLandCap
                     * (1.0f + 0.20f * (float) Math.log1p(capPerCap / 50.0f));
             float agDemandPotential = humanPop * 6.5f;
@@ -254,7 +257,8 @@ public class EnvironmentalKernel {
                 double forestAffinity = SmoothMath.sigmoid(effectiveMoisture, 450.0, 166.67)
                         * SmoothMath.sigmoid(tempC, 2.0, 4.0);
                 float residenceYears = (float) (25.0 * forestAffinity + 4.0 * (1.0 - forestAffinity));
-                float analyticalCapacityTons = Math.max(10000.0f * areaScale, npp * 1770.49f * areaScale * residenceYears * 0.025f);
+                float refAreaKm2 = (float) org.ether.society.database.H3CellPhysicsAndStateHelper.DEFAULT_AREA_RES4_KM2;
+                float analyticalCapacityTons = Math.max(10000.0f * areaScale, npp * refAreaKm2 * areaScale * residenceYears * 0.025f);
                 float foragerDependence = 1.0f - (float) Math.tanh(capPerCap / 25.0f);
                 float minForagerBiomassTons = humanPop * 48.0f * foragerDependence;
                 float natCeiling = Math.max(bioNatArr[i], Math.max(analyticalCapacityTons, minForagerBiomassTons));

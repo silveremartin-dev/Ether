@@ -191,7 +191,7 @@ pub unsafe fn process_environmental(world: &mut WorldBufferRaw, dt_years: f32) {
         if first_h3 != 0 {
             let res = ((first_h3 >> 52) & 0x0F) as usize;
             if res <= 15 {
-                area_scale = ((H3_AVG_AREA_KM2[res] / 1770.49).clamp(0.01, 20.0)) as f32;
+                area_scale = ((H3_AVG_AREA_KM2[res] / 1770.49).clamp(1.0e-5, 20.0)) as f32;
             }
         }
     }
@@ -253,7 +253,7 @@ pub unsafe fn process_environmental(world: &mut WorldBufferRaw, dt_years: f32) {
         ) as f32;
 
         let arable_land_cap = 0.08 + 0.92 * (((cap_per_cap / 80.0) as f64).tanh() as f32);
-        let base_ag_potential = (npp * 85.0 * slope_retention * frost_factor).clamp(500.0, 180000.0);
+        let base_ag_potential = (npp * 1800.0 * slope_retention * frost_factor).clamp(500.0, 3_600_000.0);
         let max_ag_potential = base_ag_potential
             * area_scale
             * agro_climatic_factor

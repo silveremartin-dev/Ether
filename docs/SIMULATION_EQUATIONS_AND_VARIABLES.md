@@ -223,12 +223,14 @@ The numerical solver architecture partitions differential systems based on their
 * **Governing Equations**:
   $$f = 2\Omega \sin\phi, \quad \mathbf{v}_{\text{geostrophic}} = -\frac{1}{\rho_{\text{air}} f} \nabla P \times \hat{\mathbf{k}}$$
   $$\frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla)\mathbf{u} = -\frac{1}{\rho_{\text{air}}} \nabla P - f \hat{\mathbf{k}} \times \mathbf{u} - \kappa_{\text{drag}} \mathbf{u}$$
+  $$p_{\text{wind,meteo}}(\phi) = \frac{1}{2} \rho_{\text{air}} \|\mathbf{u}(\phi)\|^3 \;[\text{W/m}^2], \qquad E_{\text{wind},i} = \operatorname{wattsToGjPerYear}\!\left(\min\!\left(p_{\text{wind,meteo}} \cdot A_{\text{rotor}}(N_i, k_{\text{pc},i}),\; 1.25 \cdot A_{\text{cell},i}\right)\right) \;[\text{GJ/yr}]$$
 * **Parameters & Physical Units**:
   * $\Omega = 7.292115 \times 10^{-5}\text{ rad/s}$: Earth sidereal rotational angular velocity.
   * $f$: Coriolis parameter [$\text{s}^{-1}$].
   * $\rho_{\text{air}}$: Atmospheric density [$\text{kg/m}^3$] ($\approx 1.225\text{ kg/m}^3$ at sea level).
   * $P$: Atmospheric pressure field [$\text{Pa}$].
   * $\mathbf{u} = (u, v)$: Horizontal wind velocity vector [$\text{m/s}$], resolving trade winds ($[0^\circ, 30^\circ]$), westerlies ($[30^\circ, 60^\circ]$), and polar easterlies ($[60^\circ, 90^\circ]$).
+  * $E_{\text{wind},i}$: Captured anthropogenic wind exergy stored in `WorldBuffer.energyWind` [$\text{GJ/yr}$], strictly $0.0$ when $N_i \le 0$ or $k_{\text{pc},i} \le 0$ (`Contract 2`).
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 5. Greenhouse Radiative Forcing (`GreenhouseRadiativeEngine`)
@@ -791,9 +793,10 @@ The numerical solver architecture partitions differential systems based on their
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Kleidon, A. (2010). *Life, hierarchy, and the thermodynamic machinery of planet Earth*. Physics of Life Reviews, 7(4), 424-460; Kleidon, A. (2016). *Thermodynamic Foundations of the Earth System*. Cambridge University Press; Paltridge, G. W. (1975). *Q. J. R. Meteorol. Soc.*
 * **Governing Equations**:
-  $$\eta_{\text{carnot}} = \frac{T_s - T_e}{T_s} \approx 0.115, \qquad G_{\text{ke}} = \frac{1}{4} \eta_{\text{carnot}} \cdot I_{\text{net}} \approx 2.5\text{--}3.5\text{ W/m}^2$$
+  $$I_{\text{surf}}(\phi) = S_0 (1 - \alpha_{\text{p}}) \cdot \max(0.08, \cos\phi) \;[\text{W/m}^2], \qquad \eta_{\text{carnot}} = \frac{T_s - T_e}{T_s} \approx 0.115, \qquad G_{\text{ke}} = \frac{1}{4} \eta_{\text{carnot}} \cdot I_{\text{net}} \approx 2.5\text{--}3.5\text{ W/m}^2$$
   $$P_{\text{precip}} = E = \left(\frac{\Delta}{\Delta + \gamma}\right) \frac{R_n}{\lambda_v} \cdot 3.15576 \times 10^7\text{ s/yr}$$
 * **Parameters & Physical Units**:
+  * $I_{\text{surf}}(\phi)$: Direct astronomical surface solar irradiance [$\text{W/m}^2$], strictly decoupled from anthropogenic `WorldBuffer.energySolar` [$\text{GJ/yr}$].
   * $T_e = 255.0\text{ K}$: Planetary radiative emission temperature.
   * $\lambda_v = 2.45 \times 10^6\text{ J/kg}$: Latent heat of vaporization of water.
   * $\gamma = 0.66\text{ hPa/K}$: Psychrometric constant.
@@ -914,11 +917,11 @@ The numerical solver architecture partitions differential systems based on their
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Betz, A. (1926). *Wind-Energie und ihre Ausnutzung durch Windmühlen*. Vandenhoeck & Ruprecht; Shockley, W., & Queisser, H. J. (1961). *Detailed balance limit of efficiency of p-n junction solar cells*. Journal of Applied Physics, 32(3), 510-519.
 * **Governing Equations**:
-  $$P_{\text{wind, max}} = \frac{16}{27} \cdot \frac{1}{2} \rho_{\text{air}} A_{\text{rotor}} v_{\text{wind}}^3 \quad [\text{Watts}]$$
-  $$P_{\text{solar, max}} = S(\phi) \cdot \eta_{\text{SQ}} \cdot A_{\text{panel}}, \quad \eta_{\text{SQ}} \approx 33.7\%$$
+  $$P_{\text{wind, max}} = \min\!\left(\frac{16}{27} \cdot \frac{1}{2} \rho_{\text{air}} A_{\text{rotor}}(N_i, k_{\text{pc},i}) v_{\text{wind}}^3,\; 1.25 \cdot A_{\text{cell},i}\right) \quad [\text{Watts}], \qquad E_{\text{wind},i} = \operatorname{wattsToGjPerYear}(P_{\text{wind, max}}) \quad [\text{GJ/yr}]$$
+  $$P_{\text{solar, max}} = S(\phi) \cdot \eta_{\text{SQ}}(k_{\text{pc},i}) \cdot A_{\text{panel}}(N_i, k_{\text{pc},i}), \quad \eta_{\text{SQ}} \le 33.7\%, \qquad E_{\text{solar},i} = \operatorname{wattsToGjPerYear}(P_{\text{solar, max}}) \quad [\text{GJ/yr}]$$
 * **Parameters & Physical Units**:
-  * $16/27 \approx 59.3\%$: Betz aerodynamic extraction ceiling for open fluid turbines.
-  * $\eta_{\text{SQ}}$: Shockley-Queisser single-junction bandgap quantum limit.
+  * $16/27 \approx 59.3\%$: Betz aerodynamic extraction ceiling for open fluid turbines, macroscopically bounded at Kleidon's $1.25\,\text{W/m}^2$ atmospheric dissipation ceiling over $A_{\text{cell},i}$.
+  * $\eta_{\text{SQ}}$: Shockley-Queisser single-junction photovoltaic quantum limit, with $A_{\text{rotor}}, A_{\text{panel}} \equiv 0$ when $N_i \le 0$ or $k_{\text{pc},i} \le 0$ so uninhabited cells store $0.0\,\text{GJ/yr}$ (`Contract 2`).
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 40. Urban Thermodynamics & Heat Island (`UrbanThermodynamicsEngine`)
@@ -970,16 +973,13 @@ The numerical solver architecture partitions differential systems based on their
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Smil, V. (2017). *Energy and Civilization: A History*. MIT Press; Ayres, R. U., & Warr, B. (2009). *The Economic Growth Engine: How Energy and Work Drive Material Prosperity*. Edward Elgar.
 * **Governing Equations**:
-  $$P_{\text{total}} = P_{\text{somatic}} + P_{\text{draft}} + P_{\text{hydraulic}} + P_{\text{wind}} + P_{\text{steam}} + P_{\text{grid}} \quad [\text{Watts}]$$
-  $$P_{\text{somatic}} = N_i \cdot 100.0\text{ W}, \quad P_{\text{draft}} = \min(B_{\text{livestock}}, 2.0 N_i) \cdot 450.0 \cdot \sigma_{\text{yoke}}(k_{\text{pc}})$$
-  $$P_{\text{steam}} = \eta_{\text{carnot}}(T_{\text{steam}}, T_{\text{cold}}) \cdot \frac{\text{CoalExtraction} \cdot \text{LHV}_{\text{coal}}}{\Delta t} \cdot \sigma_{\text{boiler}}(k_{\text{steam}})$$
-  $$P_{\text{useful}} = \sum_m \eta_m \cdot P_m$$
+  $$P_{\text{total}} = P_{\text{somatic}} + P_{\text{hearth}} + P_{\text{draft}} + P_{\text{hydraulic}} + P_{\text{wind}} + P_{\text{steam}} + P_{\text{ice}} \quad [\text{Watts}]$$
+  $$P_{\text{somatic}} = N_i \cdot B_{\text{basal}}(M_b), \quad P_{\text{hearth}} = N_i \cdot 212.0 \tanh\!\left(\frac{M_{\text{wood,kg}} + 50}{50}\right), \quad P_{\text{draft}} = N_{\text{draft}} \cdot 450.0 \cdot \sigma_{\text{yoke}}(k_{\text{pc}})$$
+  $$W_{\text{steam}} = \phi_{\text{coal}}(k_{\text{pc}}) \cdot \dot{Q}_{\text{coal}} \cdot \eta_{\text{steam}}(k_{\text{pc}}), \qquad \Delta M_{\text{coal}} = -\frac{W_{\text{steam}} / \eta_{\text{steam}}}{\text{LHV}_{\text{coal}}} \Delta t \quad (\text{First/Second Law Carnot enthalpy debit})$$
 * **Parameters & Physical Units**:
-  * $P$: Mechanical, thermal, and electrical power generation [$\text{Watts}$].
-  * $P_{\text{useful}}$: Delivered useful physical work [$\text{Watts}$].
-  * $\sigma_{\text{yoke}}(k_{\text{pc}})$: Horse collar / heavy ard capital threshold ($k_{\text{pc}} \ge 80\text{ kg/cap}$).
-  * $\sigma_{\text{boiler}}(k_{\text{steam}})$: High-pressure metallurgy capital threshold ($k_{\text{pc}} \ge 1800\text{ kg/cap}$).
-  * $\eta_m$: Thermodynamic second-law conversion efficiency for prime mover $m$:
+  * $P$: Mechanical, thermal, and electrical power generation [$\text{Watts}$], stored in `WorldBuffer.energyFire` in [$\text{GJ/yr}$] via `PhysicalUnitsHelper.wattsToGjPerYear`.
+  * $\phi_{\text{coal}}(k_{\text{pc}}) = \tanh(\operatorname{softplus}(k_{\text{pc}} - 950, 0.02) / 1\,200)$: $C^\infty$ high-pressure boiler metallurgical capital gate ($k_{\text{pc}} \gtrsim 950\,\text{kg/cap}$ coal-steam; $k_{\text{pc}} \gtrsim 2\,800\,\text{kg/cap}$ internal combustion hydrocarbons).
+  * $\eta_m$: Thermodynamic second-law conversion efficiency for prime mover $m$ ($\dot{Q}_{\text{fuel}} = \dot{W}_{\text{shaft}} / \eta_m$, debiting $24\,\text{GJ/t}$ coal, $42\,\text{GJ/t}$ oil, $15\,\text{GJ/t}$ wood):
     * Human muscle labor: $\eta \approx 0.18$
     * Draft ox/horse: $\eta \approx 0.12$
     * Water/wind mill: $\eta \approx 0.35$
@@ -1117,13 +1117,12 @@ The numerical solver architecture partitions differential systems based on their
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
 * **Academic Literature Reference**: Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press; Turchin, P. (2016). *Ages of Discord*. Beresta Books; Goldstone, J. A. (1991). *Revolution and Rebellion in the Early Modern World*. University of California Press.
 * **Governing Equations**:
-  $$\Psi = \text{MMP} \cdot \text{EMP} \cdot \text{SFD}$$
-  $$\text{MMP} = \frac{w_0}{w} \frac{N}{K_{\text{carrying}}}, \quad \text{EMP} = \frac{E}{N} \frac{y_{\text{elite}}}{y_0}, \quad \text{SFD} = \frac{\text{Debt}}{\text{Revenue}}$$
+  $$E_{\text{cal},i} = F_{\text{granary},i} + 0.70\,B_{\text{agr},i} e_{\text{grain}} + 0.15\,B_{\text{liv},i} e_{\text{fauna}} + 0.25\,B_{\text{fish},i} e_{\text{marine}} + 0.005\,B_{\text{nat},i} e_{\text{flora}} \quad [\text{GJ}]$$
+  $$\Psi_i = \text{MMP}_i \cdot \text{EMP}_i \cdot \text{SFD}_i, \qquad \text{MMP}_i = \max\!\left(0.2,\; \frac{1.9}{\max(0.2, E_{\text{cal},i}/N_i)} \tanh\!\left(\frac{\rho_i}{150}\right)\right)$$
 * **Parameters & Physical Units**:
-  * $\Psi$: Political Stress Index [normalized on $[0, 100]$ in Ether].
-  * $\text{MMP}$: Mass Mobilization Potential driven by declining real wages and land scarcity.
-  * $\text{EMP}$: Elite Overproduction driven by wealth concentration and competition for fixed state offices.
-  * $\text{SFD}$: State Fiscal Distress driven by sovereign borrowing costs and tax evasion.
+  * $E_{\text{cal},i}$: Total available edible caloric stock in cell $i$ [$\text{GJ}$] (`WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ`, `Contract 2 & 4`), shared identically across `TurchinGoldstoneSDTEngine`, `StructuralDemographicBifurcationEngine` (cellular derivative envelope participant), `HarrisCulturalMaterialismEngine`, `GranovetterThresholdCascadeEngine`, `BioMolecularEpidemiologyEngine`, and `CompiledTelemetryPlan` (`foodSat`).
+  * $\Psi_i$: Political Stress Index driving continuous institutional erosion and Poisson bifurcation hazard $\lambda_{\text{crisis}} = \lambda_0 \exp(0.4 \max(0, \Psi_i - \Psi_{\text{crit}}))$.
+  * $\text{MMP}_i, \text{EMP}_i, \text{SFD}_i$: Mass Mobilization Potential, Elite Overproduction, and State Fiscal Distress multipliers.
 * **Computational Complexity**: $O(1)$ per polity.
 
 #### 52.1. Ibn Khaldun Asabiyyah Dynamics & Frontier Strife (`CliodynamicsEngine`)
@@ -1172,12 +1171,11 @@ The numerical solver architecture partitions differential systems based on their
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
 * **Academic Literature Reference**: Krugman, P. (1991). *Increasing returns and economic geography*. Journal of Political Economy, 99(3), 483-499; Fujita, M., Krugman, P., & Venables, A. J. (1999). *The Spatial Economy*. MIT Press.
 * **Governing Equations**:
-  $$\omega_i = \left( \sum_j Y_j T_{ij}^{1-\sigma} G_j^{\sigma-1} \right)^{1/\sigma}, \quad \frac{d \lambda_i}{dt} = \gamma_{\text{mig}} \cdot \left(\frac{\omega_i}{\bar{\omega}} - 1.0\right) \lambda_i$$
+  $$k_{\text{area},i} = \frac{K_i}{A_{\text{cell},i}} \;[\text{kg/km}^2], \qquad \rho_i = \frac{N_i}{A_{\text{cell},i}} \;[\text{hab/km}^2], \qquad \mathcal{A}_i = \frac{1.77\,\rho_i}{\mu_{\text{friction},i}}$$
+  $$\frac{dK_i}{dt} = K_i \cdot \operatorname{clamp}\!\left(0.015 \cdot 2\,\sigma\!\left(2\left(\frac{k_{\text{area},i}}{\bar{k}_{\text{area}}} - 1\right)\right)\frac{\mathcal{A}_i}{1 + \mathcal{A}_i} - 0.01\frac{k_{\text{area},i}/\bar{k}_{\text{area}}}{\max(1, \mathcal{A}_i)},\; -0.05,\; 0.08\right)$$
 * **Parameters & Physical Units**:
-  * $\omega_i$: Real wage index in region $i$.
-  * $\lambda_i$: Share of total industrial workforce residing in region $i$.
-  * $\sigma > 1$: Elasticity of substitution between manufactured varieties.
-  * $T_{ij} \ge 1$: Iceberg transport cost factor.
+  * $k_{\text{area},i}, \bar{k}_{\text{area}}$: Cellular and inhabited-domain mean physical capital areal density [$\text{kg/km}^2$], strictly invariant to H3 mesh resolution and ocean-cell bounding-box share (`Contract 3`).
+  * $\mathcal{A}_i$: Spatial market accessibility index normalized by local transit friction $\mu_{\text{friction},i}$.
 * **Computational Complexity**: $O(N \log N)$ across urban trading hubs.
 
 #### 57. Schelling-Axelrod Spatial Homophily & Segregation (`SchellingAxelrodSegregationEngine`)
@@ -1798,7 +1796,9 @@ The simulation state at $T_0$ is initialized from a coupled tensor stack followi
 2. **16-bit Continuous Intensity Grayscale Tensors (`TYPE_USHORT_GRAY`, $[0, 65535]$, 65,536 levels)**:
    - **Elevation & Bathymetry (`elevation.png`)**: $[-11\,000\text{ m}, +8\,848\text{ m}]$ with sea-level ($0\text{ m}$) anchored at normalized datum $0.478$ ($u_{16} = 31\,326$, vertical resolution $\approx 0.26\text{–}0.35\text{ m}$).
    - **Climate Scalars (`temperature.png`, `precipitation.png`, `seasonality.png`)**: Surface temperature ($[-50\,^\circ\text{C}, +50\,^\circ\text{C}]$, resolution $\approx 0.0015\,^\circ\text{C}$), annual precipitation ($[0, 4\,000\text{ mm/yr}]$, square-root encoded), and seasonal thermal amplitude ($[1, 61\,^\circ\text{C}]$).
-   - **Demographic Density (`density.png`)**: $\rho(\mathbf{x})$ encoded across 65,536 logarithmic grayscale levels from HYDE 3.4 conserved headcounts.
+   - **Demographic Density (`density.png`)**: Universal zero-pedestal bijective 16-bit logarithmic physical density law (`Hyde34GridReader`, `PaleolithicDensityGenerator`, `H3RasterBinningCoordinator`) conserving HYDE 3.4 headcounts across planar 2D H3 geodesic cell area $A_{\text{cell,2D}}$ (`SpatialSurfaceHelper`):
+     $$u_{16}(\rho) = \operatorname{round}\!\left(65\,535 \cdot \frac{\ln(1 + \rho / d_0)}{\ln(1 + D_{\text{ref}} / d_0)}\right), \qquad \rho(u_{16}) = d_0 \left[\left(1 + \frac{D_{\text{ref}}}{d_0}\right)^{u_{16} / 65\,535} - 1\right], \qquad N_{\text{cell}} = \bar{\rho}_{\text{cell}} \cdot A_{\text{cell,2D}}$$
+     with $d_0 = 0.1\,\text{hab/km}^2$, $D_{\text{ref}} = 25\,000\,\text{hab/km}^2$, and exact uninhabited identity $u_{16}(0) \equiv 0 \iff \rho(0) \equiv 0.0$.
    - **Tensor 4 (Materiality & Technologies)**: $\tau(\mathbf{x}) \in [0, 1]$ ($u_{16} / 65535$) lithic / metallurgical complexity.
    - **Tensor 6 (Institutional Complexity)**: $\mathcal{I}(\mathbf{x}) \in [0, 1]$ ($u_{16} / 65535$) legal codification and administrative depth (Seshat).
    - **Tensor 7 (Ecological Footprint & Degradation)**: $D(\mathbf{x}) \in [0, 1]$ ($u_{16} / 65535$) HYDE 3.4 agro-pastoral land-use strain, soil salinization, and deforestation.
@@ -1828,9 +1828,9 @@ with auto-identity diagonal $A(i \to i) \equiv 1.0$.
 
 #### 2. Dynamic Asymmetric Evolution ($t > t_0$)
 The square matrix $\mathbf{A}(t)$ serves strictly as the initial state ($t_0$) and is dynamically updated across simulation ticks:
-* **Warfare & Invasions (`WarDiplomacyEngine`)**:
-  Border skirmishes degrade affinities asymmetrically:
-  $$\Delta A(i_{\text{aggressor}} \to j_{\text{defender}}) = -(2.0 + 10.0 \cdot \mathcal{P}_{\text{escalate}})$$
+   * **Warfare & Invasions (`WarDiplomacyEngine`)**:
+  Geopolitically bounded to polities intersecting the active mesh (`minDistanceSq <= maxRadiusSq`), border skirmishes scale continuously with $\Delta t_{\text{yr}}$ and restrict physical demolition to the contested frontline cell while degrading affinities asymmetrically:
+  $$\Delta A(i_{\text{aggressor}} \to j_{\text{defender}}) = -(2.0 + 10.0 \cdot \mathcal{P}_{\text{escalate}}) \cdot \Delta t_{\text{yr}}$$
   $$\Delta A(j_{\text{defender}} \to i_{\text{aggressor}}) = 1.6 \cdot \Delta A(i_{\text{aggressor}} \to j_{\text{defender}}) \quad (\text{defensive grievance penalty})$$
 * **Peacetime Trade & Cultural Diffusion**:
   Peaceful borders and mutual commerce generate directed reconciliation:
@@ -2180,7 +2180,7 @@ In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) a
   * **Single-Responsibility Solow-Swan Base Capital (`UrbanKernel.java` & `urban.rs`) & Marginal Tier 2 Carnot-Lavoisier Closure (`TypeBEnginePassRunner.java`, `AGENTS.md` §19–§20)**: Phase 1 `UrbanKernel` (synchronized with `urban.rs`) is the sole owner of baseline Solow-Swan equilibrium and Tainter turnover ($\dot{k}_{\text{pc}} = \delta_0 k^*(p, B_{\text{agr}}, N) - \delta_{\text{eff}}(C) k_{\text{pc}}$, $\delta_0 = 0.04\text{ yr}^{-1}$) with Lavoisier raw-material debit. In Phase 2, for any active Tier 2 configuration (`engineCount >= 1`), `TypeBEnginePassRunner` combines overlapping theories via upper/lower envelopes ($\Delta K_{\text{env}}^+ = \max_e \Delta K_e^+$, $\Delta K_{\text{env}}^- = \min_e \Delta K_e^-$) and bounds marginal positive capital deepening by remaining net exergy surplus after deducting basal demand, Garrett maintenance, and Phase 1 replacement ($E_{\text{repl,P1}} = 0.04 K \cdot e_{\text{embodied}}$):
     $$\Delta K_{\text{Carnot}} = \frac{s_{\text{marg}}\cdot \max\!\left(0,\; E_{\text{cell}} - N E_{\text{basal}} - \lambda_{\text{Garrett}} K - 0.04 K e_{\text{embodied}}\right)\cdot \Delta t}{e_{\text{embodied}}}, \qquad e_{\text{embodied}} = 15\,\text{MJ/kg}, \; s_{\text{marg}} = 0.12$$
     $$\Delta K^+_{\text{phys}} = \min\!\left(\Delta K_{\text{env}}^+,\; \Delta K_{\text{Carnot}}\right) \quad (\text{land}), \qquad \Delta M_{\text{metal}} = 0.05\,\Delta K^+_{\text{t}}, \;\; \Delta M_{\text{timber}} = 0.07\,\Delta K^+_{\text{t}}, \;\; \Delta M_{\text{clay}} = 0.10\,\Delta K^+_{\text{t}}$$
-    while discrete catastrophic shocks in `EventPhysicalImpactExecutor` remain unconstrained ($\Delta S \ge 0$). Across all audited non-capital engines, upstream stocks are strictly debited: `ThermodynamicPrimeMoversEngine` and `JevonsParadoxEngine` debit fossil/timber fuels ($24\,\text{GJ/t}$ coal, $42\,\text{GJ/t}$ oil, $15\,\text{GJ/t}$ wood); `WienerCyberneticHomeostasisEngine`, `PolanyiFictitiousCommoditiesEngine`, and `DraftAnimalFodderAllocationEngine` debit `biomassAgriculture`, `biomassNatural`, and `biomassLivestock`; `KondratievSchumpeterLongWaveEngine` converts scrapped capital via `PhysicalUnitsHelper.kgToMetricTonnes`; and `AiryIsostasyCrustalRootEngine` runs at tectonic timescale ($10^{-6}\,\text{yr}^{-1}$).
+    while discrete catastrophic shocks in `EventPhysicalImpactExecutor` remain unconstrained ($\Delta S \ge 0$). Across `EnvironmentalKernel.java` and `native/ether-core-native/src/environmental.rs`, primary crop potential per Res-4 reference area ($1\,770.49\,\text{km}^2 = 177\,049\,\text{ha}$) is scaled as $B_{\text{ag,base}} = \operatorname{clamp}(1\,800\,\text{NPP}\cdot f_{\text{slope}}\cdot f_{\text{frost}},\; 500,\; 3.6 \times 10^6)\,\text{GJ}$ (`Lieth 1975`; `Smil 2008`, supporting wet-rice and alluvial yields up to $1.9\text{--}3.8\,\text{t/ha/yr}$ across all H3 resolutions). Across all audited non-capital engines, upstream stocks are strictly debited: `ThermodynamicPrimeMoversEngine` and `JevonsParadoxEngine` debit fossil/timber fuels ($24\,\text{GJ/t}$ coal, $42\,\text{GJ/t}$ oil, $15\,\text{GJ/t}$ wood via $\dot{Q}_{\text{fuel}} = \dot{W}_{\text{shaft}}/\eta_{\text{th}}$); `WienerCyberneticHomeostasisEngine`, `PolanyiFictitiousCommoditiesEngine`, and `DraftAnimalFodderAllocationEngine` debit `biomassAgriculture`, `biomassNatural`, and `biomassLivestock`; `KondratievSchumpeterLongWaveEngine` converts scrapped capital via `PhysicalUnitsHelper.kgToMetricTonnes`; and `AiryIsostasyCrustalRootEngine` runs at tectonic timescale ($10^{-6}\,\text{yr}^{-1}$).
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 33. Tier 2 Type B Engine Domain Validity Conditions & Default Scenario Activation (`AutoEpochScenarioHelper.java`)

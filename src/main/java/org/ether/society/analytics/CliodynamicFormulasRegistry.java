@@ -469,6 +469,8 @@ public final class CliodynamicFormulasRegistry {
      * @return synthetic emergent technology index in [0.1, 10.0]
      */
     public static double computeEmergentTechnologyLevel(double powerWattsPerCapita, double capitalPerCapita) {
-        return org.ether.society.database.H3CellPhysicsAndStateHelper.computeGarrettLotkaEmergentIndex(powerWattsPerCapita, capitalPerCapita, 80.0);
+        double basalW = org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS.basalMetabolicPowerWatts();
+        return org.ether.society.database.H3CellPhysicsAndStateHelper.computeGarrettLotkaEmergentIndex(
+                powerWattsPerCapita, capitalPerCapita, basalW);
     }
 }

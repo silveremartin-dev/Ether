@@ -151,13 +151,15 @@ public final class TelemetryEvaluationContext {
     }
 
     double powerWattsPerCapita() {
-        return popSum > 0.0 ? Math.max(80.0, (energyCapturedMw * 1.0e6) / popSum) : 80.0;
+        double basalW = org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS.basalMetabolicPowerWatts();
+        return popSum > 0.0 ? Math.max(basalW, (energyCapturedMw * 1.0e6) / popSum) : basalW;
     }
 
     double phiExergy() {
         if (cachedPhiExergy == null) {
+            double basalW = org.ether.society.model.OrganismBiophysicalProfile.HOMO_SAPIENS.basalMetabolicPowerWatts();
             cachedPhiExergy = H3CellPhysicsAndStateHelper.computeGarrettLotkaEmergentIndex(
-                    powerWattsPerCapita(), kpc(), 80.0);
+                    powerWattsPerCapita(), kpc(), basalW);
         }
         return cachedPhiExergy;
     }

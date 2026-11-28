@@ -133,9 +133,9 @@ public final class H3BufferAndEventCoordinator {
                     }
                 }
 
-                if (coreCell != null) {
+                double maxRadiusSq = ps.radiusDeg() * ps.radiusDeg();
+                if (coreCell != null && minDistanceSq <= maxRadiusSq) {
                     Polity polity = new Polity(ps.name(), ps.colorRgb(), coreCell);
-                    double maxRadiusSq = ps.radiusDeg() * ps.radiusDeg();
                     for (H3Cell c : cells) {
                         if (c == null || c.getOwner() != null || c.getElevationOr(0.0) < 0.0) continue;
                         double dLat = c.getLatitudeOr(0.0) - ps.coreLat();

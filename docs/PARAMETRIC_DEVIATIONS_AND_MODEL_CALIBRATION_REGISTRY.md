@@ -155,7 +155,7 @@ The foundational purpose of this registry is **epistemic transparency and algori
 * **Canonical Published Formulation**:
   * Planetary heat engine maximizing work dissipation: $G_{\text{ke}} = \frac{1}{4} \eta_{\text{carnot}} I_{\text{net}}$, $\eta_{\text{carnot}} = (T_s - T_e)/T_s$.
 * **Calibrated Ether Formulation**:
-  * Closed-form analytical evaluation of atmospheric kinetic wind power and equilibrium precipitation:
+  * Closed-form analytical evaluation of atmospheric kinetic wind power and equilibrium precipitation directly from astronomical latitudinal irradiance $I_{\text{surf}}(\phi) = S_0(1 - \alpha_{\text{p}})\max(0.08,\cos\phi)$ [$\text{W/m}^2$] (decoupled from anthropogenic `WorldBuffer.energySolar` [$\text{GJ/yr}$]):
     $$\eta_{\text{carnot}} = \frac{\max(0, T_{\text{surf, K}} - T_e)}{T_{\text{surf, K}}}, \qquad P_{\text{precip, eq}} = 1.26 \cdot \frac{\Delta}{\Delta + \gamma} \cdot \frac{R_{\text{net}}}{\lambda_v} \quad [\text{mm/year}]$$
 * **Parameters, Material Properties & Physical Units**:
   * $T_e = 255.0\text{ K}$: Planetary radiative equilibrium temperature ($\approx -18^\circ\text{C}$).
@@ -262,7 +262,8 @@ The foundational purpose of this registry is **epistemic transparency and algori
   $$\Phi_{\text{exergy}}(p, k_{\text{pc}}) = 0.85 + 0.50 \log_{10}\left(1.0 + \frac{k_{\text{active}}}{k_0}\right) + 0.70 \log_{10}\left(1.0 + \frac{\operatorname{softplus}(p - p_{\text{somatic}}, 5.0)}{p_0}\right)$$
 * **Parameters & Physical Units**:
   * $p$: Total mechanical, thermal, and electrical power per capita [$\text{W/capita}$].
-  * $p_{\text{somatic}} = 348.0\text{ W/capita}$: Basal human metabolic rate ($100\text{ W}$) plus minimal domestic hearth heating ($248\text{ W}$) (Smil 2017).
+  * $B_{\text{basal}}(65\,\text{kg}) = 4.24 \times 65^{3/4} \approx 97.0\,\text{W/capita}$: Kleiber basal endosomatic metabolic rate (`OrganismBiophysicalProfile.HOMO_SAPIENS.basalMetabolicPowerWatts()`), unified across cellular and DAG telemetry evaluators.
+  * $p_{\text{somatic}} = 348.0\text{ W/capita}$: Basal human metabolic rate ($97.0\text{ W}$), somatic work ($39.0\text{ W}$), plus domestic wood hearth heating ($212.0\text{ W}$) (Smil 2017).
   * $p_0 = 250.0\text{ W/capita}$: Characteristic scale of agrarian draft animal traction and water/wind milling.
   * $k_{\text{pc}} = K / N$: Total structural and mechanical physical capital stock per person [$\text{kg/capita}$].
   * $k_0 = 120.0\text{ kg/capita}$: Characteristic mass scale of traditional agrarian village infrastructure (tools, granaries, masonry) (Krausmann et al. 2017).
@@ -385,16 +386,14 @@ The foundational purpose of this registry is **epistemic transparency and algori
   * Canonical SDT multiplies dimensionless macro ratios:
     $$\Psi = \text{MMP} \cdot \text{EMP} \cdot \text{SFD} = \left(\frac{w_0}{w} \frac{N}{K}\right) \cdot \left(\frac{E}{N} \frac{y_e}{y_0}\right) \cdot \left(\frac{\text{Debt}}{\text{Rev}}\right)$$
 * **Calibrated Ether Formulation**:
-  $$\text{MMP}_i = \operatorname{clamp}\left(\frac{\text{Req}_{\text{food}}}{\max(0.1, \text{Food}_{\text{pc}, i})}, \; 0.5, \; 3.0\right)$$
-  $$\text{EMP}_i = 1.0 + 2.5 \cdot \text{Gini}_i \cdot \text{SurplusRatio}_i$$
-  $$\text{SFD}_i = \operatorname{clamp}\left(\frac{\text{SovereignDebt}_i}{\max(1.0, \text{PolityRevenue}_i)}, \; 0.0, \; 4.0\right)$$
-  $$\Psi_i = \sigma_{\text{state}}(N_{\text{state}}) \cdot \left( 25.0 \cdot \text{MMP}_i \cdot \text{EMP}_i \cdot (1.0 + 0.5 \cdot \text{SFD}_i) \right)$$
+  $$\text{MMP}_i = \max\!\left(0.2,\; \frac{1.9}{\max(0.2, E_{\text{cal},i} / N_i)} \cdot \tanh\!\left(\frac{\rho_i}{150.0}\right)\right)$$
+  $$\text{EMP}_i = \max\!\left(0.2,\; \left(\frac{\max(0.0, \text{Gini}_i - 0.25)}{0.20}\right)^2\right)$$
+  $$\text{SFD}_i = \max\!\left(0.2,\; 0.4 \cdot \frac{1.9}{\max(0.2, E_{\text{cal},i} / N_i)} \cdot \tanh\!\left(\frac{k_{\text{pc},i}}{800.0}\right)\right), \qquad \Psi_i = \text{MMP}_i \cdot \text{EMP}_i \cdot \text{SFD}_i$$
 * **Parameters & Physical Units**:
-  * $\Psi_i$: Political Stress Index normalized on $[0, 100]$ [index points].
-  * $\text{Food}_{\text{pc}, i}$: Caloric intake per person [$\text{kcal/capita/day}$].
-  * $\text{Req}_{\text{food}} = 2000.0\text{ kcal/capita/day}$: Subsistence nutritional requirement.
+  * $\Psi_i$: Cellular Structural-Demographic Political Stress Index [dimensionless].
+  * $E_{\text{cal},i} / N_i$: Total available edible caloric stock per person [$\text{GJ/(capita}\cdot\text{yr)}$] via `WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ` (`Contract 2 & 4`), normalized against subsistence benchmark $1.9\text{--}3.362\,\text{GJ/(capita}\cdot\text{yr)}$.
+  * $\rho_i = N_i / A_{\text{cell},i}$: Local geodesic population density [$\text{hab/km}^2$].
   * $\text{Gini}_i$: Local inequality coefficient [$0.0 - 1.0$].
-  * $\sigma_{\text{state}}$: Continuous state emergence sigmoid based on total polity population $N_{\text{state}}$.
 * **Justification for Deviation**:
   * Canonical SDT formulas produce unbounded dimensionless ratios when applied to local grid cells. The calibrated formulation maps SDT continuously onto the standard Seshat index scale $[0, 100]$:
     * Stable integrative empires: $\Psi \in [40, 55]$.

@@ -122,7 +122,28 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
             org.ether.society.core.dod.WorldBuffer wb,
             Map<Long, Integer> h3ToSlot,
             org.ether.society.model.Scenario scenario) {
-        if (nations == null || nations.size() < 2) return;
+        processGeopoliticalConflicts(nations, cells, wb, h3ToSlot, scenario, 1.0 / 12.0);
+    }
+
+    /**
+     * Executes geopolitical conflict pass across active nations with explicit Julian year time-step scaling.
+     *
+     * @param nations  list of active polities
+     * @param cells    list of all grid cells
+     * @param wb       live DOD world buffer (nullable)
+     * @param h3ToSlot mapping from H3 index to DOD slot (nullable)
+     * @param scenario active scenario configuration (nullable)
+     * @param dtYears  integration time step in Julian years
+     */
+    public static void processGeopoliticalConflicts(
+            List<Polity> nations,
+            List<H3Cell> cells,
+            org.ether.society.core.dod.WorldBuffer wb,
+            Map<Long, Integer> h3ToSlot,
+            org.ether.society.model.Scenario scenario,
+            double dtYears) {
+        if (nations == null || nations.size() < 2 || dtYears <= 0.0) return;
+        double dtClamped = Math.min(1.0, Math.max(1.0e-4, dtYears));
 
         // Precompute bounding boxes once per tick for all nations (O(N) total)
         Map<Polity, BoundingBox> bboxes = new HashMap<>();
@@ -178,15 +199,15 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
                     // Continuous escalation threshold (Bueno de Mesquita 1981): border skirmishes escalate only above positive casus belli margin
                     double escalationProbability = org.ether.society.core.math.SmoothMath.sigmoid(warDesire, 0.06, 0.12);
                     if (escalationProbability > 0.55) {
-                        resolveBorderBattle(aggressor, defender, contact, wb, h3ToSlot);
+                        resolveBorderBattle(aggressor, defender, contact, wb, h3ToSlot, dtClamped);
                         if (scenario != null) {
-                            // Border clash degrades canonical bilateral diplomatic affinity dynamically
-                            double affinityDrop = 2.0 + 10.0 * escalationProbability;
+                            // Border clash degrades canonical bilateral diplomatic affinity scaled by dtYears
+                            double affinityDrop = (2.0 + 10.0 * escalationProbability) * dtClamped;
                             scenario.adjustPairwiseAffinity(aggressor.getName(), defender.getName(), -affinityDrop);
                         }
                     } else if (scenario != null && warDesire < -0.05) {
-                        // Peacetime bilateral diplomatic reconciliation
-                        double affinityGain = 0.5 * Math.min(2.0, -warDesire);
+                        // Peacetime bilateral diplomatic reconciliation scaled by dtYears
+                        double affinityGain = 0.5 * Math.min(2.0, -warDesire) * dtClamped;
                         scenario.adjustPairwiseAffinity(aggressor.getName(), defender.getName(), affinityGain);
                     }
                 }
@@ -324,8 +345,9 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
             Polity defender,
             BorderContact contact,
             org.ether.society.core.dod.WorldBuffer wb,
-            Map<Long, Integer> h3ToSlot) {
-        if (contact == null) return;
+            Map<Long, Integer> h3ToSlot,
+            double dtYears) {
+        if (contact == null || dtYears <= 0.0) return;
         double borderFriction = contact.avgFriction();
 
         ForceProfile aggProfile = computeForceProfile(aggressor, wb, h3ToSlot);
@@ -359,26 +381,23 @@ public class WarDiplomacyEngine extends AbstractSimulationEngine {
         double aggressorPower = (aggressorForce * (0.5 + aggressor.getStateCapacity()) * aggArmamentFactor * aggLogisticsFactor * aggBullionFactor) / effectiveFriction;
         double defenderPower = defenderForce * (0.5 + defender.getStateCapacity()) * defArmamentFactor * defLogisticsFactor * defBullionFactor * crestDefenseBonus;
 
-        double aggCostFraction = Math.clamp(0.04 + (0.04 * (borderFriction / 4.0)) + (0.02 * Math.log1p(aggressorForce / 2000.0)), 0.04, 0.35);
-        double defCostFraction = Math.clamp(0.03 + (0.02 * (defenderForce / Math.max(1.0, aggressorForce + defenderForce))), 0.02, 0.20);
+        double aggCostFraction = Math.clamp(0.04 + (0.04 * (borderFriction / 4.0)) + (0.02 * Math.log1p(aggressorForce / 2000.0)), 0.04, 0.35) * dtYears;
+        double defCostFraction = Math.clamp(0.03 + (0.02 * (defenderForce / Math.max(1.0, aggressorForce + defenderForce))), 0.02, 0.20) * dtYears;
 
         aggressor.setTreasuryBullion(Math.max(0.0, aggressor.getTreasuryBullion() * (1.0 - aggCostFraction)));
         defender.setTreasuryBullion(Math.max(0.0, defender.getTreasuryBullion() * (1.0 - defCostFraction)));
 
-        for (H3Cell c : aggressor.getTerritory()) {
-            if (c == null) continue;
-            if (c.getResourceCapital() != null) c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.997));
-            Integer slot = (wb != null && h3ToSlot != null && c.getH3Index() != null) ? h3ToSlot.get(c.getH3Index()) : null;
-            if (slot != null && slot >= 0 && slot < wb.getCapacity()) {
-                wb.getResourceCapital()[slot] = Math.max(0.0f, wb.getResourceCapital()[slot] * 0.997f);
+        // Battlefield capital attrition applies strictly to the contested frontline cell (line 500+),
+        // while interior cities pay war costs via sovereign treasury bullion rather than physical demolition.
+        H3Cell frontline = contact.contestedCell();
+        if (frontline != null) {
+            double skirmishWear = 0.04 * dtYears;
+            if (frontline.getResourceCapital() != null) {
+                frontline.setResourceCapital(Math.max(0.0, frontline.getResourceCapital() * (1.0 - skirmishWear)));
             }
-        }
-        for (H3Cell c : defender.getTerritory()) {
-            if (c == null) continue;
-            if (c.getResourceCapital() != null) c.setResourceCapital(Math.max(0.0, c.getResourceCapital() * 0.996));
-            Integer slot = (wb != null && h3ToSlot != null && c.getH3Index() != null) ? h3ToSlot.get(c.getH3Index()) : null;
+            Integer slot = (wb != null && h3ToSlot != null && frontline.getH3Index() != null) ? h3ToSlot.get(frontline.getH3Index()) : null;
             if (slot != null && slot >= 0 && slot < wb.getCapacity()) {
-                wb.getResourceCapital()[slot] = Math.max(0.0f, wb.getResourceCapital()[slot] * 0.996f);
+                wb.getResourceCapital()[slot] = (float) Math.max(0.0, wb.getResourceCapital()[slot] * (1.0 - skirmishWear));
             }
         }
 
