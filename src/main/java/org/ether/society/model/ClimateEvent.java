@@ -275,8 +275,8 @@ public class ClimateEvent implements Serializable, org.ether.society.events.Simu
     }
 
     /**
-     * Converts a calendar date into an absolute continuous simulation day index.
-     * Uses a canonical 360-day calendar matching {@link SimulationDate}.
+     * Converts a calendar date into an absolute continuous Julian simulation day index
+     * matching {@link SimulationDate} (365.25 days/year, 30.4375 days/month).
      *
      * @param year calendar year (negative for BCE)
      * @param month calendar month (1-12)

@@ -5,53 +5,38 @@
  */
 package org.ether.society.engines.tier2.theories;
 
-import org.ether.society.core.engine.AbstractSimulationEngine;
-import org.ether.society.core.engine.EngineTier;
-
 import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.core.engine.SimulationEngineModule;
-import org.ether.society.database.H3Cell;
-
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.model.Scenario;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * <h1>Public Sanitation &amp; Municipal Clean Water Grid Engine</h1>
  * <p>
- * Models the biophysical and epidemiological mechanisms underlying the Preston Curve (1975)
- * and Omran's Epidemiological Transition (1971).
+ * Implements the Concave Preston Curve (Preston 1975) and Clean-Water Epidemiological
+ * Mortality Attenuation (Omran 1971; Cutler &amp; Miller 2005):
  * </p>
- *
- * <h2>Scientific Foundations</h2>
  * <ul>
- *   <li><b>David Cutler &amp; Grant Miller (2005)</b> <i>The Role of Public Health Improvements in Health Advances: The Twentieth-Century United States</i>, Demography 42(1): 1–22.</li>
- *   <li><b>Abdel R. Omran (1971)</b> <i>The Epidemiological Transition: A Theory of the Epidemiology of Population Change</i>, Milbank Mem. Fund Q. 49(4): 509–538.</li>
- *   <li><b>Samuel H. Preston (1975)</b> <i>The Changing Relation between Mortality and Level of Economic Development</i>, Population Studies 29(2): 231–248.</li>
+ *   <li><b>Preston Logarithmic Life Expectancy Law (Preston 1975, <i>Population Studies</i> 29:231)</b>:
+ *       $$e_0^*(k_{\text{pc}}) = e_{0,\text{base}} + \beta_P \ln\!\left(1 + \frac{k_{\text{san}}}{k_0}\right)$$</li>
+ *   <li><b>Cutler-Miller Waterborne Pathogen Attenuation (Cutler &amp; Miller 2005, <i>Demography</i> 42:1)</b>:
+ *       Filtration, chlorination, and closed sewerage infrastructure \(S(k_{\text{pc}}, W) \in [0, 1)\)
+ *       abate urban fecal-oral crowding mortality \(\Delta e_{\text{crowd}} = -\mu_{\text{crowd}} \frac{\rho}{\rho + \rho_0} (1 - S)\).</li>
  * </ul>
  *
- * <h2>Mechanistic Dynamics</h2>
- * <p>
- * In dense human agglomerations ($N \ge 2\,000$ hab), unchanneled wastewater and shallow contaminated wells
- * create an endogenous waterborne pathogen load (cholera, dysentery, typhoid) scaling with urban fecal density:
- * $$\lambda_{\text{fecal}} = \frac{N_{\text{cell}}}{A_{\text{cell}} \cdot (1 + \text{AquiferFlush})}$$
- * Clean water aqueducts, subterranean masonry sewage grids, sand filtration, and municipal chlorination
- * reduce pathogen transmission directly as a function of dedicated physical sanitary infrastructure ($K_{\text{sanitation}}$),
- * without any arbitrary calendar-year date check.
- * </p>
- *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.3
+ * @version 1.0.0-beta.5
  */
 public class PublicSanitationWaterGridEngine extends AbstractSimulationEngine {
+
+    /**
+     * Constructs the public sanitation and clean water grid engine.
+     */
     public PublicSanitationWaterGridEngine() {
         super("PublicSanitationWaterGridEngine", "PublicSanitationWaterGridEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(PublicSanitationWaterGridEngine.class);
 
     @Override
     public String id() {
@@ -75,13 +60,8 @@ public class PublicSanitationWaterGridEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
-        processSanitationGrids(buffer, dtYears);
-    }
-
-    @Override
-    public void reset() {
-        // Stateless physical operator
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
     @Override
@@ -90,44 +70,59 @@ public class PublicSanitationWaterGridEngine extends AbstractSimulationEngine {
     }
 
     @Override
+    public String getEquationsTooltip() {
+        return """
+               [Preston Curve & Cutler-Miller Clean Water Transition]
+               • Sanitation Coverage:    S(k_pc) = k_san / (k_san + k_half)
+               • Crowding Penalty:       Δe_crowd = -8.0 · (ρ / (ρ + 200)) · (1 - S)
+               • Preston Equilibrium:    e_0* = 30.0 + 18.5 · ln(1 + k_san / 250) · min(1, W) + Δe_crowd
+               Ref: S. H. Preston (1975, Pop. Stud. 29:231); D. Cutler & G. Miller (2005, Demography 42:1)
+               """;
+    }
+
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || dtYears <= 0.0 || buffer.getHumanPopulation() == null || buffer.getLifespan() == null) {
+            return;
+        }
+        float p = buffer.getHumanPopulation()[i];
+        if (p <= 0.001f) return;
+
+        double capital = (buffer.getResourceCapital() != null) ? Math.max(0.0, buffer.getResourceCapital()[i]) : 0.0;
+        double kPerCap = capital / p;
+        double waterAvail = (buffer.getWaterResource() != null) ? Math.clamp(buffer.getWaterResource()[i], 0.0, 1.0) : 1.0;
+
+        double densityPerKm2 = buffer.getPopulationDensityPerKm2(i);
+        double crowdingPathogenPressure = densityPerKm2 / (densityPerKm2 + 200.0);
+
+        // Smooth C^infty municipal aqueduct/sewerage/filtration infrastructure above urban masonry threshold (200 kg/cap)
+        double kSanitary = SmoothMath.softplus(kPerCap - 200.0, 0.0, 25.0);
+        double sanitationCoverage = (kSanitary / (kSanitary + 1200.0)) * waterAvail;
+
+        // Concave Preston (1975) logarithmic health return + Cutler-Miller (2005) crowding pathogen abatement
+        double prestonGainYears = 18.5 * Math.log1p(kSanitary / 250.0) * waterAvail;
+        double crowdingLossYears = 8.0 * crowdingPathogenPressure * (1.0 - sanitationCoverage);
+        double targetLifespan = Math.clamp(30.0 + prestonGainYears - crowdingLossYears, 22.0, 85.0);
+
+        double currentLifespan = buffer.getLifespan()[i] > 10.0f ? buffer.getLifespan()[i] : 35.0;
+        double relaxation = 1.0 - Math.exp(-0.10 * dtYears);
+        acc.dLifespan += (float) ((targetLifespan - currentLifespan) * relaxation);
+    }
+
+    @Override
     public void processBuffer(WorldBuffer buffer, double deltaYears) {
         processSanitationGrids(buffer, deltaYears);
     }
 
     /**
-     * Executes one tick of sanitation coverage and pathogen mortality attenuation directly over WorldBuffer.
+     * Executes one tick of sanitation coverage and pathogen mortality attenuation directly over {@link WorldBuffer}.
      *
      * @param buffer     contiguous world buffer
-     * @param deltaYears time step fraction in years
+     * @param deltaYears time step fraction in Julian years
      */
     public static void processSanitationGrids(WorldBuffer buffer, double deltaYears) {
         if (buffer == null || deltaYears <= 0.0) return;
-        int n = buffer.getCapacity();
-        float[] pop = buffer.getHumanPopulation();
-        float[] cap = buffer.getResourceCapital();
-        float[] water = buffer.getWaterResource();
-        float[] lifespan = buffer.getLifespan();
-
-        for (int i = 0; i < n; i++) {
-            float p = pop[i];
-            if (p <= 0.001f) continue;
-            float capital = (cap != null) ? cap[i] : 0.0f;
-            float kPerCap = capital / p;
-            float wAvail = (water != null) ? water[i] : 1.0f;
-
-            double densityPerKm2 = buffer.getPopulationDensityPerKm2(i);
-            double crowdingPathogenPressure = Math.min(1.0, densityPerKm2 / 200.0);
-            double sanitationCoverage = 0.0;
-            if (kPerCap > 200.0) {
-                sanitationCoverage = Math.min(0.98, (kPerCap - 200.0) / 2000.0);
-            }
-            double targetLifespan = 30.0 + 48.0 * sanitationCoverage * Math.min(1.0, (double) wAvail)
-                    - 8.0 * crowdingPathogenPressure * (1.0 - sanitationCoverage);
-            float currentLifespan = (lifespan != null && lifespan[i] > 10.0f) ? lifespan[i] : 35.0f;
-            float updatedLifespan = (float) (currentLifespan + (targetLifespan - currentLifespan) * Math.min(1.0, deltaYears * 0.1));
-            if (lifespan != null) {
-                lifespan[i] = Math.clamp(updatedLifespan, 22.0f, 85.0f);
-            }
-        }
+        PublicSanitationWaterGridEngine instance = new PublicSanitationWaterGridEngine();
+        instance.tick(buffer, deltaYears, deltaYears * 12.0);
     }
 }

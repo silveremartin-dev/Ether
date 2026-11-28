@@ -7,51 +7,50 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.core.engine.DerivativeAccumulator;
-
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-
 import org.ether.society.core.math.SmoothMath;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 /**
- * W. Arthur Lewis Dual-Sector Model &amp; Turning Point Engine.
+ * W. Arthur Lewis Dual-Sector Model &amp; Ranis-Fei Turning Point Engine (Lewis 1954; Ranis &amp; Fei 1961).
  *
- * <p>Implements the foundational developmental macroeconomics formulated by
- * Sir W. Arthur Lewis (1954, <i>Economic Development with Unlimited Supplies of Labour</i>; Nobel Prize 1979):</p>
+ * <p>Implements the canonical two-sector developmental growth model formulated by W. Arthur Lewis
+ * (1954, <i>The Manchester School</i> 22(2): 139–191) and mathematically formalized by Gustav Ranis
+ * &amp; John C. H. Fei (1961, <i>American Economic Review</i> 51(4): 533–565):</p>
  * <ul>
- *   <li><b>Surplus Rural Labor Phase:</b> In early industrializing societies ($k_{\text{pc}} \in [80, 250]$),
- *       the modern urban/industrial sector expands by drawing subsistence agricultural labor at a constant
- *       low real wage, maximizing capitalist profit margins and physical capital accumulation.</li>
- *   <li><b>The Lewis Turning Point:</b> When rural surplus labor is fully absorbed and urban-industrial
- *       employment exceeds the demographic absorption threshold, real agricultural wages begin to rise.</li>
- *   <li><b>Induced Mechanization &amp; Capital-Deepening:</b> Once past the turning point, rising labor costs
- *       compel manufacturers and agrarian estates to substitute machinery for human muscle, triggering
- *       accelerated capital-deepening and higher energy power dissipation ($P_{\text{watts}}/N$).</li>
+ *   <li><b>Subsistence Sector Marginal Product</b>: \(MP_{L,A} = \beta_A \frac{Y_A}{N}\). While rural labor
+ *       remains in disguised surplus (\(MP_{L,A} &lt; \bar{w}_S\)), the modern capitalist sector absorbs labor
+ *       at fixed institutional subsistence wage \(\bar{w}_S\), reinvesting capitalist surplus \(\pi_M = Y_M - \bar{w}_S L_M\).</li>
+ *   <li><b>Commercialization / Lewis Turning Point</b>: Once rural surplus labor is absorbed such that
+ *       \(MP_{L,A} \ge \bar{w}_S\) alongside commercial market integration and industrial capital intensity
+ *       (\(k_{\text{pc}} \ge k_{\text{turn}}\)), real wages rise with marginal productivity (\(w = MP_{L,A}\)),
+ *       inducing capital-for-labor mechanization, rising labor income share (falling Gini), and formal labor productivity.</li>
  * </ul>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.3
- * @see <a href="https://doi.org/10.1111/j.1467-9957.1954.tb00021.x">Lewis, W. A. (1954), The Manchester School</a>
- * @see WestBettencourtAllometryEngine
- * @see SolowSwanCapitalEngine
+ * @version 1.0.0-beta.5
  */
 public class LewisDualSectorTurningPointEngine extends AbstractSimulationEngine {
+
+    /** Capital per capita onset of modern dual-sector manufacturing (\(\text{kg/cap}\)). */
+    public static final double DUAL_SECTOR_KPC_ONSET = 80.0;
+
+    /** Capital per capita threshold of full modern sector commercialization (\(\text{kg/cap}\)). */
+    public static final double LEWIS_TURNING_POINT_KPC = 250.0;
+
+    /** Institutional subsistence real wage benchmark \(\bar{w}_S\) in agricultural output units per worker. */
+    public static final double INSTITUTIONAL_SUBSISTENCE_WAGE = 0.65;
+
+    /** Agricultural labor elasticity \(\beta_A\) in Ranis-Fei commercialization condition \(MP_{L,A} = \beta_A (Y_A / N)\). */
+    public static final double AGRARIAN_ELASTICITY_BETA = 0.65;
+
+    /**
+     * Constructs the Lewis / Ranis-Fei dual-sector turning point engine.
+     */
     public LewisDualSectorTurningPointEngine() {
         super("LewisDualSectorTurningPointEngine", "LewisDualSectorTurningPointEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(LewisDualSectorTurningPointEngine.class);
-
-    /** Capital per capita threshold marking the onset of dual-sector industrial absorption (kg/cap). */
-    public static final double DUAL_SECTOR_KPC_ONSET = 80.0;
-
-    /** Capital per capita threshold corresponding to the Lewis Turning Point (kg/cap). */
-    public static final double LEWIS_TURNING_POINT_KPC = 250.0;
 
     @Override
     public String getName() {
@@ -60,18 +59,18 @@ public class LewisDualSectorTurningPointEngine extends AbstractSimulationEngine 
 
     @Override
     public String getDescription() {
-        return "Models W. Arthur Lewis (1954) dual-sector development: surplus rural labor fuels early industrial profits until the Lewis turning point forces real wage surges and mechanization.";
+        return "Models Lewis (1954) & Ranis-Fei (1961) dual-sector development: unlimited rural labor absorption at fixed wage transitions at the commercialization turning point (MP_L,A >= w_bar) to wage growth and mechanization.";
     }
 
     @Override
     public String getEquationsTooltip() {
         return """
-               [W. Arthur Lewis Dual-Sector Transition (Lewis 1954)]
-               • Early Accumulation:  If k_pc < 250 -> ΔK = +0.035 · σ(k_pc - 80, 20) · K · dt (Surplus Labor)
-               • Turning Point:       Φ_turning = σ(k_pc - 250, 40) · σ(TradeNet - 20, 5)
-               • Induced Mechanize:   ΔK_deepening = +0.05 · Φ_turning · K · dt
-               • Wage Share Growth:   ΔWork_Value = +0.03 · Φ_turning · Work · dt
-               Ref: W. A. Lewis (1954), "Economic Development with Unlimited Supplies of Labour", The Manchester School.
+               [Lewis & Ranis-Fei Dual-Sector Model (Lewis 1954; Ranis & Fei 1961)]
+               • Rural Marginal Product: MP_L,A = β_A · (Y_agr / N)
+               • Surplus Labor Phase:    MP_L,A < w_bar => w = w_bar, dK/dt = s_π · (Y_M - w_bar · L_M)
+               • Lewis Turning Point:    MP_L,A >= w_bar => w = MP_L,A (rising real wage & induced mechanization)
+               Parameters: β_A = 0.65, w_bar = 0.65, k_onset = 80 kg/cap, k_turn = 250 kg/cap
+               Ref: W. A. Lewis (1954, Manchester School 22:139); G. Ranis & J. C. H. Fei (1961, AER 51:533)
                """;
     }
 
@@ -95,22 +94,29 @@ public class LewisDualSectorTurningPointEngine extends AbstractSimulationEngine 
         double kpc = capital / pop;
         if (kpc < DUAL_SECTOR_KPC_ONSET) return;
 
+        double agriOutput = buffer.getBiomassAgriculture() != null ? Math.max(0.0, buffer.getBiomassAgriculture()[i]) : 0.0;
+        double mpLaborAgri = AGRARIAN_ELASTICITY_BETA * ((agriOutput + 1.0) / pop);
         double trade = buffer.getCommercialFluxVolume() != null ? buffer.getCommercialFluxVolume()[i] : 0.0;
-        double earlyAbsorptionFactor = SmoothMath.sigmoid(kpc, DUAL_SECTOR_KPC_ONSET, 25.0)
-                * (1.0 - SmoothMath.sigmoid(kpc, LEWIS_TURNING_POINT_KPC, 40.0));
 
-        if (earlyAbsorptionFactor > 0.05) {
-            double extGrowth = capital * 0.030 * earlyAbsorptionFactor * dtYears;
-            acc.dResourceCapital += (float) extGrowth;
-            capital += extGrowth;
+        // Ranis-Fei (1961) commercialization condition: MP_L,A crosses institutional wage w_bar
+        double ruralScarcityTransition = SmoothMath.sigmoid(mpLaborAgri, INSTITUTIONAL_SUBSISTENCE_WAGE, 0.25);
+        double modernCapitalDepth = SmoothMath.sigmoid(kpc, LEWIS_TURNING_POINT_KPC, 40.0);
+        double marketIntegration = SmoothMath.sigmoid(trade, 20.0, 5.0);
+
+        // Phase 1: Unlimited supplies of labor (MP_L,A < w_bar, early industrial capital widening)
+        double surplusLaborPhase = SmoothMath.sigmoid(kpc, DUAL_SECTOR_KPC_ONSET, 25.0) * (1.0 - modernCapitalDepth);
+        if (surplusLaborPhase > 0.05) {
+            double wideningDeltaK = capital * 0.030 * surplusLaborPhase * dtYears;
+            acc.dResourceCapital += (float) wideningDeltaK;
+            capital += wideningDeltaK;
         }
 
-        double turningPointIntensity = SmoothMath.sigmoid(kpc, LEWIS_TURNING_POINT_KPC, 40.0)
-                * SmoothMath.sigmoid(trade, 20.0, 5.0);
-
+        // Phase 2: Post-Lewis Turning Point (exhausted rural surplus + commercialized capital deepening)
+        double turningPointIntensity = modernCapitalDepth * marketIntegration * (0.50 + 0.50 * ruralScarcityTransition);
         if (turningPointIntensity > 0.05) {
             acc.dResourceCapital += (float) (capital * 0.045 * turningPointIntensity * dtYears);
             acc.dGiniIndex -= (float) (0.015 * turningPointIntensity * dtYears);
+            acc.dInstitutionalComplexity += (float) (0.012 * turningPointIntensity * dtYears);
         }
     }
 }

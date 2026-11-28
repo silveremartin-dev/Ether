@@ -123,7 +123,8 @@ final class FalsificationDebateFixtures {
 
     static BoserupBifurcationResult runDensityThresholdBifurcation() {
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(2);
-        // Cell 0: Sparse low-pressure frontier (pop = 200, k_pc = 2500 -> density = 2.0 << 20.0)
+        java.util.Arrays.fill(buf.getCellAreaKm2Array(), 100.0f);
+        // Cell 0: Sparse low-pressure frontier (pop = 200, area = 100 km^2 -> density = 2.0 << 20.0)
         buf.getHumanPopulation()[0] = 200.0f;
         buf.getResourceCapital()[0] = 500_000.0f;
         // Cell 1: Dense agrarian floodplain (pop = 100,000 -> density = 1000.0 >> 20.0)
@@ -163,6 +164,7 @@ final class FalsificationDebateFixtures {
     static double runBoserupInvolutionSimulation() {
         // Measure marginal per-capita intensification return ratio (hyper-dense / transition threshold)
         org.ether.society.core.dod.WorldBuffer buf = new org.ether.society.core.dod.WorldBuffer(4);
+        java.util.Arrays.fill(buf.getCellAreaKm2Array(), 100.0f);
         buf.getHumanPopulation()[0] = 1900.0f;
         buf.getHumanPopulation()[1] = 2100.0f;
         buf.getHumanPopulation()[2] = 119_900.0f;

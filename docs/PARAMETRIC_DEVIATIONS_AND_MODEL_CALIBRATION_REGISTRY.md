@@ -424,23 +424,19 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 17: Krugman Core-Periphery Cellular Capital & Friction Dynamics
+### Entry 17: Krugman Core-Periphery Local Ring-1 + Mean-Field H3 Discretization
 * **Subsystem**: `KrugmanCorePeripheryEngine.java`
 * **Canonical Literature**:
   * Krugman, P. (1991). *Increasing Returns and Economic Geography*. Journal of Political Economy, 99(3), 483–499.
   * Fujita, M., Krugman, P., & Venables, A. J. (1999). *The Spatial Economy: Cities, Regions, and International Trade*. MIT Press.
 * **Canonical Published Formulation**:
-  * Two-region Dixit-Stiglitz monopolistic competition model where manufacturing share $\lambda$ migrates toward the region with higher real market potential $\Omega_i = \sum_j Y_j \tau_{ij}^{1-\sigma}$.
+  * All-to-all $R$-region Dixit-Stiglitz price index $G_i = [\sum_{j=1}^R \lambda_j T_{ji}^{1-\sigma}]^{\frac{1}{1-\sigma}}$ and nominal wage $w_i = [\sum_{j=1}^R Y_j T_{ij}^{1-\sigma} G_j^{\sigma-1}]^{\frac{1}{\sigma}}$, which requires an $O(N^2)$ pairwise matrix across $N \approx 2.88 \times 10^5$ H3 cells.
 * **Calibrated Ether Formulation**:
-  $$\text{Access}_i = \frac{10^{-3} N_i}{\max(0.2, \mu_{\text{friction}, i})}, \qquad A_{\text{cap}, i} = \frac{1}{1 + \exp\!\left(-2.0 \left(\frac{K_i}{\bar{K}} - 1.0\right)\right)}, \qquad \Phi_{\text{centripetal}, i} = 2.0 \, A_{\text{cap}, i} \, \frac{\text{Access}_i}{1.0 + \text{Access}_i}$$
-  $$\frac{dK_i}{dt} = K_i \cdot \operatorname{clamp}\!\left( 0.015 \, \Phi_{\text{centripetal}, i} - 0.01 \, \frac{K_i / \bar{K}}{\max(1.0, \text{Access}_i)}, \; -0.05, \; +0.08 \right)$$
+  * Evaluates Krugman's exact Dixit-Stiglitz price index $G_i$, nominal wage $w_i$, and real wage $\omega_i = w_i G_i^{-\mu_M}$ ($\sigma = 4.0$, $\mu_M = 0.40$) over the local hexagonal trading set $\mathcal{N}_i = \{i\} \cup \text{Ring}_1(i) \cup \{0_{\text{RoW}}\}$ using geodesic centroid distance $d_{ij} = \sqrt{\frac{2}{\sqrt{3}} A_{\text{cell},i}}$, normalized areal manufacturing shares $\lambda_j \propto K_j / A_j$, and normalized areal income shares $Y_j \propto (N_j / A_j)(1 + k_{\text{pc},j}/250)$, normalized against the symmetric reference $(G_{\text{sym},i}, w_{\text{sym},i})$.
 * **Parameters & Physical Units**:
-  * $K_i$: Local physical capital stock [$\text{kg}$].
-  * $\bar{K}$: Planetary or regional mean cellular capital [$\text{kg}$].
-  * $\mu_{\text{friction}, i}$: Local movement and freight friction index [dimensionless, $\ge 0.1$].
-  * $\Phi_{\text{centripetal}, i}$: Continuous centripetal agglomeration potential [$0.0 - 2.0$].
+  * $\sigma = 4.0$, $\mu_M = 0.40$, $\tau_0 = 0.004\,\text{km}^{-1}$, $\gamma_K = 0.12\,\text{yr}^{-1}$; $A_{\text{cell},i}$ [$\text{km}^2$]; $K_i$ [$\text{kg}$].
 * **Justification for Deviation**:
-  * Translates Krugman's 2-box implicit price-index solver into an $O(N_{\text{cells}})$ continuous cellular differential equation coupling local market accessibility ($\text{Access}_i$) and relative capital advantage ($K_i/\bar{K}$) against centrifugal land/congestion dispersion, reproducing coastal and riverine wealth concentration ($\Delta\text{Gini} = +18.0\%, |d| = 2.20$).
+  * Replaces the intractable $O(N^2)$ global all-pairs sum with an $O(6) = O(1)$ Ring-1 + Rest-of-World mean-field decomposition on the spherical H3 mesh while preserving Krugman's exact Dixit-Stiglitz / Iceberg functional form and resolution invariance (`Contract 3`).
 * **Empirical Validation**:
   * Krugman (1991); Scheidel ORBIS (2014); Maddison Project Database (2020).
 
@@ -466,47 +462,39 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-### Entry 19: Ricardo Differential Land Rent & Margin Pressure
+### Entry 19: Ricardian Marginal Product & Smooth Profit-Squeeze Closure
 * **Subsystem**: `RicardoDifferentialLandRentEngine.java`
 * **Canonical Literature**:
   * Ricardo, D. (1817). *On the Principles of Political Economy and Taxation*. John Murray.
-  * Sraffa, P. (1960). *Production of Commodities by Means of Commodities*. Cambridge University Press.
+  * Samuelson, P. A. (1959). *A modern treatment of the Ricardian economy*. Quarterly Journal of Economics, 73(1), 1–35.
 * **Canonical Published Formulation**:
-  * Agrarian economic model where demographic expansion forces settlement of progressively less fertile land (extensive margin) and higher labor inputs on existing land (intensive margin), transferring agricultural surplus from productive profits to non-productive land rents.
+  * $MP_L = \beta_A (Y_A / L)$, differential land rent $R_{\text{land}} = (1 - \beta_A) Y_A$, and profit rate $r = r_0 (1 - w_{\text{sub}} / MP_L)$ formulated over monetary corn prices and discrete landlord/capitalist/laborer classes.
 * **Calibrated Ether Formulation**:
-  $$\text{Margin}_{\text{ext}} = \sigma\left(\frac{N_i}{B_{\text{agr}, i} + 1} - 1.25, \; 0.40\right)$$
-  $$\Delta \text{Profit} = -0.06 \cdot \text{Margin}_{\text{ext}} \cdot \Delta t$$
-  $$\Delta \text{Gini} = +0.02 \cdot \text{Margin}_{\text{ext}} \cdot \Delta t$$
+  * Evaluates Samuelson's physical marginal product $MP_L = \beta_A (B_{\text{agr},i} / N_i)$ ($\beta_A = 0.65$) against subsistence grain norm $w_{\text{sub}} = 0.78\,\text{kg/cap}$, mapping the corn-wage ratio $\theta_w = w_{\text{sub}} / MP_L$ via a $C^\infty$ softplus saturation $s_R = \frac{\operatorname{softplus}(\theta_w - 1, 0, 0.20)}{1 + \operatorname{softplus}(\theta_w - 1, 0, 0.20)}$ onto physical capital drag ($\Delta K = -0.035 s_R K \Delta t$) and Gini expansion ($\Delta G = +0.02 s_R \Delta t$) above landed estate threshold $k_{\text{pc}} \ge 40\,\text{kg/cap}$.
 * **Parameters, Material Properties & Physical Units**:
-  * $\text{Threshold}_{\text{margin}} = 1.25\text{ cap/agri}$: Density-to-crop biomass threshold activating extensive margin pressure.
-  * $k_{\text{rent}} = 0.06\text{ yr}^{-1}$: Profit compression rate under full marginal exhaustion.
-  * $k_{\text{gini}} = 0.02\text{ yr}^{-1}$: Landlord rent capture Gini expansion coefficient.
+  * $\beta_A = 0.65$, $w_{\text{sub}} = 0.78\,\text{kg/cap}$, $k_{\text{floor}} = 40\,\text{kg/cap}$.
 * **Justification for Deviation**:
-  * Replaces discrete agricultural plots with continuous $C^1$ logistic evaluation on H3 cellular grids, coupling population pressure directly to active capital formation drag and patrimonial inequality without requiring explicit tenant-landlord agent micro-contracts.
+  * Expresses Ricardian stationary-state profit compression directly over conserved `WorldBuffer` stocks (`biomassAgriculture`, `humanPopulation`, `resourceCapital`) without non-conserved currency prices.
 * **Empirical Validation**:
-  * Ricardo (1817); Allen (1992) *Enclosure and the Yeoman*; Clark (2007) English historical agricultural land rents.
+  * Ricardo (1817); Samuelson (1959); Clark (2007) English agricultural land rents.
 
 ---
 
-### Entry 20: Lewis Dual-Sector Structural Transformation & Turning Point
+### Entry 20: Lewis & Ranis-Fei Dual-Sector Commercialization Closure
 * **Subsystem**: `LewisDualSectorTurningPointEngine.java`
 * **Canonical Literature**:
   * Lewis, W. A. (1954). *Economic Development with Unlimited Supplies of Labour*. The Manchester School, 22(2), 139–191.
-  * Ranis, G., & Fei, J. C. (1961). *A Theory of Economic Development*. American Economic Review, 51(4), 533–565.
+  * Ranis, G., & Fei, J. C. H. (1961). *A Theory of Economic Development*. American Economic Review, 51(4), 533–565.
 * **Canonical Published Formulation**:
-  * Two-sector macroeconomic model where a modern industrial sector expands by drawing unlimited surplus labor from a traditional subsistence sector at constant subsistence wage until the surplus is exhausted ("Lewis Turning Point"), triggering rising wages and capital deepening.
+  * Piecewise wage switch $w = \max(\bar{w}_S, MP_{L,A})$ between separate rural and urban sector balance sheets, which creates a $C^0$ derivative kink at $MP_{L,A} = \bar{w}_S$.
 * **Calibrated Ether Formulation**:
-  $$\text{SurplusAbsorption} = \sigma(k_{\text{pc}}, 60, 25) \cdot (1 - \sigma(k_{\text{pc}}, 250, 40))$$
-  $$\text{TurningPointIntensity} = \sigma(k_{\text{pc}}, 250, 40) \cdot \sigma(\text{Trade}, 20, 5)$$
-  $$\Delta K_{\text{mechanized}} = +0.045 \cdot \text{TurningPointIntensity} \cdot K \cdot \Delta t$$
+  * Evaluates $MP_{L,A} = \beta_A (B_{\text{agr},i} + 1) / N_i$ ($\beta_A = 0.65$, $\bar{w}_S = 0.65$) with smooth $C^\infty$ logistic transitions across early modern widening ($k_{\text{pc}} \ge 80\,\text{kg/cap}$) and post-turning-point mechanization ($k_{\text{pc}} \ge 250\,\text{kg/cap}$, $\text{Trade} \ge 20$), coupling `dResourceCapital`, `dGiniIndex`, and `dInstitutionalComplexity`.
 * **Parameters, Material Properties & Physical Units**:
-  * $k_{\text{onset}} = 60\text{ kg/cap}$: Early dual-sector industrial accumulation threshold.
-  * $k_{\text{turning}} = 250\text{ kg/cap}$: Empirical capital threshold for Lewis turning point surplus exhaustion.
-  * $k_{\text{wage\_boost}} = 0.025\text{ yr}^{-1}$: Productive work augmentation from induced mechanization.
+  * $k_{\text{onset}} = 80\,\text{kg/cap}$, $k_{\text{turn}} = 250\,\text{kg/cap}$, $\beta_A = 0.65$, $\bar{w}_S = 0.65$.
 * **Justification for Deviation**:
-  * Formulated as a continuous cellular phase transition based on physical observables ($k_{\text{pc}}$, trade network density) rather than requiring discrete dual-accounting balance sheets per cell.
+  * Regularizes the Ranis-Fei commercialization kink into a $C^\infty$ cellular transition over single-cell `WorldBuffer` state arrays.
 * **Empirical Validation**:
-  * Lewis (1954); Fei & Ranis (1961); Minami (1973) Japanese industrialization; Zhang (2012) Chinese Lewis Turning Point.
+  * Lewis (1954); Ranis & Fei (1961); Minami (1973) Japanese industrialization.
 
 ---
 
@@ -619,7 +607,86 @@ The foundational purpose of this registry is **epistemic transparency and algori
 
 ---
 
-## 📊 4. Central Summary Matrix of All Calibrated Subsystems (Entries 1 to 24)
+### Entry 25: Converter Capital-Area Parameterization for Prime Movers & Renewables
+* **Subsystems**: `ThermodynamicPrimeMoversEngine.java`, `RenewableEnergyPhysicsEngine.java`, `KummelAyresExergyEngine.java`
+* **Canonical Literature**:
+  * Carnot, S. (1824); Betz, A. (1926); Shockley, W., & Queisser, H. J. (1961); Ayres, R. U., & Warr, B. (2009); Smil, V. (2017).
+* **Canonical Published Formulation**:
+  * Published physical laws give conversion efficiency and power as functions of explicit machine geometry and reservoir temperatures ($P_{\text{Betz}} = \frac{8}{27}\rho A_{\text{rotor}} v^3$, $P_{\text{PV}} = \eta_{\text{SQ}} I_{\text{surf}} A_{\text{PV}}$, $\eta_{\text{th}} = \varepsilon_{\text{II}}(1 - T_C/T_H)$), leaving installed rotor/panel swept area and boiler pressure-vessel temperature $T_H$ unspecified in a macroscopic historical model without asset-level factory inventories.
+* **Calibrated Ether Formulation**:
+  * Maps aggregate per-capita physical capital $k_{\text{pc}} = K_i / N_i$ [$\text{kg/cap}$] smoothly onto installed converter capacity and working-fluid temperature ($k_{\text{pc}} \gtrsim 120\,\text{kg/cap}$ hydraulic mills, $320\,\text{kg/cap}$ wind sails, $950\,\text{kg/cap}$ coal steam boilers, $2\,800\,\text{kg/cap}$ internal combustion, $4\,500\text{–}5\,000\,\text{kg/cap}$ utility wind turbines & photovoltaics), with exact zero anthropogenic capture ($E_{\text{wind}} = E_{\text{solar}} = 0.0\,\text{GJ/yr}$) when $N_i \le 0$ or $k_{\text{pc}} \le 0$, and converts Watts to `WorldBuffer` annual fluxes via `PhysicalUnitsHelper.wattsToGjPerYear`.
+* **Parameters & Physical Units**:
+  * $T_C \in [220, 330]\,\text{K}$, $T_H \in [390, 1\,840]\,\text{K}$, $\text{LHV}_{\text{coal}} = 24\,\text{GJ/t}$, $\text{LHV}_{\text{oil}} = 42\,\text{GJ/t}$, $G_{\text{ke,max}} = 1.25\,\text{W/m}^2$.
+* **Academic Justification & Root Cause of Divergence**:
+  * Enforces `AGENTS.md` §5.1 (zero `technologyLevel` state array) and `Contract 2` (decoupling meteorological wind/insolation from anthropogenic harnessed energy) while obeying Carnot, Betz, Kleidon, and First-Law fuel enthalpy bounds.
+* **Empirical Validation**:
+  * Smil (2017) historical prime-mover chronology; Ayres & Warr (2009) 1900–2005 Second-Law exergy series.
+
+---
+
+### Entry 26: Von Thünen Sub-Grid Supply Ring & Rolling-Stock Friction Attenuation
+* **Subsystem**: `VonThunenAgriculturalRingsEngine.java`
+* **Canonical Literature**:
+  * von Thünen, J. H. (1826). *Der isolierte Staat*; Chisholm, M. (1962); Bairoch, P. (1988).
+* **Canonical Published Formulation**:
+  * Continuous radial bid-rent $R(r) = Y(p - c - f \cdot r)$ around a point market surrounded by concentric rings of explicit farm plots.
+* **Calibrated Ether Formulation**:
+  * Resolves the sub-cell supply hinterland radius $R_{\text{ring}} = \sqrt{N_i e_{\text{meta}} / (\pi y_{\text{agr},i})}$ from cellular edible caloric density $y_{\text{agr},i} = E_{\text{cal},i} / A_{\text{cell},i}$, deducts the $r_0 = 5\,\text{km}$ local village field-walk radius via `softplus`, attenuates modal transport energy share $c_{\text{eff}} = \frac{c_{\text{mode}} \mu_i}{1 + k_{\text{pc},i}/250}$ ($c_{\text{land}} = 0.008\,\text{km}^{-1}$, $c_{\text{water}} = 0.0008\,\text{km}^{-1}$), and integrates $1 - e^{-c_{\text{eff}} r}$ analytically over the circular disk.
+* **Parameters & Physical Units**:
+  * $r_0 = 5.0\,\text{km}$, $c_{\text{land}} = 0.008\,\text{km}^{-1}$, $c_{\text{water}} = 0.0008\,\text{km}^{-1}$, $e_{\text{meta}} = 3.65\,\text{GJ/(person}\cdot\text{yr)}$.
+* **Academic Justification & Root Cause of Divergence**:
+  * At H3 Res 4–6 ($36\text{–}1\,770\,\text{km}^2$), urban food-shed rings sit partially sub-grid; analytical disk integration reproduces Bairoch's (1988) inland vs. coastal urban ceiling without $O(N^2)$ multi-ring pathfinding or arbitrary population step caps.
+* **Empirical Validation**:
+  * von Thünen (1826); Clark & Haswell (1967) *Economics of Subsistence Agriculture*; Bairoch (1988).
+
+---
+
+### Entry 27: Multi-Theory Capital Envelope & Cellular Institutional Closures
+* **Subsystems**: `TypeBEnginePassRunner.java`, `EnvironmentalKernel.java` / `environmental.rs`, `AxialAgeMoralizingGodsEngine.java`, `PolanyiFictitiousCommoditiesEngine.java`, `BagehotFractionalReserveEngine.java`, `CordenNearyDutchDiseaseEngine.java`, `InnisStaplesThesisEngine.java`
+* **Canonical Literature**:
+  * Krausmann et al. (2017); Lieth (1975); Whitehouse et al. (2019); Polanyi (1944); Bagehot (1873); Corden & Neary (1982); Innis (1930).
+* **Canonical Published Formulation**:
+  * Institutional macro-theories are published either as qualitative comparative-historical mechanisms (Polanyi, Bagehot, Innis) or standalone single-mechanism models that do not specify how multiple active theories share a conserved cellular energy/material budget.
+* **Calibrated Ether Formulation**:
+  * `TypeBEnginePassRunner` combines overlapping Tier 2 capital derivatives via non-diluting upper/lower envelopes ($\Delta K_{\text{env}}^+ = \max_e \Delta K_e^+$, $\Delta K_{\text{env}}^- = \min_e \Delta K_e^-$), caps net positive Tier 2 capital deepening by remaining Carnot exergy surplus ($s_{\text{marg}} = 0.12$, $e_{\text{embodied}} = 15\,\text{MJ/kg}$) after Phase 1 Solow-Swan replacement, and debits Krausmann stoichiometry ($5\%$ metal, $7\%$ timber, $10\%$ clay). Institutional Type B engines map qualitative thresholds onto smooth $C^1$ logistic functions of $(N_i, k_{\text{pc},i}, \text{Trade}_i)$ while strictly debiting upstream physical stocks (`biomassNatural`, `metalResource`). In `EnvironmentalKernel` / `environmental.rs`, Res-4 reference crop potential scales Miami NPP across $1\,770.49\,\text{km}^2 = 177\,049\,\text{ha}$ ($B_{\text{ag,base}} = \operatorname{clamp}(1\,800\,\text{NPP}\cdot f_{\text{slope}}\cdot f_{\text{frost}}, 500, 3.6\times 10^6)\,\text{GJ}$).
+* **Academic Justification & Root Cause of Divergence**:
+  * Prevents $M$-fold capital double-counting and *ex nihilo* mass creation when multiple Tier 2 theories are co-activated (`AGENTS.md` §4.2).
+* **Empirical Validation**:
+  * Krausmann et al. (2017); HYDE 3.4 & Maddison (2020) regional/global runs.
+
+---
+
+### Entry 28: Post-Hoc $\Phi_{\text{exergy}}$ Macro-Telemetry Diagnostic Closures
+* **Subsystems**: `CliodynamicFormulasRegistry.java`, `H3CellPhysicsAndStateHelper.java`, `DemographicMetricsHelper.java`, `CompiledTelemetryPlan.java`
+* **Canonical Literature**:
+  * Maddison (2020); Smil (2017); Buringh & van Zanden (2009); Reinhart & Rogoff (2009); Harley (1988); Federico & Tena-Junguito (2017); Scheidel (2014); Standage (1998); Crosby (1972).
+* **Canonical Published Formulation**:
+  * Empirical historical series report macro-indicators (GWP in 1990 Int\$, adult literacy %, sovereign debt/GDP %, shipping freight index, relay/telegraph dispatch speed, biotic isolation) across calendar time, whereas simulation state arrays store only conserved physical masses, populations, and energy fluxes.
+* **Calibrated Ether Formulation**:
+  * Evaluates post-hoc read-only telemetry diagnostics as smooth $C^1$ functions of conserved cellular observables and the Garrett-Lotka index $\Phi_{\text{exergy}}(p, k_{\text{pc}})$ (`CliodynamicFormulasRegistry`), enforcing exact zero Paleolithic baselines (`AGENTS.md` §5.3) and zero feedback into runtime physics kernels.
+* **Academic Justification & Root Cause of Divergence**:
+  * Bridges conserved SI physical state variables (`kg`, `t`, `GJ`, `persons`) to historical benchmark series in `HistoricalValidationKernel` without storing non-physical state variables or calendar-year lookup tables.
+* **Empirical Validation**:
+  * Audited against 27 1D historical variables (`HYDE 3.4`, `Maddison 2020`, `Seshat`) across Paleolithic, Classical, Medieval, Early Modern, and Industrial benchmarks.
+
+---
+
+### Entry 29: Asymmetric Directed Cultural Affinity & Defensive Grievance Closure
+* **Subsystems**: `CulturalAffinityMatrixInitializer`, `WarDiplomacyEngine.java`, `H3BufferAndEventCoordinator.java`
+* **Canonical Literature**:
+  * Shepard, R. N. (1987); Axelrod, R. (1997); Allport, G. W. (1954); Bueno de Mesquita, B. (1981).
+* **Canonical Published Formulation**:
+  * Symmetric Euclidean trait distance $A_0(i, j) = \exp(-\lambda \|\mathbf{T}_i - \mathbf{T}_j\|_2)$ ($A_{ij} = A_{ji}$).
+* **Calibrated Ether Formulation**:
+  * Augments $A_0(i, j)$ ($\lambda = 3.5$) with directional status prestige $+0.12 \tanh(2.5(T_{j,1} - T_{i,1}))$ and dogmatic exclusivism $-0.15 T_{i,3}|T_{i,3} - T_{j,3}|$, restricts polity instantiation to active mesh bounds (`minDistanceSq <= maxRadiusSq`), and scales wartime bilateral affinity erosion continuously by $\Delta t_{\text{yr}}$ with a $1.6\times$ defensive grievance multiplier.
+* **Academic Justification & Root Cause of Divergence**:
+  * Captures asymmetric tributary assimilation vs. defensive irredentism in directed $N \times N$ polity graphs while guaranteeing $\Delta t$-invariance and regional mesh isolation.
+* **Empirical Validation**:
+  * Seshat Global History Databank polity interaction histories; regional high-resolution runs (`tokugawa_japan`, `mali_empire`, `industrial_1800`).
+
+---
+
+## 📊 4. Central Summary Matrix of All Calibrated Subsystems (Entries 1 to 29)
 
 | # | Category | Subsystem | Canonical Literature | Calibrated Ether Formulation | Specific Adaptation / Material Calibration |
 |---|---|---|---|---|---|
@@ -637,13 +704,18 @@ The foundational purpose of this registry is **epistemic transparency and algori
 | **12** | Tier 2 | Combinatorial Capital | Arthur (2009), Kremer (1993) | $dK/dt \propto N (1 + k/k_0)^\alpha$ | Embodies abstract ideas into conserved physical capital mass ($k_0 = 120\text{ kg/cap}, \alpha = 1.35$) |
 | **13** | Tier 2 | Chalcolithic Gate | Hotelling (1931), Radivojević (2010) | Third-order Hill furnace gate $k^3/(k^3+65^3)$ | Enforces Pleistocene zero-smelting without calendar hacks ($k_{\text{chalco}} = 65\text{ kg/cap}$) |
 | **14** | Tier 2 | Carrier Bandwidth | Shannon (1948), Brillouin (1956) | $B = B_0 + \alpha_k k_{\text{pc}} + \alpha_p p_{\text{exo}}^2$ | Grounds communication bandwidth in physical roads and power ($B_0 = 1\text{ Hz}$) |
-| **15** | Tier 2 | SDT Stress Index | Turchin (2016), Goldstone (1991) | Normalized spatial $\Psi \in [0, 100]$ | Spatial normalization of local demographic/food/Gini stress to Seshat $[0, 100]$ scale |
+| **15** | Tier 2 | SDT Stress Index | Turchin (2016), Goldstone (1991) | Normalized spatial $\Psi \in [0, 100]$ over $E_{\text{cal},i}$ | Spatial normalization of local demographic/caloric/Gini stress to Seshat scale |
 | **16** | Tier 2 | Soil Erosion Gate | Montgomery (2007), USDA | Two-regime ard + mechanized tillage $E_{\text{soil}}(\Phi)$ | Preserves $0\%$ Paleolithic baseline; separates ard plow from deep mechanized tillage |
-| **17** | Tier 2 | Krugman Agglomeration | Krugman (1991), Fujita et al. (1999) | Centripetal $\Phi_{\text{cent}}$ vs. centrifugal congestion $dK_i/dt$ | $O(N_{\text{cells}})$ continuous cellular formulation on H3 mesh |
+| **17** | Tier 2 | Krugman Agglomeration | Krugman (1991), Fujita et al. (1999) | Local Ring-1 + RoW Dixit-Stiglitz $(G_i, w_i, \omega_i)$ | $O(6)$ geodesic hexagonal evaluation replacing $O(N^2)$ global all-pairs sum |
 | **18** | Tier 2 | Areal Entropic Dissipation | Bihouix (2014) | $\Delta P_i \propto \Delta M_i / A_{\text{cell}, i}$ | Resolution-invariant intensive areal concentration on H3 mesh ($\lambda_{\text{diss}} = 0.015\text{ yr}^{-1}$) |
-| **19** | Tier 2 | Ricardo Differential Rent | Ricardo (1817), Sraffa (1960) | $\text{Margin}_{\text{ext}} = \sigma(N/(B_{\text{agr}}+1) - 1.25, 0.40)$ | Profit compression & Gini dilation from cultivating diminishing extensive margins |
-| **20** | Tier 2 | Lewis Dual-Sector Model | Lewis (1954), Ranis & Fei (1961) | $\text{TurningPoint} = \sigma(k_{\text{pc}}, 250, 40) \cdot \sigma(\text{Trade}, 20, 5)$ | Continuous transition from surplus labor phase to induced capital-deepening mechanization |
+| **19** | Tier 2 | Ricardo Differential Rent | Ricardo (1817), Samuelson (1959) | $MP_L = \beta_A (B_{\text{agr}}/N)$, smooth corn-wage squeeze | Expresses Ricardian profit squeeze over physical grain/population stocks without currency prices |
+| **20** | Tier 2 | Lewis Dual-Sector Model | Lewis (1954), Ranis & Fei (1961) | Smooth commercialization transition across $MP_{L,A} \lessgtr \bar{w}_S$ | Regularizes Ranis-Fei piecewise wage kink on single-cell `WorldBuffer` arrays |
 | **21** | Tier 2 | Kondratiev Long Wave | Kondratiev (1925), Schumpeter (1939) | $\phi(t) = \sin(2\pi(t-1780)/52)$, creative destruction trough | Infrastructure cycle coupled to physical capital scrapping and scrap metal recovery |
 | **22** | Tier 2 | Pomeranz Great Divergence | Pomeranz (2000), Allen (2009), Wrigley | $\mathcal{P}_{\text{div}} = \text{CoalProx} \cdot (1 + 0.8 \cdot \text{GhostAcreage})$ | Energy transport proximity & transoceanic land relief driving takeoff vs organic involution |
 | **23** | Tier 1 | Solow-Swan Capital Accumulation | Solow (1956), Garrett (2011), Krausmann (2017) | $\dot{k}_{\text{pc}} = \delta_0 k^*(P_{\text{watts}}, B_{\text{agr}}, N) - \delta_{\text{eff}}(C) k_{\text{pc}}$ | Single-responsibility base capital ODE with sedentary agrarian masonry stock & Lavoisier debit |
 | **24** | Tier 1 | Two-Phase Radioecological Decay | UNSCEAR (2000), Steinhauser et al. (2014) | Piecewise chemical ($0.92^{\Delta t}$) vs $^{137}\text{Cs}$ half-life ($T_{1/2}=30\text{ yr}$) | Single-variable memory closure ensuring nuclear exclusion zones ($P>1500$) remain uninhabitable for $>80\text{ yr}$ |
+| **25** | Tier 1 | Prime-Mover & Renewable Capacity | Carnot (1824), Betz (1926), Shockley (1961) | $k_{\text{pc}} \mapsto (A_{\text{rotor}}, A_{\text{PV}}, T_H)$ with $0\,\text{GJ/yr}$ uninhabited | Parameterizes converter area and boiler $T_H$ from conserved $K/N$ without `technologyLevel` state |
+| **26** | Tier 2 | Von Thünen Disk Closure | von Thünen (1826), Bairoch (1988) | $L(u) = 1 - \frac{2}{u^2}[1 - (1+u)e^{-u}]$ over $R_{\text{ring}}$ | Sub-grid circular hinterland analytical integration on discrete H3 cells |
+| **27** | Tier 2 | Multi-Theory Capital Envelope | Krausmann (2017), Polanyi, Bagehot, Corden | $\Delta K^+_{\text{phys}} = \min(\max_e \Delta K^+_e, \Delta K_{\text{Carnot}})$ | Eliminates $M$-fold capital double-counting and enforces Lavoisier/Carnot bounds |
+| **28** | Telemetry | Post-Hoc $\Phi_{\text{exergy}}$ Diagnostics | Maddison (2020), Smil (2017), Reinhart (2009) | Read-only $C^1$ response functions over $(p, k_{\text{pc}})$ | Maps conserved SI states to 27 historical validation series with zero kernel feedback |
+| **29** | Tier 2 | Asymmetric Cultural Affinity | Shepard (1987), Axelrod (1997), Allport (1954) | Directed $A(i \to j)$ prestige/dogma prior & $1.6\times$ war grievance | Captures asymmetric core-periphery assimilation and $\Delta t_{\text{yr}}$-scaled frontline conflict |

@@ -1,53 +1,50 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Silvere Martin-Michiellot
+ * Copyright (c) 2024-2026 Silvere Martin-Michiellot
  * AUTHOR: Silvere Martin-Michiellot
  */
 package org.ether.society.engines.tier2.theories;
 
-import org.ether.society.core.engine.AbstractSimulationEngine;
-import org.ether.society.core.engine.EngineTier;
-
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.core.engine.SimulationEngineModule;
-import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
+import org.ether.society.core.math.SmoothMath;
+import org.ether.society.i18n.I18n;
+import org.ether.society.model.PhysicalUnitsHelper;
 import org.ether.society.model.Scenario;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-
 /**
- * Biophysical Exergy Economics Engine (Kümmel, 1982 / Ayres & Warr, 2009).
+ * Biophysical Exergy Economics Engine (Kümmel 1982, 2011; Ayres &amp; Warr 2005, 2009).
  *
- * <p>Models macroeconomic production with thermodynamic exergy as an essential physical factor:</p>
- * <pre>
- *   Y_i = A_i · K_i^α · L_i^β · (E_useful,i)^γ
- * </pre>
- * where:
- * <ul>
- *   <li><b>α + β + γ = 1</b> (Constant returns to scale).</li>
- *   <li><b>γ ≈ 0.45 - 0.50</b>: Output elasticity of useful exergy (much higher than neoclassical cost share ~5%).</li>
- *   <li><b>E_useful = E_primary · η_thermo(t)</b>: Primary energy multiplied by thermodynamic conversion efficiency.</li>
- * </ul>
+ * <p>Implements the constant-returns-to-scale thermodynamic macroeconomic production function
+ * where useful exergy (physical work \(E_{\text{useful}} = \eta_{\text{exergy}} E_{\text{primary}}\))
+ * is an essential factor alongside capital \(K\) and labor \(L\):</p>
+ * <p>$$Y_i = A_0 \, K_i^{\alpha} \, L_i^{\beta} \, E_{\text{useful},i}^{\gamma}, \qquad \alpha + \beta + \gamma = 1$$</p>
+ * <p>with Carnot-bounded Second-Law exergy conversion efficiency
+ * \(\eta_{\text{exergy}} = \varepsilon_{\text{II}} \left(1 - \frac{T_C}{T_H}\right)\).</p>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.3
+ * @version 1.0.0-beta.5
  */
 public class KummelAyresExergyEngine extends AbstractSimulationEngine {
+
+    /** Output elasticity of physical capital (\(\alpha = 0.25\), Ayres &amp; Warr 2009). */
+    public static final double ALPHA_K = 0.25;
+
+    /** Output elasticity of human labor (\(\beta = 0.25\), Ayres &amp; Warr 2009). */
+    public static final double BETA_L = 0.25;
+
+    /** Output elasticity of useful exergy/work (\(\gamma = 0.50\), Kümmel 2011; Ayres &amp; Warr 2009). */
+    public static final double GAMMA_E = 0.50;
+
+    /**
+     * Constructs the Kümmel / Ayres-Warr biophysical exergy production engine.
+     */
     public KummelAyresExergyEngine() {
         super("KummelAyresExergyEngine", "KummelAyresExergyEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
-    private static final Logger logger = LoggerFactory.getLogger(KummelAyresExergyEngine.class);
-
-    public static final double ALPHA_K = 0.25; // Capital elasticity
-    public static final double BETA_L = 0.25;  // Labor elasticity
-    public static final double GAMMA_E = 0.50; // Useful exergy elasticity
 
     @Override
     public String id() {
@@ -76,30 +73,35 @@ public class KummelAyresExergyEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (buffer == null || dtYears <= 0.0 || buffer.getHumanPopulation() == null) return;
         float p = buffer.getHumanPopulation()[i];
         if (p <= 0.001f) return;
-        float capital = (buffer.getResourceCapital() != null) ? Math.max(1.0f, buffer.getResourceCapital()[i]) : 10.0f;
-        float labor = p * 0.5f;
+
+        double capital = (buffer.getResourceCapital() != null) ? Math.max(1.0, buffer.getResourceCapital()[i]) : 10.0;
+        double labor = p * 0.5;
 
         double tColdK = (buffer.getTemperature() != null)
-                ? org.ether.society.model.PhysicalUnitsHelper.celsiusToKelvin(buffer.getTemperature()[i])
+                ? Math.clamp(PhysicalUnitsHelper.celsiusToKelvin(buffer.getTemperature()[i]), 220.0, 330.0)
                 : 288.15;
-        double coal = (buffer.getResourceCoal() != null) ? buffer.getResourceCoal()[i] : 0.0;
-        double hydrocarbon = ((buffer.getResourceOil() != null ? buffer.getResourceOil()[i] : 0.0)
-                + (buffer.getResourceGas() != null ? buffer.getResourceGas()[i] : 0.0));
 
-        double deltaTFlame = 450.0
-                + 700.0 * SmoothMath.sigmoid(coal, 100.0, 30.0)
-                + 500.0 * SmoothMath.sigmoid(hydrocarbon, 100.0, 30.0);
-        double etaCarnot = 1.0 - (tColdK / (tColdK + deltaTFlame));
+        // Enthalpy-weighted adiabatic combustion reservoir temperature T_H [K] (biomass ~900 K, coal ~1450 K, hydrocarbons ~1850 K)
+        double coalGJ = (buffer.getResourceCoal() != null ? Math.max(0.0, buffer.getResourceCoal()[i]) : 0.0) * 24.0;
+        double oilGasGJ = (buffer.getResourceOil() != null ? Math.max(0.0, buffer.getResourceOil()[i]) * 42.0 : 0.0)
+                + (buffer.getResourceGas() != null ? Math.max(0.0, buffer.getResourceGas()[i]) * 50.0 : 0.0);
+        double bioGJ = Math.max(1.0, (buffer.getBiomassNatural() != null ? Math.max(0.0, buffer.getBiomassNatural()[i]) : 1.0) * 15.0);
+        double totalEnthalpyPool = bioGJ + coalGJ + oilGasGJ;
+        double tHotK = Math.max(tColdK + 120.0,
+                (900.0 * bioGJ + 1450.0 * coalGJ + 1850.0 * oilGasGJ) / totalEnthalpyPool);
+
+        // Carnot limit * Second-Law exergetic effectiveness epsilon_II (Ayres & Warr 2009)
+        double etaCarnot = 1.0 - (tColdK / tHotK);
         double kPerCap = capital / p;
-        double recoveryFactor = 0.08 + (0.58 - 0.08) * SmoothMath.sigmoid(kPerCap, 1200.0, 400.0);
-        double etaThermo = Math.clamp(etaCarnot * recoveryFactor, 0.05, 0.50);
+        double secondLawEffectiveness = 0.10 + 0.48 * (kPerCap / (kPerCap + 1200.0));
+        double etaExergy = Math.clamp(etaCarnot * secondLawEffectiveness, 0.05, 0.50);
 
         double primaryWatts = p * Math.max(85.0, buffer.computeCellPowerWattsPerCapita(i));
-        double usefulExergy = SmoothMath.softplus(primaryWatts * etaThermo, 1.0, 5.0);
+        double usefulExergy = SmoothMath.softplus(primaryWatts * etaExergy, 1.0, 5.0);
         double economicOutput = Math.pow(capital, ALPHA_K) * Math.pow(labor, BETA_L) * Math.pow(usefulExergy, GAMMA_E);
 
         double netDeltaK = (economicOutput * 0.05 - capital * 0.04) * dtYears;
@@ -107,131 +109,53 @@ public class KummelAyresExergyEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
-        super.tick(buffer, dtYears, dtMonthly);
-    }
-
-    @Override
-    public void reset() {
-        // Stateless physical operator
-    }
-
-    /**
-     * Returns the localized display name of the Kümmel-Ayres-Warr biophysical exergy engine.
-     *
-     * @return localized engine name
-     */
-    @Override
     public String getName() {
-        return org.ether.society.i18n.I18n.getOrDefault(
+        return I18n.getOrDefault(
                 "engine.kummel_ayres.name",
                 "Kümmel / Ayres-Warr Biophysical Exergy Economics");
     }
 
-    /**
-     * Returns the localized scientific description of the engine.
-     *
-     * @return localized engine description
-     */
     @Override
     public String getDescription() {
-        return org.ether.society.i18n.I18n.getOrDefault(
+        return I18n.getOrDefault(
                 "engine.kummel_ayres.desc",
                 "Thermodynamic macroeconomic production function Y = A · K^α · L^β · E_useful^γ where useful work/exergy is the prime driver of industrial output.");
     }
 
-    /**
-     * Returns the localized mathematical tooltip detailing equations, physical units, and references.
-     *
-     * @return localized equations tooltip
-     */
     @Override
     public String getEquationsTooltip() {
-        return org.ether.society.i18n.I18n.getOrDefault(
+        return I18n.getOrDefault(
                 "engine.kummel_ayres.tooltip",
                 """
                 [Kümmel & Ayres-Warr Useful Exergy Production Function]
                 • Output Function:        Y_i = A_i · K_i^0.25 · L_i^0.25 · (E_useful,i)^0.50
-                • Transducer Efficiency:  η_exergy(k_pc) = 0.05 + 0.40 · tanh(k_pc / 2500 kg/cap)
-                • Useful Exergy Flux:     E_useful,i = P_primary,i · η_exergy(k_pc)
+                • Second-Law Exergy Eff.: η_exergy = ε_II · (1 - T_C / T_H)
+                • Useful Exergy Flux:     E_useful,i = P_primary,i · η_exergy
                 • Euler Homogeneity:      α + β + γ = 1.0
-                Units: Y [Int$/yr], K [kg physical capital], L [person-hours], E_useful [Watts]
+                Units: Y [output/yr], K [kg physical capital], L [person-eq], E_useful [W]
                 Ref: R. Kümmel (2011) "The Second Law of Economics"; Ayres & Warr (2009) "The Economic Growth Engine"
                 """);
     }
 
-    /**
-     * Returns the engine ontological tier and domain classification.
-     *
-     * @return localized category label
-     */
     @Override
     public String getCategory() {
         return "Tier 2: Biophysical Economics";
     }
 
-    /**
-     * Integrates thermodynamic useful exergy production and capital formation over \(\Delta t\) years.
-     *
-     * @param cells      contiguous list of active H3 hexagonal cells
-     * @param deltaYears integration time step \(\Delta t\) in Julian years
-     */
     @Override
     public void processBuffer(WorldBuffer buffer, double deltaYears) {
         processKummelAyresExergy(buffer, deltaYears);
     }
 
     /**
-     * Executes pure Data-Oriented Design (DoD) second-law Carnot exergy production over WorldBuffer.
+     * Executes pure Data-Oriented Design (DoD) Second-Law Carnot exergy production over {@link WorldBuffer}.
      *
-     * @param buffer contiguous world buffer
+     * @param buffer     contiguous world buffer
      * @param deltaYears time step duration in astronomical Julian years
      */
     public static void processKummelAyresExergy(WorldBuffer buffer, double deltaYears) {
         if (buffer == null || deltaYears <= 0.0) return;
-        int n = buffer.getCapacity();
-        float[] popArr = buffer.getHumanPopulation();
-        float[] capArr = buffer.getResourceCapital();
-        float[] coalArr = buffer.getResourceCoal();
-        float[] oilArr = buffer.getResourceOil();
-        float[] gasArr = buffer.getResourceGas();
-        float[] tempArr = buffer.getTemperature();
-
-        for (int i = 0; i < n; i++) {
-            float p = popArr[i];
-            if (p <= 0.001f) continue;
-            float capital = (capArr != null) ? Math.max(1.0f, capArr[i]) : 10.0f;
-            float labor = p * 0.5f;
-
-            double tColdK = (tempArr != null) ? (tempArr[i] + 273.15) : 288.15;
-            double coal = (coalArr != null) ? coalArr[i] : 0.0;
-            double hydrocarbon = ((oilArr != null ? oilArr[i] : 0.0) + (gasArr != null ? gasArr[i] : 0.0));
-
-            // Carnot second-law thermodynamics: effective prime-mover combustion flame temperature
-            double deltaTFlame = 450.0
-                    + 700.0 * SmoothMath.sigmoid(coal, 100.0, 30.0)
-                    + 500.0 * SmoothMath.sigmoid(hydrocarbon, 100.0, 30.0);
-            double tHotK = tColdK + deltaTFlame;
-            double etaCarnot = 1.0 - (tColdK / tHotK);
-
-            double kPerCap = capital / p;
-            double recoveryFactor = 0.08 + (0.58 - 0.08) * SmoothMath.sigmoid(kPerCap, 1200.0, 400.0);
-            double etaThermo = Math.clamp(etaCarnot * recoveryFactor, 0.05, 0.50);
-
-            double primaryWatts = p * Math.max(85.0, buffer.computeCellPowerWattsPerCapita(i));
-            double usefulExergy = SmoothMath.softplus(primaryWatts * etaThermo, 1.0, 5.0);
-
-            double tfp = 1.0;
-            double economicOutput = tfp * Math.pow(capital, ALPHA_K) * Math.pow(labor, BETA_L) * Math.pow(usefulExergy, GAMMA_E);
-
-            double capitalReinvestment = economicOutput * 0.05 * deltaYears;
-            double capitalDepreciation = capital * 0.04 * deltaYears;
-            if (capArr != null) {
-                capArr[i] = (float) Math.max(1.0, capital + capitalReinvestment - capitalDepreciation);
-            }
-        }
+        KummelAyresExergyEngine instance = new KummelAyresExergyEngine();
+        instance.tick(buffer, deltaYears, deltaYears * 12.0);
     }
 }
-
-
-

@@ -107,6 +107,11 @@ public class PomeranzGreatDivergenceEngine extends AbstractSimulationEngine {
             acc.dResourceCapital += (float) (capital * 0.055 * divergencePotential * dtYears);
         } else if (kpc >= 80.0 && p >= 10.0f) {
             acc.dResourceCapital -= (float) Math.min(Math.max(0.0, capital - 10.0), capital * 0.006 * dtYears);
+            // Wrigley (2010) organic-economy forestry bottleneck: absent mineral coal, proto-industrial heat draws down standing wood biomass
+            if (buffer.getBiomassNatural() != null && buffer.getBiomassNatural()[i] > 10.0f) {
+                double woodDrawdown = buffer.getBiomassNatural()[i] * 0.012 * (1.0 - coalProximityFactor) * dtYears;
+                acc.dBiomassNatural -= (float) woodDrawdown;
+            }
         }
     }
 
@@ -197,6 +202,9 @@ public class PomeranzGreatDivergenceEngine extends AbstractSimulationEngine {
                 double involutionDrag = 0.015 * deltaYears;
                 if (capArr != null) {
                     capArr[i] = (float) Math.max(10.0, capital * (1.0 - involutionDrag * 0.40));
+                }
+                if (natArr != null && natArr[i] > 10.0f) {
+                    natArr[i] = (float) Math.max(10.0, natArr[i] * (1.0 - 0.012 * (1.0 - coalProximityFactor) * deltaYears));
                 }
             }
         }

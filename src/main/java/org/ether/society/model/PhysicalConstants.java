@@ -38,6 +38,9 @@ public final class PhysicalConstants {
     /** Standard atmospheric pressure at sea level P_0 in Pascals */
     public static final double STANDARD_ATM_PASCALS = 101325.0;
 
+    /** Standard Earth surface gravitational acceleration g_0 in m/s² (CGPM 1901) */
+    public static final double STANDARD_GRAVITY_M_PER_S2 = 9.80665;
+
     /** Standard zero Celsius in Kelvin */
     public static final double KELVIN_ZERO_CELSIUS = 273.15;
 

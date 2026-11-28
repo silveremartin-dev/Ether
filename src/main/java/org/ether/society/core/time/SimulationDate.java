@@ -6,24 +6,25 @@
  */
 package org.ether.society.core.time;
 
+import org.ether.society.model.PhysicalConstants;
+
 import java.io.Serializable;
 import java.util.Locale;
 
 /**
  * <h1>SimulationDate</h1>
  * <p>
- * Dedicated, immutable, strongly-typed temporal representation for macro-historical
- * and planetary simulation chronologies across multi-millennial timescales (-100,000 BP to 2100+ CE).
- * Uses canonical astronomical 360-day year (12 months of 30 days) ensuring strict bitwise determinism
- * and linear step-independent temporal comparisons.
+ * Immutable, strongly-typed temporal coordinate for macro-historical and planetary simulation
+ * chronologies across multi-millennial timescales (\(-100\,000\,\text{BP}\) to \(2100+\,\text{CE}\)).
+ * Anchored strictly to the IAU Julian year (\(365.25\,\text{days/yr}\)) and synodic month
+ * (\(30.4375\,\text{days/mo}\)) in compliance with {@code AGENTS.md} §3 Contract 1.
  * </p>
  *
- * @param year calendar year (negative for BCE/BP, positive for CE)
- * @param month calendar month (1-12)
- * @param day calendar day of month (1-30)
- * 
+ * @param year  calendar year (negative for BCE/BP, positive for CE)
+ * @param month calendar month (1–12)
+ * @param day   calendar day of month (1–30)
  * @author Silvere Martin-Michiellot
- * @version 1.0.0
+ * @version 1.0.0-beta.5
  */
 public record SimulationDate(int year, int month, int day) implements Comparable<SimulationDate>, Serializable {
 
@@ -37,9 +38,9 @@ public record SimulationDate(int year, int month, int day) implements Comparable
     /**
      * Factory method creating a date with normalized month and day bounds.
      *
-     * @param year calendar year (negative for BCE)
-     * @param month calendar month (1-12)
-     * @param day calendar day of month (1-30)
+     * @param year  calendar year (negative for BCE)
+     * @param month calendar month (1–12)
+     * @param day   calendar day of month (1–30)
      * @return non-null immutable date
      */
     public static SimulationDate of(int year, int month, int day) {
@@ -47,31 +48,32 @@ public record SimulationDate(int year, int month, int day) implements Comparable
     }
 
     /**
-     * Factory method converting an absolute linear day index into a calendar date.
+     * Factory method converting an absolute linear Julian day index into a calendar date.
      *
-     * @param absoluteDays absolute linear day count
+     * @param absoluteDays absolute linear Julian day count
      * @return non-null calendar date
      */
     public static SimulationDate ofDays(long absoluteDays) {
-        long totalDays = absoluteDays;
-        long year = totalDays / 360L;
-        long rem = totalDays % 360L;
-        if (rem < 0) {
-            rem += 360L;
-            year -= 1;
-        }
-        int month = (int) (rem / 30L) + 1;
-        int day = (int) (rem % 30L) + 1;
-        return new SimulationDate((int) year, month, day);
+        double daysPerYear = PhysicalConstants.DAYS_PER_JULIAN_YEAR;
+        double daysPerMonth = PhysicalConstants.DAYS_PER_SYNODIC_MONTH;
+        long year = (long) Math.floor((absoluteDays + 1.0e-6) / daysPerYear);
+        double remYearDays = Math.max(0.0, absoluteDays - year * daysPerYear);
+        int monthIndex = Math.min(11, (int) Math.floor((remYearDays + 1.0e-6) / daysPerMonth));
+        double remMonthDays = Math.max(0.0, remYearDays - monthIndex * daysPerMonth);
+        int day = Math.clamp((int) Math.round(remMonthDays) + 1, 1, 30);
+        return new SimulationDate((int) year, monthIndex + 1, day);
     }
 
     /**
-     * Converts this date into a continuous, linear absolute day scalar.
+     * Converts this date into a continuous, linear absolute Julian day index.
      *
-     * @return absolute linear simulation days
+     * @return absolute linear Julian days
      */
     public long toAbsoluteDays() {
-        return ((long) year * 360L) + (((long) month - 1L) * 30L) + ((long) day - 1L);
+        double exactDays = ((double) year * PhysicalConstants.DAYS_PER_JULIAN_YEAR)
+                + (((double) month - 1.0) * PhysicalConstants.DAYS_PER_SYNODIC_MONTH)
+                + ((double) day - 1.0);
+        return Math.round(exactDays);
     }
 
     /**
@@ -82,7 +84,7 @@ public record SimulationDate(int year, int month, int day) implements Comparable
      */
     public boolean isBefore(SimulationDate other) {
         if (other == null) return false;
-        return this.toAbsoluteDays() < other.toAbsoluteDays();
+        return this.compareTo(other) < 0;
     }
 
     /**
@@ -93,7 +95,7 @@ public record SimulationDate(int year, int month, int day) implements Comparable
      */
     public boolean isAfter(SimulationDate other) {
         if (other == null) return false;
-        return this.toAbsoluteDays() > other.toAbsoluteDays();
+        return this.compareTo(other) > 0;
     }
 
     /**
@@ -104,7 +106,7 @@ public record SimulationDate(int year, int month, int day) implements Comparable
      */
     public boolean isAtOrAfter(SimulationDate other) {
         if (other == null) return false;
-        return this.toAbsoluteDays() >= other.toAbsoluteDays();
+        return this.compareTo(other) >= 0;
     }
 
     /**
@@ -115,11 +117,11 @@ public record SimulationDate(int year, int month, int day) implements Comparable
      */
     public boolean isAtOrBefore(SimulationDate other) {
         if (other == null) return false;
-        return this.toAbsoluteDays() <= other.toAbsoluteDays();
+        return this.compareTo(other) <= 0;
     }
 
     /**
-     * Calculates signed days between this date and target date (target - this).
+     * Calculates signed Julian days between this date and target date ({@code target - this}).
      *
      * @param target target date
      * @return day count delta
@@ -130,20 +132,20 @@ public record SimulationDate(int year, int month, int day) implements Comparable
     }
 
     /**
-     * Advances date by specified continuous days.
+     * Advances date by specified continuous Julian days.
      *
      * @param days days to add (may be negative)
-     * @return new advanced SimulationDate
+     * @return new advanced {@link SimulationDate}
      */
     public SimulationDate plusDays(long days) {
         return ofDays(this.toAbsoluteDays() + days);
     }
 
     /**
-     * Advances date by specified years.
+     * Advances date by specified Julian years.
      *
      * @param years years to add
-     * @return new advanced SimulationDate
+     * @return new advanced {@link SimulationDate}
      */
     public SimulationDate plusYears(int years) {
         return of(this.year + years, this.month, this.day);
@@ -152,7 +154,11 @@ public record SimulationDate(int year, int month, int day) implements Comparable
     @Override
     public int compareTo(SimulationDate o) {
         if (o == null) return 1;
-        return Long.compare(this.toAbsoluteDays(), o.toAbsoluteDays());
+        int cmpY = Integer.compare(this.year, o.year);
+        if (cmpY != 0) return cmpY;
+        int cmpM = Integer.compare(this.month, o.month);
+        if (cmpM != 0) return cmpM;
+        return Integer.compare(this.day, o.day);
     }
 
     @Override

@@ -7,50 +7,41 @@
 package org.ether.society.engines.tier2.theories;
 
 import org.ether.society.core.dod.WorldBuffer;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.core.engine.SimulationEngineModule;
+import org.ether.society.core.math.SmoothMath;
 import org.ether.society.database.H3Cell;
 import org.ether.society.engines.tier1.PhysicalEnergyGridEngine;
+import org.ether.society.i18n.I18n;
 import org.ether.society.model.Scenario;
-import org.ether.society.core.math.SmoothMath;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
- * Physical Capital Diffusion &amp; Induced Innovation Engine.
+ * Physical Capital Diffusion &amp; Induced Substitution Engine (Nelson &amp; Phelps 1966; Hicks 1932; Acemoglu 2002).
  *
- * <p>In strict conformance with {@code AGENTS.md} §10.1, technology is NOT stored or mutated
- * as an independent state variable. This engine provides:</p>
- * <ul>
- *   <li><b>A posteriori physical era diagnostic</b>: maps continuous per-capita power dissipation
- *       (\(P_{\text{watts}}/N\)) and material yield strength into human historical archetypes.</li>
- *   <li><b>Spatial capital and knowledge diffusion</b>: transports structural capital and
- *       productive tooling along active commercial corridors.</li>
- *   <li><b>Induced capital deepening</b>: Allen-Acemoglu directed technical change manifesting
- *       through physical capital accumulation (\(\Delta K\)).</li>
- * </ul>
+ * <p>Implements two peer-reviewed mechanisms strictly over conserved physical observables ({@code AGENTS.md} §4.2 &amp; §5.1):</p>
+ * <ol>
+ *   <li><b>Nelson-Phelps Spatial Frontier Catch-Up (Nelson &amp; Phelps 1966, <i>AER</i> 56:69–75)</b>:
+ *       $$\frac{dk_i}{dt} = \phi_d \, \max\!\left(0,\; k_{\max,\mathcal{N}_i} - k_i\right)$$
+ *       diffusing productive physical tooling across contiguous H3 trade neighbors.</li>
+ *   <li><b>Hicks-Acemoglu Induced Factor-Scarcity Substitution (Hicks 1932; Acemoglu 2002, <i>QJE</i> 117:781)</b>:
+ *       Organic timber scarcity relative to metallic ore availability induces mineral-embodied capital deepening
+ *       bounded by {@code TypeBEnginePassRunner}'s Lavoisier-Carnot envelope.</li>
+ * </ol>
  *
  * @author Silvere Martin-Michiellot
- * @version 1.0.0-beta.3
+ * @version 1.0.0-beta.5
  */
-public class PhysicalCapitalDiffusionEngine implements SimulationEngineModule {
-    private static final Logger logger = LoggerFactory.getLogger(PhysicalCapitalDiffusionEngine.class);
+public class PhysicalCapitalDiffusionEngine extends AbstractSimulationEngine {
 
-    @Override
-    public String id() {
-        return "PhysicalCapitalDiffusionEngine";
-    }
+    /** Nelson-Phelps spatial frontier catch-up rate (\(\phi_d = 0.025\,\text{yr}^{-1}\)). */
+    public static final double NELSON_PHELPS_CATCHUP_RATE = 0.025;
 
-    @Override
-    public String name() {
-        return "Physical Capital Diffusion Engine";
-    }
-
-    @Override
-    public EngineTier tier() {
-        return EngineTier.TIER_2_CLIODYNAMIC;
+    /**
+     * Constructs the Nelson-Phelps / Hicks-Acemoglu physical capital diffusion engine.
+     */
+    public PhysicalCapitalDiffusionEngine() {
+        super("PhysicalCapitalDiffusionEngine", "Physical Capital Diffusion Engine", EngineTier.TIER_2_CLIODYNAMIC);
     }
 
     @Override
@@ -61,48 +52,93 @@ public class PhysicalCapitalDiffusionEngine implements SimulationEngineModule {
     }
 
     @Override
-    public void tick(WorldBuffer buffer, double dtYears, double dtMonthly) {
-        processBuffer(buffer, dtYears);
+    public boolean supportsCellularDerivatives() {
+        return true;
     }
 
     @Override
-    public void reset() {
-        // Stateless physical operator
+    public String getEquationsTooltip() {
+        return """
+               [Nelson-Phelps Diffusion & Hicks-Acemoglu Induced Substitution]
+               • Frontier Catch-Up:     dk_i/dt = φ_d · max(0, k_frontier,N(i) - k_i)
+               • Induced Substitution:  dk_ind/dt = μ_ind · S_organic · (M_metal / (M_metal + M_0))
+               Parameters: φ_d = 0.025 yr^-1, M_0 = 15 t
+               Ref: R. R. Nelson & E. S. Phelps (1966, AER 56:69); D. Acemoglu (2002, QJE 117:781)
+               """;
     }
 
-    public void processBuffer(WorldBuffer buffer, double dtYears) {
-        if (buffer == null || dtYears <= 0) return;
-        float[] popArr = buffer.getHumanPopulation();
-        float[] capArr = buffer.getResourceCapital();
-        float[] woodArr = buffer.getBiomassNatural();
-        float[] metalArr = buffer.getMetalResource();
-        if (popArr == null || capArr == null) return;
-
-        int count = buffer.getCapacity();
-        for (int i = 0; i < count; i++) {
-            float pop = popArr[i];
-            if (pop <= 0.0f) continue;
-
-            float capPerCapita = capArr[i] / pop;
-            float wood = woodArr != null ? woodArr[i] : 1000.0f;
-            float metal = metalArr != null ? metalArr[i] : 0.0f;
-
-            double organicDemand = pop * 0.15;
-            double organicScarcityStress = SmoothMath.smoothClamp(1.0 - (wood / Math.max(1.0, organicDemand)), 0.0, 1.0, 20.0);
-
-            double potMetal = (metal > 0.0) ? (metal / (metal + 15.0)) : 0.0;
-            double deltaK = 5.0 * organicScarcityStress * potMetal * Math.max(0.0001, dtYears);
-            capArr[i] += (float) (deltaK * pop);
+    @Override
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        if (buffer == null || dtYears <= 0.0 || buffer.getHumanPopulation() == null || buffer.getResourceCapital() == null) {
+            return;
         }
+        float pop = buffer.getHumanPopulation()[i];
+        if (pop <= 0.0f) return;
+
+        double kSelf = buffer.getResourceCapital()[i] / pop;
+
+        // 1. Nelson & Phelps (1966) contiguous H3 neighbor frontier catch-up
+        double kNeighborMax = kSelf;
+        int[][] neighbors = buffer.getNeighborIndexes();
+        if (neighbors != null && i < neighbors.length && neighbors[i] != null) {
+            float[] popArr = buffer.getHumanPopulation();
+            float[] capArr = buffer.getResourceCapital();
+            int cap = buffer.getCapacity();
+            for (int nIdx : neighbors[i]) {
+                if (nIdx >= 0 && nIdx < cap && popArr[nIdx] > 1.0f) {
+                    double kNbr = capArr[nIdx] / popArr[nIdx];
+                    if (kNbr > kNeighborMax) {
+                        kNeighborMax = kNbr;
+                    }
+                }
+            }
+        }
+        double nelsonPhelpsCatchUpKgPerCap = NELSON_PHELPS_CATCHUP_RATE
+                * SmoothMath.softplus(kNeighborMax - kSelf, 0.0, 2.0) * dtYears;
+
+        // 2. Hicks (1932) / Acemoglu (2002) organic-resource scarcity induced substitution
+        double wood = buffer.getBiomassNatural() != null ? buffer.getBiomassNatural()[i] : 1000.0;
+        double metal = buffer.getMetalResource() != null ? buffer.getMetalResource()[i] : 0.0;
+        double organicDemand = pop * 0.15;
+        double organicScarcityStress = SmoothMath.smoothClamp(1.0 - (wood / Math.max(1.0, organicDemand)), 0.0, 1.0, 20.0);
+        double metalElasticity = metal > 0.0 ? (metal / (metal + 15.0)) : 0.0;
+        double inducedDeltaKgPerCap = 5.0 * organicScarcityStress * metalElasticity * dtYears;
+
+        acc.dResourceCapital += (float) ((nelsonPhelpsCatchUpKgPerCap + inducedDeltaKgPerCap) * pop);
     }
 
-    public record PhysicalEra(String i18nKeyPrefix, String defaultName, double minPowerWattsPerCapita, double minMaterialYieldMPa, String defaultDescription) {
+    /**
+     * A posteriori diagnostic historical archetype record derived solely from physical observables.
+     *
+     * @param i18nKeyPrefix          localization bundle key prefix
+     * @param defaultName            fallback English archetype name
+     * @param minPowerWattsPerCapita minimum per-capita power dissipation (\(\text{W/person}\))
+     * @param minMaterialYieldMPa    characteristic structural material yield strength (\(\text{MPa}\))
+     * @param defaultDescription     fallback English physical description
+     */
+    public record PhysicalEra(
+            String i18nKeyPrefix,
+            String defaultName,
+            double minPowerWattsPerCapita,
+            double minMaterialYieldMPa,
+            String defaultDescription) {
+
+        /**
+         * Returns the localized display name of this physical era.
+         *
+         * @return localized era name
+         */
         public String name() {
-            return org.ether.society.i18n.I18n.getOrDefault(i18nKeyPrefix + ".name", defaultName);
+            return I18n.getOrDefault(i18nKeyPrefix + ".name", defaultName);
         }
 
+        /**
+         * Returns the localized scientific description of this physical era.
+         *
+         * @return localized era description
+         */
         public String description() {
-            return org.ether.society.i18n.I18n.getOrDefault(i18nKeyPrefix + ".desc", defaultDescription);
+            return I18n.getOrDefault(i18nKeyPrefix + ".desc", defaultDescription);
         }
     }
 
@@ -123,7 +159,7 @@ public class PhysicalCapitalDiffusionEngine implements SimulationEngineModule {
             "High-pressure steam engines, Bessemer steel (800 MPa), and fossil coal grids (8,000 W/capita).");
 
     /**
-     * Determines physical historical era based on per-capita mechanical/thermal power dissipation.
+     * Determines physical historical era based strictly on per-capita mechanical/thermal power dissipation.
      *
      * @param cell the cell under inspection
      * @return diagnostic historical era

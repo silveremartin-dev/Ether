@@ -72,7 +72,7 @@ Ether decouples numerical integration across three discrete physical time scales
   - Resolves van Genuchten soil water retention, N-P-K soil nutrient depletion, and Stokes siltation kinetics.
   - Integrates Farquhar FvCB photosynthesis, Beer-Lambert light interception, and soil organic carbon decay.
   - Updates cohort demographic aging, Gompertz-Makeham senescence, and Kimura genetic drift.
-  - Evaluates active Tier 1 biophysical modules (`TypeBEnginePassRunner.executeActiveTier1Engines` in phase `3b_Tier1Biophysical`: thermodynamics, ecological degradation, pollution, metallurgy) and active Tier 2 cliodynamic theories (`TypeBEnginePassRunner.executeActiveTypeBEngines` in phase `4_ProceduralEngines`) via Single-Pass Cellular Kernel Fusion over `WorldBuffer` and `DerivativeAccumulator`, followed by sovereign `Polity` macro-cycles (`CliodynamicsEngine`, `WarDiplomacyEngine`, `SovereignTreasuryBondEngine`).
+  - Integrates coupled biophysical, thermodynamic, and socio-institutional differential operators across spatial cells and sovereign polities.
 
 - **Tier 3  -  Annual Macro Physics Scale ($\Delta t_{\text{annual}} = 365 \text{ days} \approx 31.5576 \times 10^6 \text{ s}$)**:
   - Deep mineral ore grade degradation and Hotelling depletion dynamics (`OreGradeThermodynamicsEngine`).
@@ -119,21 +119,14 @@ with canonical parameters:
 #### 2. Historical Epoch Uncertainty Envelopes:
 - **Deep Time ($-3\,000\,000\text{ BP}$ to $-10\,000\text{ BP}$)**: $\tau \approx 45\text{--}50\%$. Archeological bone beds, lithic scatters, and ice-core proxies capture order-of-magnitude demographic densities and global climate anomalies.
 
-### 2.3 Canonical Time-Step Representation (`SimulationTimeStep`) & Numerical Discretization Principles
+### 2.3 Astronomical Time Coordinate & Numerical Integration Principles
 
-To enforce strict dimensional consistency, zero allocation per tick, and prevent numerical drift across spatial scales, temporal increments across all simulation engines, DOD kernels, and pipeline orchestrators are represented exclusively via the immutable value record `org.ether.society.core.SimulationTimeStep`.
+#### 1. Exact Astronomical Constants (IAU 1976 / 2012):
+Temporal integration across multi-millennial horizons is anchored to the International Astronomical Union (IAU) Julian year and synodic month:
+$$J_{\text{yr}} = 365.25\,\text{d}, \qquad M_{\text{syn}} = 30.4375\,\text{d}, \qquad \tau_{\text{d}} = 86\,400\,\text{s}, \qquad \tau_{\text{yr}} = J_{\text{yr}} \cdot \tau_{\text{d}} = 3.15576 \times 10^7\,\text{s}$$
 
-#### 1. Exact Astronomical Baseline Conversions:
-All temporal conversions anchor to authoritative astronomical invariants (`PhysicalConstants`):
-$$\text{DAYS\_PER\_JULIAN\_YEAR} = 365.25, \quad \text{DAYS\_PER\_SYNODIC\_MONTH} = 30.4375, \quad \text{SECONDS\_PER\_DAY} = 86\,400.0$$
-
-The canonical accessors are:
-$$\Delta t_{\text{days}} = \text{timeStep.dtDays}()$$
-$$\Delta t_{\text{years}} = \frac{\Delta t_{\text{days}}}{365.25} = \text{timeStep.dtYears}()$$
-$$\Delta t_{\text{months}} = \frac{\Delta t_{\text{days}}}{30.4375} = \text{timeStep.dtMonths}()$$
-$$\Delta t_{\text{seconds}} = \Delta t_{\text{days}} \times 86\,400.0 = \text{timeStep.dtSeconds}()$$
-
-A strict positive lower bound ($\Delta t_{\min} = 10^{-4}\text{ days} \approx 8.64\text{ s}$) guarantees numerical regularity and eliminates division-by-zero hazards. Ad-hoc approximations (such as equating monthly duration directly to annual duration) are strictly prohibited.
+For a time increment $\Delta t_{\text{d}} \ge 10^{-4}\,\text{d}$:
+$$\Delta t_{\text{yr}} = \frac{\Delta t_{\text{d}}}{J_{\text{yr}}}, \qquad \Delta t_{\text{mo}} = \frac{\Delta t_{\text{d}}}{M_{\text{syn}}}, \qquad \Delta t_{\text{s}} = \Delta t_{\text{d}} \cdot \tau_{\text{d}}$$
 
 #### 2. Numerical Integration Strategy & The Computational ROI Filter:
 The numerical solver architecture partitions differential systems based on their mathematical stiffness and computational return on investment (Computational ROI):
@@ -223,14 +216,14 @@ The numerical solver architecture partitions differential systems based on their
 * **Governing Equations**:
   $$f = 2\Omega \sin\phi, \quad \mathbf{v}_{\text{geostrophic}} = -\frac{1}{\rho_{\text{air}} f} \nabla P \times \hat{\mathbf{k}}$$
   $$\frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla)\mathbf{u} = -\frac{1}{\rho_{\text{air}}} \nabla P - f \hat{\mathbf{k}} \times \mathbf{u} - \kappa_{\text{drag}} \mathbf{u}$$
-  $$p_{\text{wind,meteo}}(\phi) = \frac{1}{2} \rho_{\text{air}} \|\mathbf{u}(\phi)\|^3 \;[\text{W/m}^2], \qquad E_{\text{wind},i} = \operatorname{wattsToGjPerYear}\!\left(\min\!\left(p_{\text{wind,meteo}} \cdot A_{\text{rotor}}(N_i, k_{\text{pc},i}),\; 1.25 \cdot A_{\text{cell},i}\right)\right) \;[\text{GJ/yr}]$$
+  $$p_{\text{wind}}(\phi) = \frac{1}{2} \rho_{\text{air}} \|\mathbf{u}(\phi)\|^3 \quad [\text{W/m}^2]$$
 * **Parameters & Physical Units**:
   * $\Omega = 7.292115 \times 10^{-5}\text{ rad/s}$: Earth sidereal rotational angular velocity.
   * $f$: Coriolis parameter [$\text{s}^{-1}$].
   * $\rho_{\text{air}}$: Atmospheric density [$\text{kg/m}^3$] ($\approx 1.225\text{ kg/m}^3$ at sea level).
   * $P$: Atmospheric pressure field [$\text{Pa}$].
   * $\mathbf{u} = (u, v)$: Horizontal wind velocity vector [$\text{m/s}$], resolving trade winds ($[0^\circ, 30^\circ]$), westerlies ($[30^\circ, 60^\circ]$), and polar easterlies ($[60^\circ, 90^\circ]$).
-  * $E_{\text{wind},i}$: Captured anthropogenic wind exergy stored in `WorldBuffer.energyWind` [$\text{GJ/yr}$], strictly $0.0$ when $N_i \le 0$ or $k_{\text{pc},i} \le 0$ (`Contract 2`).
+  * $p_{\text{wind}}(\phi)$: Meteorological boundary-layer kinetic wind power density [$\text{W/m}^2$].
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 5. Greenhouse Radiative Forcing (`GreenhouseRadiativeEngine`)
@@ -250,10 +243,9 @@ The numerical solver architecture partitions differential systems based on their
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Stommel, H. (1961). *Thermohaline convection with two stable regimes of flow*. Tellus, 13(2), 224-230; Rahmstorf, S. (1995). *Bifurcations of the Atlantic thermohaline circulation in two different climate models*. Nature, 378(6553), 145-149; Broecker, W. S. (1998). *Paleoceanography*, 13(2), 119-121; EPICA Community Members (2006). *Nature*, 444, 195-198.
 * **Governing Equations**:
-  $$q_{\text{AMOC}} = \operatorname{softplus}\left( C \cdot \left[ \alpha_T \cdot \eta_{\text{gyre}} (T_e - T_p) - \beta_S (S_e - S_p) \right], \; 1.5 \right)$$
-  $$\frac{dT_p}{dt} = \frac{T_p^* - T_p}{\tau_T}$$
-  $$\frac{dS_p}{dt} = \frac{\max(0, q_{\text{AMOC}})}{V_p} (S_e - S_p) - \frac{\left(F_0 \frac{\max(0, q)}{q_0} + F_{\text{melt}}\right) S_0}{V_p} + \frac{S_p^* - S_p}{\tau_{\text{diff}}}$$
-  $$\Delta T_{\text{North}} = -8.0 \cdot \frac{1}{1 + \exp\left( \frac{q_{\text{AMOC}} - 8.0}{1.5} \right)} \qquad \Delta T_{\text{South}} = -0.22 \cdot \Delta T_{\text{North}}$$
+  $$q_{\text{AMOC}} = k \left| \alpha_T (T_e - T_p) - \beta_S (S_e - S_p) \right|$$
+  $$\frac{d(T_e - T_p)}{dt} = -\frac{(T_e - T_p) - \Delta T^*}{\tau_T} - \frac{2 \, q_{\text{AMOC}}}{V_p} (T_e - T_p)$$
+  $$\frac{d(S_e - S_p)}{dt} = \frac{2 \, F_w S_0}{V_p} - \frac{2 \, q_{\text{AMOC}}}{V_p} (S_e - S_p)$$
 * **Parameters & Physical Units**:
   * $q_{\text{AMOC}}$: Overturning volumetric transport [$\text{Sverdrups, } 1\text{ Sv} = 10^6\text{ m}^3\text{/s}$], baseline unperturbed $q_0 \approx 18.2\text{ Sv}$.
   * $C = 11500.0$: Hydrodynamic Stommel coupling constant.
@@ -599,9 +591,8 @@ The numerical solver architecture partitions differential systems based on their
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Charnov, E. L. (1993). *Life History Invariants: Some Explorations of Symmetry in Evolutionary Ecology*. Oxford University Press; Stearns, S. C. (1992). *The Evolution of Life Histories*. Oxford University Press; Promislow, D. E. L., & Harvey, P. H. (1990). *Living fast and dying young: A comparative analysis of life-history variation among mammals*. Journal of Zoology, 220(3), 417-437.
 * **Governing Equations**:
-  $$\mu_{\text{adult}} \cdot \alpha = C_{\text{charnov}} \approx 1.80 \pm 0.20$$
-  $$\alpha^*(\mu) = \operatorname{clamp}\left(\frac{C_{\text{charnov}}}{\mu_{\text{total}}}, \; \alpha_{\min}, \; \alpha_{\max}\right) \quad [\text{years}]$$
-  $$l_\alpha = \exp(-\mu_{\text{juv}} \cdot \alpha) = \exp(-q_{\text{juv}} \cdot C_{\text{charnov}}), \qquad b^*(\mu) = \frac{\mu_{\text{adult}}}{l_\alpha}$$
+  $$\mu_{\text{adult}} \cdot \alpha = C_{\text{Charnov}} \approx 1.80 \pm 0.20, \qquad \alpha^*(\mu_{\text{adult}}) = \frac{C_{\text{Charnov}}}{\mu_{\text{adult}}}$$
+  $$l_\alpha = \exp(-\mu_{\text{juv}} \cdot \alpha) = \exp(-q_{\text{juv}} \cdot C_{\text{Charnov}}), \qquad b^*(\mu_{\text{adult}}) = \frac{\mu_{\text{adult}}}{l_\alpha}$$
 * **Parameters & Physical Units**:
   * $C_{\text{charnov}} = 1.80$: Conserved mammalian/primate life-history invariant [dimensionless].
   * $q_{\text{juv}} = 0.65$: Ratio of juvenile mortality hazard to adult mortality hazard.
@@ -753,12 +744,12 @@ The numerical solver architecture partitions differential systems based on their
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Sterner, R. W., & Elser, J. J. (2002). *Ecological Stoichiometry: The Biology of Elements from Molecules to the Biosphere*. Princeton University Press; Redfield, A. C. (1958). *The biological control of chemical factors in the environment*. American Scientist, 46(3), 205-221; Loladze, I. (2002, 2014). *Hidden shift of the ionome of plants with rising atmospheric CO2*. eLife, 3, e02245.
 * **Governing Equations**:
-  $$\text{Redfield Ratio}_{\text{marine}} = 106\text{ C} : 16\text{ N} : 1\text{ P} \implies \frac{\text{C}}{\text{P}} \approx 41.1, \; \frac{\text{N}}{\text{P}} \approx 7.23 \text{ by mass}$$
-  $$L_{\text{Liebig}}(\text{N}, \text{P}, \text{K}) = \text{softmin}\left(\frac{\text{N}}{\text{N}_{\text{opt}}}, \; \text{softmin}\left(\frac{\text{P}}{\text{P}_{\text{opt}}}, \; \frac{\text{K}}{\text{K}_{\text{opt}}}, \; 8.0\right), \; 8.0\right)$$
-  $$D_{\text{protein}}(\text{CO}_2) = 1.0 - \delta_{\text{max}} \cdot \tanh\left(\frac{\max(0, \text{CO}_2 - 280.0)}{350.0}\right)$$
+  $$\text{C} : \text{N} : \text{P}_{\text{molar}} = 106 : 16 : 1 \implies \frac{M_{\text{C}}}{M_{\text{P}}} \approx 41.1, \quad \frac{M_{\text{N}}}{M_{\text{P}}} \approx 7.23 \text{ (by mass)}$$
+  $$L_{\text{Liebig}}(\text{N}, \text{P}, \text{K}) = \min\!\left(1, \; \frac{[\text{N}]}{[\text{N}]_{\text{opt}}}, \; \frac{[\text{P}]}{[\text{P}]_{\text{opt}}}, \; \frac{[\text{K}]}{[\text{K}]_{\text{opt}}}\right)$$
+  $$\frac{[\text{N}]_{\text{plant}}(C_a)}{[\text{N}]_{\text{plant}}(C_0)} = \left(\frac{C_a}{C_0}\right)^{-\beta_{\text{ionome}}}$$
 * **Parameters & Physical Units**:
-  * $L_{\text{Liebig}} \in [0.05, 1.0]$: Continuous $C^1$ multi-nutrient limitation scalar.
-  * $D_{\text{protein}} \in [0.88, 1.0]$: Atmospheric carbon enrichment protein dilution coefficient ($\sim 12\%$ maximum grain protein dilution).
+  * $L_{\text{Liebig}} \in [0, 1]$: Liebig law of the minimum multi-elemental yield limitation factor.
+  * $\beta_{\text{ionome}} > 0$: Elevated-$\text{CO}_2$ plant mineral and protein stoichiometric dilution exponent (Loladze 2002, 2014).
 * **Epistemic Invariant**: Mass-balance conservation of chemical element ratios without ad-hoc single-variable cliffs.
 * **Computational Complexity**: $O(1)$ per cell.
 
@@ -796,7 +787,7 @@ The numerical solver architecture partitions differential systems based on their
   $$I_{\text{surf}}(\phi) = S_0 (1 - \alpha_{\text{p}}) \cdot \max(0.08, \cos\phi) \;[\text{W/m}^2], \qquad \eta_{\text{carnot}} = \frac{T_s - T_e}{T_s} \approx 0.115, \qquad G_{\text{ke}} = \frac{1}{4} \eta_{\text{carnot}} \cdot I_{\text{net}} \approx 2.5\text{--}3.5\text{ W/m}^2$$
   $$P_{\text{precip}} = E = \left(\frac{\Delta}{\Delta + \gamma}\right) \frac{R_n}{\lambda_v} \cdot 3.15576 \times 10^7\text{ s/yr}$$
 * **Parameters & Physical Units**:
-  * $I_{\text{surf}}(\phi)$: Direct astronomical surface solar irradiance [$\text{W/m}^2$], strictly decoupled from anthropogenic `WorldBuffer.energySolar` [$\text{GJ/yr}$].
+  * $I_{\text{surf}}(\phi)$: Incident surface shortwave solar irradiance [$\text{W/m}^2$].
   * $T_e = 255.0\text{ K}$: Planetary radiative emission temperature.
   * $\lambda_v = 2.45 \times 10^6\text{ J/kg}$: Latent heat of vaporization of water.
   * $\gamma = 0.66\text{ hPa/K}$: Psychrometric constant.
@@ -864,16 +855,16 @@ The numerical solver architecture partitions differential systems based on their
     * Steel rail train: $\mu \approx 0.001$
 * **Computational Complexity**: $O(1)$ per transport link.
 
-#### 35.1. Transport Infrastructure Capital & Spatial Friction Attenuation (`InfrastructureEnergyEngine`)
+#### 35.1. Transport Infrastructure & Iceberg Trade-Cost Attenuation (`InfrastructureEnergyEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
-* **Academic Literature Reference**: Minetti, A. E., et al. (2002). *Energy cost of walking and running at extreme uphill and downhill slopes*. J. Appl. Physiol., 93(3), 1039–1046; Donaldson, D. (2018). *Railroads of the Raj: Estimating the impact of transportation infrastructure*. American Economic Review, 108(4), 899-934.
-* **Governing Equations** (shared closed-form with `H3CellPhysicsAndStateHelper.calculateMovementFrictionFromObservables`):
-  $$k_{\text{infra}} = \frac{K_{\text{infra}}}{\max(10.0, A_{\text{cell}})} \quad [\text{kg/km}^2]$$
-  $$\text{infraMitigation} = 0.15 + \frac{0.85}{1.0 + 0.25 \cdot \ln(1.0 + \text{softplus}(10.0 \cdot k_{\text{infra}}, 0, 0.5))}$$
-  $$\mu_{\text{friction}, i} = \text{smoothClamp}(\tau_{\text{land}, 0} \cdot \text{infraMitigation}, \; 0.30, 25.0, 10.0)$$
+* **Academic Literature Reference**: Samuelson, P. A. (1954). *The transfer problem and transport costs, II*. Economic Journal, 64(254), 264–289; Allen, T., & Arkolakis, C. (2014). *Trade and the Topography of the Spatial Economy*. Quarterly Journal of Economics, 129(3), 1085–1140; Donaldson, D. (2018). *Railroads of the Raj: Estimating the impact of transportation infrastructure*. American Economic Review, 108(4), 899–934.
+* **Governing Equations**:
+  $$\tau_{ij} = \exp\!\left(\int_{\gamma_{ij}} \mu(\mathbf{x}) \, ds\right), \qquad \mu(\mathbf{x}) = \mu_0(\nabla z, T, B_{\text{veg}}) \cdot \left(1 + \frac{K_{\text{infra}}(\mathbf{x})}{A(\mathbf{x}) \cdot k_0}\right)^{-\zeta}$$
 * **Parameters & Physical Units**:
-  * $K_{\text{infra}}$: Physical mass of paved roads, canals, and bridges [$\text{kg}$].
-  * $\mu_{\text{friction}, i}$: Effective closed-form terrestrial/marine transit friction coefficient ($\ge 0.30$ land floor, $\ge 0.40$ sea).
+  * $\tau_{ij} \ge 1$: Samuelson iceberg trade-cost factor between origin $i$ and destination $j$ [dimensionless].
+  * $\mu(\mathbf{x})$: Instantaneous spatial transit resistance per unit distance [$\text{km}^{-1}$].
+  * $K_{\text{infra}} / A$: Physical transport infrastructure density (roads, bridges, canals, rails) [$\text{kg/km}^2$].
+  * $\zeta > 0$: Transport infrastructure trade-cost elasticity (Donaldson 2018).
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 36. Pyrometallurgical Reduction Enthalpy (`MetallurgyEnthalpyEngine`)
@@ -915,13 +906,15 @@ The numerical solver architecture partitions differential systems based on their
 
 #### 39. Renewable Energy Thermodynamic Limits (`RenewableEnergyPhysicsEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
-* **Academic Literature Reference**: Betz, A. (1926). *Wind-Energie und ihre Ausnutzung durch Windmühlen*. Vandenhoeck & Ruprecht; Shockley, W., & Queisser, H. J. (1961). *Detailed balance limit of efficiency of p-n junction solar cells*. Journal of Applied Physics, 32(3), 510-519.
+* **Academic Literature Reference**: Betz, A. (1926). *Wind-Energie und ihre Ausnutzung durch Windmühlen*. Vandenhoeck & Ruprecht; Shockley, W., & Queisser, H. J. (1961). *Detailed balance limit of efficiency of p-n junction solar cells*. Journal of Applied Physics, 32(3), 510–519; Kleidon, A. (2010). *Life, hierarchy, and the thermodynamic machinery of planet Earth*. Physics of Life Reviews, 7(4), 424–460.
 * **Governing Equations**:
-  $$P_{\text{wind, max}} = \min\!\left(\frac{16}{27} \cdot \frac{1}{2} \rho_{\text{air}} A_{\text{rotor}}(N_i, k_{\text{pc},i}) v_{\text{wind}}^3,\; 1.25 \cdot A_{\text{cell},i}\right) \quad [\text{Watts}], \qquad E_{\text{wind},i} = \operatorname{wattsToGjPerYear}(P_{\text{wind, max}}) \quad [\text{GJ/yr}]$$
-  $$P_{\text{solar, max}} = S(\phi) \cdot \eta_{\text{SQ}}(k_{\text{pc},i}) \cdot A_{\text{panel}}(N_i, k_{\text{pc},i}), \quad \eta_{\text{SQ}} \le 33.7\%, \qquad E_{\text{solar},i} = \operatorname{wattsToGjPerYear}(P_{\text{solar, max}}) \quad [\text{GJ/yr}]$$
+  $$P_{\text{Betz}} = \frac{16}{27} \cdot \frac{1}{2} \rho_{\text{air}} A_{\text{rotor}} v_{\text{wind}}^3, \qquad P_{\text{wind}} \le G_{\text{ke,max}} \cdot A_{\text{surface}} \quad [\text{W}]$$
+  $$P_{\text{PV}} = \eta_{\text{SQ}}(E_g) \cdot I_{\text{surf}}(\phi) \cdot A_{\text{PV}}, \qquad \eta_{\text{SQ}}(1.34\,\text{eV}) \le 0.337 \quad [\text{W}]$$
 * **Parameters & Physical Units**:
-  * $16/27 \approx 59.3\%$: Betz aerodynamic extraction ceiling for open fluid turbines, macroscopically bounded at Kleidon's $1.25\,\text{W/m}^2$ atmospheric dissipation ceiling over $A_{\text{cell},i}$.
-  * $\eta_{\text{SQ}}$: Shockley-Queisser single-junction photovoltaic quantum limit, with $A_{\text{rotor}}, A_{\text{panel}} \equiv 0$ when $N_i \le 0$ or $k_{\text{pc},i} \le 0$ so uninhabited cells store $0.0\,\text{GJ/yr}$ (`Contract 2`).
+  * $C_{p,\max} = 16/27 \approx 0.5926$: Betz aerodynamic power extraction limit for an open-flow actuator disk.
+  * $G_{\text{ke,max}} \approx 1.25\,\text{W/m}^2$: Kleidon atmospheric kinetic-energy generation limit per unit surface area.
+  * $\eta_{\text{SQ}}(E_g)$: Shockley-Queisser radiative detailed-balance limit for a single-junction semiconductor of bandgap $E_g$.
+  * $I_{\text{surf}}(\phi)$: Incident surface solar irradiance at latitude $\phi$ [$\text{W/m}^2$].
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 40. Urban Thermodynamics & Heat Island (`UrbanThermodynamicsEngine`)
@@ -971,46 +964,36 @@ The numerical solver architecture partitions differential systems based on their
 
 #### 42.2. Thermodynamic Prime Movers & Useful Exergy Conversion (`ThermodynamicPrimeMoversEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
-* **Academic Literature Reference**: Smil, V. (2017). *Energy and Civilization: A History*. MIT Press; Ayres, R. U., & Warr, B. (2009). *The Economic Growth Engine: How Energy and Work Drive Material Prosperity*. Edward Elgar.
+* **Academic Literature Reference**: Carnot, S. (1824). *Réflexions sur la puissance motrice du feu*. Bachelier; Weisbach, J. (1845). *Lehrbuch der Ingenieur- und Maschinen-Mechanik*. Vieweg; Ayres, R. U., & Warr, B. (2009). *The Economic Growth Engine*. Edward Elgar; Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
 * **Governing Equations**:
-  $$P_{\text{total}} = P_{\text{somatic}} + P_{\text{hearth}} + P_{\text{draft}} + P_{\text{hydraulic}} + P_{\text{wind}} + P_{\text{steam}} + P_{\text{ice}} \quad [\text{Watts}]$$
-  $$P_{\text{somatic}} = N_i \cdot B_{\text{basal}}(M_b), \quad P_{\text{hearth}} = N_i \cdot 212.0 \tanh\!\left(\frac{M_{\text{wood,kg}} + 50}{50}\right), \quad P_{\text{draft}} = N_{\text{draft}} \cdot 450.0 \cdot \sigma_{\text{yoke}}(k_{\text{pc}})$$
-  $$W_{\text{steam}} = \phi_{\text{coal}}(k_{\text{pc}}) \cdot \dot{Q}_{\text{coal}} \cdot \eta_{\text{steam}}(k_{\text{pc}}), \qquad \Delta M_{\text{coal}} = -\frac{W_{\text{steam}} / \eta_{\text{steam}}}{\text{LHV}_{\text{coal}}} \Delta t \quad (\text{First/Second Law Carnot enthalpy debit})$$
+  $$\eta_{\text{Carnot}} = 1 - \frac{T_C}{T_H}, \qquad \eta_{\text{th}} = \varepsilon_{\text{II}} \left(1 - \frac{T_C}{T_H}\right), \qquad \dot{W}_{\text{shaft}} = \eta_{\text{th}} \, \dot{Q}_{\text{fuel}}$$
+  $$P_{\text{hydro}} = \eta_w \, \rho_w \, g \, Q \, H, \qquad P_{\text{muscle}} = \eta_{\text{muscle}} \, \dot{E}_{\text{metabolic}}$$
+  $$\frac{dM_{\text{fuel}}}{dt} = -\frac{\dot{Q}_{\text{fuel}}}{\text{LHV}_{\text{fuel}}} = -\frac{\dot{W}_{\text{shaft}}}{\eta_{\text{th}} \cdot \text{LHV}_{\text{fuel}}}$$
 * **Parameters & Physical Units**:
-  * $P$: Mechanical, thermal, and electrical power generation [$\text{Watts}$], stored in `WorldBuffer.energyFire` in [$\text{GJ/yr}$] via `PhysicalUnitsHelper.wattsToGjPerYear`.
-  * $\phi_{\text{coal}}(k_{\text{pc}}) = \tanh(\operatorname{softplus}(k_{\text{pc}} - 950, 0.02) / 1\,200)$: $C^\infty$ high-pressure boiler metallurgical capital gate ($k_{\text{pc}} \gtrsim 950\,\text{kg/cap}$ coal-steam; $k_{\text{pc}} \gtrsim 2\,800\,\text{kg/cap}$ internal combustion hydrocarbons).
-  * $\eta_m$: Thermodynamic second-law conversion efficiency for prime mover $m$ ($\dot{Q}_{\text{fuel}} = \dot{W}_{\text{shaft}} / \eta_m$, debiting $24\,\text{GJ/t}$ coal, $42\,\text{GJ/t}$ oil, $15\,\text{GJ/t}$ wood):
-    * Human muscle labor: $\eta \approx 0.18$
-    * Draft ox/horse: $\eta \approx 0.12$
-    * Water/wind mill: $\eta \approx 0.35$
-    * Newcomen atmospheric steam engine: $\eta \approx 0.005$
-    * Watt condensing steam engine: $\eta \approx 0.04$
-    * Corliss / Triple-expansion marine steam: $\eta \approx 0.18$
-    * Parsons steam turbine & electric grid: $\eta \approx 0.38 - 0.45$
-* **Computational Complexity**: $O(1)$ per cell; executed in Pass 3.2.
+  * $T_C, T_H$: Absolute cold-sink ambient temperature and hot-reservoir combustion/working-fluid temperature [$\text{K}$].
+  * $\varepsilon_{\text{II}} \in (0, 1)$: Second-Law exergetic effectiveness of the heat engine cycle (Ayres & Warr 2009).
+  * $\rho_w = 1\,000\,\text{kg/m}^3$, $g = 9.80665\,\text{m/s}^2$, $Q$ [$\text{m}^3\text{/s}$], $H$ [$\text{m}$], $\eta_w \in [0.20, 0.85]$: Weisbach hydraulic wheel/turbine parameters.
+  * $\text{LHV}_{\text{fuel}}$: Specific lower heating value ($15\,\text{GJ/t}$ dry wood, $24\,\text{GJ/t}$ bituminous coal, $42\,\text{GJ/t}$ crude oil, $50\,\text{GJ/t}$ natural gas; Smil 2017).
+* **Computational Complexity**: $O(1)$ per cell.
 
 ---
 ## 4. Tier 2  -  Optional Cliodynamic & Phenomenological Engines (One-by-One)
 
-### Subsection A: Macro-Theoretical Cliodynamic Plugins (`org.ether.society.procedural.tier2`)
+### Subsection A: Macro-Theoretical Cliodynamic Plugins
 
 #### 43. Kümmel-Ayres-Warr Biophysical Exergy Growth (`KummelAyresExergyEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
-* **Academic Literature Reference**: Kümmel, R. (1982). *The impact of energy on industrial growth*. Energy, 7(2), 189-203; Ayres, R. U., & Warr, B. (2005). *Accounting for growth: the role of physical work*. Structural Change and Economic Dynamics, 16(2), 181-209; Carnot, S. (1824).
+* **Academic Literature Reference**: Kümmel, R. (1982). *The impact of energy on industrial growth*. Energy, 7(2), 189–203; Kümmel, R. (2011). *The Second Law of Economics*. Springer; Ayres, R. U., & Warr, B. (2005). *Accounting for growth: the role of physical work*. Structural Change and Economic Dynamics, 16(2), 181–209.
 * **Governing Equations**:
-  $$Y = A \cdot K^\alpha L^\beta E_{\text{useful}}^\gamma, \quad \alpha + \beta + \gamma = 1$$
-  $$E_{\text{useful}} = P_{\text{primary}} \cdot \eta_{\text{exergy}}(T_C, T_H, k_{\text{pc}})$$
-  $$\eta_{\text{exergy}} = \left(1 - \frac{T_C}{T_H}\right) \cdot \epsilon_{\text{recovery}}(k_{\text{pc}})$$
-  $$T_H = T_C + \Delta T_{\text{biomass}} + \Delta T_{\text{coal}} \cdot \sigma(\text{Coal}, 100, 30) + \Delta T_{\text{hydrocarbon}} \cdot \sigma(\text{Oil}+\text{Gas}, 100, 30)$$
-  $$\epsilon_{\text{recovery}}(k_{\text{pc}}) = 0.08 + 0.50 \cdot \sigma(k_{\text{pc}}; 1200, 400)$$
+  $$Y = A_0 \, K^\alpha \, L^\beta \, U^\gamma, \qquad \alpha + \beta + \gamma = 1, \qquad U = \eta_{\text{exergy}} \, E_{\text{primary}}$$
+  $$\eta_{\text{exergy}} = \varepsilon_{\text{II}} \left(1 - \frac{T_C}{T_H}\right)$$
 * **Parameters & Physical Units**:
-  * $Y$: Physical economic output [$\text{Geary-Khamis Int\$}$].
-  * $K$: Productive physical capital stock [$\text{kg}$ or constant $\$$].
-  * $L$: Labor input [$\text{worker-hours}$].
-  * $E_{\text{useful}}$: Useful thermodynamic exergy work delivered by prime movers [$\text{Watts}$].
-  * $\eta_{\text{exergy}}$: Second-law conversion efficiency bounded by Carnot thermodynamic flame limit [$0.05 - 0.50$].
-  * $\alpha = 0.25, \beta = 0.25, \gamma = 0.50$: Physical exergy output elasticity (Ayres & Warr 2005).
-* **Computational Complexity**: $O(1)$ per cell / polity.
+  * $Y$: Aggregate physical economic output [$\text{Int\$/yr}$].
+  * $K$: Productive physical capital stock [$\text{kg}$].
+  * $L$: Human labor input [$\text{person-hours/yr}$].
+  * $U$: Useful exergy / physical work flux delivered to transformation processes [$\text{W}$].
+  * $\alpha = 0.25, \beta = 0.25, \gamma = 0.50$: Constant-returns output elasticities estimated for industrial economies (Ayres & Warr 2005, 2009).
+* **Computational Complexity**: $O(1)$ per cell.
 
 #### 44. West-Bettencourt Urban Allometric Scaling (`WestBettencourtAllometryEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
@@ -1058,15 +1041,15 @@ The numerical solver architecture partitions differential systems based on their
   * $\theta_{\text{involution}} \approx 0.65$: Decreasing marginal return to labor under manual terracing and weeding (Geertz agricultural involution).
 * **Computational Complexity**: $O(1)$ per agricultural cell.
 
-#### 47. Arthur Recombinant Combinatorial Capital Evolution (`ArthurCombinatorialTechnologyEngine`)
+#### 47. Arthur Recombinant Combinatorial Evolution & Kremer Scale Growth (`ArthurCombinatorialTechnologyEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
-* **Academic Literature Reference**: Arthur, W. B. (2009). *The Nature of Technology: What It Is and How It Evolves*. Free Press.
+* **Academic Literature Reference**: Kremer, M. (1993). *Population growth and technological change: One million B.C. to 1990*. Quarterly Journal of Economics, 108(3), 681–716; Arthur, W. B., & Polak, W. (2006). *The evolution of technology within a simple computer model*. Complexity, 11(5), 23–31; Arthur, W. B. (2009). *The Nature of Technology*. Free Press.
 * **Governing Equations**:
-  $$\frac{dK}{dt} = \mu_{\text{comb}} \cdot N \cdot \left(1 + \frac{k_{\text{pc}}}{120.0}\right)^{1.35} \cdot \ln\left(1 + \frac{N}{100.0}\right) \cdot \frac{1}{1 + k_{\text{pc}}/50000.0} - \delta_{\text{wear}} K$$
+  $$\frac{dM_t}{dt} = \mu_c \, N \, \binom{M_t}{m} \propto \mu_c \, N \, M_t^\alpha, \qquad \frac{\dot{A}}{A} = g \, N \, A^\phi$$
 * **Parameters & Physical Units**:
-  * $K$: Physical capital tooling and machine inventory [$\text{kg}$].
-  * $k_{\text{pc}} = K / N$: Capital density [$\text{kg/capita}$].
-  * $\mu_{\text{comb}} = 0.045\text{ kg/(person}\cdot\text{year)}$: Tool synthesis rate.
+  * $M_t$: Repertoire of active combinatorial technical modules.
+  * $N$: Interacting population size of innovators and practitioners [persons] (Kremer 1993).
+  * $\alpha > 1$: Combinatorial synergy exponent from multi-component recombination (Arthur 2009).
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 48. Hotelling Non-Renewable Resource Depletion Rent (`HotellingResourceDepletionEngine`)
@@ -1075,21 +1058,20 @@ The numerical solver architecture partitions differential systems based on their
 * **Governing Equations**:
   $$\frac{d P_{\text{resource}}}{dt} = r_{\text{interest}} \cdot P_{\text{resource}} - \frac{\partial C(R, Q)}{\partial R}$$
 * **Parameters & Physical Units**:
-  * $P_{\text{resource}}$: In-situ scarcity rent of mineral or fossil stock [$\text{\$/metric ton}$].
-  * $r_{\text{interest}}$: Social discount interest rate [$\text{year}^{-1}$].
+  * $P_{\text{resource}}$: In-situ scarcity rent of mineral or fossil stock [$\text{\$/t}$].
+  * $r_{\text{interest}}$: Social discount interest rate [$\text{yr}^{-1}$].
   * $C(R, Q)$: Marginal extraction cost function increasing as remaining stock $R$ depletes.
 * **Computational Complexity**: $O(1)$ per mineral extraction node.
 
-#### 49. Tainter Diminishing Returns on Organizational Complexity (`TainterComplexityCollapseEngine`)
+#### 49. Tainter Diminishing Marginal Returns on Sociopolitical Complexity (`TainterComplexityCollapseEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
 * **Academic Literature Reference**: Tainter, J. A. (1988). *The Collapse of Complex Societies*. Cambridge University Press.
 * **Governing Equations**:
-  $$\text{MarginalReturn } MR = \frac{d B_{\text{benefit}}}{d C_{\text{org}}} = \frac{B_0}{1 + \exp(\alpha C_{\text{org}})} - \kappa_{\text{maintenance}} C_{\text{org}}^{1.15}$$
-  $$\text{SurplusFlow} = N \cdot \left(0.05 + 2.5 \ln\!\left(1 + \frac{k_{\text{pc}}}{200}\right)\right)\Delta t, \quad \text{MaintenanceCost} = \left(0.015 K + N \cdot C_{\text{org}}^{2.2} \cdot 0.08\right)\Delta t$$
+  $$B(C) = B_0 + b \ln(1 + C), \qquad M(C) = m_0 \, C^\gamma \quad (\gamma > 1), \qquad \frac{d(B - M)}{dC} = \frac{b}{1 + C} - \gamma m_0 C^{\gamma - 1}$$
 * **Parameters & Physical Units**:
-  * $C_{\text{org}} = \ln(1 + 0.02\,k_{\text{pc}})$: Administrative complexity, bureaucracy size, and institutional specialization [index units].
-  * $B_{\text{benefit}}$: Solved societal problems and coordinated public goods output (sub-linear logarithmic diminishing returns).
-  * Systemic collapse trigger: When $\text{MaintenanceCost} > \text{SurplusFlow}$ ($MR \le 0$), escalating overhead erodes physical capital $K$ and institutional complexity.
+  * $C$: Sociopolitical and bureaucratic differentiation complexity [dimensionless].
+  * $B(C)$: Concave problem-solving benefit function ($\frac{dB}{dC} > 0, \frac{d^2B}{dC^2} < 0$, Tainter 1988).
+  * $M(C)$: Convex per-capita energetic/fiscal maintenance cost ($\gamma > 1$); systemic simplification ensues when $\frac{dB}{dC} < \frac{dM}{dC}$.
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 50. NASA HANDY Socio-Ecological Predator-Prey Collapse (`HandyNasaHybridEngine`, `HandyNasaPureEngine`)
@@ -1113,17 +1095,18 @@ The numerical solver architecture partitions differential systems based on their
   * $R_{\text{nonren}}$: Remaining fossil and mineral reserve fraction [$0.0 - 1.0$].
 * **Computational Complexity**: $O(1)$ globally.
 
-#### 52. Turchin-Goldstone Structural-Demographic Theory (SDT) Secular Cycles (`TurchinGoldstoneSDTEngine`)
+#### 52. Turchin-Goldstone Structural-Demographic Theory (SDT) Secular Cycles (`TurchinGoldstoneSDTEngine`, `StructuralDemographicBifurcationEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
-* **Academic Literature Reference**: Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press; Turchin, P. (2016). *Ages of Discord*. Beresta Books; Goldstone, J. A. (1991). *Revolution and Rebellion in the Early Modern World*. University of California Press.
+* **Academic Literature Reference**: Goldstone, J. A. (1991). *Revolution and Rebellion in the Early Modern World*. University of California Press; Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press; Turchin, P. (2016). *Ages of Discord*. Beresta Books.
 * **Governing Equations**:
-  $$E_{\text{cal},i} = F_{\text{granary},i} + 0.70\,B_{\text{agr},i} e_{\text{grain}} + 0.15\,B_{\text{liv},i} e_{\text{fauna}} + 0.25\,B_{\text{fish},i} e_{\text{marine}} + 0.005\,B_{\text{nat},i} e_{\text{flora}} \quad [\text{GJ}]$$
-  $$\Psi_i = \text{MMP}_i \cdot \text{EMP}_i \cdot \text{SFD}_i, \qquad \text{MMP}_i = \max\!\left(0.2,\; \frac{1.9}{\max(0.2, E_{\text{cal},i}/N_i)} \tanh\!\left(\frac{\rho_i}{150}\right)\right)$$
+  $$\Psi = \text{MMP} \cdot \text{EMP} \cdot \text{SFD}$$
+  $$\text{MMP} = \frac{w_0}{w} \cdot \frac{N_{\text{urb}}}{N}, \qquad \text{EMP} = \frac{N_e}{N} \cdot \frac{y_e}{y_0}, \qquad \text{SFD} = \frac{D_{\text{state}}}{R_{\text{tax}}}$$
 * **Parameters & Physical Units**:
-  * $E_{\text{cal},i}$: Total available edible caloric stock in cell $i$ [$\text{GJ}$] (`WorldBufferComponentAdapter.computeAvailableEdibleCaloricGJ`, `Contract 2 & 4`), shared identically across `TurchinGoldstoneSDTEngine`, `StructuralDemographicBifurcationEngine` (cellular derivative envelope participant), `HarrisCulturalMaterialismEngine`, `GranovetterThresholdCascadeEngine`, `BioMolecularEpidemiologyEngine`, and `CompiledTelemetryPlan` (`foodSat`).
-  * $\Psi_i$: Political Stress Index driving continuous institutional erosion and Poisson bifurcation hazard $\lambda_{\text{crisis}} = \lambda_0 \exp(0.4 \max(0, \Psi_i - \Psi_{\text{crit}}))$.
-  * $\text{MMP}_i, \text{EMP}_i, \text{SFD}_i$: Mass Mobilization Potential, Elite Overproduction, and State Fiscal Distress multipliers.
-* **Computational Complexity**: $O(1)$ per polity.
+  * $\Psi$: Multiplicative Political Stress Index [dimensionless] (Goldstone 1991; Turchin 2016).
+  * $\text{MMP}$: Mass Mobilization Potential driven by inverse real wage $w_0 / w$ and urban youth/nucleation share $N_{\text{urb}} / N$.
+  * $\text{EMP}$: Elite Mobilization Potential (elite overproduction $N_e / N$ and intra-elite relative income $y_e / y_0$).
+  * $\text{SFD}$: State Fiscal Distress (sovereign public debt $D_{\text{state}}$ relative to fiscal revenue $R_{\text{tax}}$).
+* **Computational Complexity**: $O(1)$ per cell / polity.
 
 #### 52.1. Ibn Khaldun Asabiyyah Dynamics & Frontier Strife (`CliodynamicsEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
@@ -1169,14 +1152,16 @@ The numerical solver architecture partitions differential systems based on their
 
 #### 56. Krugman New Economic Geography Core-Periphery Agglomeration (`KrugmanCorePeripheryEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
-* **Academic Literature Reference**: Krugman, P. (1991). *Increasing returns and economic geography*. Journal of Political Economy, 99(3), 483-499; Fujita, M., Krugman, P., & Venables, A. J. (1999). *The Spatial Economy*. MIT Press.
+* **Academic Literature Reference**: Krugman, P. (1991). *Increasing returns and economic geography*. Journal of Political Economy, 99(3), 483–499; Fujita, M., Krugman, P., & Venables, A. J. (1999). *The Spatial Economy*. MIT Press.
 * **Governing Equations**:
-  $$k_{\text{area},i} = \frac{K_i}{A_{\text{cell},i}} \;[\text{kg/km}^2], \qquad \rho_i = \frac{N_i}{A_{\text{cell},i}} \;[\text{hab/km}^2], \qquad \mathcal{A}_i = \frac{1.77\,\rho_i}{\mu_{\text{friction},i}}$$
-  $$\frac{dK_i}{dt} = K_i \cdot \operatorname{clamp}\!\left(0.015 \cdot 2\,\sigma\!\left(2\left(\frac{k_{\text{area},i}}{\bar{k}_{\text{area}}} - 1\right)\right)\frac{\mathcal{A}_i}{1 + \mathcal{A}_i} - 0.01\frac{k_{\text{area},i}/\bar{k}_{\text{area}}}{\max(1, \mathcal{A}_i)},\; -0.05,\; 0.08\right)$$
+  $$T_{ij} = \exp(\tau \, d_{ij}), \qquad G_i = \left[ \sum_j \lambda_j \, T_{ji}^{1 - \sigma} \right]^{\frac{1}{1 - \sigma}}$$
+  $$w_i = \left[ \sum_j Y_j \, T_{ij}^{1 - \sigma} \, G_j^{\sigma - 1} \right]^{\frac{1}{\sigma}}, \qquad \omega_i = w_i \, G_i^{-\mu_M}, \qquad \frac{d\lambda_i}{dt} = \gamma \, \lambda_i (\omega_i - \bar{\omega})$$
 * **Parameters & Physical Units**:
-  * $k_{\text{area},i}, \bar{k}_{\text{area}}$: Cellular and inhabited-domain mean physical capital areal density [$\text{kg/km}^2$], strictly invariant to H3 mesh resolution and ocean-cell bounding-box share (`Contract 3`).
-  * $\mathcal{A}_i$: Spatial market accessibility index normalized by local transit friction $\mu_{\text{friction},i}$.
-* **Computational Complexity**: $O(N \log N)$ across urban trading hubs.
+  * $T_{ij} \ge 1$: Samuelson iceberg transport cost factor over geodesic distance $d_{ij}$ [$\text{km}$] at rate $\tau$ [$\text{km}^{-1}$].
+  * $\sigma > 1$: Dixit-Stiglitz elasticity of substitution among differentiated manufactured varieties ($\sigma = 4.0$, Krugman 1991).
+  * $\mu_M \in (0, 1)$: Expenditure share on manufactured goods ($\mu_M = 0.40$, Krugman 1991).
+  * $G_i, w_i, \omega_i$: Regional Dixit-Stiglitz manufacturing price index, nominal manufacturing wage, and real wage driving replicator agglomeration $\dot{\lambda}_i$.
+* **Computational Complexity**: $O(6)$ local neighborhood evaluation per cell.
 
 #### 57. Schelling-Axelrod Spatial Homophily & Segregation (`SchellingAxelrodSegregationEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
@@ -1321,7 +1306,7 @@ The numerical solver architecture partitions differential systems based on their
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
 * **Academic Literature Reference**: Scott, J. C. (2009). *The Art of Not Being Governed: An Anarchist History of Upland Southeast Asia*. Yale University Press; Scott, J. C. (2017). *Against the Grain*. Yale University Press.
 * **Governing Equations**:
-  $$M_{\text{evasion}} = N_{\text{valley}} \cdot \sigma(\text{TaxRate}_{\text{grain}} - \text{HighlandForagingCost})$$
+  $$P_{\text{evade}} = \frac{1}{1 + \exp\!\left(-\beta (\tau_{\text{grain}} - c_{\text{upland}})\right)}, \qquad M_{\text{evasion}} = N_{\text{valley}} \cdot P_{\text{evade}}$$
 * **Parameters & Physical Units**:
   * $M_{\text{evasion}}$: Out-migration rate of peasants fleeing state cereal taxation to non-state highlands (Zomia).
 * **Computational Complexity**: $O(1)$ per frontier cell.
@@ -1380,387 +1365,297 @@ The numerical solver architecture partitions differential systems based on their
   * $\psi_1 = 0.0, \psi_2 = 0.00284$: Quadratic GDP damage coefficient per $^\circ\text{C}^2$.
 * **Computational Complexity**: $O(1)$ per climate region.
 
-#### 80. Planetary Kardashev Scale Rating (`KardashevPureEngine`)
+#### 80. Leslie White Energetic Evolution (`LeslieWhitePureEngine`, `WhiteEnergyEvolutionEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Kardashev, N. S. (1964). *Transmission of information by extraterrestrial civilizations*. Soviet Astronomy, 8, 217-221.
+* **Academic Literature Reference**: White, L. A. (1943). *Energy and the evolution of culture*. American Anthropologist, 45(3), 335–356.
 * **Governing Equations**:
-  $$K_{\text{sagan}} = \frac{\log_{10}(P_{\text{total}}) - 6.0}{10.0}$$
+  $$C = E \times T_{\text{eff}}$$
 * **Parameters & Physical Units**:
-  * $P_{\text{total}}$: Civilization total energy dissipation [$\text{Watts}$].
-* **Computational Complexity**: $O(1)$ globally.
-
-#### 81. Leslie White Energetic Evolution (`LeslieWhitePureEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: White, L. A. (1943). *Energy and the evolution of culture*. American Anthropologist, 45(3), 335-356.
-* **Governing Equations**:
-  $$C = E \times T_{\text{eff}} = p_{\text{exo}} \times \eta_{\text{transducer}}(k_{\text{pc}})$$
-* **Parameters & Physical Units**:
-  * $C$: Degree of cultural development.
+  * $C$: Degree of cultural development; $E$: annual energy harnessed per capita [$\text{J/(person}\cdot\text{yr)}$]; $T_{\text{eff}}$: thermodynamic efficiency of technological tools putting energy to work.
 * **Computational Complexity**: $O(1)$ per polity.
 
-#### 82. Gerhard Lenski Social Stratification & Milanovic-Piketty Dynamic Inequality (`LenskiPureEngine`)
+#### 81. Gerhard Lenski Social Stratification & Milanovic-Piketty Dynamic Inequality (`LenskiPureEngine`, `LenskiEcologicalEvolutionaryEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Lenski, G. (1966). *Power and Privilege: A Theory of Social Stratification*. McGraw-Hill; Milanovic, B., et al. (2011). *Pre-Industrial Inequality*. The Economic Journal, 121(551), 255–272; Piketty, T. (2014). *Capital in the Twenty-First Century*.
+* **Academic Literature Reference**: Lenski, G. (1966). *Power and Privilege: A Theory of Social Stratification*. McGraw-Hill; Milanovic, B., Lindert, P. H., & Williamson, J. G. (2011). *Pre-Industrial Inequality*. Economic Journal, 121(551), 255–272; Piketty, T. (2014). *Capital in the Twenty-First Century*. Harvard University Press.
 * **Governing Equations**:
-  $$G_{\max}(k_{\text{pc}}) = 1 - \frac{s_{\min}}{\max(s_{\min} + 1, k_{\text{pc}})}, \quad s_{\min} = 15.0\text{ kg/cap}$$
-  $$\frac{dG}{dt} = \lambda_{\text{accum}} \cdot \left[ \mu_{\text{extract}}(r - g, C) \cdot G_{\max}(k_{\text{pc}}) - G \right] - \delta_{\text{shock}} \cdot G$$
-  $$\mu_{\text{extract}} = 0.20 + 0.70 \cdot \sigma(r - g; 0, 0.02) \cdot \sigma(C; 0.25, 0.10)$$
+  $$G_{\max}(\alpha) = \frac{\alpha - 1}{\alpha} (1 - \varepsilon), \qquad \alpha = \frac{y}{s_{\min}}, \qquad \beta = \frac{s}{g}, \qquad r > g$$
 * **Parameters & Physical Units**:
-  * $G$: Dynamic Lorenz Gini coefficient [$0.18 - 0.80$].
-  * $G_{\max}$: Maximum feasible inequality (Inequality Possibility Frontier, Milanovic 2011).
-  * $r - g$: Return on capital minus local economic growth rate (Piketty 2014).
-  * $C$: Institutional administrative complexity index [$0.0 - 1.0$].
-  * $\lambda_{\text{accum}} = 0.04\text{ yr}^{-1}$: Institutional capital adjustment speed.
+  * $G_{\max}(\alpha)$: Milanovic-Lindert-Williamson (2011) Inequality Possibility Frontier (IPF) as a function of mean income $y$ in multiples $\alpha = y / s_{\min}$ of physiological subsistence $s_{\min}$, with elite population share $\varepsilon$.
+  * $r - g$: Rate of return on capital $r$ minus macroeconomic growth rate $g$ driving wealth-to-income concentration $\beta = K / Y$ (Piketty 2014).
 * **Computational Complexity**: $O(1)$ per cell / polity.
 
-#### 83. Marvin Harris Cultural Materialism (`CulturalMaterialismPureEngine`)
+#### 82. Marvin Harris Cultural Materialism (`CulturalMaterialismPureEngine`, `HarrisCulturalMaterialismEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
 * **Academic Literature Reference**: Harris, M. (1979). *Cultural Materialism: The Struggle for a Science of Culture*. Random House.
 * **Governing Equations**:
-  $$\text{NormAdoption} = \arg\max(\text{CaloricYield} - \text{MetabolicWork})$$
+  $$\pi_{\text{practice}} = E_{\text{yield}} - E_{\text{input}}, \qquad p^* = \arg\max_{p} \left(E_{\text{yield}}(p) - E_{\text{input}}(p)\right)$$
 * **Parameters & Physical Units**:
-  * Evaluates institutional adoption of sacred taboos (e.g. sacred cows, pork taboos) based on net agricultural thermodynamics.
+  * Evaluates ecological-energetic selection of subsistence practices and cultural taboos from net caloric balance [$\text{J/yr}$].
 * **Computational Complexity**: $O(1)$ per cultural node.
 
-#### 84. Asimov Psychohistory Macro-Stochastic Dynamics (`PsychohistoryPureEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Turchin, P. (2008). *Arise 'cliodynamics'*. Nature, 454(7200), 34-35.
+#### 83. Multi-Hazard Early Warning Threshold Indicator (`CliodynamicAdvisor`)
+* **Model Classification**: Tier 2 - Type B (Diagnostic Early-Warning Module)
+* **Academic Literature Reference**: Scheffer, M., et al. (2009). *Early-warning signals for critical transitions*. Nature, 461(7260), 53–59.
 * **Governing Equations**:
-  $$d\mathbf{X}_t = \mathbf{A}(\mathbf{X}_t) \, dt + \mathbf{\Sigma} \, d\mathbf{W}_t$$
-* **Parameters & Physical Units**:
-  * Evaluates statistical predictability decay under large $N$ ensembles.
-* **Computational Complexity**: $O(1)$ per macro step.
-
-#### 85. Cybernetic Autonomous AI Planetary Regulation (`SovereignAIGovernanceEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Beer, S. (1972). *Brain of the Firm: The Managerial Cybernetics of Organization*. Allen Lane.
-* **Governing Equations**:
-  $$\mathbf{u}^*(t) = \arg\min_{\mathbf{u}} \int_t^{t+H} \left( \|\mathbf{x}(\tau) - \mathbf{x}_{\text{safe}}\|^2_Q + \|\mathbf{u}(\tau)\|^2_R \right) d\tau$$
-* **Computational Complexity**: $O(H \cdot \text{states})$.
-
-#### 85.1. Multi-Hazard Early Warning Predictive Advisor (`CliodynamicAdvisor`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Governing Equations**:
-  $$\mathbf{\Omega}_{\text{risk}} = \left[ \mathbb{I}(T_w \ge 31), \mathbb{I}([\text{NPK}] \le 0.15), \mathbb{I}(h_{\text{piezo}} \le 5), \mathbb{I}(\Psi \ge 70), \mathbb{I}(D \ge 1.5 Y) \right]$$
+  $$\mathbf{\Omega}_{\text{risk}} = \left[ \mathbb{I}(T_w \ge T_{w,\text{crit}}), \; \mathbb{I}(L_{\text{Liebig}} \le L_{\min}), \; \mathbb{I}(h_{\text{aq}} \le h_{\min}), \; \mathbb{I}(\Psi \ge \Psi_{\text{crit}}) \right]$$
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 85.2. Axial Age Moralizing Gods & Prosocial Policing (`AxialAgeMoralizingGodsEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Whitehouse, H., et al. (2019). *Complex societies precede moralizing gods throughout world history*. Nature, 568(7751), 226-229; Norenzayan, A. (2013). *Big Gods: How Religion Transformed Cooperation and Conflict*. Princeton University Press.
+#### 84. Axial Age Moralizing Gods & Prosocial Policing (`AxialAgeMoralizingGodsEngine`)
+* **Model Classification**: Tier 2 - Type B (Institutional & Cognitive Cliodynamics)
+* **Academic Literature Reference**: Norenzayan, A. (2013). *Big Gods: How Religion Transformed Cooperation and Conflict*. Princeton University Press; Whitehouse, H., et al. (2019). *Complex societies precede moralizing gods throughout world history*. Nature, 568(7751), 226–229.
 * **Governing Equations**:
-  $$\Theta_{\text{moral}} = \sigma\left(\frac{N - 100\,000}{15\,000}\right) \cdot \sigma\left(\frac{k_{\text{pc}} - 80}{20}\right)$$
-  $$\tau_{\text{friction}} = \max\left(0.20, \; 1.0 - 0.35 \cdot \Theta_{\text{moral}}\right), \quad \Delta K_{\text{civic}} = K \cdot 0.015 \cdot \Theta_{\text{moral}} \cdot \Delta t$$
+  $$P(\text{MoralizingGods} \mid \text{SPC}_1) = \frac{1}{1 + \exp\!\left(-\beta (\log_{10} N_{\text{polity}} - \log_{10} N_c)\right)}, \qquad N_c \approx 10^5\text{–}10^6\text{ persons}$$
 * **Parameters & Physical Units**:
-  * $\Theta_{\text{moral}} \in [0, 1]$: Prosocial institutional trust scaling index.
-  * $N_{\text{crit}} = 100\,000$: Seshat empirical anonymous scale threshold.
+  * $N_{\text{polity}}$: Polity population scale where anonymous exchange exceeds direct Dunbar/kin reputation monitoring (Whitehouse et al. 2019 Seshat threshold).
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 85.3. Barfield Nomadic Steppe Shadow Empire & Extortion Symbiosis (`BarfieldNomadicSteppeEmpireEngine`)
-* **Model Classification**: Tier 2 - Type A / B (Canonical Cliodynamic Debate & Scenario Plugin)
+#### 85. Barfield Nomadic Steppe Shadow Empire & Extortion Symbiosis (`BarfieldNomadicSteppeEmpireEngine`)
+* **Model Classification**: Tier 2 - Type A / B (Geopolitical Cliodynamics)
 * **Academic Literature Reference**: Barfield, T. J. (1989). *The Perilous Frontier: Nomadic Empires and China, 221 BC to AD 1757*. Blackwell; Di Cosmo, N. (2002). *Ancient China and Its Enemies*. Cambridge University Press.
 * **Governing Equations**:
-  $$\Phi_{\text{tribute}} = \gamma_{\text{extort}} \cdot \min\left(K_{\text{sedentary}} \cdot 0.035, \; N_{\text{nomad}} \cdot 25.0\right) \cdot \Theta_{\text{vulnerability}}$$
-  $$\frac{dK_{\text{nomad}}}{dt} = \Phi_{\text{tribute}} - \delta_{\text{pastoral}} K_{\text{nomad}}, \quad \left.\frac{dW_{\text{cohesion}}}{dt}\right|_{\Phi = 0} = -0.05 \cdot W_{\text{cohesion}}$$
+  $$\frac{dC_{\text{steppe}}}{dt} = \eta_{\text{redist}} \, \Phi_{\text{tribute}}(Y_{\text{sedentary}}) - \delta_c \, C_{\text{steppe}}$$
 * **Parameters & Physical Units**:
-  * $\Phi_{\text{tribute}}$: Extorted cross-border bullion and agricultural subsidies [$\text{kg}$ or $\text{\$}$].
-  * $W_{\text{cohesion}}$: Inter-clan military alignment and Khagan authority index.
+  * $\Phi_{\text{tribute}}(Y_{\text{sedentary}})$: External tributary surplus extracted from the adjacent sedentary agrarian empire; when $Y_{\text{sedentary}} \to 0 \implies \Phi_{\text{tribute}} = 0$, the steppe confederation $C_{\text{steppe}}$ undergoes synchronous centrifugal collapse ($\dot{C}_{\text{steppe}} = -\delta_c C_{\text{steppe}}$).
 * **Computational Complexity**: $O(1)$ per pastoral cell.
 
-#### 85.4. Polanyi Fictitious Commodities & The Great Transformation (`PolanyiFictitiousCommoditiesEngine`)
-* **Model Classification**: Tier 2 - Type B (Institutional Macroeconomics & Historical Transition)
-* **Academic Literature Reference**: Polanyi, K. (1944). *The Great Transformation: The Political and Economic Origins of Our Time*. Beacon Press; Block, F. (2003). *Karl Polanyi and the Writing of The Great Transformation*. Theory and Society.
+#### 85.1. Polanyi Fictitious Commodities & The Double Movement (`PolanyiFictitiousCommoditiesEngine`)
+* **Model Classification**: Tier 2 - Type B (Institutional Macroeconomics)
+* **Academic Literature Reference**: Polanyi, K. (1944). *The Great Transformation: The Political and Economic Origins of Our Time*. Farrar & Rinehart.
 * **Governing Equations**:
-  $$\mathcal{M}_{\text{com}} = \sigma\left(\frac{K}{N} - 80.0, \; 20.0\right) \cdot \sigma\left(\text{TradeNet} - 15.0, \; 5.0\right)$$
-  $$\Delta Y_{\text{alloc}} = +0.08 \cdot \mathcal{M}_{\text{com}} \cdot Y_{\text{agri}} \cdot \Delta t$$
-  $$\text{Dislocation} = \mathcal{M}_{\text{com}} \cdot \max\left(0, \; 1 - \frac{\text{Food}}{1.20 \cdot N}\right) \cdot 0.15$$
-  $$\Delta \text{Friction}_{\text{social}} = +0.05 \cdot \text{Dislocation} \cdot \Delta t$$
+  $$\frac{dA_{\text{enclosed}}}{dt} = \kappa_m \, m_{\text{market}} \, A_{\text{commons}}, \qquad \frac{dS_{\text{counter}}}{dt} = \gamma_p \, m_{\text{market}} \, \max\!\left(0, \; 1 - \frac{c_{\text{food}}}{c_{\text{sub}}}\right)$$
 * **Parameters & Physical Units**:
-  * $\mathcal{M}_{\text{com}} \in [0, 1]$: Market commodification index of customary land and labor.
-  * Dislocation: Subsistence vulnerability under dissolved customary communal buffers.
+  * $A_{\text{commons}}, A_{\text{enclosed}}$: Customary commons vs. market-enclosed land/biomass stock.
+  * $S_{\text{counter}}$: Protective social countermovement ("Double Movement") triggered when market exposure erodes subsistence security $c_{\text{food}} / c_{\text{sub}}$.
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 85.5. Bagehot Fractional-Reserve Liquidity & Lender of Last Resort (`BagehotFractionalReserveEngine`)
+#### 85.2. Bagehot Fractional-Reserve Liquidity & Debt Deflation (`BagehotFractionalReserveEngine`)
 * **Model Classification**: Tier 2 - Type B (Financial Macroeconomics & Banking Crises)
-* **Academic Literature Reference**: Bagehot, W. (1873). *Lombard Street: A Description of the Money Market*. Henry S. King; Fisher, I. (1933). *The Debt-Deflation Theory of Great Depressions*. Econometrica.
+* **Academic Literature Reference**: Bagehot, W. (1873). *Lombard Street: A Description of the Money Market*. Henry S. King; Fisher, I. (1933). *The Debt-Deflation Theory of Great Depressions*. Econometrica, 1(4), 337–357.
 * **Governing Equations**:
-  $$M_{\text{credit}} = 1.0 + 0.35 \cdot \sigma\left(\frac{K}{N} - 150.0, \; 35.0\right) \cdot \sigma\left(\text{TradeNet} - 15.0, \; 5.0\right)$$
-  $$\text{Loss}_{\text{freeze}} = 0.06 \cdot M_{\text{credit}} \cdot \text{Stress}_{\text{systemic}} \cdot \Delta t$$
-  $$\Delta K_{\text{deflation}} = \begin{cases} 0 & \text{if } M_{\text{reserves}}/N \ge 15.0\text{ kg/cap (Bagehot Rule)} \\ -K \cdot \text{Loss}_{\text{freeze}} & \text{if unbuffered debt deflation} \end{cases}$$
+  $$M = \frac{1 + c_d}{r_R + c_d} \, B_{\text{base}}, \qquad d_{\text{real}} = \frac{D_{\text{nom}}}{P}, \qquad \frac{dP}{dt} = -\kappa_f \, \max(0, L_{\text{demand}} - R_{\text{LOLR}})$$
 * **Parameters & Physical Units**:
-  * $M_{\text{credit}}$: Endogenous commercial credit multiplier.
-  * $M_{\text{reserves}}$: State or central bank liquid bullion reserves.
+  * $M / B_{\text{base}}$: Fractional-reserve credit multiplier over specie/base money $B_{\text{base}}$ with reserve ratio $r_R$ and currency-deposit ratio $c_d$.
+  * $R_{\text{LOLR}}$: Central-bank Lender-of-Last-Resort liquidity injection arresting Fisherian debt-deflation liquidation ($d_{\text{real}} = D_{\text{nom}}/P$).
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 85.6. Corden-Neary Dutch Disease & Resource Curse (`CordenNearyDutchDiseaseEngine`)
-* **Model Classification**: Tier 2 - Type B (Structural Macroeconomics & Mineral Booms)
-* **Academic Literature Reference**: Corden, W. M., & Neary, J. P. (1982). *Booming Sector and De-Industrialisation in a Small Open Economy*. The Economic Journal, 92(368), 825-848; Auty, R. (1993). *Sustaining Development in Mineral Economies*. Routledge.
+#### 85.3. Corden-Neary Dutch Disease & Resource Curse (`CordenNearyDutchDiseaseEngine`)
+* **Model Classification**: Tier 2 - Type B (Open-Economy Macroeconomics)
+* **Academic Literature Reference**: Corden, W. M., & Neary, J. P. (1982). *Booming Sector and De-Industrialisation in a Small Open Economy*. Economic Journal, 92(368), 825–848; Auty, R. (1993). *Sustaining Development in Mineral Economies*. Routledge.
 * **Governing Equations**:
-  $$R_{\text{boom}} = \frac{M_{\text{metal}} + 0.5 M_{\text{coal}} + 0.8 M_{\text{oil}}}{K + M_{\text{metal}} + 1.0}$$
-  $$\Delta Y_{\text{crowd-out}} = -0.03 \cdot \sigma\left(R_{\text{boom}} - 0.25, \; 0.08\right) \cdot Y_{\text{agri}} \cdot \Delta t$$
-  $$\Delta \text{Friction}_{\text{port}} = +0.02 \cdot \sigma\left(R_{\text{boom}} - 0.25, \; 0.08\right) \cdot \Delta t$$
+  $$L_B + L_M + L_N = L, \qquad w = P_B \frac{\partial F_B}{\partial L_B} = P_M \frac{\partial F_M}{\partial L_M} = P_N \frac{\partial F_N}{\partial L_N}, \qquad \frac{\partial L_M}{\partial P_B} < 0$$
 * **Parameters & Physical Units**:
-  * $R_{\text{boom}}$: Extractive rent share in total cellular output.
+  * $B, M, N$: Booming extractive sector, lagging traded manufacturing/diversified sector, and non-tradable services sector; a boom in $B$ raises real wages $w$ and relative non-tradable price $P_N / P_M$ (resource-movement + spending effects), crowding out $L_M$ and $Y_M$.
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 85.7. Harold Innis Staples Thesis & Export Frontier Dependency (`InnisStaplesThesisEngine`)
-* **Model Classification**: Tier 2 - Type B (Spatial Economic History & Resource Corridors)
-* **Academic Literature Reference**: Innis, H. A. (1930). *The Fur Trade in Canada: An Introduction to Canadian Economic History*. University of Toronto Press; Mackintosh, W. A. (1923). *Economic Factors in Canadian History*. Canadian Historical Review.
+#### 85.4. Harold Innis Staples Thesis & Export Frontier Dependency (`InnisStaplesThesisEngine`)
+* **Model Classification**: Tier 2 - Type B (Spatial Economic History)
+* **Academic Literature Reference**: Mackintosh, W. A. (1923). *Economic Factors in Canadian History*. Canadian Historical Review, 4(1), 12–25; Innis, H. A. (1930). *The Fur Trade in Canada*. University of Toronto Press; Watkins, M. H. (1963). *A staple theory of economic growth*. Canadian Journal of Economics and Political Science, 29(2), 141–158.
 * **Governing Equations**:
-  $$S_{\text{ratio}} = \frac{0.40 B_{\text{nat}} + M_{\text{metal}}}{10.0 \cdot N + 1.0}$$
-  $$\Delta \text{Trade}_{\text{export}} = +0.04 \cdot \sigma\left(S_{\text{ratio}} - 25.0, \; 8.0\right) \cdot \Delta t$$
-  $$\Delta B_{\text{nat}} = -0.01 \cdot \sigma\left(S_{\text{ratio}} - 25.0, \; 8.0\right) \cdot B_{\text{nat}} \cdot \Delta t$$
+  $$Y_{\text{frontier}} = P_S Q_S + \sum_k \ell_k P_S Q_S, \qquad \frac{dR_S}{dt} = -Q_S$$
+* **Parameters & Physical Units**:
+  * $Q_S$: Raw staple extraction flux from natural stock $R_S$; $\ell_k$: backward, forward, and fiscal-demand linkage multipliers (Watkins 1963).
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 85.8. Norbert Wiener Cybernetic Negative-Feedback Homeostasis (`WienerCyberneticHomeostasisEngine`)
-* **Model Classification**: Tier 2 - Type B (System Dynamics & Control Theory)
+#### 85.5. Norbert Wiener Cybernetic Negative-Feedback Homeostasis (`WienerCyberneticHomeostasisEngine`)
+* **Model Classification**: Tier 2 - Type B (Control Theory & Homeostasis)
 * **Academic Literature Reference**: Wiener, N. (1948). *Cybernetics: Or Control and Communication in the Animal and the Machine*. MIT Press; Ashby, W. R. (1956). *An Introduction to Cybernetics*. Chapman & Hall.
 * **Governing Equations**:
-  $$e(t) = \frac{\text{Food}/N - \text{Setpoint}}{\text{Setpoint}}, \quad \Delta W = -\kappa_{\text{gain}} \cdot e(t) \cdot \Delta t$$
+  $$e(t) = r_{\text{set}} - y(t), \qquad u(t) = K_p \, e(t)$$
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 85.9. Alfred Crosby Columbian Exchange & Virgin-Soil Epidemics (`CrosbyColumbianExchangeEngine`)
+#### 85.6. Alfred Crosby Columbian Exchange & Virgin-Soil Epidemics (`CrosbyColumbianExchangeEngine`)
 * **Model Classification**: Tier 2 - Type B (Historical Ecological Transitions & Epidemiology)
-* **Academic Literature Reference**: Crosby, A. W. (1972). *The Columbian Exchange: Biological and Cultural Consequences of 1492*. Greenwood Press; Dobyns, H. F. (1983). *Their Number Become Thinned*. University of Tennessee Press.
+* **Academic Literature Reference**: Crosby, A. W. (1972). *The Columbian Exchange: Biological and Cultural Consequences of 1492*. Greenwood Press; Anderson, R. M., & May, R. M. (1991). *Infectious Diseases of Humans*. Oxford University Press.
 * **Governing Equations**:
-  $$W_{\text{muscle}} \le 40.0 \quad \text{if } B_{\text{livestock}} < 1.0\text{ and } k_{\text{pc}} < 1\,500\text{ kg/cap}$$
-  $$N(t + \Delta t) = N(t) \cdot \left[1.0 - 0.90 \cdot \min(1.0, \; 0.10 \cdot \Delta t)\right] \quad \text{upon Contact}$$
+  $$1 - s_\infty = \exp\!\left(-\mathcal{R}_0 (1 - s_\infty)\right) \quad (S_0 \approx N_0 \text{ virgin-soil final-size relation})$$
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 86. Technological Singularity & Accelerating Returns (`TechnologicalSingularityEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Kurzweil, R. (2005). *The Singularity Is Near*. Viking.
+#### 86. Law of Accelerating Returns (`KurzweilAcceleratingReturnsEngine`)
+* **Model Classification**: Tier 2 - Type B (Prospective Exploratory Heuristic)
+* **Academic Literature Reference**: Moore, G. E. (1965). *Cramming more components onto integrated circuits*. Electronics, 38(8), 114–117; Kurzweil, R. (2005). *The Singularity Is Near*. Viking; Landauer, R. (1961). *Irreversibility and heat generation in the computing process*. IBM J. Res. Dev., 5(3), 183–191.
 * **Governing Equations**:
-  $$\frac{dC_{\text{compute}}}{dt} = \kappa \cdot C_{\text{compute}} \cdot \exp(\alpha t)$$
+  $$\frac{dC}{dt} = r(C) \, C, \qquad E_{\text{bit}} \ge k_B T \ln 2 \quad (\text{Landauer thermodynamic bound})$$
 * **Computational Complexity**: $O(1)$ per cycle.
 
-#### 87. Geoengineering Aerosol Albedo Feedback (`GeoengineeringAlbedoFeedbackEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Crutzen, P. J. (2006). *Albedo enhancement by stratospheric sulfur injections*. Climatic Change, 77(3), 211-220.
+#### 87. Geoengineering Stratospheric Aerosol Albedo Feedback (`GeoengineeringAlbedoFeedbackEngine`)
+* **Model Classification**: Tier 2 - Type B (Prospective Exploratory Heuristic)
+* **Academic Literature Reference**: Crutzen, P. J. (2006). *Albedo enhancement by stratospheric sulfur injections*. Climatic Change, 77(3), 211–220.
 * **Governing Equations**:
-  $$\Delta \alpha_{\text{albedo}} = -\kappa_{\text{aerosol}} M_{\text{SO2}}$$
+  $$\Delta F_{\text{SRM}} = -\frac{S_0}{4} \, T_{\text{atm}}^2 (1 - A_c) \, \Delta \alpha_{\text{strat}}(M_{\text{SO}_2})$$
 * **Computational Complexity**: $O(1)$ per body.
 
-#### 88. Closed-Loop Paraterraforming Domes (`LifeSupportDomeEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Wheeler, R. M. (2017). *Agriculture for space: People and places paving the way*. Open Agriculture, 2(1), 14-32.
+#### 88. Closed-Loop Bioregenerative Life-Support Habitat (`PressurizedHabitatEngine`)
+* **Model Classification**: Tier 2 - Type B (Off-Earth Exploratory Heuristic)
+* **Academic Literature Reference**: Eckart, P. (1996). *Spaceflight Life Support and Biospherics*. Microcosm Press / Kluwer; Wheeler, R. M. (2017). *Agriculture for space*. Open Agriculture, 2(1), 14–32.
 * **Governing Equations**:
-  $$\frac{d O_2}{dt} = P_{\text{hydroponic}} - C_{\text{human}} - \text{Leakage}(P_{\text{dome}}, P_{\text{ambient}})$$
-* **Computational Complexity**: $O(1)$ per facility.
-
-#### 88.1. In-Situ Resource Utilization (ISRU) Autarky (`IsruAutarkyAndSpaceColonizationEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Anand, M., et al. (2012). *Lunar ISRU: A review*. Planetary and Space Science, 74(1), 42-48.
-* **Governing Equations**:
-  $$R_{\text{autarky}} = \frac{K_{\text{isru}}}{K_{\text{isru}} + M_{\text{import}}}$$
+  $$\frac{dm_{\text{O}_2}}{dt} = \dot{m}_{\text{photo,O}_2} + \dot{m}_{\text{electrolysis,O}_2} - N \dot{m}_{\text{resp,O}_2} - \dot{m}_{\text{leak}}(\Delta P)$$
 * **Computational Complexity**: $O(1)$ per habitat cell.
 
-#### 89. Cultural Sociology & Memetic Drift (`InformationEntropyEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Cavalli-Sforza, L. L., & Feldman, M. W. (1981). *Cultural Transmission and Evolution*. Princeton University Press.
+#### 88.1. In-Situ Resource Utilization (ISRU) Mass Closure (`IsruAutarkyAndSpaceColonizationEngine`)
+* **Model Classification**: Tier 2 - Type B (Off-Earth Exploratory Heuristic)
+* **Academic Literature Reference**: Anand, M., et al. (2012). *Lunar ISRU: A review*. Planetary and Space Science, 74(1), 42–48.
 * **Governing Equations**:
-  $$H_{\text{culture}} = -\sum_i p_i \ln p_i, \quad dp_i = \nabla^2 p_i \, dt + \sigma \, dW_{i, t}$$
-* **Computational Complexity**: $O(1)$ per cultural vector.
+  $$R_{\text{ISRU}} = \frac{\dot{M}_{\text{local}}}{\dot{M}_{\text{local}} + \dot{M}_{\text{import}}}$$
+* **Computational Complexity**: $O(1)$ per habitat cell.
+
+#### 89. Cultural Transmission & Shannon Information Entropy (`InformationEntropyEngine`, `CulturalSociologyEngine`)
+* **Model Classification**: Tier 2 - Type B (Cultural Evolution)
+* **Academic Literature Reference**: Shannon, C. E. (1948). *A mathematical theory of communication*. Bell System Technical Journal, 27(3), 379–423; Cavalli-Sforza, L. L., & Feldman, M. W. (1981). *Cultural Transmission and Evolution*. Princeton University Press.
+* **Governing Equations**:
+  $$H = -\sum_i p_i \ln p_i, \qquad C_{\text{channel}} = B \log_2\!\left(1 + \frac{S}{N_0 B}\right)$$
+* **Computational Complexity**: $O(1)$ per cell.
 
 #### 90. Glottochronological Linguistic Divergence (`LanguageLinguisticEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Swadesh, M. (1952). *Lexico-statistic dating of prehistoric ethnic contacts*. Proceedings of the American Philosophical Society, 96(4), 452-463.
+* **Model Classification**: Tier 2 - Type B (Historical Linguistics)
+* **Academic Literature Reference**: Swadesh, M. (1952). *Lexico-statistic dating of prehistoric ethnic contacts*. Proceedings of the American Philosophical Society, 96(4), 452–463.
 * **Governing Equations**:
-  $$d_{\text{cognate}} = \exp(-2 \lambda_{\text{glotto}} t), \quad \lambda_{\text{glotto}} \approx 0.19 / \text{millennium}$$
+  $$c(t) = \exp(-2 \lambda_g t), \qquad \lambda_g \approx 0.14\text{–}0.19\,\text{kyr}^{-1}$$
 * **Computational Complexity**: $O(1)$ per dialect community.
 
-#### 91. Religious Proselytization & Sectarian Polarization (`ReligionIdeologyEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Stark, R., & Bainbridge, W. S. (1987). *A Theory of Religion*. Peter Lang.
+#### 93. Lanchester Attrition & Structural Armor Penetration (`ThermodynamicWarfareEngine`)
+* **Model Classification**: Tier 2 - Type B (Conflict Mechanics)
+* **Academic Literature Reference**: Lanchester, F. W. (1916). *Aircraft in Warfare: The Dawn of the Fourth Arm*. Constable and Co.; Tate, A. (1967). *A theory for the deceleration of long rods after impact*. Journal of the Mechanics and Physics of Solids, 15(6), 387–399; Ashby, M. F. (2011). *Materials Selection in Mechanical Design*. Butterworth-Heinemann.
 * **Governing Equations**:
-  $$\frac{dR_i}{dt} = \beta_{\text{pros}} R_i (1 - R_i) - \delta_{\text{schism}} R_i^2$$
-* **Computational Complexity**: $O(1)$ per religious group.
+  $$\frac{dA}{dt} = -\beta B, \qquad \frac{dB}{dt} = -\alpha A \implies \alpha (A_0^2 - A^2) = \beta (B_0^2 - B^2)$$
+  $$\frac{1}{2} \rho_p v_0^2 > R_t \approx c_y \sigma_y \quad (\text{hydrodynamic/plastic penetration threshold})$$
+* **Parameters & Physical Units**:
+  * $A, B$: Opposing force strengths under Lanchester's Square Law with lethality coefficients $\alpha, \beta$ [$\text{yr}^{-1}$].
+  * $\sigma_y$: Fortification or armor material yield strength [$\text{Pa}$].
+* **Computational Complexity**: $O(1)$ per contested cell.
 
-#### 92. Financial Banking Fractional Reserves & Credit Leverage (`FinancialBankingEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Minsky, H. P. (1986). *Stabilizing an Unstable Economy*. Yale University Press.
+#### 94. Gravity & Random-Utility Spatial Migration (`ThermodynamicMigrationEngine`)
+* **Model Classification**: Tier 2 - Type B (Spatial Demography)
+* **Academic Literature Reference**: Ravenstein, E. G. (1885). *The laws of migration*. J. Stat. Soc. London, 48(2), 167–235; Zipf, G. K. (1946). *The $P_1 P_2 / D$ hypothesis*. American Sociological Review, 11(6), 677–686; McFadden, D. (1974). *Conditional logit analysis of qualitative choice behavior*.
 * **Governing Equations**:
-  $$\text{Leverage} = \frac{\text{Assets}}{\text{Equity}}, \quad \frac{d\text{Debt}}{dt} = r \cdot \text{Debt} - \text{Repay}$$
-* **Computational Complexity**: $O(1)$ per banking node.
+  $$M_{ij} = G_{\text{mig}} \frac{N_i N_j}{d_{ij}^\gamma} \exp\!\left(\beta (U_j - U_i - C_{ij})\right)$$
+* **Computational Complexity**: $O(6)$ Ring-1 adjacency evaluation.
 
-#### 93. Kinetic Warfare & Fortification Yield Breaching (`ThermodynamicWarfareEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Lanchester, F. W. (1916). *Aircraft in Warfare: The Dawn of the Fourth Arm*. Constable and Company.
+#### 95. Jevons Paradox & Direct Energy Rebound (`JevonsParadoxEngine`)
+* **Model Classification**: Tier 2 - Type B (Energy Economics)
+* **Academic Literature Reference**: Jevons, W. S. (1865). *The Coal Question*. Macmillan; Saunders, H. D. (1992). *The Khazzoom-Brookes postulate and neoclassical growth*. Energy Journal, 13(4), 131–148; Sorrell, S. (2009). *Jevons' Paradox revisited*. Energy Policy, 37(4), 1456–1469.
 * **Governing Equations**:
-  $$P_{\text{kinetic}} = N_{\text{soldiers}} \cdot (50.0 + p_{\text{exo}} \cdot \eta_{\text{ordnance}}) \quad [\text{Watts}]$$
-  $$\text{Resistance} = \sigma_{\text{yield}} \cdot d_{\text{wall}} \cdot A_{\text{cross}} \quad (\sigma_{\text{yield}} \in [20, 2000]\text{ MPa})$$
-* **Computational Complexity**: $O(1)$ per battlefield.
+  $$\varepsilon_{\eta}^{E} = -1 - \varepsilon_{P_S}^{S}, \qquad \varepsilon_{P_S}^{S} < -1 \implies \frac{\partial E}{\partial \eta} > 0 \quad (\text{backfire})$$
+* **Computational Complexity**: $O(1)$ per cell.
 
-#### 94. Thermodynamic Spatial Gravitational Migration (`ThermodynamicMigrationEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Ravenstein, E. G. (1885). *The laws of migration*. Journal of the Statistical Society of London, 48(2), 167-235; Zipf, G. K. (1946). *The P1 P2/D hypothesis: on the intercity movement of persons*. American Sociological Review, 11(6), 677-686.
+#### 96. Deterministic Lorenz Strange Attractor (`BifurcationChaosEngine`)
+* **Model Classification**: Tier 2 - Type B (Nonlinear Dynamical Sandbox)
+* **Academic Literature Reference**: Lorenz, E. N. (1963). *Deterministic nonperiodic flow*. Journal of the Atmospheric Sciences, 20(2), 130–141.
 * **Governing Equations**:
-  $$M_{ij} = G_{\text{mig}} \cdot \frac{N_i N_j}{d_{ij}^2} \cdot \exp\left( \frac{\text{Utility}_j - \text{Utility}_i}{k_B T_{\text{friction}}} \right)$$
-* **Computational Complexity**: $O(1)$ Ring-1 adjacency lookup.
-
-#### 95. Jevons Paradox & Exergy Rebound (`JevonsParadoxEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Jevons, W. S. (1865). *The Coal Question*. Macmillan; Alcott, B. (2005). *Jevons' paradox*. Ecological Economics, 54(1), 9-21.
-* **Governing Equations**:
-  $$\text{Consumption} = \frac{\text{Work}}{\eta_{\text{converter}}}, \quad \epsilon_{\text{elasticity}} > 1.0 \implies \frac{d\text{Consumption}}{d\eta} > 0$$
-* **Computational Complexity**: $O(1)$ per sector.
-
-#### 96. Non-Linear Bifurcation Chaos (`BifurcationChaosEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Lorenz, E. N. (1963). *Deterministic nonperiodic flow*. Journal of the Atmospheric Sciences, 20(2), 130-141.
-* **Governing Equations**:
-  $$\dot{x} = \sigma_{\text{lorenz}} (y - x), \quad \dot{y} = x (\rho - z) - y, \quad \dot{z} = x y - \beta z$$
+  $$\dot{x} = \sigma (y - x), \qquad \dot{y} = x (\rho - z) - y, \qquad \dot{z} = x y - \beta z$$
 * **Computational Complexity**: $O(1)$ per node.
 
-#### 97. Spatial Capital Tooling Diffusion & Induced Scarcity Substitution (`PhysicalCapitalDiffusionEngine`)
-* **Model Classification**: Tier 2 - Type B (Physical Capital Dynamic Engine)
-* **Academic Literature Reference**: Acemoglu, D. (2002). *Directed technical change*. The Review of Economic Studies, 69(4), 781-809; Allen, R. C. (2009). *The British Industrial Revolution in Global Perspective*. Cambridge University Press; Clark, G. (2007). *A Farewell to Alms*. Princeton University Press.
+#### 97. Nelson-Phelps Technology Diffusion & Directed Technical Change (`PhysicalCapitalDiffusionEngine`)
+* **Model Classification**: Tier 2 - Type B (Macroeconomic Diffusion)
+* **Academic Literature Reference**: Nelson, R. R., & Phelps, E. S. (1966). *Investment in humans, technological diffusion, and economic growth*. American Economic Review, 56(1/2), 69–75; Hicks, J. R. (1932). *The Theory of Wages*. Macmillan; Acemoglu, D. (2002). *Directed technical change*. Quarterly Journal of Economics, 117(3), 781–809.
 * **Governing Equations**:
-  $$\Delta K_{j \leftarrow i} = \kappa_{\text{trade}} \cdot N_j \cdot \frac{\max(0, k_{\text{pc}, i} - k_{\text{pc}, j})}{\max(1.0, 0.1 \cdot \text{Friction}_{ij})} \cdot \Delta t$$
-  $$\Delta k_{\text{induced}} = 5.0 \cdot \text{Scarcity}_{\text{organic}} \cdot \text{Potential}_{\text{substitute}} \cdot \Delta t$$
-  $$\text{Scarcity}_{\text{organic}} = \operatorname{clamp}\left(1.0 - \frac{B_{\text{wood}}}{0.15 \cdot N}, \; 0.0, \; 1.0\right)$$
-  $$\text{Potential}_{\text{substitute}} = w_{\text{metal}} \frac{M}{M + 15} + w_{\text{coal}} \frac{C}{C + 50} + w_{\text{hydro}} \frac{H}{H + 100}$$
+  $$\frac{dA_i}{dt} = \phi(h_i) \left(T(t) - A_i(t)\right), \qquad \frac{A_M}{A_Z} = \left(\frac{P_M}{P_Z}\right)^{\frac{1}{\varepsilon - 1}} \left(\frac{Z}{M}\right)^{\frac{\sigma - 1}{\varepsilon - 1}}$$
 * **Parameters & Physical Units**:
-  * $k_{\text{pc}}$: Productive physical capital stock per capita [$\text{kg/person}$].
-  * $\mu_{ij}$: Trade corridor physical transport friction cost [dimensionless].
-  * $w_i(k_{\text{pc}})$: Continuous Fermi-Dirac technological adoption weights ($k_{0, \text{coal}} = 500\text{ kg/cap}, k_{0, \text{hydro}} = 2000\text{ kg/cap}$).
-  * Diagnostic era classification: maps physical power flux $P_{\text{watts}}/N$ directly to archetypes (Paleolithic $\le 100\text{ W}$, Neolithic $\ge 250\text{ W}$, Antiquity $\ge 600\text{ W}$, Medieval $\ge 1500\text{ W}$, Industrial $\ge 8000\text{ W}$) without state-level technology fluid.
-* **Computational Complexity**: $O(R)$ along active trade corridors and $O(1)$ per populated cell; executed in Pass 3.2.
+  * $\phi(h_i) > 0$: Catch-up diffusion rate toward frontier $T(t)$ (Nelson & Phelps 1966).
+  * $Z, M$: Scarce organic vs. abundant mineral input factors driving Hicks-Acemoglu induced factor-saving capital deepening when gross elasticity of substitution $\sigma > 1$.
+* **Computational Complexity**: $O(6)$ per cell.
 
-#### 98. Spatial Trade Gravity Corridors (`TradeNetworkRouter`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Tinbergen, J. (1962). *Shaping the World Economy*. Twentieth Century Fund.
+#### 98. Tinbergen Gravity Equation of Trade (`TradeNetworkRouter`)
+* **Model Classification**: Tier 2 - Type B (International Trade)
+* **Academic Literature Reference**: Tinbergen, J. (1962). *Shaping the World Economy*. Twentieth Century Fund; Anderson, J. E., & van Wincoop, E. (2003). *Gravity with gravitas*. American Economic Review, 93(1), 170–192.
 * **Governing Equations**:
-  $$\Phi_{ij} = G \cdot \frac{N_i N_j}{D_{ij}^\gamma} \cdot \exp(-\lambda_{\text{frict}} \cdot \text{Friction}_{ij})$$
+  $$\Phi_{ij} = G \frac{Y_i Y_j}{D_{ij}^\gamma} \left(\frac{\tau_{ij}}{\Pi_i P_j}\right)^{1 - \sigma}$$
 * **Computational Complexity**: $O(\text{candidate links})$.
 
-#### 99. Municipal Public Sanitation & Potable Water Grid (`PublicSanitationWaterGridEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Omran, A. R. (1971). *The epidemiological transition: a theory of the epidemiology of population change*. Milbank Memorial Fund Quarterly, 49(4), 509-538; Cutler, D., & Miller, G. (2005). *The role of public health improvements in health advances: The twentieth-century United States*. Demography, 42(1), 1-22.
+#### 99. Preston Curve & Clean-Water Epidemiological Transition (`PublicSanitationWaterGridEngine`)
+* **Model Classification**: Tier 2 - Type B (Demographic & Public Health Transition)
+* **Academic Literature Reference**: Omran, A. R. (1971). *The epidemiological transition*. Milbank Mem. Fund Q., 49(4), 509–538; Preston, S. H. (1975). *The changing relation between mortality and level of economic development*. Population Studies, 29(2), 231–248; Cutler, D., & Miller, G. (2005). *The role of public health improvements in health advances*. Demography, 42(1), 1–22.
 * **Governing Equations**:
-  $$f_{\text{clean}} = \frac{K_{\text{pipe}}}{K_{\text{pipe}} + K_{\text{water}, 0}} \cdot \min\left(1.0, \frac{W_{\text{fresh}}}{W_{\text{req}} \cdot N_i}\right)$$
-  $$f_{\text{sewer}} = \frac{k_{\text{sewer}}^2}{k_{\text{sewer}}^2 + 650.0^2}$$
-  $$q_{\text{infant}} = 0.015 + 0.305 \cdot (1.0 - f_{\text{clean}})^{1.5} \cdot (1.0 - 0.5 f_{\text{sewer}}) \cdot \left(1.5 - 0.5 \frac{\text{Food}}{\text{Req}}\right)$$
+  $$e_0(y) = e_{0,\min} + \beta_P \ln\!\left(1 + \frac{y}{y_0}\right), \qquad \ln m_i = \alpha_i - \gamma_{\text{water}} \, \mathbb{I}_{\text{clean},i}$$
 * **Parameters & Physical Units**:
-  * $f_{\text{clean}}$: Potable treated water coverage fraction [$0.0 - 1.0$].
-  * $f_{\text{sewer}}$: Subterranean sewage drainage coverage fraction [$0.0 - 1.0$].
-  * $q_{\text{infant}}$: Under-5 child mortality rate [$0.015 - 0.32$]. Pre-industrial baseline $\approx 32\%$, modern sanitised floor $\approx 1.5\%$.
-* **Computational Complexity**: $O(1)$ per cell; executed in Pass 2.
+  * $e_0(y)$: Concave Preston (1975) life expectancy at birth [$\text{yr}$] as a function of real per-capita material provision $y$.
+  * $\gamma_{\text{water}} > 0$: Log-mortality reduction from municipal clean-water filtration and chlorination (Cutler & Miller 2005).
+* **Computational Complexity**: $O(1)$ per cell.
 
-#### 100. Physical Media & Movable Type Printing Revolution (`PhysicalMediaPrintingEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Buringh, E., & van Zanden, J. L. (2009). *Charting the "Rise of the West": Manuscripts and printed books in Europe, a long-term perspective*. Journal of Economic History, 69(2), 409-445; Dittmar, J. E. (2011). *Information technology and economic change: the impact of the printing press*. Quarterly Journal of Economics, 126(3), 1133-1172.
+#### 100. Book Production & Human Capital Accumulation (`PhysicalMediaPrintingEngine`)
+* **Model Classification**: Tier 2 - Type B (Economic History of Knowledge)
+* **Academic Literature Reference**: Buringh, E., & van Zanden, J. L. (2009). *Charting the "Rise of the West": Manuscripts and printed books in Europe, a long-term perspective*. Journal of Economic History, 69(2), 409–445; Dittmar, J. E. (2011). *Information technology and economic change: the impact of the printing press*. Quarterly Journal of Economics, 126(3), 1133–1172.
 * **Governing Equations**:
-  $$Q_{\text{books}} = \alpha_{\text{scribe}} N_{\text{scribes}} + \alpha_{\text{press}} K_{\text{press}} \cdot \sigma_{\text{paper}}(k_{\text{mill}})$$
-  $$\frac{dB_{\text{stock}}}{dt} = Q_{\text{books}} - \delta_{\text{wear}} B_{\text{stock}}, \quad B_{\text{pc}} = \frac{B_{\text{stock}}}{N_i}$$
-  $$\text{Literacy} = \text{Literacy}_{\max} \cdot \frac{B_{\text{pc}}}{B_{\text{pc}} + 2.5} \cdot \frac{k_{\text{edu}}}{k_{\text{edu}} + 150.0}$$
-* **Parameters & Physical Units**:
-  * $\alpha_{\text{scribe}} = 2.0\text{ books/year}$: Manual scriptorium monk copying speed.
-  * $\alpha_{\text{press}} = 1500.0\text{ books/year}$: Movable metal type press throughput.
-  * $B_{\text{pc}}$: Physical book stock per person [books/capita].
-* **Computational Complexity**: $O(1)$ per cell; executed in Pass 2.
+  $$\frac{dB_{\text{books}}}{dt} = Q_{\text{print}} - \delta_b B_{\text{books}}, \qquad \ln Q_{\text{books},i} = \alpha_0 + \alpha_1 \ln N_i + \alpha_2 \ln\left(\frac{1}{P_{\text{book}}}\right)$$
+* **Computational Complexity**: $O(1)$ per cell.
 
-#### 101. Sovereign Treasury & Perpetual Bond Markets (`SovereignTreasuryBondEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Reinhart, C. M., & Rogoff, K. S. (2009). *This Time Is Different: Eight Centuries of Financial Folly*. Princeton University Press; Dickson, P. G. M. (1967). *The Financial Revolution in England*. Macmillan; Stasavage, D. (2011). *States of Credit*. Princeton University Press.
+#### 101. Domar-Bohn Sovereign Debt Sustainability Dynamics (`SovereignTreasuryBondEngine`)
+* **Model Classification**: Tier 2 - Type B (Fiscal Macroeconomics)
+* **Academic Literature Reference**: Domar, E. D. (1944). *The "burden of the debt" and the national income*. American Economic Review, 34(4), 798–827; Bohn, H. (1998). *The behavior of U.S. public debt and deficits*. Quarterly Journal of Economics, 113(3), 949–963; Reinhart, C. M., & Rogoff, K. S. (2009). *This Time Is Different*. Princeton University Press.
 * **Governing Equations**:
-  $$\text{Deficit} = G_{\text{military}} + G_{\text{admin}} + r_{\text{bond}} D_{\text{sovereign}} - T_{\text{revenue}}$$
-  $$\frac{dD_{\text{sovereign}}}{dt} = \max(0, \text{Deficit}) - \text{Amortization}$$
-  $$r_{\text{bond}} = r_0 + 0.10 \cdot \left(\frac{D_{\text{sovereign}}}{Y_{\text{polity}}}\right)^2 \cdot \frac{1}{\text{Legitimacy} + 0.1}$$
+  $$\frac{dd}{dt} = (r - g) \, d + p_{\text{def}}, \qquad d = \frac{D_{\text{sovereign}}}{Y}$$
 * **Parameters & Physical Units**:
-  * $D_{\text{sovereign}}$: Outstanding sovereign government debt [$\text{Geary-Khamis Int\$}$].
-  * $r_{\text{bond}}$: Sovereign yield spread on government debt [$0.03 - 0.25$].
-* **Computational Complexity**: $O(1)$ per polity; executed in Pass 3.4.
+  * $d$: Sovereign debt-to-output ratio [dimensionless]; $r$: effective interest rate on public debt [$\text{yr}^{-1}$]; $g$: real output growth rate [$\text{yr}^{-1}$]; $p_{\text{def}} = (G - T)/Y$: primary fiscal deficit ratio.
+* **Computational Complexity**: $O(1)$ per polity.
 
-#### 102. Naval Hydrodynamics & Cargo Freight Economics (`NavalHydrodynamicsFreightEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Froude, W. (1874). *On the Resistance of Ships*. British Association for the Advancement of Science; Harley, C. K. (1988). *Ocean freight rates and new world expansion 1750-1913*. Journal of Economic History, 48(4), 851-876.
+#### 102. Froude Ship Resistance & Maritime Freight Economics (`NavalHydrodynamicsFreightEngine`)
+* **Model Classification**: Tier 2 - Type B (Transport Physics & Economic History)
+* **Academic Literature Reference**: Froude, W. (1874). *On Experiments with H.M.S. Greyhound*. Trans. Inst. Naval Architects, 15, 36–73; Harley, C. K. (1988). *Ocean freight rates and new world expansion, 1750–1913*. Journal of Economic History, 48(4), 851–876.
 * **Governing Equations**:
-  $$R_{\text{total}} = \frac{1}{2} C_f \rho_{\text{water}} S_{\text{wetted}} v^2 + \frac{1}{2} C_r \rho_{\text{water}} \nabla^{2/3} v^2$$
-  $$C_{\text{freight}}(\Phi) = \sigma_{\text{sea}}(\Phi) \cdot \left[ 20.0 + \frac{1400.0}{1.0 + \left(\frac{\max(0, \Phi - 1.02)}{0.22}\right)^3} \right]$$
+  $$R_T = \frac{1}{2} \rho_w S v^2 \left( C_F(\text{Re}) + C_R(\text{Fn}) \right), \qquad \text{Re} = \frac{v L}{\nu}, \qquad \text{Fn} = \frac{v}{\sqrt{g L}}$$
 * **Parameters & Physical Units**:
-  * $R_{\text{total}}$: Hydrodynamic total drag force [$\text{Newtons}$].
-  * $C_{\text{freight}}$: Real maritime dry bulk shipping freight index (1913=100) [$20.0 - 1415.0$].
-* **Computational Complexity**: $O(1)$ per maritime corridor; executed in Pass 2.
+  * $R_T$: Total hull hydrodynamic drag [$\text{N}$] decomposed into viscous skin-friction coefficient $C_F(\text{Re})$ and wave-making residuary coefficient $C_R(\text{Fn})$ over wetted surface area $S$ [$\text{m}^2$] and waterline length $L$ [$\text{m}$].
+* **Computational Complexity**: $O(1)$ per maritime corridor.
 
-#### 103. Spatial Agrarian Concentric Rings & Urban Food Logistics (`VonThunenAgriculturalRingsEngine`)
-* **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: von Thünen, J. H. (1826). *Der isolirte Staat in Beziehung auf Landwirthschaft und Nationalökonomie*. Leopold; Chisholm, M. (1962). *Rural Settlement and Land Use*. Hutchinson; Bairoch, P. (1988). *Cities and Economic Development*. University of Chicago Press.
+#### 103. Von Thünen Locational Land Rent & Hinterland Grain Transport (`VonThunenAgriculturalRingsEngine`)
+* **Model Classification**: Tier 2 - Type B (Spatial Agricultural Economics)
+* **Academic Literature Reference**: von Thünen, J. H. (1826). *Der isolierte Staat in Beziehung auf Landwirtschaft und Nationalökonomie*. Perthes; Chisholm, M. (1962). *Rural Settlement and Land Use*. Hutchinson; Bairoch, P. (1988). *Cities and Economic Development*. University of Chicago Press.
 * **Governing Equations**:
-  $$R_{\text{rent}}(d) = Y \cdot (P_{\text{market}} - C_{\text{production}}) - Y \cdot F_{\text{freight}} \cdot d$$
-  $$S_{\text{export}} = \max\left(0, \text{Harvest} - N_{\text{rural}} \cdot \text{Req}_{\text{subsistence}}\right) \cdot \exp(-\lambda_{\text{trans}} \cdot d)$$
-  $$N_{\max,\text{city}}(k_{\text{pc}}) = 25\,000 + \frac{55\,000}{1 + \exp\left(-\frac{k_{\text{pc}} - 250}{75}\right)} + 5\,000 \cdot \operatorname{softplus}\left(\frac{k_{\text{pc}} - 800}{100}\right)$$
+  $$R(r) = Y (p - c - f \cdot r), \qquad r_{\max} = \frac{p - c}{f}$$
+  $$L_{\text{disk}}(c R) = 1 - \frac{1}{\pi R^2} \int_0^R e^{-c r} \, 2\pi r \, dr = 1 - \frac{2}{(c R)^2}\left[1 - (1 + c R) e^{-c R}\right]$$
 * **Parameters & Physical Units**:
-  * $R_{\text{rent}}(d)$: Economic locational land rent at distance $d$ from urban center [$\text{\$/ha}$].
-  * $S_{\text{export}}$: Deliverable caloric food surplus exported to feed central nucleated city [$\text{kcal/year}$].
-  * $N_{\max,\text{city}}$: Continuous $C^1$ urban grain hinterland demographic capacity [inhabitants], expanding smoothly with paved road, canal, and rail infrastructure capital $k_{\text{pc}} = K/N$.
-* **Computational Complexity**: $O(6)$ per agricultural cell; executed in Pass 2.
+  * $R(r)$: Locational land rent per unit area at distance $r$ [$\text{km}$] from market with yield $Y$, market price $p$, production cost $c$, and freight rate $f$.
+  * $L_{\text{disk}}(c R) \in [0, 1)$: Exact disk-integrated share of harvested grain consumed in transit over circular supply ring radius $R = \sqrt{N e_{\text{meta}} / (\pi y_{\text{agr}})}$ at modal energy-loss rate $c$ [$\text{km}^{-1}$] ($\approx 0.008\,\text{km}^{-1}$ ox-wagon vs. $\approx 0.0008\,\text{km}^{-1}$ waterway barge).
+* **Computational Complexity**: $O(1)$ per cell.
 
-#### 104. Differential Land Rent & Margin Pressure (`RicardoDifferentialLandRentEngine`)
-* **Model Classification**: Tier 2 - Type B (Thematic Theory Engine)
-* **Academic Literature Reference**: Ricardo, D. (1817). *On the Principles of Political Economy and Taxation*. John Murray; Sraffa, P. (1960). *Production of Commodities by Means of Commodities*. Cambridge University Press.
+#### 104. Ricardian Differential Land Rent & Stationary Profit Squeeze (`RicardoDifferentialLandRentEngine`)
+* **Model Classification**: Tier 2 - Type B (Classical Political Economy)
+* **Academic Literature Reference**: Ricardo, D. (1817). *On the Principles of Political Economy and Taxation*. John Murray; Samuelson, P. A. (1959). *A modern treatment of the Ricardian economy*. Quarterly Journal of Economics, 73(1), 1–35.
 * **Governing Equations**:
-  $$\text{Margin}_{\text{ext}} = \sigma\left(\frac{N_i}{B_{\text{agr}, i} + 1} - 1.25, \; 0.40\right)$$
-  $$\frac{dK_i}{dt} = -0.06 \cdot \text{Margin}_{\text{ext}} \cdot K_i$$
-  $$\frac{d\text{Gini}_i}{dt} = +0.02 \cdot \text{Margin}_{\text{ext}}$$
+  $$Y_A = A_0 \, T_{\text{land}}^{1 - \beta_A} L^{\beta_A}, \qquad MP_L = \frac{\partial Y_A}{\partial L} = \beta_A \frac{Y_A}{L}, \qquad R_{\text{land}} = Y_A - L \cdot MP_L = (1 - \beta_A) Y_A$$
+  $$r_{\text{profit}} = r_0 \left(1 - \frac{w_{\text{sub}}}{MP_L}\right)$$
 * **Parameters & Physical Units**:
-  * $N_i$: Cellular human population [inhabitants].
-  * $B_{\text{agr}, i}$: Standing agricultural biomass [$\text{tons}$].
-  * $\text{Margin}_{\text{ext}}$: Extensive and intensive land frontier pressure index $[0.0, 1.0]$.
-* **Computational Complexity**: $O(1)$ per cell; executed in Pass 3.2.
+  * $MP_L$: Marginal product of labor on the agricultural extensive/intensive margin ($0 < \beta_A < 1$).
+  * $R_{\text{land}}$: Differential rent accruing to landowners; as population growth drives $MP_L \to w_{\text{sub}}$, capitalist profit $r_{\text{profit}} \to 0$ (Ricardian stationary state).
+* **Computational Complexity**: $O(1)$ per cell.
 
-#### 105. Dual-Sector Structural Transformation & Lewis Turning Point (`LewisDualSectorTurningPointEngine`)
-* **Model Classification**: Tier 2 - Type B (Thematic Theory Engine)
-* **Academic Literature Reference**: Lewis, W. A. (1954). *Economic Development with Unlimited Supplies of Labour*. The Manchester School, 22(2), 139–191; Ranis, G., & Fei, J. C. (1961). *A Theory of Economic Development*. American Economic Review.
+#### 105. Lewis & Ranis-Fei Dual-Sector Structural Transformation (`LewisDualSectorTurningPointEngine`)
+* **Model Classification**: Tier 2 - Type B (Developmental Macroeconomics)
+* **Academic Literature Reference**: Lewis, W. A. (1954). *Economic Development with Unlimited Supplies of Labour*. The Manchester School, 22(2), 139–191; Ranis, G., & Fei, J. C. H. (1961). *A Theory of Economic Development*. American Economic Review, 51(4), 533–565.
 * **Governing Equations**:
-  $$\text{SurplusAbsorption} = \sigma(k_{\text{pc}}, 60, 25) \cdot (1 - \sigma(k_{\text{pc}}, 250, 40))$$
-  $$\text{TurningPointIntensity} = \sigma(k_{\text{pc}}, 250, 40) \cdot \sigma(\text{Trade}, 20, 5)$$
-  $$\frac{dK_i}{dt} = \left(0.030 \cdot \text{SurplusAbsorption} + 0.045 \cdot \text{TurningPointIntensity}\right) \cdot K_i$$
+  $$w = \max\!\left(\bar{w}_S, \; MP_{L,A}\right), \qquad MP_{L,A} = \frac{\partial Y_A}{\partial L_A}, \qquad \frac{dK_M}{dt} = s_\pi \left(Y_M - w \, L_M\right)$$
 * **Parameters & Physical Units**:
-  * $k_{\text{pc}}$: Physical capital per capita [$\text{kg/person}$].
-  * $\text{TurningPointIntensity}$: Post-turning point labor scarcity and mechanization induction index $[0.0, 1.0]$.
-* **Computational Complexity**: $O(1)$ per cell; executed in Pass 3.2.
+  * $\bar{w}_S$: Institutional subsistence wage during the unlimited rural labor phase ($MP_{L,A} < \bar{w}_S$).
+  * Commercialization / Lewis Turning Point ($MP_{L,A} = \bar{w}_S$): Rural labor surplus is exhausted, real wages rise with marginal productivity ($w = MP_{L,A}$), and modern producers substitute capital machinery $K_M$ for labor.
+* **Computational Complexity**: $O(1)$ per cell.
 
-#### 106. Long Wave Infrastructure Cycles & Creative Destruction (`KondratievSchumpeterLongWaveEngine`)
-* **Model Classification**: Tier 2 - Type B (Thematic Theory Engine)
-* **Academic Literature Reference**: Kondratiev, N. D. (1925). *The Major Economic Cycles*; Schumpeter, J. A. (1939). *Business Cycles*. McGraw-Hill; Freeman, C., & Louçã, F. (2001). *As Time Goes By*. Oxford University Press.
+#### 106. Kondratiev-Schumpeter Long Waves & Vintage Creative Destruction (`KondratievSchumpeterLongWaveEngine`)
+* **Model Classification**: Tier 2 - Type B (Macroeconomic Cycles)
+* **Academic Literature Reference**: Kondratiev, N. D. (1925). *The Major Economic Cycles*. Voprosy Konyunktury, 1(1), 28–79; Schumpeter, J. A. (1939). *Business Cycles*. McGraw-Hill.
 * **Governing Equations**:
-  $$\phi(t) = \sin\left(\frac{2\pi \cdot (t - 1780)}{52}\right)$$
-  $$\text{CreativeDestruction} = \max\left(0, \; -\phi(t)\right) \cdot \sigma(k_{\text{pc}}, 150, 30)$$
-  $$\Delta K_{\text{liquidated}} = -0.015 \cdot \text{CreativeDestruction} \cdot K_i \cdot \Delta t$$
-  $$\Delta M_{\text{recycled}} = +0.30 \cdot |\Delta K_{\text{liquidated}}|$$
+  $$I(t) = I_0 \left[1 + \alpha_K \sin\!\left(\frac{2\pi (t - t_0)}{T_K}\right)\right], \qquad \frac{dK}{dt} = I(t) - \delta(t) K$$
 * **Parameters & Physical Units**:
-  * $\phi(t)$: Harmonic phase of the 52-year Kondratiev infrastructure cycle $[-1.0, 1.0]$.
-  * $\Delta M_{\text{recycled}}$: Reclaimed scrap metal and reusable alloy feedstock [$\text{kg}$].
-* **Computational Complexity**: $O(1)$ per cell; executed in Pass 3.2.
+  * $T_K \approx 48\text{–}60\,\text{yr}$: Characteristic replacement period of durable transport and power infrastructures ($52\,\text{yr}$ canonical period), with accelerated scrapping $\delta(t)$ during Schumpeterian creative-destruction troughs.
+* **Computational Complexity**: $O(1)$ per cell.
 
-#### 107. Energy Transport Proximity & Transatlantic Ghost Acreage (`PomeranzGreatDivergenceEngine`)
-* **Model Classification**: Tier 2 - Type B (Thematic Theory Engine)
-* **Academic Literature Reference**: Pomeranz, K. (2000). *The Great Divergence: China, Europe, and the Making of the Modern World Economy*. Princeton University Press; Allen, R. C. (2009). *The British Industrial Revolution in Global Perspective*. Cambridge University Press; Wrigley, E. A. (2010). *Energy and the English Industrial Revolution*. Cambridge University Press.
+#### 107. Pomeranz-Wrigley Subterranean Forest & Colonial Ghost Acreage (`PomeranzGreatDivergenceEngine`)
+* **Model Classification**: Tier 2 - Type B (Comparative Economic History)
+* **Academic Literature Reference**: Pomeranz, K. (2000). *The Great Divergence: China, Europe, and the Making of the Modern World Economy*. Princeton University Press; Wrigley, E. A. (2010). *Energy and the English Industrial Revolution*. Cambridge University Press.
 * **Governing Equations**:
-  $$\text{CoalProximity} = \sigma(\text{Coal}, 500, 100) \cdot (1 - \sigma(\mu_{\text{friction}}, 0.70, 0.15))$$
-  $$\text{GhostAcreage} = \sigma(\text{Trade}, 25, 5) \cdot \sigma(k_{\text{pc}}, 100, 30)$$
-  $$\mathcal{P}_{\text{divergence}} = \text{CoalProximity} \cdot (1.0 + 0.80 \cdot \text{GhostAcreage})$$
-  $$\frac{dK_i}{dt} = +0.055 \cdot \mathcal{P}_{\text{divergence}} \cdot K_i$$
+  $$A_{\text{ghost,coal}} = \frac{E_{\text{coal}}}{y_{\text{wood}}}, \qquad A_{\text{ghost,trade}} = \sum_c \frac{M_{\text{import},c}}{y_{\text{land},c}}, \qquad A_{\text{eff}} = A_{\text{dom}} + A_{\text{ghost,coal}} + A_{\text{ghost,trade}}$$
 * **Parameters & Physical Units**:
-  * $\text{CoalProximity}$: Transport-accessible thermal fossil energy index $[0.0, 1.0]$.
-  * $\text{GhostAcreage}$: Transoceanic agricultural land relief index $[0.0, 1.0]$.
-  * $\mathcal{P}_{\text{divergence}}$: Industrial takeoff potential $[0.0, 1.8]$.
-* **Computational Complexity**: $O(1)$ per cell; executed in Pass 3.2.
+  * $A_{\text{ghost,coal}}$: "Subterranean forest" land-area equivalent [$\text{km}^2$] liberated by substituting coal enthalpy $E_{\text{coal}}$ for sustainable coppice forestry yield $y_{\text{wood}}$ (Wrigley 2010).
+  * $A_{\text{ghost,trade}}$: Transoceanic colonial ghost acreage [$\text{km}^2$] embodied in imported land-intensive commodities $M_{\text{import},c}$ (timber, cotton, sugar, grain; Pomeranz 2000).
+* **Computational Complexity**: $O(1)$ per cell.
 
-#### 108. Geopolitical Crisis Escalation & Warfare Attrition (`WarDiplomacyEngine`)
-* **Model Classification**: Tier 2 - Type B (Geopolitical Conflict Engine)
-* **Academic Literature Reference**: Bueno de Mesquita, B. (1981). *The War Trap*. Yale University Press; Lanchester, F. W. (1916). *Aircraft in Warfare: The Dawn of the Fourth Arm*. Constable and Co.; Clausewitz, C. von (1832). *Vom Kriege*. Dümmlers Verlag.
+#### 108. Bueno de Mesquita Expected-Utility War Trap & Contest Success (`WarDiplomacyEngine`)
+* **Model Classification**: Tier 2 - Type B (Geopolitical Conflict Theory)
+* **Academic Literature Reference**: Bueno de Mesquita, B. (1981). *The War Trap*. Yale University Press; Hirshleifer, J. (1989). *Conflict and rent-seeking success functions: Ratio vs. difference models of relative success*. Public Choice, 63(2), 101–112; Lanchester, F. W. (1916).
 * **Governing Equations**:
-  $$\mathcal{P}_{\text{escalate}} = \frac{1}{1 + \exp\left(-\frac{\text{warDesire}}{0.12}\right)}$$
-  $$\Delta \text{Affinity}_{\text{aggressor}\to\text{defender}} = -(2.0 + 10.0 \cdot \mathcal{P}_{\text{escalate}}) \quad \text{if } \mathcal{P}_{\text{escalate}} > 0.50$$
-  $$\Delta \text{Affinity}_{\text{defender}\to\text{aggressor}} = 1.6 \cdot \Delta \text{Affinity}_{\text{aggressor}\to\text{defender}} \quad \text{(asymmetric defensive grievance)}$$
-  $$\mathcal{P}_{\text{conquest}} = \frac{\Phi_{\text{attacker}}^2}{\Phi_{\text{attacker}}^2 + \Phi_{\text{defender}}^2}$$
+  $$E(U_{i \to j}) = p_{ij} \, U_i(\Delta V_j) + (1 - p_{ij}) \, U_i(-\Delta L_i) - C_i - U_i(Q_{ij}), \qquad p_{ij} = \frac{\Phi_i^m}{\Phi_i^m + \Phi_j^m} \quad (m = 2)$$
 * **Parameters & Physical Units**:
-  * $\text{warDesire}$: Net expected utility of aggressive geopolitical conflict $[-1.0, 1.0]$.
-  * $\mathcal{P}_{\text{escalate}}$: Continuous $C^1$ war declaration probability (conflict active when $> 0.50$).
-  * $\Phi_{\text{military}}$: Lanchester combat power derived from demographic levy $N_{\text{troops}}$, physical ordnance capital $k_{\text{ordnance}}$, and sovereign war chest bullion.
-  * Peacetime reconciliation relaxation: $+0.5 \cdot \min(2.0, -\text{warDesire})$ points/tick for aggressor $\to$ defender, and $\times 0.9$ for defender $\to$ aggressor when $\text{warDesire} < -0.05$.
-* **Computational Complexity**: $O(P^2)$ where $P$ is the number of active polities; executed in Pass 3.3.
+  * $E(U_{i \to j})$: Net expected utility of initiating conflict against polity $j$ relative to status quo $Q_{ij}$ (Bueno de Mesquita 1981).
+  * $p_{ij} \in (0, 1)$: Tullock-Hirshleifer-Lanchester contest success probability with Square-Law decisiveness exponent $m = 2$ over military capabilities $\Phi_i, \Phi_j$.
+* **Computational Complexity**: $O(P^2)$ across $P$ active polities.
 
 ---
 ## 5. Computational Complexity & Integration Benchmark Matrix
@@ -1796,8 +1691,8 @@ The simulation state at $T_0$ is initialized from a coupled tensor stack followi
 2. **16-bit Continuous Intensity Grayscale Tensors (`TYPE_USHORT_GRAY`, $[0, 65535]$, 65,536 levels)**:
    - **Elevation & Bathymetry (`elevation.png`)**: $[-11\,000\text{ m}, +8\,848\text{ m}]$ with sea-level ($0\text{ m}$) anchored at normalized datum $0.478$ ($u_{16} = 31\,326$, vertical resolution $\approx 0.26\text{–}0.35\text{ m}$).
    - **Climate Scalars (`temperature.png`, `precipitation.png`, `seasonality.png`)**: Surface temperature ($[-50\,^\circ\text{C}, +50\,^\circ\text{C}]$, resolution $\approx 0.0015\,^\circ\text{C}$), annual precipitation ($[0, 4\,000\text{ mm/yr}]$, square-root encoded), and seasonal thermal amplitude ($[1, 61\,^\circ\text{C}]$).
-   - **Demographic Density (`density.png`)**: Universal zero-pedestal bijective 16-bit logarithmic physical density law (`Hyde34GridReader`, `PaleolithicDensityGenerator`, `H3RasterBinningCoordinator`) conserving HYDE 3.4 headcounts across planar 2D H3 geodesic cell area $A_{\text{cell,2D}}$ (`SpatialSurfaceHelper`):
-     $$u_{16}(\rho) = \operatorname{round}\!\left(65\,535 \cdot \frac{\ln(1 + \rho / d_0)}{\ln(1 + D_{\text{ref}} / d_0)}\right), \qquad \rho(u_{16}) = d_0 \left[\left(1 + \frac{D_{\text{ref}}}{d_0}\right)^{u_{16} / 65\,535} - 1\right], \qquad N_{\text{cell}} = \bar{\rho}_{\text{cell}} \cdot A_{\text{cell,2D}}$$
+   - **Demographic Density (`density.png`)**: Bijective 16-bit logarithmic areal population density encoding conserving population integrals $N_{\text{cell}} = \iint_{\Omega_{\text{cell}}} \rho(\mathbf{x}) \, dA$ over spherical surface element $dA = R^2 \cos\phi \, d\phi \, d\lambda$:
+     $$u_{16}(\rho) = \operatorname{round}\!\left(65\,535 \cdot \frac{\ln(1 + \rho / d_0)}{\ln(1 + D_{\text{ref}} / d_0)}\right), \qquad \rho(u_{16}) = d_0 \left[\left(1 + \frac{D_{\text{ref}}}{d_0}\right)^{u_{16} / 65\,535} - 1\right]$$
      with $d_0 = 0.1\,\text{hab/km}^2$, $D_{\text{ref}} = 25\,000\,\text{hab/km}^2$, and exact uninhabited identity $u_{16}(0) \equiv 0 \iff \rho(0) \equiv 0.0$.
    - **Tensor 4 (Materiality & Technologies)**: $\tau(\mathbf{x}) \in [0, 1]$ ($u_{16} / 65535$) lithic / metallurgical complexity.
    - **Tensor 6 (Institutional Complexity)**: $\mathcal{I}(\mathbf{x}) \in [0, 1]$ ($u_{16} / 65535$) legal codification and administrative depth (Seshat).
@@ -1805,39 +1700,14 @@ The simulation state at $T_0$ is initialized from a coupled tensor stack followi
    - **Tensor 8 (Epidemiological Pathogen Immunity)**: $P(\mathbf{x}) \in [0, 1]$ ($u_{16} / 65535$) endemic vector burden and acquired immunity.
    - **10 Geological & Hydrological Resource Tensors**: Coal, Oil, Gas, Uranium, He-3, Iron/Copper, Precious Metals, Rare Earths, Geothermal Heat, and Aquifers encoded in 16-bit grayscale ($[0, 65535]$).
 
-### 6.2 Directed Square Cultural Affinity Matrix & Asymmetric Evolution ($N \times N$)
-Rather than an idealized symmetric or triangular representation, inter-cultural relations in Ether are formalized as a **fully directed, asymmetric $N \times N$ square matrix** $\mathbf{A} \in [0.0, 1.0]^{N \times N}$, where $A_{i \to j}$ denotes the directional affinity, diplomatic tolerance, and assimilation openness expressed by cultural entity $i$ towards entity $j$, and in general $A_{i \to j} \ne A_{j \to i}$.
-
-#### 1. Baseline Prior Formulation from 4D Empirical Trait Space ($t = t_0$)
-At epoch initialization ($t = t_0$), each entity $i$ is parameterized by its empirical ethnographic trait vector $\mathbf{T}_i = [T_{i,0}, T_{i,1}, T_{i,2}, T_{i,3}] \in [0, 1]^4$ (Glottolog 4.8 linguistic branch, Murdock D-PLACE / Todd social stratification, ArchaeoGLOBE subsistence regime, and Seshat ritual/axial tradition):
-
-$$\text{Dist}_{ij} = \sqrt{\sum_{k=0}^3 \left( T_{i,k} - T_{j,k} \right)^2}$$
-$$A_0(i, j) = \exp\left( -\lambda \cdot \text{Dist}_{ij} \right) \quad (\lambda = 3.5)$$
-
-Directional asymmetry is derived from two socio-historical structural invariants:
-1. **Prestige & Institutional Asymmetry** ($\Delta_{\text{status}} = T_{j,1} - T_{i,1}$):
-   Peripheral and tribal polities exhibit aspirational cultural openness toward complex imperial centers ($\Delta_{\text{status}} > 0$), while dominant imperial states display an ethnocentric discounting bias toward peripheries:
-   $$\text{Bias}_{\text{prestige}}(i \to j) = 0.12 \cdot \tanh(2.5 \cdot \Delta_{\text{status}})$$
-2. **Ritual Exclusivism & Intolerance Friction** ($\Delta_{\text{dogma}} = T_{i,3} \cdot |T_{i,3} - T_{j,3}|$):
-   Doctrinally rigid or dogmatic ritual traditions ($T_{i,3} \to 1$) incur severe unilateral friction against divergent systems, whereas syncretic traditions ($T_{i,3} \to 0$) maintain higher baseline tolerance:
-   $$\text{Discount}_{\text{dogma}}(i \to j) = 0.15 \cdot \Delta_{\text{dogma}}$$
-
-The resulting directed initial affinity is continuously bounded:
-$$A(i \to j) = \operatorname{clamp}\left( A_0(i, j) + \text{Bias}_{\text{prestige}}(i \to j) - \text{Discount}_{\text{dogma}}(i \to j), \; 0.01, \; 1.0 \right)$$
-with auto-identity diagonal $A(i \to i) \equiv 1.0$.
-
-#### 2. Dynamic Asymmetric Evolution ($t > t_0$)
-The square matrix $\mathbf{A}(t)$ serves strictly as the initial state ($t_0$) and is dynamically updated across simulation ticks:
-   * **Warfare & Invasions (`WarDiplomacyEngine`)**:
-  Geopolitically bounded to polities intersecting the active mesh (`minDistanceSq <= maxRadiusSq`), border skirmishes scale continuously with $\Delta t_{\text{yr}}$ and restrict physical demolition to the contested frontline cell while degrading affinities asymmetrically:
-  $$\Delta A(i_{\text{aggressor}} \to j_{\text{defender}}) = -(2.0 + 10.0 \cdot \mathcal{P}_{\text{escalate}}) \cdot \Delta t_{\text{yr}}$$
-  $$\Delta A(j_{\text{defender}} \to i_{\text{aggressor}}) = 1.6 \cdot \Delta A(i_{\text{aggressor}} \to j_{\text{defender}}) \quad (\text{defensive grievance penalty})$$
-* **Peacetime Trade & Cultural Diffusion**:
-  Peaceful borders and mutual commerce generate directed reconciliation:
-  $$\Delta A(i \to j) = +0.5 \cdot \min(2.0, -\text{warDesire})$$
-  modulated by trade conductance and cultural prestige.
-* **State Persistence**:
-  Pairwise overrides are persisted in scenario presets (`culturalAffinityMatrix: { "idA:idB": value }`) and remain inspectable and editable per directed cell in the `CulturalAffinityMatrixDialog` GUI.
+### 6.2 Cultural Distance & Intergroup Contact Theory ($N \times N$)
+* **Academic Literature Reference**: Shepard, R. N. (1987). *Toward a universal law of generalization for psychological science*. Science, 237(4820), 1317–1323; Axelrod, R. (1997). *The dissemination of culture*. Journal of Conflict Resolution, 41(2), 203–226; Allport, G. W. (1954). *The Nature of Prejudice*. Addison-Wesley; Cavalli-Sforza, L. L., & Feldman, M. W. (1981).
+* **Governing Equations**:
+  $$D_{ij} = \left( \sum_{k=1}^{K} w_k |T_{i,k} - T_{j,k}|^2 \right)^{1/2}, \qquad A_0(i, j) = \exp(-\lambda D_{ij}), \qquad \frac{dA_{ij}}{dt} = \kappa_+ \Phi_{\text{contact},ij}(1 - A_{ij}) - \kappa_- C_{\text{conflict},ij} A_{ij}$$
+* **Parameters & Physical Units**:
+  * $\mathbf{T}_i \in [0, 1]^K$: Ethnographic and institutional trait vector (language family, kinship structure, subsistence mode, ritual norm).
+  * $A_0(i, j) \in (0, 1]$: Shepard exponential similarity generalization law ($A_0(i, i) = 1$).
+  * $\Phi_{\text{contact},ij}, C_{\text{conflict},ij}$: Peaceful trade contact vs. active inter-polity conflict intensity (Allport 1954; Axelrod 1997). Asymmetric prestige/dogma priors and defensive war grievance closures are documented in `docs/PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md` (Entry 29).
 
 ---
 
@@ -1850,395 +1720,88 @@ To sustain real-time execution across $175,000+$ H3 hexagonal cells without garb
 4. **Deterministic Stateless PRNG**: Spatial stochastic events evaluated via `DeterministicPRNG.splitMix64(seed, tick, cellIndex, streamId)`, guaranteeing bit-identical determinism across multi-threaded runs.
 
 ---
-## 8. Post-Hoc Cliodynamic Macro-Indicators & Telemetry Specifications
+## 8. Canonical Macro-Observables & Published Diagnostic Equations
 
-In strict adherence to the Physical Observables Invariant (**AGENTS.md §10**) and the Ban on Curve-Fitting (**AGENTS.md §11**), runtime simulation kernels update only conserved physical, chemical, thermodynamic, and demographic observables. All 27 macro-indicators and cliodynamic metrics are evaluated post-hoc using closed-form analytical equations grounded in empirical literature from `CliodynamicAnalyticalFormulasCatalog.java` and `MacroeconomicMetricsCalculator.java`.
+Runtime simulation kernels integrate only conserved physical, chemical, thermodynamic, and demographic state variables. Post-hoc planetary and regional diagnostics derive from canonical published laws below; any macroscopic closure or $\Phi_{\text{exergy}}$ parameterization required for discrete H3 meshes is documented separately in [`docs/PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md`](PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md).
 
-### 8.1. Macroeconomic & Energy Metabolism Indicators
+### 8.1. Energetic, Thermodynamic & Planetary Power Laws
 
-#### 1. Gross World Product ($Y_{\text{GWP}}$)
-* **Model Classification**: Tier 1 Thermodynamic Output Diagnostic
-* **Academic Literature Reference**: Maddison, A. (2007). *Contours of the World Economy 1-2030 AD*. Oxford University Press; Bolt, J., & van Zanden, J. L. (2020). *Maddison Project Database 2020*; Solow, R. M. (1956).
-* **Output Unit**: Billions of 1990 Geary-Khamis International Dollars [$\text{G\$}$].
+#### 1. Garrett Thermodynamic Wealth-Power Relation
+* **Academic Literature Reference**: Garrett, T. J. (2011). *Are there basic physical constraints on future anthropogenic emissions of carbon dioxide?* Climatic Change, 104(3), 437-455; Lotka, A. J. (1922). *Contribution to the energetics of evolution*. PNAS, 8(6), 147-151.
 * **Governing Equation**:
-  $$y_{\text{pc}}(\Phi) = y_{\text{subsistence}} \cdot \left(\frac{\max(0.85, \Phi_{\text{exergy}})}{0.85}\right)^{3.5}$$
-  $$Y_{\text{GWP}} = \frac{N_{\text{world}} \cdot y_{\text{pc}}(\Phi)}{10^9}$$
+  $$P(t) = \lambda_G \, W(t), \qquad W(t) = \int_{-\infty}^{t} Y_{\text{net}}(\tau) \, d\tau$$
 * **Parameters & Physical Units**:
-  * $N_{\text{world}}$: Total global human population [inhabitants].
-  * $\Phi_{\text{exergy}}$: Garrett-Lotka Exergy-Capital Index [dimensionless, $0.85 - 3.50$].
-  * $y_{\text{subsistence}} = 100.0\text{ Int\$/capita}$: Somatic foraging subsistence income floor.
+  * $P(t)$: Primary civilization power dissipation [$\text{W}$].
+  * $W(t)$: Cumulative active physical wealth stock; $\lambda_G$: thermodynamic dissipation constant linking maintained material structure to continuous power consumption.
 
-#### 2. Global Primary Energy Harvest ($E_{\text{primary}}$)
-* **Model Classification**: Tier 1 Physical Energy Telemetry
-* **Academic Literature Reference**: Smil, V. (2017). *Energy and Civilization: A History*. MIT Press.
-* **Output Unit**: Exajoules per year [$\text{EJ/year}$, $10^{18}\text{ Joules/year}$].
+#### 2. Kardashev-Sagan Planetary Power Scale ($K_{\text{Sagan}}$)
+* **Academic Literature Reference**: Kardashev, N. S. (1964). *Transmission of information by extraterrestrial civilizations*. Soviet Astronomy, 8, 217-221; Sagan, C. (1973). *The Cosmic Connection*. Doubleday.
 * **Governing Equation**:
-  $$e_{\text{pc}}(\Phi) = e_{\text{somatic}} \cdot \left(\frac{\max(0.85, \Phi_{\text{exergy}})}{0.85}\right)^{2.2} \quad [\text{GJ/(person}\cdot\text{year)}]$$
-  $$E_{\text{primary}} = \frac{N_{\text{world}} \cdot e_{\text{pc}}(\Phi) \cdot 10^9}{10^{18}}$$
+  $$K_{\text{Sagan}} = \frac{\log_{10}(P_{\text{total}}) - 6}{10}$$
 * **Parameters & Physical Units**:
-  * $e_{\text{somatic}} = 15.0\text{ GJ/(person}\cdot\text{year)}$: Basal somatic food intake ($3.36\text{ GJ}$) plus domestic biomass heating ($11.64\text{ GJ}$).
+  * $P_{\text{total}} = \sum_i P_i$: Total planetary civilization power dissipation [$\text{W}$] ($P_{\text{total}} = 10^{16}\,\text{W} \iff K_{\text{Sagan}} = 1.0$).
 
-#### 3. Fossil Fuel Share in Primary Energy ($f_{\text{fossil}}$)
-* **Model Classification**: Tier 1 Physical Mix Diagnostic
-* **Academic Literature Reference**: Smil, V. (2017); Ritchie, H., et al. (2020). *Energy*. Our World in Data.
-* **Output Unit**: Percentage of primary energy [$\%$].
+#### 3. Marchetti-Nakicenovic Logistic Primary Energy Substitution
+* **Academic Literature Reference**: Fisher, J. C., & Pry, R. H. (1971). *A simple substitution model of technological change*. Technological Forecasting and Social Change, 3, 75-88; Marchetti, C. (1977). *Primary energy substitution models*. Technological Forecasting and Social Change, 10(4), 345-356; Smil, V. (2017).
 * **Governing Equation**:
-  $$f_{\text{fossil}}(\Phi) = \operatorname{clamp}\left( \frac{85.0}{1.0 + \exp(-(\Phi_{\text{exergy}} - 1.55) / 0.18)}, \; 0.0, \; 95.0 \right)$$
+  $$\ln\!\left(\frac{f_k(t)}{1 - f_k(t)}\right) = \alpha_k (t - t_{0,k}), \qquad \sum_k f_k(t) = 1$$
 * **Parameters & Physical Units**:
-  * $\Phi_{\text{exergy}} = 1.55$: Inflection point corresponding to the First Industrial Revolution transition from biomass to coal.
+  * $f_k \in (0, 1)$: Fractional market share of primary energy carrier $k$ (biomass, coal, oil, gas, nuclear, renewables).
 
-#### 4. Agricultural Energy Return on Investment ($\text{EROEI}_{\text{agr}}$)
-* **Model Classification**: Tier 1 Agro-Energetic Diagnostic
-* **Academic Literature Reference**: Smil, V. (2008). *Energy in Nature and Society*. MIT Press; Leach, G. (1976). *Energy and Food Production*. IPC Science and Technology Press.
-* **Output Unit**: Dimensionless caloric output / input ratio.
+#### 4. Agro-Ecological Energy Return on Investment ($\text{EROEI}_{\text{agr}}$)
+* **Academic Literature Reference**: Leach, G. (1976). *Energy and Food Production*. IPC Science and Technology Press; Smil, V. (2008). *Energy in Nature and Society*. MIT Press.
 * **Governing Equation**:
-  $$\text{EROEI}_{\text{agr}}(\Phi) = \sigma_{\text{agr}}(\Phi) \cdot \left[ 4.5 + \frac{6.0}{1.0 + \exp(-(\Phi_{\text{exergy}} - 1.50) / 0.20)} \right]$$
-  $$\sigma_{\text{agr}}(\Phi) = \tanh(\max(0.0, \Phi_{\text{exergy}} - 0.935) \cdot 5.0)$$
+  $$\text{EROEI}_{\text{agr}} = \frac{E_{\text{edible\_harvest}}}{E_{\text{ag\_input}}}$$
 * **Parameters & Physical Units**:
-  * $\sigma_{\text{agr}}$: Neolithic domestication activation factor enforcing $\text{EROEI}_{\text{agr}} \equiv 0.0$ for Pleistocene hunter-gatherers.
-  * Baseline $4.5$: Traditional plow agriculture return.
-  * Ceiling $10.5$: Mechanized agriculture supported by Haber-Bosch fertilizers and diesel tractors.
+  * Dimensionless ratio of harvested metabolizable food energy [$\text{J}$] to direct and embodied agronomic energy inputs [$\text{J}$].
 
----
+### 8.2. Demographic, Inequality & Fiscal Accounting Identities
 
-### 8.2. Urban, Human Capital & Institutional Indicators
-
-#### 5. Urbanization Rate ($U$)
-* **Model Classification**: Tier 1 Demographic State Observable
-* **Academic Literature Reference**: Bairoch, P. (1988). *Cities and Economic Development*. University of Chicago Press; de Vries, J. (1984). *European Urbanization: 1500-1800*. Harvard University Press.
-* **Output Unit**: Percentage of total population [$\%$].
-* **Governing Equation**:
-  * Continuous Cellular Nucleation (`DemographicMetricsHelper.computeCellUrbanFraction`): Combines spatial nucleation $\max(\sigma(N_i, 5000, 1500), \sigma(\rho_i, 12, 4))$ with smooth $C^1$ agrarian ($k_{\text{pc}} \approx 180\text{ kg/cap}$), commercial ($k_{\text{pc}} \approx 1200\text{ kg/cap}$), and industrial harmonic ($P_{\text{watts}} \approx 1200\text{ W/cap}, k_{\text{pc}} \approx 2800\text{ kg/cap}$) activation shares clamped in $[0.0, 0.92]$, preserving $< 0.01\%$ in Paleolithic bands and $\sim 2\text{--}6\%$ in Classical agrarian provinces.
-  * Direct Spatial Sum (`CompiledTelemetryPlan`):
-    $$U = \operatorname{clamp}\!\left(\frac{\sum_i N_i \cdot u_{\text{cell}}(N_i, k_{\text{pc},i}, P_{\text{watts},i}, A_i)}{\sum_i N_i} \times 100.0,\; 0.0,\; 95.0\right)$$
-  * Analytical Closed-Form (`CliodynamicAnalyticalFormulasCatalog.java`):
-    $$U(\Phi) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 0.95) \cdot 5.0) \cdot \frac{85.0}{1.0 + \exp(-(\Phi - 1.65) / 0.30)}, \; 0.0, \; 90.0 \right)$$
-
-#### 6. Adult Literacy Rate ($L$)
-* **Model Classification**: Tier 2 Cultural Telemetry (`CliodynamicFormulasRegistry.computeLiteracyRate`, `TelemetryDagNodeHelper`, `CulturalKnowledgeMetricsHelper`)
-* **Academic Literature Reference**: Goody, J. (1986). *The Logic of Writing and the Organization of Society*; Buringh, E., & van Zanden, J. L. (2009). *Charting the "Rise of the West"*. Journal of Economic History; Graff, H. J. (1987). *The Legacies of Literacy*. Indiana University Press.
-* **Output Unit**: Percentage of adult population [$\%$].
-* **Governing Equation**:
-  * Continuous $C^1$ Endogenous Three-Regime Emergence from physical built capital $k_{\text{pc}}$ ($\text{kg/cap}$), power flux $p$ ($\text{W/cap}$), and urbanization share $U$ ($\%$):
-    $$L_{\text{scribal}}(k_{\text{pc}}) = \begin{cases} 0.0 & \text{if } k_{\text{pc}} \le 25.0 \\ 4.0 \tanh\!\left(\frac{(k_{\text{pc}} - 25.0)^2}{(k_{\text{pc}} + 100.0) \cdot 260.0}\right) & \text{if } k_{\text{pc}} > 25.0 \end{cases}$$
-    $$L_{\text{vern}}(k_{\text{pc}}, U) = 16.0 \tanh\!\left(\frac{\max(0, k_{\text{pc}} - 450.0)^{1.30}}{7500.0} + 0.025 \max(0, U - 4.5)\right)$$
-    $$L_{\text{mass}}(k_{\text{pc}}, p) = 70.0 \tanh\!\left(\frac{\max(0, k_{\text{pc}} - 2800.0)^{1.35}}{230\,000.0} + \frac{\max(0, p - 820.0)^{1.40}}{68\,000.0}\right)$$
-    $$L = \operatorname{clamp}\!\left(L_{\text{scribal}} + L_{\text{vern}} + L_{\text{mass}} + L_{\text{colonial}}(I_0),\; 0.0,\; 99.5\right)$$
-  * Enforces exact $0.0\%$ Paleolithic oral baseline ($k_{\text{pc}} \le 25.0\text{ kg/cap}$), positive endogenous $\partial L / \partial k_{\text{pc}} > 0$ across all historical regimes (eliminating flat `Math.max(I0, I)` clamping), and crew literacy retention $L_{\text{colonial}} = 99.4\,\sigma(\log_{10} I_0, 7.28, 0.07)$ for off-Earth spacefaring missions ($I_0 \ge 2 \times 10^7\text{ bits/cap}$).
-
-#### 7. Cohort Life Expectancy at Birth ($e_0$)
-* **Model Classification**: Tier 1 Demographic Telemetry
-* **Academic Literature Reference**: Omran, A. R. (1971). *The Epidemiological Transition*; Preston, S. H. (1975). *The Changing Relation between Mortality and Level of Economic Development*.
-* **Output Unit**: Mean expected lifespan in years [$\text{years}$].
-* **Governing Equation**:
-  $$e_0(\Phi, \text{Food}) = \operatorname{clamp}\left( 28.0 + \frac{52.0}{1.0 + \exp(-(\Phi_{\text{exergy}} - 1.50) / 0.25)} + \operatorname{clamp}\left(\frac{\text{Food} - 2000.0}{500.0}, -8.0, 5.0\right), \; 20.0, \; 85.0 \right)$$
-* **Parameters & Physical Units**:
-  * Pre-industrial baseline: $28.0\text{ years}$.
-  * Modern post-sanitation ceiling: $80.0\text{ years}$.
-  * Nutritional perturbation: $\pm 5.0\text{ years}$ based on caloric intake relative to $2000\text{ kcal/capita/day}$.
-
-#### 8. Elite Overproduction Index ($\text{EOI}$)
-* **Model Classification**: Tier 2 - Type A Cliodynamic Diagnostic
-* **Academic Literature Reference**: Turchin, P. (2016). *Ages of Discord: A Structural-Demographic Analysis of American Polity*. Beresta Books.
-* **Output Unit**: Dimensionless ratio.
-* **Governing Equation**:
-  $$\text{EOI}(\Phi, S) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 0.94) \cdot 4.0) \cdot \left[1.0 + 2.5 \cdot \left(1.0 - \frac{S}{100.0}\right)\right], \; 0.0, \; 5.0 \right)$$
-* **Parameters & Physical Units**:
-  * $S$: Institutional political stability score [$0.0 - 100.0$].
-
-#### 9. Political Stress Index ($\Psi$, PSI)
-* **Model Classification**: Tier 2 - Type A Cliodynamic Stress Metric
-* **Academic Literature Reference**: Turchin, P. (2003, 2016); Goldstone, J. A. (1991).
-* **Output Unit**: Index points on $[0.0, 100.0]$.
-* **Governing Equation**:
-  $$\Psi(\Phi, S) = \operatorname{clamp}\left( \tanh(\max(0.0, \Phi - 0.95) \cdot 3.0) \cdot \left[ 25.0 + 70.0 \cdot \left(1.0 - \frac{S}{100.0}\right) \right], \; 0.0, \; 100.0 \right)$$
-* **Parameters & Physical Units**:
-  * Pax / Integrative Empire baseline: $\Psi \approx 40 - 55$.
-  * State Breakdown / Civil War crisis: $\Psi > 80$.
-
-#### 10. Asabiyyah Social Cohesion ($S_{\text{asabiyyah}}$)
-* **Model Classification**: Tier 2 - Type A Sociological Diagnostic
-* **Academic Literature Reference**: Ibn Khaldun (1377). *The Muqaddimah*; Turchin, P. (2003).
-* **Output Unit**: Dimensionless collective solidarity score [$0.05, 1.0$].
-* **Governing Equation**:
-  $$S_{\text{asabiyyah}}(\Phi, S) = \operatorname{clamp}\left( 0.50 \cdot \frac{S}{100.0} + \frac{0.50}{1.0 + 0.30 \max(0.0, \Phi_{\text{exergy}} - 0.85)}, \; 0.05, \; 1.0 \right)$$
-
-#### 11. Sociopolitical Instability Index ($\text{SPI}$)
-* **Model Classification**: Tier 2 - Type A Macro-Instability Metric
-* **Academic Literature Reference**: Turchin, P., & Nefedov, S. (2009). *Secular Cycles*. Princeton University Press.
-* **Output Unit**: Index points on $[0.0, 100.0]$.
-* **Governing Equation**:
-  $$\text{SPI}(\Phi, S) = \operatorname{clamp}\left( 10.0 + 85.0 \cdot \left(1.0 - \frac{S}{100.0}\right) \cdot \tanh(\max(0.0, \Phi - 0.95) \cdot 3.0), \; 0.0, \; 100.0 \right)$$
-
-#### 12. Gini Wealth & Income Inequality ($G$)
-* **Model Classification**: Tier 2 - Type A Stratification Diagnostic
-* **Academic Literature Reference**: Milanovic, B., Lindert, P. H., & Williamson, J. G. (2011). *Pre-Industrial Inequality*. Economic Journal; Scheidel, W. (2017). *The Great Leveler*.
-* **Output Unit**: Gini coefficient [$0.18 - 0.75$].
-* **Governing Equation**:
-  $$G(\Phi) = \operatorname{clamp}\left( 0.23 + 0.25 \cdot \tanh(\max(0.0, \Phi_{\text{exergy}} - 0.90) \cdot 2.2), \; 0.18, \; 0.75 \right)$$
-
-#### 13. Coinage Precious Metal Purity / Currency Debasement ($D_{\text{currency}}$)
-* **Model Classification**: Tier 2 - Type B Monetary Policy Indicator (`CliodynamicFormulasRegistry.computeCurrencyDebasement`)
-* **Academic Literature Reference**: Butcher, K., & Ponting, M. (2014); Cipolla, C. M. (1963); Sargent, T. J., & Velde, F. R. (2002). *The Big Problem of Small Change*. Princeton University Press.
-* **Output Unit**: Precious metal purity percentage [$\%$].
-* **Governing Equation**:
-  $$P_{\text{bullion}}(S) = 96.0 \cdot \left[1.0 - 0.78 \left(1.0 - \frac{S}{100.0}\right)^{1.20}\right], \qquad f_{\text{fiat}}(\Phi) = 0.88 \, \sigma(\Phi, 1.48, 0.22)$$
-  $$P_{\text{coin}}(\Phi, S) = \operatorname{clamp}\!\left( \sigma(\Phi, 0.955, 0.010) \cdot \left[ P_{\text{bullion}}(S) (1 - f_{\text{fiat}}(\Phi)) + 5.0 \, f_{\text{fiat}}(\Phi) \right], \; 0.0, \; 98.5 \right) \quad (\equiv 0.0 \text{ for } \Phi \le 0.91)$$
-
-#### 14. Sovereign Debt Burden ($D_{\text{sovereign}}$)
-* **Model Classification**: Tier 2 - Type B Fiscal Debt Telemetry
-* **Academic Literature Reference**: Reinhart, C. M., & Rogoff, K. S. (2009). *This Time Is Different: Eight Centuries of Financial Folly*. Princeton University Press; Dickson, P. G. M. (1967). *The Financial Revolution in England*. Macmillan; Stasavage, D. (2011). *States of Credit*. Princeton University Press.
-* **Output Unit**: Debt as percentage of annual GDP [$\%$].
-* **Governing Equation**:
-  $$D_{\text{sovereign}}(\Phi, S) = \sigma(\Phi, 0.94, 0.015) \cdot \left[ D_{\text{premodern}}(\Phi, S) + D_{\text{medieval}}(\Phi, S) + D_{\text{modern}}(\Phi) + D_{\text{totalwar}}(\Phi) \right]$$
-  $$D_{\text{premodern}} = 8.5 + 1.5 \tanh(\operatorname{sp}(\Phi - 1.05) \cdot 3.0) + 3.0 \tanh(\operatorname{sp}(\Phi - 1.10) \cdot 3.0) \cdot \left(1 - \frac{S}{100}\right)^{1.3}$$
-  $$D_{\text{medieval}} = 21.0 \tanh(\operatorname{sp}(\Phi - 1.12) \cdot 5.0) \cdot \left[0.6 + 0.4 \left(1 - \frac{S}{100}\right)\right]$$
-  $$D_{\text{modern}} = 42.0 \tanh(\operatorname{sp}(\Phi - 1.22) \cdot 10.0)$$
-  $$D_{\text{totalwar}} = \frac{22.0}{1 + \exp\left(-\frac{\Phi - 1.55}{0.08}\right)}$$
-* **Parameters & Physical Units**:
-  * Enforces the Deep-Time Invariant (`AGENTS.md §8.2`): $\sigma(\Phi, 0.94, 0.015) \to 0$ for prehistoric forager bands ($\Phi \le 0.90$).
-  * Pre-modern patrimonial borrowing: $\sim 8.5 - 10.0\%$ (Antiquity through Early Middle Ages).
-  * Late medieval war loans: $+21.0\%$ (Florentine Monte Comune, Venetian Prestiti: 1347 CE $\sim 30.8\%$).
-  * Modern funded national debt: $+42.0\%$ (1694 Bank of England, Napoleonic mobilization: 1800 CE $\sim 75.0\%$).
-  * Total war debt mobilization: $+22.0\%$ (WWI 1914 $\sim 80.0\%$, WWII 1945 $\sim 110.0\%$).
-
----
-
-### 8.3. Logistics, Communications & Environmental Indicators
-
-#### 15. Global Maritime Trade Volume ($V_{\text{trade}}$)
-* **Model Classification**: Tier 2 - Type B Trade Volume Telemetry (`CliodynamicFormulasRegistry.computeGlobalTradeVolume`)
-* **Academic Literature Reference**: Federico, G., & Tena-Junguito, A. (2017). *A Tale of Two Globalizations*. Review of World Economics; Harley, C. K. (1988).
-* **Output Unit**: Trade volume index (1913 = 100).
-* **Governing Equation**:
-  $$V_{\text{trade}}(\Phi) = \operatorname{clamp}\!\left( \tanh(\max(0.0, \Phi - 0.94) \cdot 4.0) \cdot 1.8 \cdot \left(\frac{1400.0}{\max(15.0, C_{\text{freight}}(\Phi))}\right)^{1.52} \cdot \max(1.0, \Phi)^{1.4}, \; 0.0, \; 3500.0 \right)$$
-
-#### 16. Real Maritime Shipping Freight Cost ($C_{\text{freight}}$)
-* **Model Classification**: Tier 2 - Type B Transport Economics Indicator (`CliodynamicFormulasRegistry.computeShippingFreightCostIndex`)
-* **Academic Literature Reference**: Harley, C. K. (1988). *Ocean Freight Rates and New World Expansion 1750-1913*. Journal of Economic History; Mohammed, S. I., & Williamson, J. G. (2004).
-* **Output Unit**: Real freight cost index (1913 = 100).
-* **Governing Equation**:
-  $$C_{\text{freight}}(\Phi) = \operatorname{clamp}\!\left( 20.0 + \frac{1400.0}{1.0 + \left(\frac{\max(0.0, \Phi - 1.02)}{0.22}\right)^3}, \; 15.0, \; 1415.0 \right)$$
-
-#### 17. Long-Distance Information Travel Speed ($v_{\text{info}}$)
-* **Model Classification**: Tier 1 Communications Physical Diagnostic (`CliodynamicFormulasRegistry.computeInformationTravelSpeed`)
-* **Academic Literature Reference**: Scheidel, W. (2014). *The Shape of the Roman World: Modelling Imperium (ORBIS)*. JRA; Standage, T. (1998). *The Victorian Internet*. Walker & Company.
-* **Output Unit**: Velocity in kilometers per day [$\text{km/day}$].
-* **Governing Equation**:
-  $$v_{\text{info}}(\Phi) = \operatorname{clamp}\!\left( 28.0 + 92.0 \tanh(\max(0, \Phi - 0.92)\cdot 1.8) + \frac{28\,000.0}{1 + \exp\!\left(-\frac{\Phi - 1.72}{0.06}\right)} + \frac{550\,000.0}{1 + \exp\!\left(-\frac{\Phi - 2.08}{0.05}\right)} + \frac{2.6 \times 10^8}{1 + \exp\!\left(-\frac{\Phi - 2.42}{0.04}\right)}, \; 4.0, \; 3.0 \times 10^8 \right)$$
-* **Parameters & Physical Units**:
-  * Ancient/medieval courier relay (Rome Cursus Publicus, Song relay posts): $28 - 120\text{ km/day}$ ($\Phi \in [0.92, 1.45]$).
-  * Electric telegraphy ($\Phi \approx 1.72$), wireless radio ($\Phi \approx 2.08$), and optical fiber ($\Phi \approx 2.42$), bounded by vacuum speed of light $3.0 \times 10^8\text{ km/day}$.
-
-#### 18. Per-Capita Structural Metal Smelting Production ($M_{\text{smelt}}$)
-* **Model Classification**: Tier 1 Chemical Smelting Output (`CliodynamicFormulasRegistry.computeMetalSmeltingPerCapita`)
-* **Academic Literature Reference**: Malandra, W. W. (1990). *Archaeometallurgy in Global Context*; USGS Mineral Commodity Summaries (2023).
-* **Output Unit**: Kilograms per person per year [$\text{kg/(person}\cdot\text{year)}$].
-* **Governing Equation**:
-  $$M_{\text{smelt}}(\Phi) = \operatorname{clamp}\!\left( \tanh(\max(0.0, \Phi - 0.90) \cdot 4.0) \cdot \left[ 1.4 + 85.0 (\operatorname{softplus}(\Phi - 1.38, 0.0, 6.0))^{1.85} \right], \; 0.0, \; 350.0 \right)$$
-
-#### 19. Real Unskilled Wage Purchasing Power ($W_{\text{unskilled}}$)
-* **Model Classification**: Tier 1 Economic Welfare Diagnostic
-* **Academic Literature Reference**: Allen, R. C. (2001). *The great divergence in European wages and prices from the Middle Ages to the First World War*. Explorations in Economic History, 38(4), 411-447; Clark, G. (2005).
-* **Output Unit**: Purchasing power index (London 1750 = 100).
-* **Governing Equation**:
-  * Direct State Observable (`MacroeconomicMetricsCalculator.java`):
-    $$W_{\text{unskilled}} = \operatorname{clamp}\left( 100.0 \cdot \frac{\text{Food}_{\text{pc}}}{2000.0} \cdot (1.5 - \text{Gini}), \; 50.0, \; 1000.0 \right)$$
-  * Analytical Closed-Form (`CliodynamicAnalyticalFormulasCatalog.java`):
-    $$W_{\text{unskilled}}(\Phi) = \operatorname{clamp}\left( 100.0 + 150.0 (\operatorname{softplus}(\Phi - 1.20, 0.0, 10.0))^{1.8}, \; 50.0, \; 1000.0 \right)$$
-
-#### 20. Pristine Forest Cover Remaining ($F_{\text{forest}}$)
-* **Model Classification**: Tier 1 Ecological State Observable (`CliodynamicFormulasRegistry.computeForestCoverRemaining`)
-* **Academic Literature Reference**: Williams, M. (2003). *Deforesting the Earth: From Prehistory to Global Crisis*. University of Chicago Press; Kaplan, J. O., et al. (2009).
-* **Output Unit**: Percentage of pre-anthropogenic forest area [$\%$].
-* **Governing Equation**:
-  $$F_{\text{forest}}(\Phi) = \operatorname{clamp}\!\left( 100.0 - 35.0 \tanh(\max(0.0, \Phi_{\text{exergy}} - 0.92) \cdot 1.45) - \frac{28.0}{1.0 + \exp\!\left(-\frac{\Phi_{\text{exergy}} - 1.95}{0.28}\right)}, \; 25.0, \; 100.0 \right)$$
-
-#### 21. Topsoil Erosion Loss ($E_{\text{soil}}$)
-* **Model Classification**: Tier 1 Geomorphic Transport Diagnostic (`CliodynamicFormulasRegistry.computeTopsoilErosionLoss`)
-* **Academic Literature Reference**: Montgomery, D. R. (2007). *Dirt: The Erosion of Civilizations* & *PNAS*, 104(33), 13268-13272.
-* **Output Unit**: Cumulative percentage topsoil loss [$\%$].
-* **Governing Equation**:
-  $$E_{\text{soil}}(\Phi) = \operatorname{clamp}\!\left( 23.5 \tanh\!\left(\max(0.0, \Phi_{\text{exergy}} - 0.93)^{1.30} \cdot 2.4\right) + \frac{42.0}{1.0 + \exp\!\left(-\frac{\Phi_{\text{exergy}} - 2.05}{0.25}\right)}, \; 0.0, \; 75.0 \right)$$
-
-#### 22. Atmospheric $\text{CO}_2$ Concentration ($C_{\text{CO2}}$) & Fossil Fuel Share ($f_{\text{fossil}}$)
-* **Model Classification**: Tier 1 Atmospheric Reservoir Observable (`TelemetryDagNodeHelper`, `CliodynamicFormulasRegistry`)
-* **Academic Literature Reference**: Lüthi, D., et al. (2008); Ballantyne, A. P., et al. (2012); Smil, V. (2017); Ruddiman, W. F. (2003).
-* **Output Unit**: Parts per million by volume [$\text{ppm}$] and percentage [$\%$].
+#### 5. Total Population & Urban Nucleation Share ($N_{\text{world}}, U$)
+* **Academic Literature Reference**: Bairoch, P. (1988). *Cities and Economic Development*. University of Chicago Press; de Vries, J. (1984). *European Urbanization 1500-1800*. Harvard University Press.
 * **Governing Equations**:
-  $$f_{\text{fossil}}(\Phi) = \operatorname{clamp}\!\left( \sigma(\Phi, 1.36, 0.025) \cdot \frac{85.0}{1.0 + \exp\!\left(-\frac{\Phi - 1.78}{0.14}\right)}, \; 0.0, \; 95.0 \right)$$
-  $$C_{\text{CO2}}(t) = \operatorname{clamp}\!\left( C_{\text{CO2}}(t_0) + \left[\frac{\frac{f_{\text{fossil}}}{100} \cdot P_{\text{MW}} \cdot 31\,557.6 \cdot 0.0205 \cdot 0.44}{2.124 \times 10^9} + 0.008 \tanh(\max(0, \Phi - 0.94)\cdot 2.5)\right] (t - t_0), \; 160.0, \; 2000.0 \right)$$
-  (strictly initialized from $t_0$ scenario paleoclimatic $\text{CO}_2$ without runtime benchmark lookup).
-
-#### 23. Mean Global Surface Temperature Anomaly ($\Delta T$)
-* **Model Classification**: Tier 1 Climate Diagnostic
-* **Academic Literature Reference**: Myhre, G., et al. (1998); IPCC AR6 WG1 (2021).
-* **Output Unit**: Degrees Celsius relative to pre-industrial Holocene [$^\circ\text{C}$].
-* **Governing Equation**:
-  $$\Delta F = 5.35 \cdot \ln\left( \frac{\max(150.0, C_{\text{CO2}})}{280.0} \right) \quad [\text{W/m}^2]$$
-  $$\Delta T = \Delta F \cdot \lambda_{\text{climate}} = \Delta F \cdot 0.80 \quad [^\circ\text{C}]$$
+  $$N_{\text{world}} = \sum_{i} \sum_{c=1}^{7} N_{i,c}, \qquad U = \frac{\sum_{i} N_i \, \mathbb{I}(N_{\text{cluster},i} \ge N_{\text{urb}})}{\sum_{i} N_i}$$
 * **Parameters & Physical Units**:
-  * $\lambda_{\text{climate}} = 0.80^\circ\text{C}/(\text{W/m}^2)$: Equilibrium climate sensitivity parameter ($\sim 3.0^\circ\text{C}$ per doubling of $\text{CO}_2$).
+  * $N_{\text{urb}} = 5\,000\,\text{inhabitants}$: Bairoch (1988) historical urban settlement threshold.
 
-#### 24. Biogeographical Zero-Containment Compliance ($\Omega_{\text{containment}}$)
-* **Model Classification**: Tier 2 - Type B Ecological Quarantine Metric
-* **Academic Literature Reference**: Crosby, A. W. (1972). *The Columbian Exchange: Biological and Cultural Consequences of 1492*. Greenwood Press; Elton, C. S. (1958). *The Ecology of Invasions by Animals and Plants*. Methuen.
-* **Output Unit**: Biotic isolation index in $[0.04, 1.00]$.
+#### 6. Lorenz Curve & Gini Coefficient ($G$)
+* **Academic Literature Reference**: Gini, C. (1912). *Variabilita e mutabilita*; Milanovic, B., Lindert, P. H., & Williamson, J. G. (2011). *Pre-Industrial Inequality*. Economic Journal, 121(551), 255-272.
 * **Governing Equation**:
-  $$\Omega_{\text{containment}}(V_{\text{trade}}) = \operatorname{clamp}\left( 1.00 - 0.62 \tanh\left(\frac{V}{19.5}\right) - 0.21 \tanh\left(\frac{\operatorname{softplus}(V - 16, 50)}{110}\right) - 0.13 \tanh\left(\frac{\operatorname{softplus}(V - 400, 50)}{1200}\right), \; 0.04, \; 1.00 \right)$$
+  $$G = \frac{\sum_{i=1}^{n} \sum_{j=1}^{n} w_i w_j |y_i - y_j|}{2 \, \bar{y} \left(\sum_{i=1}^{n} w_i\right)^2} = 1 - 2 \int_0^1 L(p) \, dp$$
 * **Parameters & Physical Units**:
-  * Driven endogenously by cumulative trade connectivity ($V_{\text{trade}}$), with zero calendar date gating.
+  * $L(p)$: Cumulative share of wealth or income held by the bottom $p \in [0, 1]$ population fraction; $G \in [0, 1]$.
 
-#### 25. Planetary Kardashev Energy Rating ($K_{\text{sagan}}$)
-* **Model Classification**: Tier 1 Planetary Power Diagnostic
-* **Academic Literature Reference**: Kardashev, N. S. (1964); Sagan, C. (1973). *The Cosmic Connection*. Doubleday.
-* **Output Unit**: Dimensionless continuous scale index.
+#### 7. Allen Welfare Ratio (Real Unskilled Wage)
+* **Academic Literature Reference**: Allen, R. C. (2001). *The great divergence in European wages and prices from the Middle Ages to the First World War*. Explorations in Economic History, 38(4), 411-447.
 * **Governing Equation**:
-  $$K_{\text{sagan}} = \frac{\log_{10}(\max(1.0, P_{\text{watts/capita}} \cdot N_{\text{world}})) - 6.0}{10.0}$$
+  $$WR = \frac{w_{\text{annual}}}{n_{\text{hh}} \cdot P_{\text{basket}}}$$
 * **Parameters & Physical Units**:
-  * Global power dissipation across all human civilization ($10^{13}\text{ W} \implies K \approx 0.73$).
+  * $WR$: Dimensionless household subsistence welfare ratio of annual unskilled laborer earnings $w_{\text{annual}}$ to the cost of $n_{\text{hh}}$ physiological subsistence baskets $P_{\text{basket}}$.
 
-#### 26. Emergent Technology Diagnostic ($T_{\text{emergent}}$)
-* **Model Classification**: Tier 1 Post-Hoc Synthetic State Diagnostic
-* **Academic Literature Reference**: Lotka, A. J. (1922); Garrett, T. J. (2011); Ashby, M. F. (2011).
-* **Output Unit**: Synthetic technology index in $[0.1, 10.0]$.
+#### 8. Seigniorage & Bullion Debasement Accounting
+* **Academic Literature Reference**: Cipolla, C. M. (1963). *Currency depreciation in medieval Europe*. Economic History Review, 15(3), 413-422; Sargent, T. J., & Velde, F. R. (2002). *The Big Problem of Small Change*. Princeton University Press; Butcher, K., & Ponting, M. (2014).
 * **Governing Equation**:
-  $$T_{\text{emergent}} = \Phi_{\text{exergy}}(p, k_{\text{pc}}) = \text{H3CellPhysicsAndStateHelper.computeGarrettLotkaEmergentIndex}(p, k_{\text{pc}}, 80.0)$$
-* **Epistemic Invariant**:
-  * Reconstituted strictly *a posteriori* from physical observables ($p = P_{\text{watts}}/N$ in $\text{Watts}$ and $k_{\text{pc}} = K/N$ in $\text{kg/capita}$).
-  * Technology is never stored as an independent state variable in cellular memory (`WorldBuffer` or `H3Cell`).
-
-#### 27. Krugman Core-Periphery Centripetal & Centrifugal Capital Agglomeration (`KrugmanCorePeripheryEngine.java`)
-* **Model Classification**: Tier 2 - Type B Spatial Economic Geography Engine
-* **Academic Literature Reference**: Krugman, P. (1991). *Increasing Returns and Economic Geography*. Journal of Political Economy, 99(3), 483–499; Fujita, M., Krugman, P., & Venables, A. J. (1999). *The Spatial Economy*. MIT Press.
-* **Governing Equations**:
-  $$\text{Access}_i = \frac{10^{-3} N_i}{\max(0.2, \mu_{\text{friction}, i})}, \qquad A_{\text{cap}, i} = \frac{1}{1 + \exp\!\left(-2.0 \left(\frac{K_i}{\bar{K}} - 1.0\right)\right)}, \qquad \Phi_{\text{centripetal}, i} = 2.0 \, A_{\text{cap}, i} \, \frac{\text{Access}_i}{1.0 + \text{Access}_i}$$
-  $$\mu_{\text{friction}, i}(t + \Delta t) = \max\!\left(0.1, \; \mu_{\text{friction}, i}(t) \cdot (1.0 - 0.02 \, \Phi_{\text{centripetal}, i} \, \Delta t)\right)$$
-  $$\frac{dK_i}{dt} = K_i \cdot \operatorname{clamp}\!\left( \left(0.015 \, \Phi_{\text{centripetal}, i} - 0.01 \, \frac{K_i / \bar{K}}{\max(1.0, \text{Access}_i)}\right), \; -0.05, \; +0.08 \right)$$
-* **Physical & Economic Interpretation**: Low-friction coastal and riverine hubs ($\mu_{\text{friction}} \ll 1$) attract net capital accumulation ($dK_i/dt > 0$) while high-friction continental hinterlands experience centrifugal congestion dispersion, endogenously generating core-periphery Lorenz Gini differentiation ($|d| = 2.20$).
-
-#### 28. Total Planetary Population ($N_{\text{world}}$)
-* **Model Classification**: Tier 1 Demographic Mass State Observable
-* **Academic Literature Reference**: Biraben, J. N. (1979). *Essai sur l'évolution du nombre des hommes*. Population; McEvedy, C., & Jones, R. (1978). *Atlas of World Population History*. Penguin Books; UN World Population Prospects (2024).
-* **Output Unit**: Total living human count [persons].
-* **Governing Equation**:
-  $$N_{\text{world}} = \sum_{i \in \text{AllCells}} \sum_{c=1}^7 N_{i, c}$$
+  $$S_{\text{seign}} = M_{\text{mint}} \left(\frac{1}{\phi_{\text{fine}}} - \frac{1}{\phi_0}\right) - C_{\text{brassage}}$$
 * **Parameters & Physical Units**:
-  * Direct discrete sum of all 7 living demographic age cohorts across all $175,000+$ active spatial cells.
+  * $\phi_{\text{fine}} \in (0, 1]$: Precious metal fineness fraction of minted coinage relative to par standard $\phi_0$.
 
-#### 29. Areal Pollution Concentration Normalization & Closed-Form Movement Friction (`EntropicMetalDissipationEngine.java`, `InfrastructureEnergyEngine.java`)
-* **Model Classification**: Tier 1 Intensive State Invariance
-* **Academic Literature Reference**: Georgescu-Roegen, N. (1971). *The Entropy Law and the Economic Process*; Ayres, R. U. (1998); Swan, G. S., et al. (2018).
-* **Governing Equations**:
-  * **Intensive Areal Pollution Increment** (`EntropicMetalDissipationEngine.java`):
-    $$\Delta P_i = 0.1 \cdot \frac{\Delta M_{\text{dissipated}, i}}{A_{\text{cell}, i}} \quad [\text{pollution units}/\text{km}^2]$$
-    Converts extensive dissipated metallic mass $\Delta M_{\text{dissipated}, i}$ ($\text{kg}$) across cell area $A_{\text{cell}, i}$ ($\text{km}^2$, e.g. $1\,770.49\text{ km}^2$ at `Res 4`) into an intensive areal concentration matching `EcologicalDegradationEngine.java` and `EcotoxicologyFertilityEngine.java` ($P_{50} = 100.0$), with zero hidden $k_{\text{pc}}$ threshold gates.
-  * **Idempotent Closed-Form Movement Friction** (`InfrastructureEnergyEngine.java`):
-    $$\mu_{\text{friction}, i} = \text{H3CellPhysicsAndStateHelper.calculateMovementFriction}(\text{cell}_i)$$
-    Computes movement friction as a pure closed-form state function of terrain slope, vegetation density, moisture, and infrastructure stock, preventing cumulative tick-over-tick multiplicative decay.
+### 8.3. Atmospheric Carbon Mass Balance, Radiative Forcing & Geophysical Decay
 
-#### 30. Charney Dynamic Vegetation-Albedo Bistability & Sahara Cusp Catastrophe (`CharneyVegetationAlbedoEngine.java`)
-* **Model Classification**: Tier 1 Coupled Climate-Vegetation Dynamics
-* **Academic Literature Reference**: Charney, J. G. (1975). *Dynamics of deserts and drought in the Sahel*. Q. J. R. Meteorol. Soc., 101, 193-202; Brovkin, V., et al. (1998). *Journal of Geophysical Research*, 103(D24), 31671-31685; Claussen, M., et al. (1999). *Geophysical Research Letters*, 26(14), 2037-2040.
+#### 9. Airborne Anthropogenic Carbon Mass Balance & Myhre Forcing
+* **Academic Literature Reference**: Myhre, G., et al. (1998). *New estimates of radiative forcing due to well mixed greenhouse gases*. Geophysical Research Letters, 25(14), 2715-2718; Ballantyne, A. P., et al. (2012). *Audit of the global carbon budget: estimate errors and their impact on uptake uncertainty*. Biogeosciences, 9, 2585-2607; IPCC AR6 WG1 (2021).
 * **Governing Equations**:
-  $$V_{\text{eq}} = \frac{1}{1 + \exp\left( -\frac{P_{\text{annual}} - P_{50}}{s_P} \right)}, \qquad \frac{dV}{dt} = \frac{V_{\text{eq}} - V}{\tau_V}$$
-  $$\alpha(V) = \alpha_{\text{bare}} - (\alpha_{\text{bare}} - \alpha_{\text{veg}}) \cdot V$$
-  $$P_{\text{convect}}(V) = \beta_{\text{charney}} \cdot (\alpha_{\text{bare}} - \alpha(V)) \cdot P_{\text{baseline}}$$
-  $$\Delta P_{\text{orbital}}(t) = A_{\text{orbital}} \cdot \cos\left( 2\pi \frac{t - t_{\text{AHP}}}{T_{\text{precession}}} \right)$$
-* **Physical Mechanics & Historical Benchmark**:
-  * Milankovitch precession ($T_{\text{precession}} = 23\,000\text{ years}$, peaking at $t_{\text{AHP}} \approx -7000\text{ BCE}$) drives African monsoon northward during the African Humid Period (AHP).
-  * High grass/steppe cover lowers surface albedo from $\alpha \approx 0.38$ (bare sand) to $\approx 0.17$ (vegetated steppe), intensifying convective convergence ($+180\text{ mm/yr}$).
-  * As orbital precession wanes, rainfall crosses critical fold bifurcation threshold $P_{\text{crit}} \approx 200\text{ mm/yr}$, triggering abrupt vegetation collapse between $-4100\text{ BCE}$ and $-2000\text{ BCE}$ into hyper-arid Sahara desert without ad-hoc piecewise tuning.
-* **Computational Complexity**: $O(1)$ per land cell.
-
-#### 31. Catchment Stream Power Fluvial Incision & Bagnold Silt Replenishment (`StreamPowerErosionEngine.java`)
-* **Model Classification**: Tier 1 Geomorphological & Fluvial Transport Mechanics
-* **Academic Literature Reference**: Howard, A. D., & Kerby, G. (1983). *Geological Society of America Bulletin*, 94(6), 739-752; Whipple, K. X., & Tucker, G. E. (1999). *Journal of Geophysical Research*, 104(B8), 17661-17674; Bagnold, R. A. (1966). *USGS Professional Paper 422-I*; Hack, J. T. (1957). *USGS Professional Paper 294-B*.
-* **Governing Equations**:
-  $$A_{\text{drainage}} = \max\left( A_{\text{cell}}, \; A_{\text{cell}} \cdot \left(\frac{L_{\text{flow}}}{L_0}\right)^{1 / h} \right) \quad \text{with } h \approx 0.57 \text{ (Hack's Law)}$$
-  $$\dot{E}_{\text{fluvial}} = K_{\text{erod}} \cdot A_{\text{drainage}}^m \cdot S_{\text{slope}}^n \cdot \exp\left( -\frac{B_{\text{nat}} + B_{\text{agr}}}{B_{\text{ref}}} \right)$$
-  $$q_{\text{sediment}} = \omega_{\text{stream}} \cdot \left( \frac{\dot{E}}{g \cdot (\rho_s - \rho_w)} \right) \cdot \eta_{\text{bagnold}}$$
-  $$\Delta \text{SOC}_{\text{alluvial}} = q_{\text{sediment}} \cdot C_{\text{organic}} \cdot \frac{A_{\text{cell}}}{A_{\text{floodplain}}}$$
-* **Physical Mechanics & Historical Benchmark**:
-  * Couples high-energy headwater catchment incision with lowland/floodplain nutrient replenishment (Nile, Tigris-Euphrates, Indus, Yellow River).
-  * Vegetative root cohesion protects soil ($K_{\text{erod}} \propto \exp(-B/B_{\text{ref}})$); anthropogenic deforestation precipitates rapid topsoil flushing.
-  * Lowland sedimentation restores Soil Organic Carbon (SOC) up to $+1.5\text{ g/kg/decade}$, underpinning multi-millennial agrarian carrying capacity without artificial fertilizer.
-* **Computational Complexity**: $O(1)$ per cell.
-
-#### 32. Macro-Scale Thermodynamic Prime Movers & Exergy Transduction (`ThermodynamicPrimeMoversEngine.java`)
-* **Model Classification**: Tier 1 Physical Prime Mover Transduction
-* **Academic Literature Reference**: Smil, V. (2017). *Energy and Civilization: A History*. MIT Press; Ayres, R. U., & Warr, B. (2009). *The Economic Growth Engine*. Edward Elgar; Carnot, S. (1824). *Réflexions sur la puissance motrice du feu*.
-* **Governing Equations**:
-  $$P_{\text{draft}} = N_{\text{draft}} \cdot p_{\text{animal}} \cdot \left(\frac{k_{\text{pc}}}{k_{\text{pc}} + k_{\text{harness}}}\right), \qquad P_{\text{mill}} = K_{\text{mill}} \cdot \rho_{\text{water}} g Q H \cdot \eta_{\text{waterwheel}}$$
-  $$P_{\text{thermal}} = \dot{M}_{\text{fuel}} \cdot \text{LHV} \cdot \eta_{\text{carnot}}(T_{\text{combustion}}, T_{\text{sink}}) \cdot \sigma_{\text{engine}}(k_{\text{pc}})$$
-  $$P_{\text{watts/capita}} = \frac{P_{\text{somatic}} + P_{\text{draft}} + P_{\text{mill}} + P_{\text{thermal}}}{N_{\text{human}}}$$
+  $$\frac{dC_{\text{CO}_2}}{dt} = \frac{f_{\text{airborne}} \cdot \dot{M}_{\text{C,anth}}}{\kappa_{\text{GtC/ppm}}}, \qquad \Delta F_{\text{CO}_2} = 5.35 \ln\!\left(\frac{C_{\text{CO}_2}}{C_{\text{CO}_2,0}}\right), \qquad \Delta T_{\text{eq}} = \lambda_{\text{ECS}} \, \Delta F_{\text{CO}_2}$$
 * **Parameters & Physical Units**:
-  * Unifies animal draft power, water/wind mechanical mills, Newcomen/Watt steam engines, and internal combustion turbines into conserved physical Wattage dissipation per capita ($p = P_{\text{watts}}/N$), driving endogenous Garrett-Lotka developmental progression $\Phi_{\text{exergy}}$.
-  * **Atmospheric Carbon Stoichiometry** (`TelemetryDagNodeHelper.java`, `PhysicalUnitsHelper.GJ_PER_MW_YEAR`): Evaluates anthropogenic $\Delta\text{CO}_2$ strictly from fossil fuel share $f_{\text{fossil}}$, useful thermal power $P_{\text{MW}}$, exact SI unit factor $1\text{ MW}\cdot\text{yr} = 31\,557.6\text{ GJ}$, IPCC (2006) mean fossil carbon emission factor ($0.0205\text{ t C/GJ}$), Global Carbon Budget airborne retention ($0.44$), and Ballantyne et al. (2012) atmospheric mass factor ($2.124\text{ GtC/ppm}$): $\frac{d\text{CO}_2}{dt} = \frac{f_{\text{fossil}} \cdot P_{\text{MW}} \cdot 31\,557.6 \cdot 0.0205 \cdot 0.44}{2.124\times 10^9}\;[\text{ppm/yr}]$.
-  * **Ayres-Warr Exergy-Capital Production Function** (`StatisticsKernel.calculateGDP`): Replaces empirical polynomial fits with physical Cobb-Douglas output scaling anchored at Maddison subsistence ($Y_0 = 102\text{ Int\$1990/cap}$), $Y = N \cdot Y_0 \cdot (\max(348, p)/348)^{0.65} \cdot (1 + k_{\text{pc}}/120)^{0.35}$.
-  * **Human Population Observable & Demographic Closure Convention**: Across both Java `WorldBuffer.humanPopulation` (`DemographicKernel`, `UrbanKernel`) and Rust FFI `WorldBufferRaw.human_population`, the human slot stores living individual headcount $N$, and `SimulationPipeline` closes all Phase 1b/Phase 2 demographic deltas onto `AgentBuffer.mass` via $m_k(t^+) = m_k(t^-) \cdot \frac{N_{\text{after}}[h_k]}{N_{\text{before}}[h_k]}$.
-  * **Single-Responsibility Solow-Swan Base Capital (`UrbanKernel.java` & `urban.rs`) & Marginal Tier 2 Carnot-Lavoisier Closure (`TypeBEnginePassRunner.java`, `AGENTS.md` §19–§20)**: Phase 1 `UrbanKernel` (synchronized with `urban.rs`) is the sole owner of baseline Solow-Swan equilibrium and Tainter turnover ($\dot{k}_{\text{pc}} = \delta_0 k^*(p, B_{\text{agr}}, N) - \delta_{\text{eff}}(C) k_{\text{pc}}$, $\delta_0 = 0.04\text{ yr}^{-1}$) with Lavoisier raw-material debit. In Phase 2, for any active Tier 2 configuration (`engineCount >= 1`), `TypeBEnginePassRunner` combines overlapping theories via upper/lower envelopes ($\Delta K_{\text{env}}^+ = \max_e \Delta K_e^+$, $\Delta K_{\text{env}}^- = \min_e \Delta K_e^-$) and bounds marginal positive capital deepening by remaining net exergy surplus after deducting basal demand, Garrett maintenance, and Phase 1 replacement ($E_{\text{repl,P1}} = 0.04 K \cdot e_{\text{embodied}}$):
-    $$\Delta K_{\text{Carnot}} = \frac{s_{\text{marg}}\cdot \max\!\left(0,\; E_{\text{cell}} - N E_{\text{basal}} - \lambda_{\text{Garrett}} K - 0.04 K e_{\text{embodied}}\right)\cdot \Delta t}{e_{\text{embodied}}}, \qquad e_{\text{embodied}} = 15\,\text{MJ/kg}, \; s_{\text{marg}} = 0.12$$
-    $$\Delta K^+_{\text{phys}} = \min\!\left(\Delta K_{\text{env}}^+,\; \Delta K_{\text{Carnot}}\right) \quad (\text{land}), \qquad \Delta M_{\text{metal}} = 0.05\,\Delta K^+_{\text{t}}, \;\; \Delta M_{\text{timber}} = 0.07\,\Delta K^+_{\text{t}}, \;\; \Delta M_{\text{clay}} = 0.10\,\Delta K^+_{\text{t}}$$
-    while discrete catastrophic shocks in `EventPhysicalImpactExecutor` remain unconstrained ($\Delta S \ge 0$). Across `EnvironmentalKernel.java` and `native/ether-core-native/src/environmental.rs`, primary crop potential per Res-4 reference area ($1\,770.49\,\text{km}^2 = 177\,049\,\text{ha}$) is scaled as $B_{\text{ag,base}} = \operatorname{clamp}(1\,800\,\text{NPP}\cdot f_{\text{slope}}\cdot f_{\text{frost}},\; 500,\; 3.6 \times 10^6)\,\text{GJ}$ (`Lieth 1975`; `Smil 2008`, supporting wet-rice and alluvial yields up to $1.9\text{--}3.8\,\text{t/ha/yr}$ across all H3 resolutions). Across all audited non-capital engines, upstream stocks are strictly debited: `ThermodynamicPrimeMoversEngine` and `JevonsParadoxEngine` debit fossil/timber fuels ($24\,\text{GJ/t}$ coal, $42\,\text{GJ/t}$ oil, $15\,\text{GJ/t}$ wood via $\dot{Q}_{\text{fuel}} = \dot{W}_{\text{shaft}}/\eta_{\text{th}}$); `WienerCyberneticHomeostasisEngine`, `PolanyiFictitiousCommoditiesEngine`, and `DraftAnimalFodderAllocationEngine` debit `biomassAgriculture`, `biomassNatural`, and `biomassLivestock`; `KondratievSchumpeterLongWaveEngine` converts scrapped capital via `PhysicalUnitsHelper.kgToMetricTonnes`; and `AiryIsostasyCrustalRootEngine` runs at tectonic timescale ($10^{-6}\,\text{yr}^{-1}$).
-* **Computational Complexity**: $O(1)$ per cell.
+  * $\dot{M}_{\text{C,anth}}$: Anthropogenic fossil + land-use carbon emission flux [$\text{GtC/yr}$].
+  * $f_{\text{airborne}} \approx 0.44$: Mean airborne retention fraction (Ballantyne et al. 2012).
+  * $\kappa_{\text{GtC/ppm}} = 2.124\,\text{GtC/ppm}$: Atmospheric carbon conversion mass constant.
+  * $\lambda_{\text{ECS}} \approx 0.80\,\text{K/(W}\cdot\text{m}^{-2}\text{)}$: Planck + feedback climate sensitivity parameter ($\sim 3.0\,\text{K}$ per $\text{CO}_2$ doubling).
 
-#### 33. Tier 2 Type B Engine Domain Validity Conditions & Default Scenario Activation (`AutoEpochScenarioHelper.java`)
-* **Model Classification**: Tier 2 - Type B Epistemic Scope & Scenario Activation Protocol (`AGENTS.md` §8.2, §11.3, §12.4, §13)
-* **Comprehensive Catalog Reference**: See [`docs/TYPE_B_ENGINES_VALIDITY_CONDITIONS_CATALOG.md`](TYPE_B_ENGINES_VALIDITY_CONDITIONS_CATALOG.md) for the complete **86-entry** specification table (strictly 1-to-1 with executable Java engine classes).
-* **Governing Epistemic Principle**:
-  * Unlike Tier 1 biophysical conservation laws (which operate permanently across all epochs and planets), Tier 2 Type B engines model context-dependent historical, institutional, technological, capital, or geopolitical regimes across the full **$-3\,000\,000\text{ BP}$ to $2200\text{ CE}$** simulation horizon.
-  * Rather than injecting hidden conditional sigmoids inside a Type B engine's differential equations to give it artificial validity outside its historical domain, `AutoEpochScenarioHelper.calibrateTypeBEngines(planetKey, year)` evaluates each engine's explicit **Domain Validity Conditions** (Planetary Scope, Temporal Window $[t_{\min}, t_{\max}]$ up to $2200\text{ CE}$, Physical Capital $k_{\text{pc}}$ & Exergy $P_{\text{watts}}$ Preconditions, and Geopolitical Regime Scope) and **unchecks (`false`) by default** any Type B engine whose validity conditions are not met by the scenario:
-    1. **Deep-Time Biocultural, Evolutionary & Forager-Mobility Engines ($[-3\,000\,000\text{ BP}, 2200\text{ CE}]$, 8 engines)**: Active (`true`) from Plio-Pleistocene hominin emergence (`SelfDomesticationEngine`, `SexualSelectionMatingEngine`, `KinSelectionHamiltonEngine`, `PriceMultilevelSelectionEngine`), Middle Paleolithic symbolic language (`LanguageLinguisticEngine`, `CulturalSociologyEngine` from $-300\,000\text{ BP}$), and Upper Paleolithic maritime navigation (`DynamicMaritimeRoutingGraph` from $-60\,000\text{ BP}$) through $2200\text{ CE}$.
-    2. **Neolithic, Bronze Age & Classical Agrarian-State Engines ($[-8\,000 / -3\,000\text{ BCE}, 2200\text{ CE}]$, 24 engines)**: Unchecked (`false`) across the Plio-Pleistocene and Paleolithic ($t_0 < -8\,000\text{ BCE}$); active (`true`) once sedentary farming, livestock traction, urban markets, and state fiscal structures exist. Long-term institutional and structural engines remain active up to $2200\text{ CE}$, while bounded historical regimes deactivate at their realistic upper bound (`ScottAgainstTheGrainPureEngine` $[-4\,000\text{ BCE}, 1500\text{ CE}]$, `FrontierAsabiyyahEngine` $[-3\,000\text{ BCE}, 1800\text{ CE}]$, `DraftAnimalFodderAllocationEngine` $[-3\,000\text{ BCE}, 1950\text{ CE}]$ superseded by tractor mechanization).
-    3. **Iron Age, Medieval & Early Modern Mercantile Engines ($[-1\,000\text{ BCE} \dots 1700\text{ CE}, 2200\text{ CE}]$, 13 engines)**: Unchecked (`false`) prior to their historical emergence; bounded regimes deactivate after their historical era (`BarfieldNomadicSteppeEmpireEngine` $[-1\,000\text{ BCE}, 1750\text{ CE}]$, `CrosbyColumbianExchangeEngine` $[1492\text{ CE}, 1750\text{ CE}]$, `ProtestantWorkEthicEngine` $[1550\text{ CE}, 1950\text{ CE}]$, `AsymmetricColonialTradeEngine` $[1492\text{ CE}, 1960\text{ CE}]$, `InnisStaplesThesisEngine` $[1700\text{ CE}, 1960\text{ CE}]$, `PhysicalMediaPrintingEngine` $[1450\text{ CE}, 2010\text{ CE}]$ superseded by digital networks), while permanent fiscal/institutional structures (`SovereignTreasuryBondEngine`, `TocquevilleEliteFrustrationEngine`, `CantillonMonetaryInjectionEngine`, `AxialAgeMoralizingGodsEngine`) remain active through $2200\text{ CE}$.
-    4. **Industrial, Fossil-Exergy & Modern Macroeconomic Engines ($[1750 / 1800 / 1850\text{ CE}, 2200\text{ CE}]$, 13 engines)**: Unchecked (`false`) across all pre-industrial scenarios; transitional industrial regimes deactivate at their realistic historical/future bound (`PomeranzGreatDivergenceEngine` $[1750\text{ CE}, 1914\text{ CE}]$, `RicardoDifferentialLandRentEngine` $[1750\text{ CE}, 1950\text{ CE}]$, `LewisDualSectorTurningPointEngine` $[1850\text{ CE}, 2050\text{ CE}]$, `CordenNearyDutchDiseaseEngine` $[1850\text{ CE}, 2060\text{ CE}]$), while enduring thermodynamic, financial, and urban-grid laws (`KondratievSchumpeterLongWaveEngine`, `KummelAyresExergyEngine`, `JevonsParadoxEngine`, `PublicSanitationWaterGridEngine`, `BagehotFractionalReserveEngine`, `EasterlinRelativeIncomeFertilityEngine`, `MarxCapitalAccumulationEngine`, `HotellingExhaustibleResourceEngine`, `SenEntitlementFamineEngine`) remain active up to $2200\text{ CE}$.
-    5. **Contemporary, Great Acceleration & Off-Earth Habitat Engines ($[1900 / 1950\text{ CE}, 2200\text{ CE}]$, 12 engines)**: Unchecked (`false`) prior to the 20th century on Earth; bounded 20th/21st-century regimes deactivate at their physical horizon (`KurzweilAcceleratingReturnsEngine` $[1990\text{ CE}, 2060\text{ CE}]$ at atomic/Landauer silicon limits, `World3CouplingEngine` $[1950\text{ CE}, 2100\text{ CE}]$ at the MIT Club of Rome horizon), long-term modern couplings remain active up to $2200\text{ CE}$ (`PhysicalLeontiefInputOutputEngine`, `PhysicalSupplyChainEngine`, `EcotoxicologyFertilityEngine`, `NuclearSafetyRadiotoxicityEngine`, `InformationEntropyEngine`, etc.), and `IsruAutarkyAndSpaceColonizationEngine` is unchecked (`false`) on Earth and active (`true`) only on off-Earth outposts (`moon`, `mars`) with sealed pressurized domes.
-    6. **Specialized Regional, Counterfactual, Speculative & Pure-Theory Sandbox Engines (16 engines)**: Systematically unchecked (`false`) by default on general global auto-scenarios (`AmerindianEcosystemEngine`, `RomanImperialCliodynamicEngine`, `EdoJapanIsolationEngine`, `MonasticDemographicBufferEngine`, `World3PureEngine`, `HandyNasaPureEngine`, `NordhausDiceHybridEngine`, `NordhausDicePureEngine`, `NuclearWarfareClimateEngine`, `GeoengineeringAlbedoFeedbackEngine`, `TerraformingEngine`, `BifurcationChaosEngine`, etc.), and enabled only in their dedicated regional/thematic presets or when explicitly checked by the user.
-
-#### 34. Simulation Temporal Event Architecture & Two-Phase Radioecological Contamination Decay (`SimulationDate.java`, `SimulationTemporalEvent.java`, `EventPhysicalImpactExecutor.java`, `EcologicalDegradationEngine.java`)
-* **Model Classification**: Tier 1 Invariant Geophysical & Temporal Event Framework (`AGENTS.md` §3, §7, §8, §10)
-* **Academic Literature Reference**:
-  * Kooijman, S. A. L. M. (2010). *Summary of concepts and terms in Dynamic Energy Budget theory*;
-  * Steinhauser, G., Brandl, A., & Johnson, T. E. (2014). *Comparison of the Chernobyl and Fukushima nuclear accidents: a review of the environmental impacts*. Science of the Total Environment, 470, 800-817;
-  * Robock, A., Oman, L., & Stenchikov, G. L. (2007). *Nuclear winter revisited with a modern climate model and current nuclear arsenals: Still catastrophic consequences*. J. Geophys. Res., 112, D13107;
-  * Keeling, M. J., & Rohani, P. (2008). *Modeling Infectious Diseases in Humans and Animals*. Princeton University Press.
-* **Governing Temporal Architecture**:
-  * **Canonical 360-Day Simulation Date Coordinate**:
-    Continuous linear calendar coordinate representation without proleptic Gregorian discontinuities across the full $-3\,000\,000\text{ BP}$ to $+10\,000\text{ CE}$ epoch spectrum:
-    $$D_{\text{sim}}(y, m, d) = 360 \cdot y + 30 \cdot (m - 1) + (d - 1)$$
-    Implemented within the immutable domain value record `SimulationDate` and enforced by `SimulationTemporalEvent` across all event records (`ClimateEvent`, `HistoricalEvent`).
-  * **Event Triggering and Expiration Criteria**:
-    An event with start coordinate $D_{\text{start}}$ and duration $\Delta D_{\text{days}}$ satisfies:
-    $$\text{isDue}(D_{\text{sim}}) \iff D_{\text{sim}} \ge D_{\text{start}}$$
-    $$\text{isActive}(D_{\text{sim}}) \iff D_{\text{start}} \le D_{\text{sim}} < D_{\text{start}} + \max(1, \Delta D_{\text{days}})$$
-    $$\text{isExpired}(D_{\text{sim}}) \iff D_{\text{sim}} \ge D_{\text{start}} + \max(1, \Delta D_{\text{days}})$$
-
-* **Mathematical Event Temporal Profiles**:
-  * **Volcanic Eruptions & Atmospheric Aerosols** (`VOLCANO`, `CLIMATE_ANOMALY`):
-    Impulsive sulfur/soot injection into the stratosphere adding optical depth $\Delta \tau = 0.05 \cdot \text{magnitude}$. Attenuates global top-of-atmosphere solar irradiance according to Beer-Lambert radiation law:
-    $$S(t) = S_0 \cdot \exp(-\tau(t))$$
-    Causing planetary surface cooling $\Delta T_{\text{global}} = -12.0 \cdot (1 - \exp(-0.85 \cdot \tau))$ in `AlbedoClimateEngine.java`, with stratospheric aerosol washout half-life $T_{1/2} = 1.0\text{ year}$.
-  * **Seismic Shocks & Tsunamis** (`EARTHQUAKE`, `TSUNAMI`):
-    Instantaneous Dirac impulse $I(t) = \delta(t - t_0)$. Produces instantaneous physical capital destruction:
-    $$K(t^+) = K(t^-) \cdot \exp(-\alpha \cdot I_{\text{seismic}})$$
-    followed by endogenous economic capital reconstruction governed by cellular saving/investment rates.
-  * **Hydrological Droughts & Inundations** (`DROUGHT`, `FLOOD`, `HEATWAVE`, `FAMINE`):
-    Progressive draw-down and recovery curves. Droughts trigger logistic freshwater aquifer depletion $W_{\text{aquifer}}(t)$ and food yield depression. Floods apply an acute pulse (1-3 days) followed by an alluvial silt fertilization recharge ($N\text{-}P\text{-}K$ soil enhancement).
-  * **Biological Pathogens & Pestilence** (`PANDEMIC`, `EPIDEMIC`, `PLAGUE`, `LOCUST_SWARM`, `CROP_BLIGHT`):
-    Seeding of active infectious compartments $I_0 = N \cdot \min(0.25, \text{virulence} \cdot \text{attenuation})$ coupled to `SpatialMetapopulationSEIREngine.java`. Drives epidemiological transmission along trade networks and spatial neighbor rings, peaking according to reproduction number $\mathcal{R}_0$ before herd immunity and recovery phase.
-  * **Anthropic Cataclysms & Radiotoxicity** (`NUCLEAR_STRIKE`, `NUCLEAR_WINTER`, `INDUSTRIAL_ACCIDENT`):
-    High-intensity kinetic and radiotoxic shocks injecting localized radiotoxic pollution $P \ge 12\,000\text{ units}$.
-
-* **Two-Phase Radioecological Contamination Decay** (`EcologicalDegradationEngine.java`):
-  * **Standard Chemical / Industrial Pollution ($P \le 1000\text{ units}$)**:
-    Attenuates rapidly through atmospheric dispersion, sedimentation, and microbial biodegradation:
-    $$P_{\text{chem}}(t + \Delta t) = \max\left(0.0, \; P_{\text{chem}}(t) \cdot 0.92^{\Delta t_{\text{months}}} - 1.2 \cdot \Delta t_{\text{months}}\right)$$
-  * **Persistent Radiotoxic Fission Fallout ($P > 1000\text{ units}$, Chernobyl, Fukushima, Nuclear Strikes)**:
-    Governed by long-lived radioactive fission isotopes ($^{137}\text{Cs}$, $^{90}\text{Sr}$) with half-life $T_{1/2} = 30.0\text{ years}$ ($\lambda_{\text{nuclear}} = \frac{\ln 2}{30.0} \approx 0.023105\text{ year}^{-1}$):
-    $$P_{\text{nuclear}}(t + \Delta t) = (P(t) - 1000.0) \cdot \exp(-\lambda_{\text{nuclear}} \cdot \Delta t_{\text{years}})$$
-    $$P_{\text{total}}(t + \Delta t) = P_{\text{chem}}(t + \Delta t) + P_{\text{nuclear}}(t + \Delta t)$$
-  * **Human Exclusion Zone & Habitability Threshold**:
-    Any spatial cell where $P > 1500\text{ units}$ represents a lethal radiotoxic exclusion zone. In `ThermodynamicMigrationEngine.java`, settlement probability $p_{\text{accept}} = 0.0$ and emigrant chemical potential drives total human evacuation. Because $P_{\text{nuclear}}$ requires $80\text{ to }90\text{ years}$ to decay from $12\,000$ to under $1\,500$, sites like Chernobyl (1986) remain strictly uninhabitable across multi-decadal simulation spans.
-
----
+#### 10. Beer-Lambert Stratospheric Volcanic Aerosol Attenuation & Radioactive Decay
+* **Academic Literature Reference**: Robock, A. (2000). *Volcanic eruptions and climate*. Reviews of Geophysics, 38(2), 191-219; Rutherford, E., & Soddy, F. (1902). *The cause and nature of radioactivity*; Steinhauser, G., Brandl, A., & Johnson, T. E. (2014). *Comparison of the Chernobyl and Fukushima nuclear accidents*. Science of the Total Environment, 470, 800-817.
+* **Governing Equations**:
+  $$I_{\text{TOA,eff}}(t) = I_0 \exp(-\tau_{\text{aer}}(t)), \qquad \frac{d\tau_{\text{aer}}}{dt} = -\frac{\tau_{\text{aer}}}{\tau_{\text{washout}}}$$
+  $$A(t) = \sum_k A_{k,0} \exp(-\lambda_k t), \qquad \lambda_k = \frac{\ln 2}{T_{1/2,k}}$$
+* **Parameters & Physical Units**:
+  * $\tau_{\text{aer}}$: Stratospheric sulfate/soot optical depth [dimensionless] with e-folding residence time $\tau_{\text{washout}} \approx 1\text{-}2\,\text{yr}$ (Robock 2000).
+  * $T_{1/2,k}$: Radionuclide half-life ($^{137}\text{Cs}$: $30.17\,\text{yr}$; $^{90}\text{Sr}$: $28.79\,\text{yr}$; $^{131}\text{I}$: $8.02\,\text{d}$).
