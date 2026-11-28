@@ -11,20 +11,22 @@ import org.ether.society.core.engine.AbstractSimulationEngine;
 import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
 import org.ether.society.core.math.SmoothMath;
-import org.ether.society.database.H3Cell;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Tasmanian Cultural Regression &amp; Demographic Isolation Engine.
  *
- * <p>Formalizes Joseph Henrich's model of cultural loss (2004, <i>American Antiquity</i> 69:197):
- * when effective demographic pool size falls below the critical threshold required to sustain
- * specialized complex crafts, incomplete cultural transmission leads to the decay and loss of
- * complex physical tooling and capital stock (\(K\)).</p>
+ * <p>Formalizes Joseph Henrich's Gumbel extreme-value model of cultural skill transmission
+ * (2004, <i>American Antiquity</i> 69(2): 197–214, Eq. 3):</p>
+ * \[
+ * \Delta \bar{z} = -\alpha + \beta \left(\gamma_E + \ln N_e\right) = \beta \ln\!\left(\frac{N_e}{N^*}\right),
+ * \qquad N^* = \exp\!\left(\frac{\alpha}{\beta} - \gamma_E\right)
+ * \]
+ * <p>where \(\gamma_E \approx 0.5772156649\) is the Euler-Mascheroni constant and \(N^*\) is the critical
+ * interacting learner pool size required to offset transmission error \(\alpha\). When \(N_e &lt; N^*\),
+ * \(\Delta \bar{z} &lt; 0\) induces logarithmic skill and physical tooling decay proportional to
+ * \(\ln(N^* / N_e)\).</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
@@ -32,6 +34,12 @@ import java.util.List;
 public class TasmanianCulturalRegressionEngine extends AbstractSimulationEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(TasmanianCulturalRegressionEngine.class);
+
+    /** Euler-Mascheroni constant (\(\gamma_E \approx 0.5772156649\)) in Henrich's (2004) Gumbel skill model. */
+    public static final double EULER_MASCHERONI_GAMMA = 0.5772156649015329;
+
+    /** Skill transmission dispersion coupling rate (\(\beta\) in \(\text{yr}^{-1}\)). */
+    public static final double HENRICH_DISPERSION_BETA_PER_YR = 0.025;
 
     private static double isolationPopulationThreshold = 5000.0;
     private double currentLossRate = 0.0;
@@ -46,24 +54,30 @@ public class TasmanianCulturalRegressionEngine extends AbstractSimulationEngine 
     }
 
     /**
-     * Prepares the global demographic threshold before cellular derivative sweeps.
+     * Evaluates Henrich's (2004, Eq. 3) logarithmic skill-loss rate \(\Delta \bar{z} = \beta \ln(N_e / N^*)\)
+     * across the active learner pool before cellular derivative sweeps.
      *
      * @param buffer contiguous world memory buffer
-     * @param dtYears elapsed time in years
+     * @param dtYears elapsed time in Julian years
      */
     public void prepareTick(WorldBuffer buffer, double dtYears) {
-        if (buffer == null || buffer.getHumanPopulation() == null) {
+        if (buffer == null || buffer.getHumanPopulation() == null || dtYears <= 0.0) {
             currentLossRate = 0.0;
             return;
         }
         float[] pop = buffer.getHumanPopulation();
-        double totalPop = 0.0;
+        double effectivePool = 0.0;
         int cap = buffer.getCapacity();
         for (int i = 0; i < cap; i++) {
-            if (pop[i] > 0.0f) totalPop += pop[i];
+            if (pop[i] > 0.0f) effectivePool += pop[i];
         }
-        double lossIntensity = SmoothMath.sigmoid(2500.0 - totalPop, 0.0, 800.0);
-        currentLossRate = 0.04 * lossIntensity * dtYears;
+        if (effectivePool <= 0.0) {
+            currentLossRate = 0.0;
+            return;
+        }
+        double logPoolDeficit = Math.log(isolationPopulationThreshold / Math.max(1.0, effectivePool));
+        double smoothDeficit = SmoothMath.softplus(logPoolDeficit, 0.0, 20.0);
+        currentLossRate = Math.min(0.25, HENRICH_DISPERSION_BETA_PER_YR * smoothDeficit) * dtYears;
     }
 
     @Override

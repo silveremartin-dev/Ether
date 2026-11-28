@@ -117,6 +117,9 @@ public final class PhysicalConstants {
     /** Pasture herbage and forage biomass (ruminant feed) in MJ/kg */
     public static final double BIOMASS_ENERGY_DENSITY_HERBAGE_MJ_PER_KG = 4.0;
 
+    /** Bituminous coal specific lower heating value (LHV) in GJ per metric tonne (Smil 2017) */
+    public static final double COAL_LHV_GJ_PER_TONNE = 24.0;
+
     // --- Trophic Footprint Multipliers (Mobilized Raw Biomass / Ingested Energy) ---
     /** Terrestrial hunter-gatherers footprint multiplier (Speth & Spielmann 1983) */
     public static final double TROPHIC_MULTIPLIER_HUNTER_GATHERER = 2.25;

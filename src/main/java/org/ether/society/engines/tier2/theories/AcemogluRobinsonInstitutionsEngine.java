@@ -15,16 +15,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Acemoglu-Robinson Institutional Economics Engine.
+ * Acemoglu-Robinson Institutional Political Economy Engine.
  *
- * <p>Models the divergence of nations driven by institutional architecture (Acemoglu &amp; Robinson 2012,
- * <i>Why Nations Fail</i>): inclusive institutions secure property rights and promote creative destruction
- * and capital deepening, whereas extractive institutions suffer elite expropriation and capital flight.</p>
+ * <p>Formalizes the property-rights and expropriation-risk investment equation of Acemoglu, Johnson
+ * &amp; Robinson (2001, <i>American Economic Review</i> 91(5): 1369–1401; 2005, <i>Handbook of Economic Growth</i>
+ * Ch. 6) and Acemoglu &amp; Robinson (2012, <i>Why Nations Fail</i>):</p>
+ * \[
+ * r_{\text{net}} = (1 - \tau_{\text{extr}}) r_K - \delta_{\text{inst}}, \qquad
+ * \frac{dK}{dt} = r_{\text{net}} \cdot \Phi_{\text{pr}}(k_{\text{pc}}) \cdot K
+ * \]
+ * <p>Inclusive institutions restrain elite expropriation (\(\tau_{\text{extr}} \ll 1 - \delta_{\text{inst}}/r_K\)),
+ * fostering private capital deepening, whereas extractive concentration (\(\tau_{\text{extr}} &gt; 1 - \delta_{\text{inst}}/r_K\))
+ * depresses private net return below the institutional hold-up hurdle rate \(\delta_{\text{inst}}\).</p>
  *
  * @author Silvere Martin-Michiellot
  * @version 1.0.0-beta.3
  */
 public class AcemogluRobinsonInstitutionsEngine extends AbstractSimulationEngine {
+
+    /** Gross private marginal return on productive physical capital (\(r_K = 0.020\,\text{yr}^{-1}\)). */
+    public static final double GROSS_CAPITAL_RETURN_PER_YR = 0.020;
+
+    /** Institutional hold-up / maintenance hurdle rate (\(\delta_{\text{inst}} = 0.007\,\text{yr}^{-1}\)). */
+    public static final double INSTITUTIONAL_HURDLE_RATE_PER_YR = 0.007;
+
     public AcemogluRobinsonInstitutionsEngine() {
         super("AcemogluRobinsonInstitutionsEngine", "AcemogluRobinsonInstitutionsEngine", EngineTier.TIER_2_CLIODYNAMIC);
     }
@@ -38,11 +52,11 @@ public class AcemogluRobinsonInstitutionsEngine extends AbstractSimulationEngine
     @Override
     public String getEquationsTooltip() {
         return """
-               [Acemoglu-Robinson Institutional Divergence (Acemoglu & Robinson 2012)]
-               • Inclusiveness Index:    I = smoothClamp(1.0 - Gini, 0.05, 0.95)
-               • Property Rights Gate:   Φ_pr = σ(k_pc; 100.0, 30.0)
-               • Capital Accumulation:   dK/dt = 0.02 · (I - 0.35) · Φ_pr · K
-               Ref: D. Acemoglu & J. A. Robinson (2012), "Why Nations Fail"
+               [Acemoglu-Johnson-Robinson Expropriation Wedge (2001, 2005, 2012)]
+               • Expropriation Risk:     τ_extr = smoothClamp(Gini, 0.05, 0.95)
+               • Net Private Return:     r_net = (1 - τ_extr) · r_K - δ_inst
+               • Capital Accumulation:   dK/dt = r_net · σ(k_pc; 100.0, 30.0) · K
+               Ref: Acemoglu, Johnson & Robinson (2005), Handbook of Economic Growth, Ch. 6
                """;
     }
 
@@ -61,9 +75,9 @@ public class AcemogluRobinsonInstitutionsEngine extends AbstractSimulationEngine
         double capital = buffer.getResourceCapital() != null ? buffer.getResourceCapital()[i] : 10.0;
         double kPerCapita = capital / pop;
 
-        double inclusiveness = SmoothMath.smoothClamp(1.0 - gini, 0.05, 0.95, 20.0);
+        double expropriationRisk = SmoothMath.smoothClamp(gini, 0.05, 0.95, 20.0);
+        double netPrivateReturn = (1.0 - expropriationRisk) * GROSS_CAPITAL_RETURN_PER_YR - INSTITUTIONAL_HURDLE_RATE_PER_YR;
         double propertyRightsActivation = SmoothMath.sigmoid(kPerCapita, 100.0, 30.0);
-        double netInstitutionalGrowthRate = 0.02 * (inclusiveness - 0.35) * propertyRightsActivation * dtYears;
-        acc.dResourceCapital += (float) (capital * netInstitutionalGrowthRate);
+        acc.dResourceCapital += (float) (capital * netPrivateReturn * propertyRightsActivation * dtYears);
     }
 }

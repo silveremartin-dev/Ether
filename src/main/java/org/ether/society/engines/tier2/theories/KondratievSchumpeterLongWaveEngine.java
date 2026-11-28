@@ -67,12 +67,11 @@ public class KondratievSchumpeterLongWaveEngine extends AbstractSimulationEngine
     public String getEquationsTooltip() {
         return """
                [Kondratiev-Schumpeter Infrastructure Long Wave (Kondratiev 1925, Schumpeter 1939)]
-               • Cycle Phase:        θ(t) = ((Year - 1750) mod 52) / 52.0
-               • Wave Modulator:     W_k = sin(2π · θ(t)) · σ(k_pc - 120, 30)
-               • Capital Momentum:   ΔK = (0.015 + 0.025 · W_k) · K · dt
-               • Creative Shakeout:  If W_k < -0.40 -> Obsolete Capital Liquidation & Replacement Renewal
-               • Friction Wave:      Friction = Base_Friction · (1.0 - 0.12 · W_k)
-               Ref: N. D. Kondratiev (1925), "The Major Economic Cycles"; J. A. Schumpeter (1939), "Business Cycles".
+               • Cycle Phase:        θ(τ) = (τ mod 52.0) / 52.0
+               • Wave Modulator:     W_k = sin(2π · θ(τ)) · σ(k_pc; 120.0, 30.0)
+               • Gross Investment:   dK/dt = (0.015 + 0.025 · W_k) · K
+               • Creative Shakeout:  W_k < -0.50 -> Scrapping δ_s = 0.015 · |W_k| (15% metal recovery)
+               Ref: N. D. Kondratiev (1925); J. A. Schumpeter (1939), "Business Cycles".
                """;
     }
 

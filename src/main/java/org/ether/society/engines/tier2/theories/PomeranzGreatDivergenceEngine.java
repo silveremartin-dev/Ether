@@ -6,36 +6,34 @@
  */
 package org.ether.society.engines.tier2.theories;
 
-import org.ether.society.core.engine.AbstractSimulationEngine;
-import org.ether.society.core.engine.EngineTier;
-
 import org.ether.society.core.dod.WorldBuffer;
-import org.ether.society.core.math.SmoothMath;
+import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.core.engine.SimulationEngineModule;
-import org.ether.society.database.H3Cell;
-
+import org.ether.society.core.math.SmoothMath;
+import org.ether.society.model.PhysicalConstants;
 import org.ether.society.model.Scenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 /**
- * Kenneth Pomeranz Great Divergence &amp; Ecological Ghost Acreage Engine.
+ * Kenneth Pomeranz &amp; E. A. Wrigley Great Divergence &amp; Ghost Acreage Engine.
  *
- * <p>Implements Kenneth Pomeranz's foundational comparative historical cliodynamics
- * (2000, <i>The Great Divergence: China, Europe, and the Making of the Modern World Economy</i>; Robert Allen 2009):</p>
+ * <p>Implements the ecological-energetic Great Divergence framework of Kenneth Pomeranz
+ * (2000, <i>The Great Divergence: China, Europe, and the Making of the Modern World Economy</i>)
+ * and E. A. Wrigley (2010, <i>Energy and the English Industrial Revolution</i>):</p>
+ * \[
+ * A_{\text{ghost,coal}} = \frac{\dot{M}_{\text{coal}} \cdot \text{LHV}_{\text{coal}}}{y_{\text{wood}}}, \qquad
+ * A_{\text{ghost,trade}} = \sum_c \frac{\dot{M}_{\text{import},c}}{y_{\text{land},c}}
+ * \]
  * <ul>
- *   <li><b>Symmetric Pre-Industrial Commercialization:</b> As of ~1750 CE, core advanced regions of Eurasia
- *       (Britain and the Yangtze River Delta) shared comparable levels of life expectancy, literacy,
- *       free product and labor markets, and proto-industrial textile crafts.</li>
- *   <li><b>The Coal Transport Proximity Factor:</b> British industrial breakout was catalyzed by the accidental
- *       geographic proximity of thick, surface coal deposits to navigable water and iron ore, driving down
- *       thermal energy costs. By contrast, Chinese coal was situated 1,500 km away in the arid, landlocked northwest (Shanxi).</li>
- *   <li><b>Colonial "Ghost Acreage":</b> Transoceanic colonial imports (American timber, cotton, and sugar)
- *       substituted for millions of hectares of domestic agrarian/forest land, preventing Britain from choking
- *       on domestic ecological resource limits, whereas the Yangtze delta was constrained to labor-intensive involution.</li>
+ *   <li><b>Subterranean Forest Relief (Wrigley 2010):</b> Water-accessible bituminous coal
+ *       (\(\text{LHV}_{\text{coal}} = 24\,\text{GJ/t}\)) substitutes for sustainable coppice woodland
+ *       thermal yield (\(y_{\text{wood}} = 7\,500\,\text{GJ/(km}^2\cdot\text{yr)}\)), releasing domestic
+ *       land from firewood competition.</li>
+ *   <li><b>Transoceanic Colonial Ghost Acreage (Pomeranz 2000):</b> Maritime bulk imports of land-intensive
+ *       commodities (timber, cotton, sugar, grain) further expand effective ecological acreage, whereas
+ *       landlocked organic economies without accessible coal draw down standing forest biomass and involute.</li>
  * </ul>
  *
  * @author Silvere Martin-Michiellot
@@ -45,17 +43,26 @@ import java.util.List;
  * @see KummelAyresExergyEngine
  */
 public class PomeranzGreatDivergenceEngine extends AbstractSimulationEngine {
-    public PomeranzGreatDivergenceEngine() {
-        super("PomeranzGreatDivergenceEngine", "PomeranzGreatDivergenceEngine", EngineTier.TIER_2_CLIODYNAMIC);
-    }
 
     private static final Logger logger = LoggerFactory.getLogger(PomeranzGreatDivergenceEngine.class);
 
     /** Minimum trade connectivity representing transoceanic colonial ghost acreage access. */
     public static final double GHOST_ACREAGE_TRADE_THRESHOLD = 25.0;
 
-    /** Minimum coal stock threshold for local mineral fuel breakout. */
+    /** Minimum coal stock threshold [metric tonnes] for commercial seam extraction. */
     public static final double COAL_BREAKOUT_STOCK_THRESHOLD = 500.0;
+
+    /** Sustainable temperate coppice forestry thermal yield [GJ / (km^2 * yr)] (Wrigley 2010; Smil 2017). */
+    public static final double COPPICE_WOODLAND_YIELD_GJ_PER_KM2_YR = 7_500.0;
+
+    /** Reference subterranean forest land-equivalence scale [km^2] for industrial takeoff. */
+    public static final double REFERENCE_SUBTERRANEAN_FOREST_KM2 =
+            (COAL_BREAKOUT_STOCK_THRESHOLD * PhysicalConstants.COAL_LHV_GJ_PER_TONNE)
+                    / COPPICE_WOODLAND_YIELD_GJ_PER_KM2_YR;
+
+    public PomeranzGreatDivergenceEngine() {
+        super("PomeranzGreatDivergenceEngine", "PomeranzGreatDivergenceEngine", EngineTier.TIER_2_CLIODYNAMIC);
+    }
 
     @Override
     public String id() {
@@ -84,33 +91,67 @@ public class PomeranzGreatDivergenceEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
+        evaluateCellDivergence(buffer, i, dtYears, acc, false);
+    }
+
+    private static void evaluateCellDivergence(
+            WorldBuffer buffer,
+            int i,
+            double dtYears,
+            DerivativeAccumulator acc,
+            boolean directMutate) {
         if (buffer == null || dtYears <= 0.0 || buffer.getHumanPopulation() == null) return;
         float p = buffer.getHumanPopulation()[i];
         if (p <= 0.5f) return;
-        float capital = (buffer.getResourceCapital() != null) ? buffer.getResourceCapital()[i] : 0.0f;
+        float[] capArr = buffer.getResourceCapital();
+        float capital = (capArr != null) ? capArr[i] : 0.0f;
         double kpc = capital / p;
         if (kpc < 50.0) return;
 
-        double coal = (buffer.getResourceCoal() != null) ? buffer.getResourceCoal()[i] : 0.0;
+        double coalTonnes = (buffer.getResourceCoal() != null) ? buffer.getResourceCoal()[i] : 0.0;
         double trade = (buffer.getCommercialFluxVolume() != null) ? buffer.getCommercialFluxVolume()[i] : 0.0;
-        double friction = (buffer.getFluxPressure() != null && buffer.getFluxPressure()[i] > 0.0f) ? buffer.getFluxPressure()[i] : 0.50;
+        double friction = (!directMutate && buffer.getFluxPressure() != null && buffer.getFluxPressure()[i] > 0.0f)
+                ? buffer.getFluxPressure()[i]
+                : 0.50;
 
-        double coalAvailability = SmoothMath.sigmoid(coal, COAL_BREAKOUT_STOCK_THRESHOLD, 100.0);
+        // Wrigley (2010) subterranean forest equivalence: A_ghost,coal = (M_coal * LHV_coal) / y_wood [km^2]
+        double subterraneanForestKm2 = (coalTonnes * PhysicalConstants.COAL_LHV_GJ_PER_TONNE)
+                / COPPICE_WOODLAND_YIELD_GJ_PER_KM2_YR;
+        double scaleWidthKm2 = (100.0 * PhysicalConstants.COAL_LHV_GJ_PER_TONNE)
+                / COPPICE_WOODLAND_YIELD_GJ_PER_KM2_YR;
+        double coalAvailability = SmoothMath.sigmoid(subterraneanForestKm2, REFERENCE_SUBTERRANEAN_FOREST_KM2, scaleWidthKm2);
         double transportAccessibility = 1.0 - SmoothMath.sigmoid(friction, 0.70, 0.15);
         double coalProximityFactor = coalAvailability * transportAccessibility;
+
+        // Pomeranz (2000) transoceanic colonial ghost acreage factor
         double ghostAcreageFactor = SmoothMath.sigmoid(trade, GHOST_ACREAGE_TRADE_THRESHOLD, 5.0)
                 * SmoothMath.sigmoid(kpc, 100.0, 30.0);
         double divergencePotential = coalProximityFactor * (1.0 + 0.80 * ghostAcreageFactor);
 
         if (divergencePotential > 0.15) {
-            acc.dResourceCapital += (float) (capital * 0.055 * divergencePotential * dtYears);
+            double dCap = capital * 0.055 * divergencePotential * dtYears;
+            if (directMutate && capArr != null) {
+                capArr[i] = (float) (capital + dCap);
+            } else if (acc != null) {
+                acc.dResourceCapital += (float) dCap;
+            }
         } else if (kpc >= 80.0 && p >= 10.0f) {
-            acc.dResourceCapital -= (float) Math.min(Math.max(0.0, capital - 10.0), capital * 0.006 * dtYears);
+            double dCapDrag = Math.min(Math.max(0.0, capital - 10.0), capital * 0.006 * dtYears);
+            if (directMutate && capArr != null) {
+                capArr[i] = (float) Math.max(10.0, capital - dCapDrag);
+            } else if (acc != null) {
+                acc.dResourceCapital -= (float) dCapDrag;
+            }
             // Wrigley (2010) organic-economy forestry bottleneck: absent mineral coal, proto-industrial heat draws down standing wood biomass
-            if (buffer.getBiomassNatural() != null && buffer.getBiomassNatural()[i] > 10.0f) {
-                double woodDrawdown = buffer.getBiomassNatural()[i] * 0.012 * (1.0 - coalProximityFactor) * dtYears;
-                acc.dBiomassNatural -= (float) woodDrawdown;
+            float[] natArr = buffer.getBiomassNatural();
+            if (natArr != null && natArr[i] > 10.0f) {
+                double woodDrawdown = natArr[i] * 0.012 * (1.0 - coalProximityFactor) * dtYears;
+                if (directMutate) {
+                    natArr[i] = (float) Math.max(10.0, natArr[i] - woodDrawdown);
+                } else if (acc != null) {
+                    acc.dBiomassNatural -= (float) woodDrawdown;
+                }
             }
         }
     }
@@ -132,19 +173,18 @@ public class PomeranzGreatDivergenceEngine extends AbstractSimulationEngine {
 
     @Override
     public String getDescription() {
-        return "Models Kenneth Pomeranz (2000) Great Divergence: industrial breakout driven by low-friction coal proximity and colonial ghost acreage relieving domestic ecological ceilings.";
+        return "Models Kenneth Pomeranz (2000) and E. A. Wrigley (2010) Great Divergence: subterranean forest coal relief and transoceanic ghost acreage.";
     }
 
     @Override
     public String getEquationsTooltip() {
         return """
-               [Kenneth Pomeranz Great Divergence (Pomeranz 2000, Allen 2009)]
-               • Coal Access:         Φ_coal = σ(Coal - 500, 100) · (1.0 - σ(Friction - 0.70, 0.15))
-               • Ghost Acreage:       Φ_ghost = σ(TradeNet - 25, 5) · σ(k_pc - 100, 30)
-               • Divergence Relief:   Ω_div = Φ_coal · (1.0 + 0.80 · Φ_ghost)
-               • Takeoff vs Stagnate: If Ω_div > 0.15 -> ΔK = +0.055 · Ω_div · K · dt (Industrial Takeoff)
-                                      Else if High Pop -> ΔK = +0.005 · K · dt (Involution Drag)
-               Ref: K. Pomeranz (2000), "The Great Divergence", Princeton University Press.
+               [Pomeranz-Wrigley Great Divergence (Pomeranz 2000, Wrigley 2010)]
+               • Subterranean Forest: A_coal = (M_coal · LHV_coal) / y_wood  [km²]
+               • Water Access:        Φ_coal = σ(A_coal; A_0, s_A) · (1 - σ(μ; 0.70, 0.15))
+               • Colonial Acreage:    Φ_ghost = σ(Trade; 25, 5) · σ(k_pc; 100, 30)
+               • Divergence Relief:   Ω_div = Φ_coal · (1 + 0.80 · Φ_ghost)
+               Ref: K. Pomeranz (2000), "The Great Divergence"; E. A. Wrigley (2010).
                """;
     }
 
@@ -159,7 +199,7 @@ public class PomeranzGreatDivergenceEngine extends AbstractSimulationEngine {
     }
 
     /**
-     * Evaluates Pomeranz coal proximity and colonial ghost acreage relief directly over WorldBuffer.
+     * Evaluates Pomeranz-Wrigley subterranean forest and colonial ghost acreage relief directly over WorldBuffer.
      *
      * @param buffer contiguous world buffer
      * @param deltaYears time step duration in astronomical Julian years
@@ -167,46 +207,8 @@ public class PomeranzGreatDivergenceEngine extends AbstractSimulationEngine {
     public static void processGreatDivergenceDynamics(WorldBuffer buffer, double deltaYears) {
         if (buffer == null || deltaYears <= 0.0) return;
         int n = buffer.getCapacity();
-        float[] popArr = buffer.getHumanPopulation();
-        float[] capArr = buffer.getResourceCapital();
-        float[] coalArr = buffer.getResourceCoal();
-        float[] natArr = buffer.getBiomassNatural();
-        float[] commArr = buffer.getCommercialFluxVolume();
-
         for (int i = 0; i < n; i++) {
-            float p = popArr[i];
-            if (p <= 0.5f) continue;
-            float capital = (capArr != null) ? capArr[i] : 0.0f;
-            double kpc = capital / p;
-            if (kpc < 50.0) continue;
-
-            double coal = (coalArr != null) ? coalArr[i] : 0.0;
-            double trade = (commArr != null) ? commArr[i] : 0.0;
-            double friction = 0.50; // navigable water baseline
-
-            double coalAvailability = SmoothMath.sigmoid(coal, COAL_BREAKOUT_STOCK_THRESHOLD, 100.0);
-            double transportAccessibility = 1.0 - SmoothMath.sigmoid(friction, 0.70, 0.15);
-            double coalProximityFactor = coalAvailability * transportAccessibility;
-
-            double ghostAcreageFactor = SmoothMath.sigmoid(trade, GHOST_ACREAGE_TRADE_THRESHOLD, 5.0)
-                    * SmoothMath.sigmoid(kpc, 100.0, 30.0);
-
-            double divergencePotential = coalProximityFactor * (1.0 + 0.80 * ghostAcreageFactor);
-
-            if (divergencePotential > 0.15) {
-                double takeoffGrowth = 0.055 * divergencePotential * deltaYears;
-                if (capArr != null) {
-                    capArr[i] = (float) (capital * (1.0 + takeoffGrowth));
-                }
-            } else if (kpc >= 80.0 && p >= 10.0f) {
-                double involutionDrag = 0.015 * deltaYears;
-                if (capArr != null) {
-                    capArr[i] = (float) Math.max(10.0, capital * (1.0 - involutionDrag * 0.40));
-                }
-                if (natArr != null && natArr[i] > 10.0f) {
-                    natArr[i] = (float) Math.max(10.0, natArr[i] * (1.0 - 0.012 * (1.0 - coalProximityFactor) * deltaYears));
-                }
-            }
+            evaluateCellDivergence(buffer, i, deltaYears, null, true);
         }
     }
 }

@@ -59,11 +59,11 @@ The **Ether Engine** strictly partitions its computational mathematical models i
 Ether decouples numerical integration across three discrete physical time scales on the Uber H3 hexagonal grid ($175,000+$ cells at Resolution 6-8) via the `MultiScaleSymplecticIntegrator`:
 
 - **Tier 1  -  Fast Daily Scale ($\Delta t_{\text{daily}} = 1 \text{ day} = 86,400 \text{ s}$)**:
-  - Resolves symmetric finite-volume mass and logistics fluxes under Courant-Friedrichs-Lewy (CFL) limits (`FluxEngine`).
+  - Resolves symmetric finite-volume mass and logistics fluxes under Courant-Friedrichs-Lewy (CFL) limits (`FluxKernel`).
   - Evaluates instantaneous wet-bulb temperature and hyperthermia thresholds (`WetBulbTemperatureEngine`).
   - Computes zonal wind vectors under Coriolis parameter $f = 2\Omega \sin\phi$ (`AtmosphericCirculationHadleyEngine`).
   - Resolves active localized epidemiological transmissions via sparse active sets (`SpatialMetapopulationSEIREngine`).
-  - Updates tactical political borders, legitimacy pressure, and military maneuvers (`PoliticalSimulationEngine`).
+  - Updates tactical political borders, legitimacy pressure, and military maneuvers (`WarDiplomacyEngine`).
 
 - **Tier 2  -  Monthly Biophysical Sub-Step Scale ($\Delta t_{\text{monthly}} = 30 \text{ days} \approx 2.592 \times 10^6 \text{ s}$)**:
   - Updates Milankovitch astronomical orbital parameters ($e$, $\varepsilon$, $\varpi$) and TOA solar insolation (`MilankovitchOrbitalEngine`).
@@ -194,7 +194,7 @@ The numerical solver architecture partitions differential systems based on their
   * $\Delta F_{\text{greenhouse}}$: Net downward longwave greenhouse radiative forcing [$\text{W/m}^2$].
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 3. Clausius-Clapeyron Atmospheric Moisture Capacity (`AtmosphericMoistureEngine`)
+#### 3. Clausius-Clapeyron Atmospheric Moisture Capacity (`GreenhouseRadiativeEngine`, `MaximumEntropyProductionEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Clausius, R. (1850). *Über die bewegende Kraft der Wärme*. Annalen der Physik, 155(3), 368-397; Bolton, D. (1980). *The computation of equivalent potential temperature*. Monthly Weather Review, 108(7), 1046-1053.
 * **Governing Equations**:
@@ -461,7 +461,7 @@ The numerical solver architecture partitions differential systems based on their
   * $P_{\text{practice}}$: Agricultural contouring and conservation practice factor [dimensionless].
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 19. Dust Storm Aerosol Mobilization & Transport (`DustStormEngine`)
+#### 19. Aeolian Saltation & Dust Aerosol Mobilization (`AlbedoClimateEngine`, `DeforestationErosionEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Gillette, D. A. (1978). *A wind tunnel simulation of the erosion of soil*. Atmospheric Environment, 12(8), 1735-1738; Shao, Y. (2008). *Physics and Modelling of Wind Erosion*. Springer.
 * **Governing Equations**:
@@ -540,21 +540,16 @@ The numerical solver architecture partitions differential systems based on their
   * Physiological boundary ($T_{\text{wb}} \ge 35^\circ\text{C}$): Human skin cannot dissipate metabolic heat via perspiration; fatal hyperthermia occurs within 6 hours without active refrigeration.
 * **Computational Complexity**: $O(1)$ per cell; evaluated on Daily Step ($\Delta t = 1\text{ day}$).
 
-#### 25. Kleiber Allometry, Primiparity & Gompertz-Makeham Senescence (`DemographicKernel`, `BiologicalDemographicsEngine`)
+#### 25. Kleiber Allometry, Euler-Lotka Renewal & Gompertz-Makeham Senescence (`DemographicKernel`, `BiologicalDemographicsEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
-* **Academic Literature Reference**: Kleiber, M. (1932). *Body size and metabolism*. Hilgardia, 6(11), 315-353; Gompertz, B. (1825). *On the nature of the function expressive of the law of human mortality*. Philosophical Transactions of the Royal Society, 115, 513-583; Makeham, W. M. (1860). *On the law of mortality*. Journal of the Institute of Actuaries, 8(6), 301-310.
+* **Academic Literature Reference**: Kleiber, M. (1932). *Body size and metabolism*. Hilgardia, 6(11), 315–353; Gompertz, B. (1825). *On the nature of the function expressive of the law of human mortality*. Philosophical Transactions of the Royal Society, 115, 513–583; Makeham, W. M. (1860). *On the law of mortality*. Journal of the Institute of Actuaries, 8(6), 301–310; Sharpe, F. R., & Lotka, A. J. (1911). *A problem in age-distribution*. Philosophical Magazine, 21(124), 435–438.
 * **Governing Equations**:
-  $$B_{\text{basal}} = B_0 M_{\text{body}}^{3/4}, \quad E_{\text{metabolic}} = 3.362\text{ GJ/(person}\cdot\text{year)}$$
-  $$\mu(a) = \alpha_{\text{makeham}} + \beta_{\text{gompertz}} \cdot \exp(\gamma_{\text{age}} a) + \mu_{\text{starvation}}(\text{Food})$$
-  $$a_{\text{primiparity}} = 14.0 + 10.0 \cdot (1.0 - C_{\text{kinship}}) + 6.0 \cdot \tanh\left(\frac{k_{\text{pc}}}{800.0}\right)$$
+  $$B_{\text{basal}} = B_0 M_{\text{body}}^{3/4}, \qquad \mu(a) = \alpha_{\text{makeham}} + \beta_{\text{gompertz}} \exp(\gamma_{\text{age}} a)$$
+  $$l(a) = \exp\!\left(-\int_0^a \mu(u) \, du\right), \qquad \int_{\alpha}^{\omega} e^{-r a} \, l(a) \, m(a) \, da = 1$$
 * **Parameters & Physical Units**:
-  * $a$: Cohort age [$\text{years}$].
-  * $\mu(a)$: Age-specific mortality hazard rate [$\text{year}^{-1}$].
-  * $\alpha_{\text{makeham}} = 0.001\text{ yr}^{-1}$: Age-independent background accidental mortality.
-  * $\beta_{\text{gompertz}} = 5.0 \times 10^{-5}\text{ yr}^{-1}$: Initial biological vulnerability.
-  * $\gamma_{\text{age}} = 0.085\text{ yr}^{-1}$: Actuarial aging rate doubling every $\sim 8.1$ years.
-  * $a_{\text{primiparity}}$: Age at first childbearing [$\text{years}$].
-  * $E_{\text{reproduction}} = 0.80\text{ GJ/birth}$: Maternal gestation and lactation bioenergetic cost.
+  * $a$: Cohort age [$\text{yr}$]; $[\alpha, \omega]$: reproductive age window [$\text{yr}$].
+  * $\mu(a)$: Age-specific actuarial mortality hazard rate [$\text{yr}^{-1}$], with Makeham background hazard $\alpha_{\text{makeham}}$ and Gompertz senescence parameters $(\beta_{\text{gompertz}}, \gamma_{\text{age}})$.
+  * $l(a) \in (0, 1]$: Cohort survival probability from birth to age $a$; $m(a)$: age-specific maternity schedule [$\text{yr}^{-1}$]; $r$: intrinsic Euler-Lotka growth rate [$\text{yr}^{-1}$].
 * **Computational Complexity**: $O(7)$ age cohorts per cell.
 
 #### 25.1. Ecotoxicological Endocrine Disruption & Fertility Attenuation (`EcotoxicologyFertilityEngine`)
@@ -572,19 +567,12 @@ The numerical solver architecture partitions differential systems based on their
 
 #### 25.2. Bergmann-Allen Ecomorphology & Thermoregulatory Scaling (`BergmannAllenMorphologyEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
-* **Academic Literature Reference**: Bergmann, C. (1847). *Ueber die Verhältnisse der Wärmeökonomie der Thiere zu ihrer Grösse*. Göttinger Studien, 3(1), 595-708; Allen, J. A. (1877). *The influence of Physical conditions in the genesis of species*. Radical Review, 1, 108-140; Ruff, C. B. (1994). *Morphological adaptation to climate in modern and fossil hominids*. American Journal of Physical Anthropology, 37(S19), 65-107; Foster, J. B. (1964). *Evolution of mammals on islands*. Nature, 202(4929), 234-235.
+* **Academic Literature Reference**: Bergmann, C. (1847). *Ueber die Verhältnisse der Wärmeökonomie der Thiere zu ihrer Grösse*. Göttinger Studien, 3(1), 595–708; Allen, J. A. (1877). *The influence of physical conditions in the genesis of species*. Radical Review, 1, 108–140; Du Bois, D., & Du Bois, E. F. (1916). *A formula to estimate the approximate surface area if height and weight be known*. Archives of Internal Medicine, 17(6), 863–871; Scholander, P. F., Hock, R., Walters, V., Johnson, F., & Irving, L. (1950). *Heat regulation in some arctic and tropical mammals and birds*. Biological Bulletin, 99(2), 237–258.
 * **Governing Equations**:
-  $$M^*(T) = M_{\text{ref}} \cdot \left[1.0 + \beta_{\text{bergmann}} \cdot \tanh\left(\frac{T_{\text{ref}} - T}{s_T}\right)\right] \quad [\text{tons}]$$
-  $$\frac{SA}{M} = c_{\text{geom}} \cdot M_{\text{kg}}^{-1/3} \quad [\text{m}^2/\text{kg}]$$
-  $$[\dot{p}_M](T, M) = [\dot{p}_{M0}] \cdot \left[1.0 + \gamma_{\text{thermo}} \cdot \frac{SA}{M} \cdot \max(0, T_{\text{comfort}} - T)\right]$$
+  $$\frac{A_s}{M} = c_{\text{geom}} \, M^{-1/3}, \qquad B(T) = \max\!\left(B_{\text{basal}}, \; g_{\text{th}} A_s (T_{\text{core}} - T)\right), \qquad T_{\text{lc}} = T_{\text{core}} - \frac{B_{\text{basal}}}{g_{\text{th}} A_s}$$
 * **Parameters & Physical Units**:
-  * $M_{\text{ref}} = 0.050\text{ tons}$ ($50.0\text{ kg}$): Reference human structural lean mass.
-  * $T_{\text{ref}} = 15.0^\circ\text{C}$, $s_T = 18.0^\circ\text{C}$: Baseline temperature and transition width.
-  * $\beta_{\text{bergmann}} = 0.25$: Bergmann latitudinal mass variation amplitude ($\pm 25\%$).
-  * $c_{\text{geom}} = 0.048\text{ m}^2\cdot\text{kg}^{1/3}$: Human allometric surface coefficient (Du Bois & Du Bois 1916).
-  * $T_{\text{comfort}} = 20.0^\circ\text{C}$: Thermoregulatory metabolic boundary.
-  * $\gamma_{\text{thermo}} = 0.035$: Conductance scaling coefficient.
-* **Epistemic Invariant**: Couples paleotemperature to body mass and DEB somatic maintenance across human and mammalian taxa without arbitrary local constants.
+  * $A_s / M$: Specific body surface-to-mass ratio [$\text{m}^2/\text{kg}$] scaling geometrically as $M^{-1/3}$ ($c_{\text{geom}} \approx 0.048\,\text{m}^2\cdot\text{kg}^{-2/3}$, Du Bois & Du Bois 1916).
+  * $g_{\text{th}}$: Whole-body thermal conductance [$\text{W/(m}^2\cdot\text{K)}$]; $T_{\text{core}}$: homeothermic core temperature [$\text{K}$]; $T_{\text{lc}}$: Scholander-Irving lower critical thermoneutral temperature [$\text{K}$].
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 25.3. Charnov Life-History Invariants & Reproductive Allocation (`LifeHistoryInvariantsEngine`)
@@ -601,7 +589,7 @@ The numerical solver architecture partitions differential systems based on their
 * **Epistemic Invariant**: Derives dynamic maturity age and fertility acceleration under crisis mortality hazards directly from evolutionary optimization rather than ad-hoc demographic tables.
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 26. Kimura Neutral Genetic Drift & Wright-Fisher Diffusion (`GeneticAdaptationEngine`)
+#### 26. Kimura Neutral Genetic Drift & Wright-Fisher Diffusion (`BioMolecularEpidemiologyEngine`, `SelectiveBreedingEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Kimura, M. (1968). *Evolutionary rate at the molecular level*. Nature, 217(5129), 624-626; Wright, S. (1931). *Evolution in Mendelian populations*. Genetics, 16(2), 97-159.
 * **Governing Equations**:
@@ -641,7 +629,7 @@ The numerical solver architecture partitions differential systems based on their
   * $M_{ij}$: Inter-cell human mobility transport matrix [$\text{persons/day}$].
 * **Computational Complexity**: $O(K_{\text{active}})$ sparse active set evaluation.
 
-#### 29. Trophic Ecosystem Biomass Thermodynamics (`BiodiversityTrophicEngine`, `TrophicEcosystemEngine`)
+#### 29. Trophic Ecosystem Biomass Thermodynamics (`TrophicEcosystemEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Lindeman, R. L. (1942). *The trophic-dynamic aspect of ecology*. Ecology, 23(4), 399-417; Odum, E. P. (1968). *Energy flow in ecosystems: a historical review*. American Zoologist, 8(1), 11-18.
 * **Governing Equations**:
@@ -690,7 +678,7 @@ The numerical solver architecture partitions differential systems based on their
   * $\Delta B_{\text{human}}$: Biomass removal via logging, clearing, and grazing.
 * **Computational Complexity**: $O(G^2)$ for $G$ functional ecological guilds.
 
-#### 31.2. Critical Slowing Down & Saddle-Node Tipping Points (`CriticalSlowingDownTippingPointEngine`)
+#### 31.2. Critical Slowing Down & Saddle-Node Tipping Points (`CharneyVegetationAlbedoEngine`, `BifurcationChaosEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
 * **Academic Literature Reference**: Scheffer, M., et al. (2009). *Early-warning signals for critical transitions*. Nature, 461(7260), 53-59; Kramers, H. A. (1940). *Brownian motion in a field of force and the diffusion model of chemical reactions*. Physica, 7(4), 284-304.
 * **Governing Equations**:
@@ -951,16 +939,15 @@ The numerical solver architecture partitions differential systems based on their
   * $\Delta T_{\text{nuclear\_winter}}$: Global surface cooling anomaly [$^\circ\text{C}$].
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 42.1. Fundamental Physical Constants Scaling (`PhysicalLawEngine`)
-* **Model Classification**: Tier 1 (Fundamental Invariant Physics)
-* **Academic Literature Reference**: Barrow, J. D. (2002). *The Constants of Nature*. Pantheon Books.
+#### 42.1. Photosynthetic Quantum Yield & Superconducting Conduction Bounds (`PhysicalLawEngine`)
+* **Model Classification**: Tier 1 (Counterfactual Physical Parameter Perturbation)
+* **Academic Literature Reference**: Zhu, X.-G., Long, S. P., & Ort, D. R. (2008). *What is the maximum efficiency with which photosynthesis can convert solar energy into biomass?* Current Opinion in Biotechnology, 19(2), 153–159; Bardeen, J., Cooper, L. N., & Schrieffer, J. R. (1957). *Theory of superconductivity*. Physical Review, 108(5), 1175–1204.
 * **Governing Equations**:
-  $$B_{\text{nat}}(t + \Delta t) = B_{\text{nat}}(t) \cdot \left[1.0 + (\gamma_{\text{photo}} - 1.0) \cdot 0.02 \cdot \Delta t\right]$$
-  $$W_{\text{eff}}(t + \Delta t) = W_{\text{eff}}(t) \cdot \left[1.0 + \mathbb{I}_{T_c \ge 300\text{ K}} \cdot 0.05 \cdot \Delta t\right]$$
+  $$\epsilon_{\text{photo}} = \beta_{\text{PAR}} \cdot \alpha_{\text{abs}} \cdot \phi_{\text{quantum}} \cdot (1 - r_{\text{photoresp}} - r_{\text{resp}}), \qquad R_{\text{cond}}(T) = \begin{cases} 0 & T < T_c \\ \rho(T) \frac{L}{A} & T \ge T_c \end{cases}$$
 * **Parameters & Physical Units**:
-  * $\gamma_{\text{photo}}$: Dimensionless scaling factor on photosynthetic quantum yield.
-  * $\mathbb{I}_{T_c \ge 300\text{ K}}$: Superconductivity indicator eliminating line resistance ($I^2 R = 0$).
-* **Computational Complexity**: $O(1)$ per cell.
+  * $\epsilon_{\text{photo}}$: Theoretical solar-to-biomass conversion ceiling ($\le 0.046$ for $\text{C}_3$ and $\le 0.060$ for $\text{C}_4$ canopies; Zhu et al. 2008).
+  * $T_c$: Critical superconducting phase-transition temperature [$\text{K}$] below which ohmic Joule dissipation $P_{\text{loss}} = I^2 R_{\text{cond}} = 0$ (Bardeen et al. 1957).
+* **Computational Complexity**: $O(1)$ per cell (exact identity no-op unless counterfactual physical constants are perturbed).
 
 #### 42.2. Thermodynamic Prime Movers & Useful Exergy Conversion (`ThermodynamicPrimeMoversEngine`)
 * **Model Classification**: Tier 1 (Fundamental Invariant Physics)
@@ -1020,14 +1007,12 @@ The numerical solver architecture partitions differential systems based on their
 
 #### 45.1. Kin Selection & Hamilton Rule Inclusive Fitness (`KinSelectionHamiltonEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
-* **Academic Literature Reference**: Hamilton, W. D. (1964). *The genetical evolution of social behaviour. I & II*. Journal of Theoretical Biology, 7(1), 1-52.
+* **Academic Literature Reference**: Hamilton, W. D. (1964). *The genetical evolution of social behaviour. I & II*. Journal of Theoretical Biology, 7(1), 1–52.
 * **Governing Equations**:
-  $$r_{\text{relate}} \cdot B_{\text{recipient}} > C_{\text{actor}}$$
-  $$\Delta F_{\text{hostility}} = \kappa_{\text{scarcity}} \cdot (1.0 - r_{\text{cultural}}) \cdot \max\left(0, 1.0 - \frac{E_{\text{cal}}}{E_{\text{req}}}\right)$$
+  $$r_{ij} \, B_j - C_i > 0, \qquad \Delta w_{\text{incl},i} = -C_i + \sum_{j \neq i} r_{ij} B_j$$
 * **Parameters & Physical Units**:
-  * $r_{\text{relate}} \in [0, 1]$: Genetic or linguistic/cultural relatedness.
-  * $B, C$: Caloric or reproductive fitness benefit and cost [$\text{Joules}$ or surviving offspring].
-  * $\Delta F_{\text{hostility}}$: Outgroup violent raiding probability under famine conditions.
+  * $r_{ij} \in [0, 1]$: Coefficient of genealogical relatedness between actor $i$ and recipient $j$.
+  * $B_j, C_i$: Reproductive fitness benefit conferred on recipient $j$ and direct fitness cost incurred by actor $i$.
 * **Computational Complexity**: $O(1)$ per cell.
 
 #### 46. Boserup Endogenous Agricultural Intensification (`BoserupAgriculturalIntensificationEngine`)
@@ -1080,8 +1065,8 @@ The numerical solver architecture partitions differential systems based on their
 * **Governing Equations**:
   $$\frac{dx_c}{dt} = \alpha_c x_c - \beta_c x_c, \quad \frac{dx_e}{dt} = \alpha_e x_e - \beta_e x_e, \quad \frac{dy}{dt} = \gamma y \left(1 - \frac{y}{K_y}\right) - \delta x \frac{y}{K_y}$$
 * **Parameters & Physical Units**:
-  * $x_c, x_e$: Commoner and elite population cohorts [persons]; $x = N / 100$ normalized cellular density in `HandyNasaHybridEngine` (unbounded bilinear depletion term $\delta = 0.005$, $\gamma = 0.02$, zero artificial density cap).
-  * $y$: Regenerative natural ecological capital / resource stock [biomass units].
+  * $x_c, x_e$: Commoner and elite population cohorts [persons] ($x = x_c + \kappa_{\text{ineq}} x_e$ effective extraction-weighted population in Motesharrei et al. 2014).
+  * $y$: Regenerative natural ecological resource stock ($K_y$: carrying capacity; $\gamma$: intrinsic regeneration rate; $\delta$: per-capita depletion rate).
   * $\alpha, \beta$: Birth and famine-induced mortality rates.
 * **Computational Complexity**: $O(1)$ per regional macro-cell.
 
@@ -1108,28 +1093,24 @@ The numerical solver architecture partitions differential systems based on their
   * $\text{SFD}$: State Fiscal Distress (sovereign public debt $D_{\text{state}}$ relative to fiscal revenue $R_{\text{tax}}$).
 * **Computational Complexity**: $O(1)$ per cell / polity.
 
-#### 52.1. Ibn Khaldun Asabiyyah Dynamics & Frontier Strife (`CliodynamicsEngine`)
+#### 52.1. Ibn Khaldun Asabiyyah Dynamics & Frontier Cohesion (`CliodynamicsEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
-* **Academic Literature Reference**: Ibn Khaldun (1377). *The Muqaddimah: An Introduction to History*; Turchin, P. (2003).
+* **Academic Literature Reference**: Ibn Khaldun (1377). *The Muqaddimah: An Introduction to History*; Turchin, P. (2003). *Historical Dynamics: Why States Rise and Fall*. Princeton University Press, Ch. 4.
 * **Governing Equations**:
-  $$\frac{dS}{dt} = r_{\text{front}} (1 - S) \cdot \mathbb{I}_{\text{frontier}} - \delta_{\text{core}} S \cdot \mathbb{I}_{\text{core}}$$
-  $$\mu_{\text{strife}} = \mu_0 \cdot \Psi^2 \cdot \Delta t \quad (\mu_0 = 0.015\text{ yr}^{-1})$$
+  $$\frac{dS}{dt} = r_0 \, S (1 - S) \cdot \mathbb{I}_{\text{frontier}} - \delta_0 \, S$$
 * **Parameters & Physical Units**:
-  * $S \in [0.05, 1.0]$: Group solidarity / Asabiyyah collective action capacity.
-  * $\mathbb{I}_{\text{frontier}}$: Active conflict border indicator.
-  * $\mu_{\text{strife}}$: Annual excess demographic mortality during revolutionary civil war [$\text{year}^{-1}$].
+  * $S \in (0, 1]$: Collective solidarity (*asabiyyah*) capacity, growing logistically at rate $r_0$ [$\text{yr}^{-1}$] along metaethnic frontiers ($\mathbb{I}_{\text{frontier}} = 1$) and decaying at rate $\delta_0$ [$\text{yr}^{-1}$] in pacified imperial interiors (Turchin 2003).
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 53. Acemoglu-Robinson Inclusive vs. Extractive Institutions (`AcemogluRobinsonInstitutionsEngine`)
+#### 53. Acemoglu-Robinson Property Rights & Expropriation Risk (`AcemogluRobinsonInstitutionsEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
-* **Academic Literature Reference**: Acemoglu, D., & Robinson, J. A. (2012). *Why Nations Fail: The Origins of Power, Prosperity, and Poverty*. Crown Business; Acemoglu, D., Johnson, S., & Robinson, J. A. (2001). *The colonial origins of comparative development*. American Economic Review, 91(5), 1369-1401.
+* **Academic Literature Reference**: Acemoglu, D., Johnson, S., & Robinson, J. A. (2001). *The colonial origins of comparative development*. American Economic Review, 91(5), 1369–1401; Acemoglu, D., Johnson, S., & Robinson, J. A. (2005). *Institutions as a fundamental cause of long-run growth*. Handbook of Economic Growth, Vol. 1A, 385–472; Acemoglu, D., & Robinson, J. A. (2012). *Why Nations Fail*. Crown.
 * **Governing Equations**:
-  $$\frac{d I_{\text{inc}}}{dt} = \theta_1 \cdot \text{CivilSocietyStrength} - \theta_2 \cdot \text{EliteRentSeeking}$$
-  $$\Delta K = K \cdot 0.02 \cdot (I_{\text{inc}} - 0.35) \cdot \Delta t$$
+  $$r_{\text{net}} = (1 - \tau_{\text{extr}}) \frac{\partial F(K, L)}{\partial K} - \delta, \qquad \frac{dK}{dt} = s_I \, r_{\text{net}} \, K$$
 * **Parameters & Physical Units**:
-  * $I_{\text{inc}} \in [0.0, 1.0]$: Broad-based property rights and rule of law index.
-  * $\Delta K$: Physical capital investment accumulation rate.
-* **Computational Complexity**: $O(1)$ per polity.
+  * $\tau_{\text{extr}} \in [0, 1]$: Effective elite expropriation and rent-extraction wedge on private output returns (Acemoglu et al. 2005).
+  * $r_{\text{net}}$: Net private rate of return on productive physical capital $K$ [$\text{yr}^{-1}$].
+* **Computational Complexity**: $O(1)$ per cell / polity.
 
 #### 54. Granovetter Collective Action Threshold Cascades (`GranovetterThresholdCascadeEngine`)
 * **Model Classification**: Tier 2 - Type A (Pluggable Cliodynamic Academic Debate)
@@ -1174,7 +1155,7 @@ The numerical solver architecture partitions differential systems based on their
 
 ---
 
-### Subsection B: Type B Scenario Heuristics & Historical Plugins (`org.ether.society.procedural.typeb`)
+### Subsection B: Type B Scenario Heuristics & Historical Plugins (`org.ether.society.engines.tier2`)
 
 #### 58. Frontier Cohesion & Asabiyyah Regeneration (`FrontierAsabiyyahEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
@@ -1194,13 +1175,13 @@ The numerical solver architecture partitions differential systems based on their
   * $B_{\text{pyro}}$: Pyrogenically maintained grassland/savanna biomass density [$\text{kg/ha}$].
 * **Computational Complexity**: $O(1)$ per cell.
 
-#### 60. Roman Imperial Expansion & Currency Debasement (`RomanImperialCliodynamicEngine`)
+#### 60. Roman Imperial Fiscal-Tributary Flow & Coinage Debasement (`RomanImperialCliodynamicEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Butcher, K., & Ponting, M. (2014). *The Metallurgy of Roman Silver Coinage: From the Reforms of Nero to the Reform of Septimius Severus*. Cambridge University Press; Hopkins, K. (1980). *Taxes and trade in the Roman Empire*. Journal of Roman Studies, 70, 101-125.
+* **Academic Literature Reference**: Hopkins, K. (1980). *Taxes and trade in the Roman Empire (200 B.C.–A.D. 400)*. Journal of Roman Studies, 70, 101–125; Butcher, K., & Ponting, M. (2014). *The Metallurgy of Roman Silver Coinage*. Cambridge University Press; Fisher, I. (1911). *The Purchasing Power of Money*. Macmillan.
 * **Governing Equations**:
-  $$\text{Purity}_{t+1} = \text{Purity}_t \cdot \left(1.0 - \frac{\max(0, \text{MilitaryPayDeficit})}{\text{SilverReserves} + 1.0}\right)$$
+  $$\phi_{\text{Ag}}(t) = \frac{M_{\text{Ag}}(t)}{M_{\text{coin}}(t)}, \qquad M_{\text{coin}} V = P Y$$
 * **Parameters & Physical Units**:
-  * $\text{Purity}$: Fineness percentage of silver denarius/antoninianus [$5.0 - 100.0\%$].
+  * $\phi_{\text{Ag}} \in (0, 1]$: Silver fineness fraction of minted imperial coinage ($M_{\text{Ag}}$: bullion silver mass; $M_{\text{coin}}$: total circulating coin mass) coupled to price level $P$ via Fisher's equation of exchange.
 * **Computational Complexity**: $O(1)$ per imperial province.
 
 #### 62. Tokugawa Japan Sakoku Autarkic Forestry (`EdoJapanIsolationEngine`)
@@ -1320,13 +1301,13 @@ The numerical solver architecture partitions differential systems based on their
   * $\bar{A}_{\text{reactive}}$: Population mean reactive aggressive response threshold.
 * **Computational Complexity**: $O(1)$ per cohort.
 
-#### 75. Sexual Selection & Polygyny Mating Skew (`SexualSelectionMatingEngine`)
+#### 75. Sexual Selection, Operational Sex Ratio & Polygyny Mating Skew (`SexualSelectionMatingEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Henrich, J., Boyd, R., & Richerson, P. J. (2012). *The puzzle of monogamous marriage*. Philosophical Transactions of the Royal Society B, 367(1589), 657-669.
+* **Academic Literature Reference**: Bateman, A. J. (1948). *Intra-sexual selection in Drosophila*. Heredity, 2(3), 349–368; Emlen, S. T., & Oring, L. W. (1977). *Ecology, sexual selection, and the evolution of mating systems*. Science, 197(4300), 215–223; Henrich, J., Boyd, R., & Richerson, P. J. (2012). *The puzzle of monogamous marriage*. Philosophical Transactions of the Royal Society B, 367(1589), 657–669.
 * **Governing Equations**:
-  $$\text{UnrestRisk} = 1.0 + \gamma_{\text{skew}} \cdot (\text{Gini}_{\text{wives}} - 0.20)$$
+  $$\text{OSR} = \frac{N_{m,\text{unpaired}}}{N_{f,\text{receptive}}}, \qquad u_m = 1 - \frac{N_f}{N_m \, \bar{w}_{\text{mated}}}$$
 * **Parameters & Physical Units**:
-  * $\text{Gini}_{\text{wives}}$: Inequality in mating distribution.
+  * $\text{OSR}$: Operational sex ratio (Emlen & Oring 1977); $u_m \in [0, 1)$: fraction of unmated adult males generated when mean wives per mated male $\bar{w}_{\text{mated}} > 1$ (Henrich et al. 2012).
 * **Computational Complexity**: $O(1)$ per polity.
 
 #### 76. Vaclav Smil Primary Energy Transition Turnover (`SmilMaterialTransitionsPureEngine`)
@@ -1347,13 +1328,14 @@ The numerical solver architecture partitions differential systems based on their
   * $D_f$: Urban radial fractal dimension.
 * **Computational Complexity**: $O(1)$ per urban cluster.
 
-#### 78. Tasmanian Demographic Cultural Atrophy (`TasmanianCulturalRegressionEngine`)
+#### 78. Henrich Gumbel Skill Transmission & Tasmanian Effect (`TasmanianCulturalRegressionEngine`)
 * **Model Classification**: Tier 2 - Type B (Scenario Heuristic Engine)
-* **Academic Literature Reference**: Henrich, J. (2004). *Demography and cultural evolution: Why adaptive cultural processes produce maladaptive losses - the Tasmanian effect*. American Antiquity, 69(2), 197-214.
+* **Academic Literature Reference**: Henrich, J. (2004). *Demography and cultural evolution: How adaptive cultural processes can produce maladaptive losses — the Tasmanian case*. American Antiquity, 69(2), 197–214.
 * **Governing Equations**:
-  $$\frac{dK}{dt} = \begin{cases} -\delta_{\text{atrophy}} \left(1 - \frac{N}{N_c}\right) (K - K_{\text{somatic}}) & \text{if } N < N_c \\ +\mu_{\text{innov}} N \sqrt{\frac{N}{N_c}} & \text{if } N \ge N_c \end{cases}$$
+  $$\Delta \bar{z} = -\alpha + \beta \left(\gamma_E + \ln N_e\right) = \beta \ln\!\left(\frac{N_e}{N^*}\right), \qquad N^* = \exp\!\left(\frac{\alpha}{\beta} - \gamma_E\right)$$
 * **Parameters & Physical Units**:
-  * $N_c = 5000.0\text{ persons}$: Critical learner network threshold below which copying errors exceed innovation.
+  * $\Delta \bar{z}$: Expected change per generation in mean population skill $\bar{z}$ under oblique/selective imitation from the most skilled model in a Gumbel extreme-value pool of size $N_e$ (Henrich 2004, Eq. 3).
+  * $\alpha > 0$: Systematic transmission bias/imperfection; $\beta > 0$: dispersion of learner skill innovations; $\gamma_E \approx 0.5772$: Euler-Mascheroni constant; $N^*$: critical effective learner pool below which $\Delta \bar{z} < 0$.
 * **Computational Complexity**: $O(1)$ per isolated landmass.
 
 #### 79. Nordhaus DICE Climate-Economy Damage (`NordhausDicePureEngine`)
@@ -1662,7 +1644,7 @@ The numerical solver architecture partitions differential systems based on their
 
 | Subsystem Classification | Temporal Tier | Time Step ($\Delta t$) | Computational Complexity Per Cell | Typical Execution Time (175k Cells) |
 |---|---|---|---|---|
-| **Flux & Logistics (`FluxEngine`)** | Tier 1 | Daily ($\Delta t = 1\text{d}$) | $O(6)$ neighbor volume balance | $3.2\text{ ms}$ |
+| **Flux & Logistics (`FluxKernel`)** | Tier 1 | Daily ($\Delta t = 1\text{d}$) | $O(6)$ neighbor volume balance | $3.2\text{ ms}$ |
 | **Wet-Bulb Temperature (`WetBulbTemperatureEngine`)** | Tier 1 | Daily ($\Delta t = 1\text{d}$) | Analytical polynomial $O(1)$ | $0.4\text{ ms}$ |
 | **Atmospheric Circulation (`AtmosphericCirculationHadleyEngine`)** | Tier 1 | Daily ($\Delta t = 1\text{d}$) | Geostrophic balance $O(1)$ | $0.6\text{ ms}$ |
 | **Epidemiological Diffusion (`SpatialMetapopulationSEIREngine`)** | Tier 1 | Daily ($\Delta t = 1\text{d}$) | Sparse active set $O(K_{\text{active}})$ | $0.8\text{ ms}$ |
@@ -1707,7 +1689,7 @@ The simulation state at $T_0$ is initialized from a coupled tensor stack followi
 * **Parameters & Physical Units**:
   * $\mathbf{T}_i \in [0, 1]^K$: Ethnographic and institutional trait vector (language family, kinship structure, subsistence mode, ritual norm).
   * $A_0(i, j) \in (0, 1]$: Shepard exponential similarity generalization law ($A_0(i, i) = 1$).
-  * $\Phi_{\text{contact},ij}, C_{\text{conflict},ij}$: Peaceful trade contact vs. active inter-polity conflict intensity (Allport 1954; Axelrod 1997). Asymmetric prestige/dogma priors and defensive war grievance closures are documented in `docs/PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md` (Entry 29).
+  * $\Phi_{\text{contact},ij}, C_{\text{conflict},ij}$: Peaceful trade contact vs. active inter-polity conflict intensity (Allport 1954; Axelrod 1997). Asymmetric prestige/dogma priors and defensive war grievance closures are documented in `docs/PARAMETRIC_DEVIATIONS_AND_MODEL_CALIBRATION_REGISTRY.md` (Entry 24).
 
 ---
 

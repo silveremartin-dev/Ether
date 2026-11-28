@@ -6,13 +6,13 @@
  */
 package org.ether.society.engines.tier1;
 
+import org.ether.society.core.dod.WorldBuffer;
 import org.ether.society.core.engine.AbstractSimulationEngine;
+import org.ether.society.core.engine.DerivativeAccumulator;
 import org.ether.society.core.engine.EngineTier;
-import org.ether.society.database.H3Cell;
+import org.ether.society.model.PhysicalUnitsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Universal Metabolic Theory of Ecology (MTE) Engine.
@@ -131,8 +131,10 @@ public class MetabolicEcologyEngine extends AbstractSimulationEngine {
             case VASCULAR_PLANT -> B0_PLANT;
         };
 
-        // Endotherms regulate internal core temperature ~310.15 K (37A°C)
-        double operativeTemp = (guild == TaxonGuild.ENDOTHERM_MAMMAL) ? 310.15 : tempKelvin;
+        // Endotherms regulate internal core temperature ~310.15 K (37 deg C)
+        double operativeTemp = (guild == TaxonGuild.ENDOTHERM_MAMMAL)
+                ? PhysicalUnitsHelper.celsiusToKelvin(37.0)
+                : tempKelvin;
         double boltzmann = calculateBoltzmannFactor(operativeTemp);
 
         return b0 * Math.pow(bodyMassKg, 0.75) * boltzmann;
@@ -196,14 +198,14 @@ public class MetabolicEcologyEngine extends AbstractSimulationEngine {
     }
 
     @Override
-    public void accumulateCellularDerivatives(org.ether.society.core.dod.WorldBuffer buffer, int i, double dtYears, double dtMonthly, org.ether.society.core.engine.DerivativeAccumulator acc) {
+    public void accumulateCellularDerivatives(WorldBuffer buffer, int i, double dtYears, double dtMonthly, DerivativeAccumulator acc) {
         if (dtYears <= 0.0) return;
-        double tempK = buffer.getTemperature()[i] + 273.15;
+        double tempK = PhysicalUnitsHelper.celsiusToKelvin(buffer.getTemperature()[i]);
 
         double naturalBiomass = buffer.getBiomassNatural()[i];
         if (naturalBiomass > 0.0) {
             double herbivoreWatts = calculateMetabolicRateWatts(150.0, tempK, TaxonGuild.ENDOTHERM_MAMMAL);
-            double annualEnergyGJ = herbivoreWatts * 0.0315576;
+            double annualEnergyGJ = PhysicalUnitsHelper.wattsToGjPerYear(herbivoreWatts);
             double metabolicRespirationTons = (annualEnergyGJ * (naturalBiomass * 0.10) / 150.0) / 18.0 * dtYears;
             double newNat = Math.max(0.1, naturalBiomass - metabolicRespirationTons * 0.05);
             acc.dBiomassNatural += (float) (newNat - naturalBiomass);
@@ -212,9 +214,9 @@ public class MetabolicEcologyEngine extends AbstractSimulationEngine {
         double livestockBiomass = buffer.getBiomassLivestock()[i];
         if (livestockBiomass > 0.0) {
             double livestockWatts = calculateMetabolicRateWatts(350.0, tempK, TaxonGuild.ENDOTHERM_MAMMAL);
-            double annualLivestockGJ = livestockWatts * 0.0315576;
+            double annualLivestockGJ = PhysicalUnitsHelper.wattsToGjPerYear(livestockWatts);
             double forageDemandTons = (annualLivestockGJ * livestockBiomass / 350.0) / 18.0 * dtYears;
-            double forageDemandKg = org.ether.society.model.PhysicalUnitsHelper.metricTonnesToKg(forageDemandTons);
+            double forageDemandKg = PhysicalUnitsHelper.metricTonnesToKg(forageDemandTons);
             double currentAgri = buffer.getBiomassAgriculture()[i];
             if (currentAgri > forageDemandKg) {
                 acc.dBiomassAgriculture -= (float) (forageDemandKg * 0.25);
